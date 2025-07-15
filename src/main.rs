@@ -10,7 +10,7 @@ use sdl3::video::Window;
 use std::time::Duration;
 
 fn get_window_state(window: &Window) -> WindowState {
-    let (x, y) = window.position();
+    let position = Some(window.position());
     let flags = window.window_flags();
     // SDL_WINDOW_MAXIMIZED is typically 0x00000080
     let maximized = (flags & 0x00000080) != 0;
@@ -23,12 +23,10 @@ fn get_window_state(window: &Window) -> WindowState {
     };
     
     WindowState {
-        x,
-        y,
+        position,
         width,
         height,
         maximized,
-        display_index: None, // We'll update this separately
     }
 }
 
@@ -40,46 +38,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Load config
     let mut config = Config::load();
     
-    // Get available displays
-    let displays = video_subsystem.displays()?;
-    println!("Available displays: {}", displays.len());
-    
-    // Use saved display index if valid, otherwise use default logic
-    let display_index = if let Some(saved_index) = config.window_state.display_index {
-        if saved_index < displays.len() {
-            saved_index
-        } else {
-            if displays.len() > 1 { 1 } else { 0 }
-        }
-    } else {
-        if displays.len() > 1 { 1 } else { 0 }
-    };
-    
-    config.window_state.display_index = Some(display_index);
-    
     // Create window with saved state or defaults
-    let mut window_builder = video_subsystem
-        .window("Hello World", config.window_state.width, config.window_state.height);
-    
-    // Position window based on saved state or center on display
-    if config.window_state.x != 100 || config.window_state.y != 100 {
-        window_builder.position(config.window_state.x, config.window_state.y);
-    } else {
-        let display = &displays[display_index];
-        let display_bounds = display.get_bounds()?;
-        window_builder.position(
-            display_bounds.x() + (display_bounds.width() as i32 - config.window_state.width as i32) / 2,
-            display_bounds.y() + (display_bounds.height() as i32 - config.window_state.height as i32) / 2
-        );
-    }
-    
-    window_builder.resizable();
-    
-    if config.window_state.maximized {
-        window_builder.maximized();
-    }
-    
-    let window = window_builder.build()?;
+    let window = config.create_window_builder(&video_subsystem, "Editor")?.build()?;
     let mut canvas = window.into_canvas();
     let texture_creator = canvas.texture_creator();
     
@@ -108,7 +68,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     // Save window state before exiting
                     let window = canvas.window();
                     config.window_state = get_window_state(window);
-                    config.window_state.display_index = Some(display_index);
                     config.save()?;
                     break 'running;
                 },

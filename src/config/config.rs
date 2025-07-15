@@ -1,30 +1,10 @@
+use super::window_state::WindowState;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
 use directories::ProjectDirs;
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct WindowState {
-    pub x: i32,
-    pub y: i32,
-    pub width: u32,
-    pub height: u32,
-    pub maximized: bool,
-    pub display_index: Option<usize>,
-}
-
-impl Default for WindowState {
-    fn default() -> Self {
-        WindowState {
-            x: 100,
-            y: 100,
-            width: 800,
-            height: 600,
-            maximized: false,
-            display_index: None,
-        }
-    }
-}
+use sdl3::video::WindowBuilder;
+use sdl3::VideoSubsystem;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Config {
@@ -65,5 +45,18 @@ impl Config {
     fn config_path() -> Option<PathBuf> {
         ProjectDirs::from("com", "editor", "editor")
             .map(|dirs| dirs.config_dir().join("window_state.json"))
+    }
+    
+    pub fn create_window_builder(&mut self, video_subsystem: &VideoSubsystem, title: &str) -> Result<WindowBuilder, Box<dyn std::error::Error>> {
+        let mut window_builder = video_subsystem
+            .window(title, self.window_state.width, self.window_state.height);
+        if let Some((x, y)) = self.window_state.position {
+            window_builder.position(x, y);
+        }
+        window_builder.resizable();
+        if self.window_state.maximized {
+            window_builder.maximized();
+        }
+        Ok(window_builder)
     }
 }
