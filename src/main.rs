@@ -1,4 +1,5 @@
 mod config;
+mod ui;
 
 use config::{Config, WindowState};
 use sdl3::event::Event;
