@@ -395,38 +395,247 @@ print(settings.name)  // null
 - `range(start, end, step)` - Generate number sequence
 - `enumerate(collection)` - Get (index, value) pairs
 - `raise(message)` - Raise runtime error/exception
-- `export(value)` or `export(dict)` - Export values from module
-- `import(path)` - Import a module
-- `require(path)` - Import and return exported value
 - `open(path, mode)` - Open file (has .close() method for with statement)
 - `create(path)` - Create new file (has .close() method for with statement)
 
-### Import/Export System
+### Module System
 ```
-// math_utils.rustleaf
-class MathUtils {
-    static fn add(a, b) { a + b }
-    static fn multiply(a, b) { a * b }
+// File: library/math.rustleaf
+pub class Math {
+    pub static fn add(a, b) { a + b }
+    pub static fn multiply(a, b) { a * b }
+    pub static var pi = 3.14159;
 }
 
-export(MathUtils)
-
-// main.rustleaf
-var MathUtils = require("math_utils.rustleaf")
-print(MathUtils.add(2, 3))  // 5
-print(MathUtils.multiply(4, 5))  // 20
-
-// Or export individual functions
-// utils.rustleaf
-fn calculate_area(width, height) {
-    width * height
+pub fn sqrt(x) {
+    x ** 0.5
 }
 
-export(calculate_area)
+pub fn square(x) {
+    x * x
+}
 
-// main.rustleaf
-var calculate_area = require("utils.rustleaf")
-print(calculate_area(10, 20))  // 200
+// Private helper - not accessible from other modules
+fn validate_positive(x) {
+    if x < 0 {
+        raise("Value must be positive")
+    }
+}
+
+// File: main.rustleaf
+// Import everything
+use library::math::*;
+print(Math.add(2, 3))  // 5
+print(sqrt(16))  // 4
+
+// Import specific items
+use library::math::{Math, sqrt};
+print(Math.multiply(4, 5))  // 20
+print(sqrt(25))  // 5
+
+// Import with path
+use library::math::Math;
+print(Math.pi)  // 3.14159
+
+// Nested paths
+// File: graphics/shapes/circle.rustleaf
+pub class Circle {
+    pub var radius;
+    
+    pub static fn new(r) {
+        var c = Circle()
+        c.radius = r
+        c
+    }
+    
+    pub fn area() {
+        3.14159 * self.radius * self.radius
+    }
+    
+    // Private method
+    fn validate() {
+        if self.radius < 0 {
+            raise("Radius cannot be negative")
+        }
+    }
+}
+
+// File: main.rustleaf
+use graphics::shapes::circle::Circle;
+var c = Circle.new(5)
+print(c.area())  // 78.53975
+
+// Multiple imports
+use std::io::{read_file, write_file};
+use std::collections::{List, Dict};
+```
+
+### Visibility Rules
+```
+// File: example.rustleaf
+
+// Public items - accessible from other modules
+pub var API_VERSION = "1.0";
+pub fn get_version() { API_VERSION }
+
+pub class Database {
+    pub var host;      // Public field
+    var connection;    // Private field
+    
+    pub static fn connect(host) {
+        var db = Database()
+        db.host = host
+        db.connection = establish_connection(host)  // Private function
+        db
+    }
+    
+    pub fn query(sql) {
+        // Public method
+        self.validate_query(sql)
+        // ... execute query
+    }
+    
+    fn validate_query(sql) {
+        // Private method - only accessible within this module
+    }
+}
+
+// Private items - only accessible within this module
+var cache = {};
+fn establish_connection(host) {
+    // Private helper function
+}
+
+// File: main.rustleaf
+use example::{Database, get_version, API_VERSION};
+
+var db = Database.connect("localhost")
+db.query("SELECT * FROM users")  // OK - public method
+// db.validate_query("...")      // Error - private method
+// db.connection                 // Error - private field
+print(db.host)                   // OK - public field
+print(get_version())             // OK - public function
+```
+
+### Attributes
+
+Attributes provide a way to attach metadata to functions, classes, and other items. They can be used for compile-time transformations.
+
+```
+// Basic attribute syntax
+#[test]
+fn test_addition() {
+    assert(2 + 2 == 4)
+}
+
+#[deprecated("Use new_api instead")]
+pub fn old_api() {
+    // ...
+}
+
+// Multiple attributes
+#[async]
+#[timeout(5000)]
+fn fetch_data(url) {
+    // ...
+}
+
+// Parameterized attributes
+#[route("/api/users")]
+#[method("GET")]
+fn handle_users_request(req) {
+    // ...
+}
+```
+
+### Custom Attributes
+
+You can define custom attributes that transform the parse tree:
+
+```
+// File: attributes/memo.rustleaf
+
+// The #[attribute] marker makes this function an attribute processor
+#[attribute]
+pub fn memo(ast_node) {
+    // ast_node is the parse tree node this attribute is attached to
+    if ast_node.type != "function" {
+        raise("@memo can only be applied to functions")
+    }
+    
+    // Generate cache storage
+    var cache_var = "__memo_cache_" + ast_node.name
+    
+    // Wrap the original function body
+    var original_body = ast_node.body
+    
+    // Create new function body that checks cache
+    ast_node.body = parse_expr("""
+        {
+            var key = stringify_args(args)
+            if ${cache_var}.has(key) {
+                ${cache_var}.get(key)
+            } else {
+                var result = ${original_body}
+                ${cache_var}.set(key, result)
+                result
+            }
+        }
+    """)
+    
+    // Add cache initialization before function
+    ast_node.prepend_statement(
+        parse_stmt("var ${cache_var} = {}")
+    )
+}
+
+// File: main.rustleaf
+use attributes::memo::memo;
+
+#[memo]
+fn fibonacci(n) {
+    if n <= 1 {
+        n
+    } else {
+        fibonacci(n - 1) + fibonacci(n - 2)
+    }
+}
+
+print(fibonacci(40))  // Fast due to memoization
+```
+
+### Attribute Processing
+
+```
+// Attributes receive the AST node they're attached to
+// They can modify it in place or replace it entirely
+
+#[attribute]
+pub fn log_calls(ast_node) {
+    var original_body = ast_node.body
+    var fn_name = ast_node.name
+    
+    // Wrap body with logging
+    ast_node.body = parse_expr("""
+        {
+            print("Calling ${fn_name} with args:", args)
+            var result = ${original_body}
+            print("${fn_name} returned:", result)
+            result
+        }
+    """)
+}
+
+// Usage
+#[log_calls]
+fn add(a, b) {
+    a + b
+}
+
+add(2, 3)
+// Output:
+// Calling add with args: [2, 3]
+// add returned: 5
 ```
 
 ### Operators
@@ -705,49 +914,68 @@ for i in range(0, 10) {
 
 ### Configuration File
 ```
-class WindowConfig {
-    var width = 800;
-    var height = 600;
-    var title = "My App";
+// File: config.rustleaf
+pub class WindowConfig {
+    pub var width = 800;
+    pub var height = 600;
+    pub var title = "My App";
 }
 
-class ThemeConfig {
-    var background = "#1e1e1e";
-    var foreground = "#d4d4d4";
-    var accent = "#569cd6";
+pub class ThemeConfig {
+    pub var background = "#1e1e1e";
+    pub var foreground = "#d4d4d4";
+    pub var accent = "#569cd6";
 }
 
-class Config {
-    var window = WindowConfig();
-    var theme = ThemeConfig();
+pub class Config {
+    pub var window = WindowConfig();
+    pub var theme = ThemeConfig();
 }
 
-// Export for use
+// Create default config
 var config = Config()
-export(config)
 
 // Can override defaults if needed
 var custom_config = Config()
 custom_config.window.width = 1024
 custom_config.theme.accent = "#ff0000"
+
+// File: main.rustleaf
+use config::{Config, WindowConfig, ThemeConfig};
+var app_config = Config()
+app_config.window.title = "My Editor"
 ```
 
 ### Plugin Example
 ```
-// plugin.rustleaf
-class Plugin {
-    fn on_startup(editor) {
-        editor.set_status("Plugin loaded")
+// File: plugins/command_palette.rustleaf
+pub class CommandPalettePlugin {
+    pub var enabled = true;
+    var shortcuts = [];  // Private list of shortcuts
+    
+    pub fn on_startup(editor) {
+        if self.enabled {
+            editor.set_status("Command palette plugin loaded")
+            self.load_shortcuts()
+        }
     }
     
-    fn on_keypress(editor, key) {
-        if key == "ctrl+shift+p" {
+    pub fn on_keypress(editor, key) {
+        if self.enabled and key == "ctrl+shift+p" {
             editor.show_command_palette()
         }
     }
+    
+    // Private helper method
+    fn load_shortcuts() {
+        // Load user-defined shortcuts
+        self.shortcuts = ["copy", "paste", "cut"]
+    }
 }
 
-// Export plugin instance
-var plugin = Plugin()
-export(plugin)
+// File: main.rustleaf
+use plugins::command_palette::CommandPalettePlugin;
+
+var plugin = CommandPalettePlugin()
+editor.register_plugin(plugin)
 ```
