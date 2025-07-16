@@ -7,7 +7,7 @@ pub struct CommentScanner<'a> {
     line: &'a mut usize,
     column: &'a mut usize,
     byte_offset: &'a mut usize,
-    errors: &'a mut Vec<LexError>,
+    _errors: &'a mut Vec<LexError>,
 }
 
 impl<'a> CommentScanner<'a> {
@@ -25,7 +25,7 @@ impl<'a> CommentScanner<'a> {
             line,
             column,
             byte_offset,
-            errors,
+            _errors: errors,
         }
     }
 
@@ -135,8 +135,9 @@ impl<'a> CommentScanner<'a> {
         *self.position >= self.input.len()
     }
     
+    #[allow(dead_code)]
     fn error(&mut self, message: String, line: usize, column: usize, offset: usize) {
-        self.errors.push(LexError {
+        self._errors.push(LexError {
             message,
             line,
             column,

@@ -4,7 +4,7 @@ use crate::lexer::error::LexError;
 pub struct NumberScanner<'a> {
     input: &'a [char],
     position: &'a mut usize,
-    line: &'a mut usize,
+    _line: &'a mut usize,
     column: &'a mut usize,
     byte_offset: &'a mut usize,
     errors: &'a mut Vec<LexError>,
@@ -22,7 +22,7 @@ impl<'a> NumberScanner<'a> {
         NumberScanner {
             input,
             position,
-            line,
+            _line: line,
             column,
             byte_offset,
             errors,

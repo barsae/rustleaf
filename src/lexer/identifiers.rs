@@ -4,7 +4,7 @@ use crate::lexer::token::{Token, TokenType, LiteralValue};
 pub struct IdentifierScanner<'a> {
     input: &'a [char],
     position: &'a mut usize,
-    line: &'a mut usize,
+    _line: &'a mut usize,
     column: &'a mut usize,
     byte_offset: &'a mut usize,
     keywords: &'a HashMap<String, TokenType>,
@@ -22,7 +22,7 @@ impl<'a> IdentifierScanner<'a> {
         IdentifierScanner {
             input,
             position,
-            line,
+            _line: line,
             column,
             byte_offset,
             keywords,

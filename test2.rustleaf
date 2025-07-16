@@ -1,6 +1,0 @@
-var x = 42;
-var y = 3.14;
-print("Hello, world!");
-print("x =", x);
-print("y =", y);
-print("x + y =", x + y);
