@@ -5,7 +5,8 @@
       "Bash(cargo:*)",
       "Bash(mv:*)",
       "Bash(mkdir:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(rm:*)"
     ],
     "deny": []
   }

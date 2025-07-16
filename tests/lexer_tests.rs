@@ -1,4 +1,4 @@
-use editor::{Lexer, TokenType, LiteralValue};
+use rustleaf::{Lexer, TokenType, LiteralValue};
 
 #[test]
 fn test_keywords() {
