@@ -77,21 +77,21 @@ Version 1.0
 [Operator Overloading](#operator-overloading)  
 
 ### 6. Statements
-6.1. Statement Evaluation  
-6.2. Expression Statements  
-6.3. Variable Declaration Statements  
-6.4. Empty Statements  
-6.5. Block Statements  
-6.6. Control Flow Statements  
-   6.6.1. If Statements  
-   6.6.2. While Statements  
-   6.6.3. For Statements  
-   6.6.4. Match Statements  
-   6.6.5. Try-Catch-Finally Statements  
-   6.6.6. With Statements  
-   6.6.7. Break Statements  
-   6.6.8. Continue Statements  
-   6.6.9. Return Statements  
+[6.1. Statement Evaluation](#61-statement-evaluation)  
+[6.2. Expression Statements](#62-expression-statements)  
+[6.3. Variable Declaration Statements](#63-variable-declaration-statements)  
+[6.4. Empty Statements](#64-empty-statements)  
+[6.5. Block Statements](#65-block-statements)  
+[6.6. Control Flow Statements](#66-control-flow-statements)  
+   [6.6.1. If Statements](#661-if-statements)  
+   [6.6.2. While Statements](#662-while-statements)  
+   [6.6.3. For Statements](#663-for-statements)  
+   [6.6.4. Match Statements](#664-match-statements)  
+   [6.6.5. Try-Catch-Finally Statements](#665-try-catch-finally-statements)  
+   [6.6.6. With Statements](#666-with-statements)  
+   [6.6.7. Break Statements](#667-break-statements)  
+   [6.6.8. Continue Statements](#668-continue-statements)  
+   [6.6.9. Return Statements](#669-return-statements)  
 
 ### 7. Functions
 [7.1. Function Declarations](#71-function-declarations)  
@@ -117,84 +117,87 @@ Version 1.0
 [Or Patterns](#or-patterns)  
 
 ### 9. Error Handling
-9.1. Error Types  
-9.2. Raising Errors  
-9.3. Try-Catch Blocks  
-9.4. Finally Blocks  
-9.5. Error Propagation  
-9.6. Error Objects  
+[9.1. Error Types](#91-error-types)  
+[9.2. Raising Errors](#92-raising-errors)  
+[9.3. Try-Catch Blocks](#93-try-catch-blocks)  
+[9.4. Finally Blocks](#94-finally-blocks)  
+[9.5. Error Propagation](#95-error-propagation)  
+[9.6. Error Objects](#96-error-objects)  
+[Assert Function](#assert-function)  
+[Pattern Match Failures](#pattern-match-failures)  
 
 ### 10. Modules
-10.1. Module System Overview  
-10.2. Import Statements  
-10.3. Export Functions  
-10.4. Module Resolution  
-10.5. Module Loading  
-10.6. Module Scope  
+[10.1. Module System Overview](#101-module-system-overview)  
+[10.2. Import Statements](#102-import-statements)  
+[10.3. Export Functions](#103-export-functions)  
+[10.4. Module Resolution](#104-module-resolution)  
+[10.5. Module Loading](#105-module-loading)  
+[10.6. Module Scope](#106-module-scope)  
 
 ### 11. Built-in Functions
-11.1. Type Functions  
-11.2. Collection Functions  
-11.3. String Functions  
-11.4. I/O Functions  
-11.5. Error Functions  
-11.6. Module Functions  
+[11.1. Type Functions](#111-type-functions)  
+[11.2. Collection Functions](#112-collection-functions)  
+[11.3. String Functions](#113-string-functions)  
+[11.4. Error Functions](#114-error-functions)  
+[11.5. Utility Functions](#115-utility-functions)  
+[11.6. Global Availability](#116-global-availability)  
 
 ### 12. Standard Library
-12.1. String Methods  
-12.2. List Methods  
-12.3. Dict Methods  
-12.4. Object Methods  
+[12.1. String Methods](#121-string-methods)  
+[12.2. List Methods](#122-list-methods)  
+[12.3. Dict Methods](#123-dict-methods)  
+[12.4. Object Methods](#124-object-methods)  
+[12.5. Method Resolution and Inheritance](#125-method-resolution-and-inheritance)  
 
 ### 13. Documentation Comments and Docstrings
-13.1. Overview  
-13.2. Documentation Comment Syntax  
-13.3. Docstring Syntax  
-13.4. Function Docstrings  
-13.5. Module Docstrings  
-13.6. Variable and Constant Docstrings  
-13.7. Object and Type Docstrings  
-13.8. Docstring Format Conventions  
-13.9. Runtime Access to Docstrings  
-13.10. Tooling Integration  
+[13.1. Overview](#131-overview)  
+[13.2. Documentation Comment Syntax](#132-documentation-comment-syntax)  
+[13.3. Docstring Syntax](#133-docstring-syntax)  
+[13.4. Function Docstrings](#134-function-docstrings)  
+[13.5. Module Docstrings](#135-module-docstrings)  
+[13.6. Variable and Constant Docstrings](#136-variable-and-constant-docstrings)  
+[13.7. Object and Type Docstrings](#137-object-and-type-docstrings)  
+[13.8. Docstring Format Conventions](#138-docstring-format-conventions)  
+[13.9. Runtime Access to Docstrings](#139-runtime-access-to-docstrings)  
+[13.10. Tooling Integration](#1310-tooling-integration)  
 
 ### 14. Memory Model
-14.1. Value Semantics  
-14.2. Reference Semantics  
-14.3. Garbage Collection  
-14.4. Resource Management  
+[14.1. Value Semantics](#141-value-semantics)  
+[14.2. Reference Semantics](#142-reference-semantics)  
+[14.3. Garbage Collection](#143-garbage-collection)  
+[14.4. Resource Management](#144-resource-management)  
 
 ### 15. Execution Model
-15.1. Program Execution  
-15.2. Expression Evaluation Order  
-15.3. Function Call Semantics  
-15.4. Exception Handling  
-15.5. Resource Cleanup  
+[15.1. Program Execution](#151-program-execution)  
+[15.2. Expression Evaluation Order](#152-expression-evaluation-order)  
+[15.3. Function Call Semantics](#153-function-call-semantics)  
+[15.4. Exception Handling](#154-exception-handling)  
+[15.5. Resource Cleanup](#155-resource-cleanup)  
 
 ### 16. RustValue Integration
-16.1. RustValue Trait  
-16.2. Value Enum  
-16.3. Field Access  
-16.4. Method Dispatch  
-16.5. Type Coercion  
-16.6. Lifetime Management  
+[16.1. RustValue Trait](#161-rustvalue-trait)  
+[16.2. Value Enum](#162-value-enum)  
+[16.3. Field Access](#163-field-access)  
+[16.4. Method Dispatch](#164-method-dispatch)  
+[16.5. Type Coercion](#165-type-coercion)  
+[16.6. Lifetime Management](#166-lifetime-management)  
 
-### 17. Attributes
-17.1. Attribute Syntax  
-17.2. Attribute Application Rules  
-17.3. Built-in Attributes  
-17.4. User-defined Attributes  
-17.5. Attribute Processing  
-17.6. AST Transformation  
-17.7. Attribute Evaluation Order  
+### 17. Macros
+[17.1. Macro Syntax](#171-macro-syntax)  
+[17.2. Macro Application Rules](#172-macro-application-rules)  
+[17.3. Built-in Macros](#173-built-in-macros)  
+[17.4. User-defined Macros](#174-user-defined-macros)  
+[17.5. Macro Processing](#175-macro-processing)  
+[17.6. AST Transformation](#176-ast-transformation)  
+[17.7. Macro Evaluation Order](#177-macro-evaluation-order)  
 
 ### Appendices
-A. Grammar Summary  
-B. Operator Precedence  
-C. Reserved Words  
-D. Built-in Function Reference  
-E. Error Codes  
-F. Implementation Limits  
+[A. Grammar Summary](#a-grammar-summary)  
+[B. Operator Precedence](#b-operator-precedence)  
+[C. Reserved Words](#c-reserved-words)  
+[D. Built-in Function Reference](#d-built-in-function-reference)  
+[E. Error Codes](#e-error-codes)  
+[F. Implementation Limits](#f-implementation-limits)  
 
 ---
 
@@ -4440,3 +4443,5070 @@ match response {
     }
 }
 ```
+
+---
+
+## 9. Error Handling
+
+RustLeaf provides error handling through exceptions that can be raised and caught. Any value can be raised as an error, and errors propagate up the call stack until caught. This chapter defines error raising, catching, propagation, and cleanup semantics.
+
+### 9.1. Error Types
+
+Errors in RustLeaf are not a special type—any value can be raised as an error.
+
+**Error Values:**
+- Any value can be raised: strings, numbers, objects, etc.
+- Most commonly strings or custom objects
+- No required error base class or interface
+- Error type identified using `type()` function
+
+**Common Error Patterns:**
+```
+// String errors
+raise("File not found")
+raise("Invalid argument: expected positive number")
+
+// Object errors
+class NetworkError {
+    var code;
+    var message;
+    
+    static fn new(code, message) {
+        var e = NetworkError()
+        e.code = code
+        e.message = message
+        e
+    }
+    
+    fn op_str() {
+        "NetworkError(${self.code}): ${self.message}"
+    }
+}
+
+raise(NetworkError.new(404, "Resource not found"))
+
+// Even primitives can be errors
+raise(42)
+raise(null)
+raise([1, 2, 3])
+```
+
+**Error Information:**
+When an error is raised, the runtime captures:
+- The error value
+- Stack trace at point of raise
+- Source location (file, line, column)
+
+### 9.2. Raising Errors
+
+Errors are raised using the `raise` function, which immediately transfers control to the nearest error handler.
+
+**Syntax:**
+```
+raise(value)
+```
+
+**Raise Semantics:**
+- Evaluates the argument to get error value
+- Captures current stack trace
+- Unwinds stack looking for try-catch block
+- If no handler found, terminates program
+- Never returns to caller
+
+**Examples:**
+```
+fn divide(a, b) {
+    if b == 0 {
+        raise("Division by zero")
+    }
+    a / b
+}
+
+fn validate_age(age) {
+    if type(age) != "int" {
+        raise("Age must be an integer")
+    }
+    if age < 0 {
+        raise("Age cannot be negative")
+    }
+    if age > 150 {
+        raise("Age seems unrealistic")
+    }
+}
+
+// Conditional raising
+fn process_data(data) {
+    if not data {
+        raise("No data provided")
+    }
+    
+    if type(data) != "list" {
+        raise("Data must be a list")
+    }
+    
+    // Process data...
+}
+
+// Raising custom errors
+class ValidationError {
+    var field;
+    var value;
+    var message;
+    
+    static fn new(field, value, message) {
+        var e = ValidationError()
+        e.field = field
+        e.value = value
+        e.message = message
+        e
+    }
+    
+    fn op_str() {
+        "ValidationError in ${self.field}: ${self.message}"
+    }
+}
+
+fn validate_email(email) {
+    if not email.contains("@") {
+        raise(ValidationError.new("email", email, "Missing @ symbol"))
+    }
+}
+```
+
+### 9.3. Try-Catch Blocks
+
+Try-catch blocks handle errors by providing an alternative execution path when errors occur.
+
+**Syntax:**
+```
+TryExpression = "try" Block "catch" Pattern Block
+```
+
+**Try-Catch Semantics:**
+- Try block is executed
+- If no error, catch block is skipped
+- If error raised, control transfers to catch
+- Catch pattern matches against error value
+- Try-catch is an expression (returns a value)
+- Value is from try block or catch block
+
+**Pattern Matching:**
+- Catch uses pattern matching on error
+- Can destructure error objects
+- Non-matching patterns re-raise error
+
+**Examples:**
+```
+// Basic try-catch
+var result = try {
+    risky_operation()
+} catch e {
+    print("Error occurred: ${e}")
+    null  // Default value on error
+}
+
+// Pattern matching errors
+var data = try {
+    parse_json(input)
+} catch {type: "SyntaxError", line: l} {
+    print("JSON syntax error on line ${l}")
+    {}  // Empty dict as fallback
+} catch e {
+    print("Unexpected error: ${e}")
+    raise(e)  // Re-raise
+}
+
+// Using error type
+fn safe_divide(a, b) {
+    try {
+        divide(a, b)
+    } catch e {
+        if type(e) == "string" and e.contains("zero") {
+            0  // Return 0 for division by zero
+        } else {
+            raise(e)  // Re-raise other errors
+        }
+    }
+}
+
+// Nested try-catch
+try {
+    var conn = connect_database()
+    try {
+        conn.execute(query)
+    } catch e {
+        print("Query failed: ${e}")
+        rollback(conn)
+    }
+} catch e {
+    print("Connection failed: ${e}")
+}
+```
+
+### 9.4. Finally Blocks
+
+Note: RustLeaf does not have finally blocks. Use `with` statements for cleanup:
+
+```
+// Instead of try-finally, use with:
+with resource = acquire_resource() {
+    try {
+        use_resource(resource)
+    } catch e {
+        print("Error using resource: ${e}")
+        raise(e)
+    }
+}  // resource.close() called automatically
+
+// Equivalent to try-catch-finally pattern:
+with file = open("data.txt") {
+    try {
+        process(file)
+    } catch e {
+        log_error(e)
+        raise(e)
+    }
+}  // file.close() always runs
+```
+
+### 9.5. Error Propagation
+
+Errors propagate up the call stack until caught or the program terminates.
+
+**Propagation Rules:**
+1. Error raised in function
+2. Function immediately returns (abnormally)
+3. Caller's execution interrupted
+4. Stack unwinds to nearest try-catch
+5. If none found, program terminates
+
+**Stack Traces:**
+- Captured at raise point
+- Include function names and line numbers
+- Available in error handlers
+- Printed on uncaught errors
+
+**Examples:**
+```
+fn level3() {
+    raise("Deep error")
+}
+
+fn level2() {
+    print("Before level3")
+    level3()  // Error propagates here
+    print("Never reached")
+}
+
+fn level1() {
+    try {
+        level2()
+    } catch e {
+        print("Caught at level1: ${e}")
+        // Stack trace available here
+    }
+}
+
+// Selective catching
+fn process_file(path) {
+    var file = try {
+        open(path)
+    } catch e {
+        // Only catch file errors
+        if e.contains("File") or e.contains("Permission") {
+            return null  // File not available
+        } else {
+            raise(e)  // Propagate other errors
+        }
+    }
+    
+    // Process file...
+}
+
+// Automatic propagation
+fn caller() {
+    risky_function()  // Error propagates automatically
+}
+
+// Re-raising with context
+fn wrapper() {
+    try {
+        dangerous_operation()
+    } catch e {
+        // Add context and re-raise
+        raise("Failed in wrapper: ${e}")
+    }
+}
+```
+
+### 9.6. Error Objects
+
+While any value can be an error, objects provide structured error information.
+
+**Error Object Conventions:**
+- No required structure
+- Common pattern: include message, code, details
+- Use `op_str()` for display formatting
+- Type name identifies error category
+
+**Examples:**
+```
+// Simple error class
+class FileError {
+    var path;
+    var operation;
+    var reason;
+    
+    static fn new(path, operation, reason) {
+        var e = FileError()
+        e.path = path
+        e.operation = operation
+        e.reason = reason
+        e
+    }
+    
+    fn op_str() {
+        "FileError: ${self.operation} failed on '${self.path}': ${self.reason}"
+    }
+}
+
+// Usage
+fn read_config(path) {
+    if not exists(path) {
+        raise(FileError.new(path, "read", "file not found"))
+    }
+    
+    var content = try {
+        read_file(path)
+    } catch e {
+        raise(FileError.new(path, "read", str(e)))
+    }
+    
+    parse_config(content)
+}
+
+// Error with error code
+class HttpError {
+    var status;
+    var message;
+    var url;
+    
+    static fn new(status, message, url) {
+        var e = HttpError()
+        e.status = status
+        e.message = message
+        e.url = url
+        e
+    }
+    
+    fn op_str() {
+        "HttpError ${self.status}: ${self.message} (${self.url})"
+    }
+}
+
+// Catching specific error types
+try {
+    fetch_data(url)
+} catch e {
+    if type(e) == "HttpError" {
+        if e.status == 404 {
+            return cached_data()  // Use cache for 404
+        } else if e.status >= 500 {
+            retry_later()  // Server error
+        }
+    }
+    raise(e)  // Re-raise others
+}
+
+// Chained errors
+class ChainedError {
+    var message;
+    var cause;
+    
+    static fn new(message, cause) {
+        var e = ChainedError()
+        e.message = message
+        e.cause = cause
+        e
+    }
+    
+    fn op_str() {
+        if self.cause {
+            "${self.message}\nCaused by: ${self.cause}"
+        } else {
+            self.message
+        }
+    }
+}
+
+fn high_level_operation() {
+    try {
+        low_level_operation()
+    } catch e {
+        raise(ChainedError.new("High-level operation failed", e))
+    }
+}
+```
+
+### Assert Function
+
+The `assert` function provides runtime assertions for debugging and validation.
+
+**Syntax:**
+```
+assert(condition, message?)
+```
+
+**Assert Semantics:**
+- Evaluates condition
+- If truthy, returns null
+- If falsy, raises error with message
+- Message is optional (default describes assertion)
+
+**Examples:**
+```
+// Basic assertions
+assert(x > 0)
+assert(type(value) == "int")
+assert(list.length > 0, "List cannot be empty")
+
+// In functions
+fn sqrt(x) {
+    assert(x >= 0, "Cannot take square root of negative number")
+    x ** 0.5
+}
+
+// Validating invariants
+class BankAccount {
+    var balance = 0;
+    
+    fn deposit(amount) {
+        assert(amount > 0, "Deposit amount must be positive")
+        self.balance += amount
+        assert(self.balance >= 0, "Balance invariant violated")
+    }
+    
+    fn withdraw(amount) {
+        assert(amount > 0, "Withdrawal amount must be positive")
+        assert(amount <= self.balance, "Insufficient funds")
+        self.balance -= amount
+    }
+}
+
+// Complex conditions
+fn process_data(data) {
+    assert(data, "Data cannot be null")
+    assert(type(data) == "list", "Data must be a list")
+    assert(data.length > 0, "Data cannot be empty")
+    assert(data.all(fn(x) { type(x) == "int" }), "All elements must be integers")
+    
+    // Process validated data...
+}
+
+// Development assertions
+fn optimize_path(points) {
+    var original_count = points.length
+    
+    // ... optimization logic ...
+    
+    assert(points.length <= original_count, "Optimization should not add points")
+}
+```
+
+### Pattern Match Failures
+
+When pattern matching fails in irrefutable contexts, a runtime error is raised.
+
+**Failure Contexts:**
+- Variable declarations with patterns
+- Destructuring assignments
+- Function parameters with patterns
+- For loop bindings
+
+**Error Messages:**
+Include helpful information:
+- Expected pattern structure
+- Actual value structure
+- Source location
+
+**Examples:**
+```
+// Declaration failures
+var [x, y] = [1]              // Error: List pattern expected 2 elements, got 1
+var {name, age} = {name: "Alice"}  // Error: Dict pattern missing required key 'age'
+
+// Assignment failures
+var a, b
+[a, b] = [1, 2, 3]           // Error: List pattern expected 2 elements, got 3
+
+// Parameter failures
+fn process_pair([x, y]) {
+    x + y
+}
+process_pair([1])            // Error: List pattern expected 2 elements, got 1
+
+// For loop failures
+for [x, y] in [[1, 2], [3]] {  // Error on second iteration
+    print(x + y)
+}
+
+// Safe pattern matching
+fn safe_destructure(data) {
+    try {
+        var [x, y, z] = data
+        process_triple(x, y, z)
+    } catch e {
+        print("Invalid data format: ${e}")
+        null
+    }
+}
+
+// Validating before destructuring
+fn extract_point(data) {
+    if type(data) == "list" and data.length == 2 {
+        var [x, y] = data  // Safe - we checked
+        Point.new(x, y)
+    } else {
+        raise("Expected [x, y] coordinate pair")
+    }
+}
+```
+
+## 10. Modules
+
+RustLeaf provides a module system for organizing code into reusable components. Modules enable namespace management, visibility control, and code separation. This chapter defines module declaration, import/export semantics, path resolution, and dependency management.
+
+### 10.1. Module System Overview
+
+**Design Principles:**
+- File-based modules (one module per file)
+- Explicit visibility with `pub` keyword
+- Path-based import system with `use` statements
+- Runtime circular dependency detection
+- No module caching (modules imported fresh each time)
+
+**Module Structure:**
+```
+project/
+├── main.rustleaf           // Entry point
+├── utils.rustleaf          // Module: utils
+├── math/
+│   ├── geometry.rustleaf   // Module: math::geometry
+│   └── algebra.rustleaf    // Module: math::algebra
+└── graphics/
+    ├── shapes/
+    │   └── circle.rustleaf // Module: graphics::shapes::circle
+    └── colors.rustleaf     // Module: graphics::colors
+```
+
+### 10.2. Import Statements
+
+Import statements use the `use` keyword to bring items from other modules into scope.
+
+**Basic Import Syntax:**
+```
+use module_path;                    // Import module
+use module_path::item;              // Import specific item
+use module_path::{item1, item2};    // Import multiple items
+use module_path::*;                 // Import all public items (discouraged)
+```
+
+**Path Resolution:**
+- **Parent paths**: `use super::sibling_module` (parent directory)
+- **Root paths**: `use root::top_level_module` (project root, explicit)
+- **Absolute paths**: `use math::geometry` (from project root, default)
+
+**Import Examples:**
+```
+// File: graphics/renderer.rustleaf
+
+// Import from project root
+use math::geometry::Point;
+use math::algebra::{Vector, Matrix};
+
+// Import from parent directory
+use super::colors::{RED, GREEN, BLUE};
+
+// Import from same directory (just use the name)
+use effects::Shader;
+
+// Import from root explicitly
+use root::utils::Logger;
+
+// Multiple imports
+use math::geometry::{Point, Line, Circle};
+
+// Import all (discouraged)
+use math::constants::*;
+```
+
+### 10.3. Export Functions
+
+Exports use the `pub` keyword to make items visible outside the current module.
+
+**Visibility Levels:**
+- **Private** (default): Only accessible within the current module
+- **Public** (`pub`): Accessible from other modules that import this module
+
+**Export Syntax:**
+```
+// Public function
+pub fn public_function() { }
+
+// Private function (default)
+fn private_function() { }
+
+// Public variable
+pub var PUBLIC_CONSTANT = 42;
+
+// Private variable (default)
+var private_data = [];
+
+// Public class
+pub class PublicClass {
+    pub var public_field;     // Public field
+    var private_field;        // Private field
+    
+    pub fn public_method() { } // Public method
+    fn private_method() { }    // Private method
+}
+
+// Private class (default)
+class PrivateClass { }
+```
+
+**Module Example:**
+```
+// File: math/geometry.rustleaf
+
+// Public exports - available to importers
+pub class Point {
+    pub var x;
+    pub var y;
+    
+    pub static fn new(x, y) {
+        var p = Point()
+        p.x = x
+        p.y = y
+        p
+    }
+    
+    pub fn distance_to(other) {
+        var dx = self.x - other.x
+        var dy = self.y - other.y
+        sqrt(dx * dx + dy * dy)
+    }
+    
+    // Private method - only accessible within this module
+    fn validate() {
+        if type(self.x) != "float" or type(self.y) != "float" {
+            raise("Point coordinates must be numbers")
+        }
+    }
+}
+
+pub fn distance(p1, p2) {
+    p1.distance_to(p2)
+}
+
+pub var ORIGIN = Point.new(0.0, 0.0);
+
+// Private helper - not accessible from other modules
+fn sqrt(x) {
+    x ** 0.5
+}
+
+var cache = {};  // Private module variable
+```
+
+**Usage:**
+```
+// File: main.rustleaf
+use math::geometry::{Point, distance, ORIGIN};
+
+var p1 = Point.new(3.0, 4.0)
+var p2 = Point.new(0.0, 0.0)
+
+print(distance(p1, ORIGIN))     // OK - public function
+print(p1.distance_to(p2))       // OK - public method
+// print(p1.validate())         // Error - private method
+// var c = cache                // Error - private variable
+```
+
+### 10.4. Module Resolution
+
+Module paths are resolved based on the filesystem structure and special keywords.
+
+**Resolution Rules:**
+1. **Absolute paths** start from project root (default)
+2. **Parent paths** start with `super::` (parent directory)
+3. **Root paths** start with `root::` (project root, explicit)
+
+**Path Resolution Algorithm:**
+```
+use path::to::module
+     ↓
+1. If path starts with "super::" → resolve relative to parent directory
+2. If path starts with "root::" → resolve from project root
+3. Otherwise → resolve from project root (absolute)
+```
+
+**Examples:**
+```
+// Project structure:
+// src/
+// ├── main.rustleaf
+// ├── utils.rustleaf
+// ├── graphics/
+// │   ├── renderer.rustleaf
+// │   └── shapes/
+// │       └── circle.rustleaf
+// └── math/
+//     └── geometry.rustleaf
+
+// File: src/graphics/renderer.rustleaf
+
+use utils                          // → src/utils.rustleaf
+use math::geometry                 // → src/math/geometry.rustleaf  
+use shapes::circle                 // → src/graphics/shapes/circle.rustleaf
+use super::utils                   // → src/utils.rustleaf
+use root::math::geometry           // → src/math/geometry.rustleaf
+```
+
+**Module File Mapping:**
+- `use utils` → `utils.rustleaf`
+- `use math::geometry` → `math/geometry.rustleaf`
+- `use graphics::shapes::circle` → `graphics/shapes/circle.rustleaf`
+
+### 10.5. Module Loading
+
+Modules are loaded and executed when first imported.
+
+**Loading Behavior:**
+- Each module file is executed once when first imported
+- Module-level code runs during import (initialization)
+- No caching - modules are re-loaded on each import
+- Circular dependencies cause runtime errors
+
+**Module Initialization:**
+```
+// File: database.rustleaf
+
+// Module-level initialization code
+print("Loading database module...")
+
+var connection_pool = [];
+var default_config = {
+    host: "localhost",
+    port: 5432,
+    timeout: 30
+};
+
+// Initialize connection pool
+for i in range(0, 10) {
+    connection_pool.append(create_connection(default_config))
+}
+
+print("Database module loaded with ${connection_pool.length} connections")
+
+// Public API
+pub fn get_connection() {
+    if connection_pool.length > 0 {
+        connection_pool.pop()
+    } else {
+        create_connection(default_config)
+    }
+}
+
+pub fn release_connection(conn) {
+    connection_pool.append(conn)
+}
+
+// Private helper
+fn create_connection(config) {
+    // Implementation details...
+    {host: config.host, port: config.port, active: true}
+}
+```
+
+**Import Execution:**
+```
+// File: main.rustleaf
+print("Starting application...")
+
+use database  // This triggers database.rustleaf execution
+// Output: "Loading database module..."
+//         "Database module loaded with 10 connections"
+
+var conn = database.get_connection()
+print("Got connection: ${conn}")
+```
+
+### 10.6. Module Scope
+
+Each module has its own scope separate from other modules.
+
+**Scope Rules:**
+- Module-level variables are private by default
+- Only `pub` items are accessible from other modules
+- Imported items are available in the importing module's scope
+- No global namespace pollution
+
+**Scope Isolation:**
+```
+// File: module_a.rustleaf
+var private_var = "A's private data"
+pub var public_var = "A's public data"
+
+pub fn get_private() {
+    private_var  // OK - same module
+}
+
+// File: module_b.rustleaf  
+var private_var = "B's private data"  // Different from A's private_var
+pub var public_var = "B's public data"
+
+use module_a
+
+pub fn test() {
+    print(module_a.public_var)     // OK - public
+    print(module_a.get_private())  // OK - returns A's private data
+    // print(module_a.private_var) // Error - not public
+    
+    print(private_var)             // "B's private data" - local scope
+}
+```
+
+**Import Scope:**
+```
+// File: graphics.rustleaf
+use math::geometry::Point
+use math::algebra::{Vector, Matrix}
+use utils::*
+
+// Point, Vector, Matrix, and all utils items are now in scope
+pub fn render_scene() {
+    var origin = Point.new(0, 0)     // Point from math::geometry
+    var transform = Matrix.identity() // Matrix from math::algebra
+    log("Rendering...")              // log from utils (via *)
+}
+```
+
+**Standard Library Scope:**
+All standard library functions and types are available globally without explicit import:
+```
+// These are always available:
+print("Hello")           // Built-in function
+var x = type(42)         // Built-in function  
+var list = [1, 2, 3]     // Built-in type
+var dict = {a: 1}        // Built-in type
+
+// No need for:
+// use std::io::print
+// use std::types::type
+```
+
+**Circular Dependency Detection:**
+The runtime maintains an import stack to detect circular dependencies during module loading.
+
+```
+// File: module_a.rustleaf
+use module_b  // ← Circular dependency!
+
+pub fn a_function() {
+    module_b.b_function()
+}
+
+// File: module_b.rustleaf  
+use module_a  // ← Circular dependency!
+
+pub fn b_function() {
+    module_a.a_function()
+}
+
+// Runtime execution:
+// 1. Start loading module_a
+// 2. Import stack: [module_a]
+// 3. module_a imports module_b
+// 4. Import stack: [module_a, module_b]  
+// 5. module_b imports module_a
+// 6. module_a already in stack → Runtime error!
+
+// Runtime error:
+// "Circular dependency detected: module_a → module_b → module_a"
+```
+
+**Resolution:**
+```
+// File: shared.rustleaf
+pub fn shared_function() {
+    "shared logic"
+}
+
+// File: module_a.rustleaf
+use shared
+
+pub fn a_function() {
+    shared.shared_function() + " from A"
+}
+
+// File: module_b.rustleaf
+use shared
+use module_a  // OK - no circularity
+
+pub fn b_function() {
+    module_a.a_function() + " via B"
+}
+```
+
+## 11. Built-in Functions
+
+RustLeaf provides a comprehensive set of built-in functions available globally without import. These functions cover type introspection, collection operations, string manipulation, error handling, and utility operations. This chapter defines all built-in functions, their signatures, behavior, and usage patterns.
+
+### 11.1. Type Functions
+
+Functions for type introspection and conversion.
+
+**type(value) → string**
+Returns the type name of a value as a string.
+
+```
+type(42)           // "int"
+type(3.14)         // "float"  
+type("hello")      // "string"
+type(true)         // "bool"
+type(null)         // "null"
+type([1, 2, 3])    // "list"
+type({a: 1})       // "dict"
+type(fn() {})      // "function"
+```
+
+**str(value) → string**
+Converts any value to its string representation.
+
+```
+str(42)            // "42"
+str(3.14)          // "3.14"
+str(true)          // "true"
+str(null)          // "null"
+str([1, 2, 3])     // "[1, 2, 3]"
+str({a: 1, b: 2})  // "{a: 1, b: 2}"
+
+// Uses op_str() method if available
+class Point {
+    var x, y;
+    fn op_str() { "(${self.x}, ${self.y})" }
+}
+str(Point.new(1, 2))  // "(1, 2)"
+```
+
+**int(value) → int**
+Converts a value to an integer.
+
+```
+int("42")          // 42
+int(3.14)          // 3 (truncated)
+int(true)          // 1
+int(false)         // 0
+int(null)          // Error: Cannot convert null to int
+
+// String parsing
+int("123")         // 123
+int("0xFF")        // 255 (hex)
+int("0b1010")      // 10 (binary)
+int("0o77")        // 63 (octal)
+int("invalid")     // Error: Invalid integer format
+```
+
+**float(value) → float**
+Converts a value to a floating-point number.
+
+```
+float("3.14")      // 3.14
+float(42)          // 42.0
+float(true)        // 1.0
+float(false)       // 0.0
+float(null)        // Error: Cannot convert null to float
+
+// Scientific notation
+float("1.23e4")    // 12300.0
+float("5e-3")      // 0.005
+```
+
+**bool(value) → bool**
+Converts a value to a boolean using truthiness rules.
+
+```
+bool(true)         // true
+bool(false)        // false
+bool(null)         // false
+bool(0)            // Error: Only null and bool have truthiness
+bool("")           // Error: Only null and bool have truthiness
+bool([])           // Error: Only null and bool have truthiness
+
+// Only null and bool values can be converted
+// For other types, use explicit comparisons:
+// if list.is_empty() { } instead of if bool(list) { }
+```
+
+### 11.2. Collection Functions
+
+Functions for working with collections and iterables.
+
+**range(start, end, step=1) → list**
+Generates a list of integers from start (inclusive) to end (exclusive).
+
+```
+range(0, 5)        // [0, 1, 2, 3, 4]
+range(1, 10, 2)    // [1, 3, 5, 7, 9]
+range(10, 0, -1)   // [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+range(5, 5)        // [] (empty range)
+
+// Single argument form (start from 0)
+range(3)           // [0, 1, 2]
+```
+
+**enumerate(iterable, start=0) → list**
+Returns a list of [index, value] pairs.
+
+```
+enumerate(["a", "b", "c"])           // [[0, "a"], [1, "b"], [2, "c"]]
+enumerate(["x", "y"], 1)             // [[1, "x"], [2, "y"]]
+
+// Usage in loops
+for i, item in enumerate(["a", "b"]) {
+    print("${i}: ${item}")
+}
+// Output: "0: a", "1: b"
+```
+
+**list(iterable) → list**
+Converts an iterable to a list.
+
+```
+list("hello")      // ["h", "e", "l", "l", "o"]
+list(range(3))     // [0, 1, 2]
+list({a: 1, b: 2}.keys())  // ["a", "b"]
+
+// Copy a list
+var original = [1, 2, 3]
+var copy = list(original)  // [1, 2, 3] (new list)
+```
+
+**dict(iterable) → dict**
+Converts an iterable of key-value pairs to a dictionary.
+
+```
+dict([["a", 1], ["b", 2]])           // {a: 1, b: 2}
+dict(enumerate(["x", "y"]))          // {0: "x", 1: "y"}
+
+// Copy a dict
+var original = {a: 1, b: 2}
+var copy = dict(original.items())    // {a: 1, b: 2} (new dict)
+```
+
+### 11.3. String Functions
+
+Functions for string operations and formatting.
+
+**print(...values) → null**
+Outputs values to console, separated by spaces.
+
+```
+print("Hello")                       // "Hello"
+print("Result:", 42)                 // "Result: 42"  
+print(1, 2, 3)                       // "1 2 3"
+print()                              // "" (empty line)
+
+// Automatically converts values to strings
+print([1, 2], {a: 3})               // "[1, 2] {a: 3}"
+```
+
+### 11.4. Error Functions
+
+Functions for error handling and debugging.
+
+**raise(error) → never**
+Raises an error with the given value.
+
+```
+raise("Something went wrong")
+raise(404)
+raise({type: "ValueError", message: "Invalid input"})
+
+// Custom error objects
+class CustomError {
+    var message;
+    static fn new(msg) {
+        var e = CustomError()
+        e.message = msg
+        e
+    }
+    fn op_str() { "CustomError: ${self.message}" }
+}
+
+raise(CustomError.new("Operation failed"))
+```
+
+**assert(condition, message="Assertion failed") → null**
+Raises an error if condition is false.
+
+```
+assert(x > 0)                        // Error if x <= 0
+assert(x > 0, "x must be positive")  // Custom message
+
+// Only works with bool values (strict truthiness)
+assert(true)                         // OK
+assert(false)                        // Error: Assertion failed
+assert(null)                         // Error: Assertion failed
+// assert(x)                         // Error: assert requires bool
+```
+
+### 11.5. Utility Functions
+
+General utility functions for common operations.
+
+**abs(number) → number**
+Returns the absolute value of a number.
+
+```
+abs(-5)            // 5
+abs(3.14)          // 3.14
+abs(0)             // 0
+abs(-0.5)          // 0.5
+```
+
+**min(...values) → value**
+Returns the smallest value from the arguments.
+
+```
+min(1, 2, 3)       // 1
+min(3.14, 2.71)    // 2.71
+min(-5, 0, 10)     // -5
+
+// Works with any comparable types
+min("apple", "banana", "cherry")     // "apple"
+```
+
+**max(...values) → value**
+Returns the largest value from the arguments.
+
+```
+max(1, 2, 3)       // 3
+max(3.14, 2.71)    // 3.14
+max(-5, 0, 10)     // 10
+
+// Works with any comparable types  
+max("apple", "banana", "cherry")     // "cherry"
+```
+
+**callable(value) → bool**
+Tests whether a value can be called as a function.
+
+```
+callable(print)              // true
+callable(fn() {})            // true
+callable("hello")            // false
+callable(42)                 // false
+
+// Test before calling
+var handler = get_handler()
+if callable(handler) {
+    handler()
+} else {
+    print("Handler is not callable")
+}
+```
+
+### 11.6. Global Availability
+
+All built-in functions are available in the global namespace without import.
+
+**Namespace Rules:**
+- Built-ins cannot be shadowed by user definitions in global scope
+- Built-ins can be shadowed in local scopes
+- Built-ins are always accessible via their original names
+
+**Shadowing Examples:**
+```
+// Global scope - cannot shadow built-ins
+var print = "not a function"  // Error: Cannot redefine built-in 'print'
+
+// Local scope - can shadow
+fn test() {
+    var print = "local variable"  // OK - local scope
+    print  // Returns "local variable"
+}
+
+fn demo() {
+    var abs = fn(x) { x * x }     // OK - local scope  
+    abs(-3)                       // 9 (uses local function)
+    
+    // Access original built-in explicitly if needed
+    // (implementation-specific mechanism)
+}
+```
+
+**Error Handling:**
+All built-in functions provide clear error messages:
+```
+int("invalid")
+// Error: Cannot convert "invalid" to integer
+//   at int() (built-in)
+//   at main.rustleaf:5:10
+
+type()
+// Error: type() requires exactly 1 argument, got 0
+//   at type() (built-in)  
+//   at main.rustleaf:3:5
+```
+
+**Performance Notes:**
+- Built-in functions are implemented natively for optimal performance
+- Type checking is performed at runtime with helpful error messages
+- Built-ins integrate seamlessly with RustLeaf's operator overloading
+
+**Complete Built-in Function List:**
+
+**Type Functions:**
+- `type(value)` - Get type name
+- `str(value)` - Convert to string  
+- `int(value)` - Convert to integer
+- `float(value)` - Convert to float
+- `bool(value)` - Convert to boolean
+
+**Collection Functions:**
+- `range(start, end, step=1)` - Generate integer sequence
+- `enumerate(iterable, start=0)` - Create indexed pairs
+- `list(iterable)` - Convert to list
+- `dict(iterable)` - Convert to dictionary
+
+**String Functions:**
+- `print(...values)` - Output to console
+
+**Error Functions:**
+- `raise(error)` - Raise an error
+- `assert(condition, message="Assertion failed")` - Assert condition
+
+**Utility Functions:**
+- `abs(number)` - Absolute value
+- `min(...values)` - Minimum value
+- `max(...values)` - Maximum value  
+- `callable(value)` - Test if callable
+
+## 12. Standard Library
+
+RustLeaf provides a rich standard library of methods for built-in types. These methods are available on all instances of their respective types and provide common operations for strings, lists, dictionaries, and objects. This chapter defines all standard library methods, their signatures, behavior, and usage patterns.
+
+### 12.1. String Methods
+
+String methods provide text manipulation and query operations. All string methods return new strings (strings are immutable).
+
+**len() → int**
+Returns the length of the string in characters.
+
+```
+"hello".len()          // 5
+"".len()               // 0
+"🚀".len()             // 1 (Unicode character)
+```
+
+**split(delimiter=" ") → list**
+Splits the string into a list of substrings.
+
+```
+"a,b,c".split(",")         // ["a", "b", "c"]
+"hello world".split()      // ["hello", "world"] (default: whitespace)
+"a::b::c".split("::")      // ["a", "b", "c"]
+"abc".split("")            // ["a", "b", "c"] (split each character)
+```
+
+**trim() → string**
+Removes whitespace from both ends.
+
+```
+"  hello  ".trim()         // "hello"
+"\n\tworld\n".trim()       // "world"
+"no spaces".trim()         // "no spaces"
+```
+
+**upper() → string**
+Converts to uppercase.
+
+```
+"hello".upper()            // "HELLO"
+"Hello World".upper()      // "HELLO WORLD"
+```
+
+**lower() → string**
+Converts to lowercase.
+
+```
+"HELLO".lower()            // "hello"
+"Hello World".lower()      // "hello world"
+```
+
+**replace(old, new) → string**
+Replaces all occurrences of old with new.
+
+```
+"hello world".replace("world", "universe")  // "hello universe"
+"aaa".replace("a", "b")                     // "bbb"
+"test".replace("x", "y")                    // "test" (no change)
+```
+
+**contains(substring) → bool**
+Tests if string contains the substring.
+
+```
+"hello world".contains("world")   // true
+"hello world".contains("planet")  // false
+"test".contains("")               // true (empty string always found)
+```
+
+**starts_with(prefix) → bool**
+Tests if string starts with the prefix.
+
+```
+"hello world".starts_with("hello")  // true
+"hello world".starts_with("world")  // false
+"test".starts_with("")               // true
+```
+
+**ends_with(suffix) → bool**
+Tests if string ends with the suffix.
+
+```
+"hello world".ends_with("world")    // true
+"hello world".ends_with("hello")    // false
+"test".ends_with("")                 // true
+```
+
+**to_list() → list**
+Converts string to list of characters.
+
+```
+"hello".to_list()          // ["h", "e", "l", "l", "o"]
+"".to_list()               // []
+```
+
+### 12.2. List Methods
+
+List methods provide collection manipulation operations. Methods that modify the list return `self` for chaining, while query methods return the requested values.
+
+**len() → int**
+Returns the number of elements in the list.
+
+```
+[1, 2, 3].len()            // 3
+[].len()                   // 0
+```
+
+**append(item) → self**
+Adds an item to the end of the list.
+
+```
+var list = [1, 2]
+list.append(3)             // [1, 2, 3]
+list.append(4).append(5)   // [1, 2, 3, 4, 5] (chaining)
+```
+
+**extend(other) → self**
+Adds all items from another iterable to the end.
+
+```
+var list = [1, 2]
+list.extend([3, 4])        // [1, 2, 3, 4]
+list.extend("ab")          // [1, 2, 3, 4, "a", "b"]
+```
+
+**insert(index, item) → self**
+Inserts an item at the specified index.
+
+```
+var list = [1, 3]
+list.insert(1, 2)          // [1, 2, 3]
+list.insert(0, 0)          // [0, 1, 2, 3]
+list.insert(-1, 2.5)       // [0, 1, 2, 2.5, 3] (negative index)
+```
+
+**pop(index=-1) → value**
+Removes and returns item at index (default: last item).
+
+```
+var list = [1, 2, 3]
+list.pop()                 // 3, list is now [1, 2]
+list.pop(0)                // 1, list is now [2]
+list.pop(5)                // Error: Index out of bounds
+```
+
+**remove(item) → self**
+Removes the first occurrence of item.
+
+```
+var list = [1, 2, 3, 2]
+list.remove(2)             // [1, 3, 2] (removes first 2)
+list.remove(5)             // Error: Item not found
+```
+
+**clear() → self**
+Removes all items from the list.
+
+```
+var list = [1, 2, 3]
+list.clear()               // []
+```
+
+**map(function) → list**
+Returns new list with function applied to each element.
+
+```
+[1, 2, 3].map(fn(x) { x * 2 })        // [2, 4, 6]
+["a", "b"].map(fn(s) { s.upper() })   // ["A", "B"]
+```
+
+**filter(function) → list**
+Returns new list with elements where function returns true.
+
+```
+[1, 2, 3, 4].filter(fn(x) { x % 2 == 0 })  // [2, 4]
+["", "a", ""].filter(fn(s) { s.len() > 0 }) // ["a"]
+```
+
+**reduce(function, initial=null) → value**
+Reduces list to single value using function.
+
+```
+[1, 2, 3, 4].reduce(fn(acc, x) { acc + x }, 0)     // 10
+[1, 2, 3].reduce(fn(acc, x) { acc * x }, 1)        // 6
+["a", "b", "c"].reduce(fn(acc, x) { acc + x }, "") // "abc"
+```
+
+**slice(start, end=null) → list**
+Returns new list with elements from start (inclusive) to end (exclusive).
+
+```
+[1, 2, 3, 4, 5].slice(1, 4)    // [2, 3, 4]
+[1, 2, 3, 4, 5].slice(2)        // [3, 4, 5] (end defaults to length)
+[1, 2, 3, 4, 5].slice(-2)       // [4, 5] (negative start)
+```
+
+**contains(item) → bool**
+Tests if list contains the item.
+
+```
+[1, 2, 3].contains(2)      // true
+[1, 2, 3].contains(4)      // false
+```
+
+**index(item) → int**
+Returns index of first occurrence of item.
+
+```
+[1, 2, 3, 2].index(2)      // 1
+[1, 2, 3].index(4)         // Error: Item not found
+```
+
+**reverse() → self**
+Reverses the list in place.
+
+```
+var list = [1, 2, 3]
+list.reverse()             // [3, 2, 1]
+```
+
+**sort(key=null) → self**
+Sorts the list in place.
+
+```
+var list = [3, 1, 2]
+list.sort()                           // [1, 2, 3]
+
+var words = ["banana", "apple", "cherry"]
+words.sort()                          // ["apple", "banana", "cherry"]
+
+var items = [{a: 3}, {a: 1}, {a: 2}]
+items.sort(fn(x) { x.a })            // [{a: 1}, {a: 2}, {a: 3}]
+```
+
+**is_empty() → bool**
+Tests if list is empty.
+
+```
+[].is_empty()              // true
+[1].is_empty()             // false
+```
+
+**to_dict() → dict**
+Converts list of [key, value] pairs to dictionary.
+
+```
+[["a", 1], ["b", 2]].to_dict()       // {a: 1, b: 2}
+enumerate(["x", "y"]).to_dict()      // {0: "x", 1: "y"}
+```
+
+### 12.3. Dict Methods
+
+Dictionary methods provide key-value operations. Methods that modify the dict return `self` for chaining, while query methods return the requested values.
+
+**len() → int**
+Returns the number of key-value pairs.
+
+```
+{a: 1, b: 2}.len()         // 2
+{}.len()                   // 0
+```
+
+**keys() → list**
+Returns list of all keys in insertion order.
+
+```
+{a: 1, b: 2, c: 3}.keys()  // ["a", "b", "c"]
+{}.keys()                  // []
+```
+
+**values() → list**
+Returns list of all values in insertion order.
+
+```
+{a: 1, b: 2, c: 3}.values()  // [1, 2, 3]
+{}.values()                   // []
+```
+
+**items() → list**
+Returns list of [key, value] pairs in insertion order.
+
+```
+{a: 1, b: 2}.items()       // [["a", 1], ["b", 2]]
+{}.items()                 // []
+```
+
+**get(key, default=null) → value**
+Returns value for key, or default if key not found.
+
+```
+{a: 1, b: 2}.get("a")      // 1
+{a: 1, b: 2}.get("c")      // null
+{a: 1, b: 2}.get("c", 0)   // 0
+```
+
+**pop(key, default=null) → value**
+Removes and returns value for key.
+
+```
+var dict = {a: 1, b: 2}
+dict.pop("a")              // 1, dict is now {b: 2}
+dict.pop("c")              // null (key not found)
+dict.pop("c", "missing")   // "missing"
+```
+
+**clear() → self**
+Removes all key-value pairs.
+
+```
+var dict = {a: 1, b: 2}
+dict.clear()               // {}
+```
+
+**merge(other) → self**
+Merges another dictionary into this one.
+
+```
+var dict = {a: 1, b: 2}
+dict.merge({b: 3, c: 4})   // {a: 1, b: 3, c: 4}
+```
+
+**contains(key) → bool**
+Tests if dictionary contains the key.
+
+```
+{a: 1, b: 2}.contains("a")  // true
+{a: 1, b: 2}.contains("c")  // false
+```
+
+**is_empty() → bool**
+Tests if dictionary is empty.
+
+```
+{}.is_empty()              // true
+{a: 1}.is_empty()          // false
+```
+
+**to_list() → list**
+Converts dictionary to list of [key, value] pairs.
+
+```
+{a: 1, b: 2}.to_list()     // [["a", 1], ["b", 2]]
+{}.to_list()               // []
+```
+
+### 12.4. Object Methods
+
+All objects (including class instances) have these fundamental methods.
+
+**type() → string**
+Returns the type name of the object.
+
+```
+var obj = MyClass()
+obj.type()                 // "MyClass"
+42.type()                  // "int"
+"hello".type()             // "string"
+```
+
+**op_str() → string**
+Returns string representation (called by `str()` function).
+
+```
+// Default implementation uses type name
+var obj = MyClass()
+obj.op_str()               // "MyClass()"
+
+// Custom implementation
+class Point {
+    var x, y;
+    fn op_str() { "(${self.x}, ${self.y})" }
+}
+Point.new(1, 2).op_str()   // "(1, 2)"
+```
+
+**op_eq(other) → bool**
+Tests equality (called by `==` operator).
+
+```
+// Default implementation uses identity
+var a = MyClass()
+var b = MyClass()
+a.op_eq(b)                 // false (different instances)
+a.op_eq(a)                 // true (same instance)
+
+// Custom implementation
+class Point {
+    var x, y;
+    fn op_eq(other) {
+        type(other) == "Point" and self.x == other.x and self.y == other.y
+    }
+}
+Point.new(1, 2).op_eq(Point.new(1, 2))  // true
+```
+
+**has_method(name) → bool**
+Tests if object has a method with the given name.
+
+```
+"hello".has_method("upper")     // true
+"hello".has_method("missing")   // false
+[1, 2, 3].has_method("append")  // true
+```
+
+**has_field(name) → bool**
+Tests if object has a field with the given name.
+
+```
+class Person {
+    var name;
+    var age = 0;
+}
+var p = Person()
+p.has_field("name")        // true
+p.has_field("age")         // true
+p.has_field("missing")     // false
+```
+
+### 12.5. Method Resolution and Inheritance
+
+**Method Call Resolution:**
+1. Look for method on object's class
+2. Look for method on built-in type (if applicable)
+3. Raise error if method not found
+
+**Method Chaining:**
+Methods that modify objects return `self` to enable chaining:
+```
+var list = []
+list.append(1).append(2).extend([3, 4]).reverse()  // [4, 3, 2, 1]
+
+var dict = {}
+dict.merge({a: 1}).merge({b: 2}).clear()           // {}
+```
+
+**Error Handling:**
+Standard library methods provide clear error messages:
+```
+[].pop()
+// Error: Cannot pop from empty list
+//   at List.pop() (standard library)
+//   at main.rustleaf:3:5
+
+{}.pop("missing")
+// Error: Key 'missing' not found in dictionary
+//   at Dict.pop() (standard library)
+//   at main.rustleaf:5:8
+```
+
+## 13. Documentation Comments and Docstrings
+
+RustLeaf provides a comprehensive documentation system using Rust-style documentation comments and docstrings. Documentation can be attached to functions, classes, modules, and variables, and is accessible at runtime for dynamic introspection. This chapter defines the documentation syntax, format conventions, and runtime access mechanisms.
+
+### 13.1. Overview
+
+**Documentation Types:**
+- **Documentation comments**: `///` for single-line, `/** */` for multi-line
+- **Docstrings**: Located above declarations, not inside function bodies
+- **Runtime access**: Documentation available via reflection functions
+- **Markdown support**: Rich formatting with Markdown syntax
+- **Structured format**: Support for `@param`, `@returns`, `@example` tags
+
+**Documentation Targets:**
+- Functions and methods
+- Classes and their members
+- Modules (file-level)
+- Variables and constants
+- Type definitions
+
+### 13.2. Documentation Comment Syntax
+
+Documentation comments use Rust-style syntax with special comment markers.
+
+**Single-line Documentation Comments:**
+```
+/// This is a single-line documentation comment
+/// It can span multiple lines by repeating the marker
+fn documented_function() {
+    // Implementation
+}
+```
+
+**Multi-line Documentation Comments:**
+```
+/**
+ * This is a multi-line documentation comment
+ * It can contain rich formatting and examples
+ * 
+ * @param x The input value
+ * @returns The processed result
+ */
+fn complex_function(x) {
+    // Implementation
+}
+```
+
+**Mixed Documentation:**
+```
+/// Brief description of the function
+/**
+ * Extended description with more details
+ * and formatting options.
+ */
+fn mixed_docs_function() {
+    // Implementation
+}
+```
+
+### 13.3. Docstring Syntax
+
+Docstrings use Rust-style placement above declarations rather than inside function bodies.
+
+**Function Docstrings:**
+```
+/// Calculates the factorial of a number
+/// 
+/// @param n The number to calculate factorial for
+/// @returns The factorial result
+/// @example
+/// ```
+/// factorial(5)  // Returns 120
+/// factorial(0)  // Returns 1
+/// ```
+fn factorial(n) {
+    if n <= 1 {
+        1
+    } else {
+        n * factorial(n - 1)
+    }
+}
+```
+
+**Class Docstrings:**
+```
+/// Represents a point in 2D space
+/// 
+/// This class provides basic geometric operations
+/// for working with 2D coordinates.
+/// 
+/// @example
+/// ```
+/// var p = Point.new(3, 4)
+/// print(p.distance_to_origin())  // 5.0
+/// ```
+class Point {
+    /// The x-coordinate of the point
+    var x;
+    
+    /// The y-coordinate of the point  
+    var y;
+    
+    /// Creates a new point with given coordinates
+    /// 
+    /// @param x The x-coordinate
+    /// @param y The y-coordinate
+    /// @returns A new Point instance
+    static fn new(x, y) {
+        var p = Point()
+        p.x = x
+        p.y = y
+        p
+    }
+    
+    /// Calculates the distance from this point to the origin
+    /// 
+    /// @returns The Euclidean distance to (0, 0)
+    fn distance_to_origin() {
+        (self.x * self.x + self.y * self.y) ** 0.5
+    }
+}
+```
+
+### 13.4. Function Docstrings
+
+Function documentation supports structured tags for parameters, return values, and examples.
+
+**Basic Function Documentation:**
+```
+/// Adds two numbers together
+/// 
+/// @param a The first number
+/// @param b The second number
+/// @returns The sum of a and b
+fn add(a, b) {
+    a + b
+}
+```
+
+**Complex Function Documentation:**
+```
+/// Processes a list of items with a transformation function
+/// 
+/// This function applies the given transformation to each item
+/// in the input list and returns a new list with the results.
+/// The original list is not modified.
+/// 
+/// @param items The list of items to process
+/// @param transform_fn The function to apply to each item
+/// @returns A new list with transformed items
+/// 
+/// @example
+/// ```
+/// var numbers = [1, 2, 3]
+/// var doubled = process_items(numbers, fn(x) { x * 2 })
+/// print(doubled)  // [2, 4, 6]
+/// ```
+/// 
+/// @example
+/// ```
+/// var words = ["hello", "world"]
+/// var upper = process_items(words, fn(s) { s.upper() })
+/// print(upper)  // ["HELLO", "WORLD"]
+/// ```
+fn process_items(items, transform_fn) {
+    items.map(transform_fn)
+}
+```
+
+**Function with Default Parameters:**
+```
+/// Creates a range of numbers
+/// 
+/// @param start The starting number (inclusive)
+/// @param end The ending number (exclusive)  
+/// @param step The step size (default: 1)
+/// @returns A list of numbers in the specified range
+/// 
+/// @example
+/// ```
+/// create_range(0, 5)     // [0, 1, 2, 3, 4]
+/// create_range(1, 10, 2) // [1, 3, 5, 7, 9]
+/// ```
+fn create_range(start, end, step = 1) {
+    range(start, end, step)
+}
+```
+
+### 13.5. Module Docstrings
+
+Module-level documentation appears at the top of files to describe the module's purpose and contents.
+
+**Module Documentation:**
+```
+/// Mathematical utility functions
+/// 
+/// This module provides common mathematical operations
+/// and constants for use throughout the application.
+/// 
+/// @example
+/// ```
+/// use math_utils::{PI, circle_area}
+/// 
+/// var area = circle_area(5.0)
+/// print("Area: ${area}")
+/// ```
+
+/// The mathematical constant π
+pub var PI = 3.14159265359;
+
+/// Calculates the area of a circle
+/// 
+/// @param radius The radius of the circle
+/// @returns The area of the circle
+pub fn circle_area(radius) {
+    PI * radius * radius
+}
+
+/// Calculates the circumference of a circle
+/// 
+/// @param radius The radius of the circle
+/// @returns The circumference of the circle  
+pub fn circle_circumference(radius) {
+    2 * PI * radius
+}
+```
+
+### 13.6. Variable and Constant Docstrings
+
+Variables and constants can be documented for API clarity.
+
+**Variable Documentation:**
+```
+/// The default timeout for network operations (in seconds)
+var DEFAULT_TIMEOUT = 30;
+
+/// Configuration options for the application
+var CONFIG = {
+    /// The server host address
+    host: "localhost",
+    
+    /// The server port number
+    port: 8080,
+    
+    /// Whether to enable debug logging
+    debug: false
+};
+
+/// List of supported file extensions
+pub var SUPPORTED_EXTENSIONS = [".txt", ".md", ".rs"];
+```
+
+**Class Member Documentation:**
+```
+class DatabaseConnection {
+    /// The connection string used to connect to the database
+    var connection_string;
+    
+    /// Whether the connection is currently active
+    var is_connected = false;
+    
+    /// The maximum number of retry attempts
+    var max_retries = 3;
+}
+```
+
+### 13.7. Object and Type Docstrings
+
+Classes and their members support hierarchical documentation.
+
+**Class with Comprehensive Documentation:**
+```
+/// A configuration management system
+/// 
+/// This class provides a structured way to manage application
+/// configuration with support for nested values, defaults,
+/// and environment variable overrides.
+/// 
+/// @example
+/// ```
+/// var config = ConfigManager.new("app.json")
+/// config.set("database.host", "localhost")
+/// var host = config.get("database.host", "default")
+/// ```
+class ConfigManager {
+    /// The path to the configuration file
+    var config_path;
+    
+    /// The loaded configuration data
+    var data = {};
+    
+    /// Creates a new configuration manager
+    /// 
+    /// @param path The path to the configuration file
+    /// @returns A new ConfigManager instance
+    static fn new(path) {
+        var manager = ConfigManager()
+        manager.config_path = path
+        manager.load()
+        manager
+    }
+    
+    /// Loads configuration from the file
+    /// 
+    /// Reads the configuration file and parses it as JSON.
+    /// If the file doesn't exist, starts with empty configuration.
+    fn load() {
+        // Implementation details...
+    }
+    
+    /// Gets a configuration value
+    /// 
+    /// Retrieves a value from the configuration using dot notation
+    /// for nested keys. Returns the default value if the key is not found.
+    /// 
+    /// @param key The configuration key (supports dot notation)
+    /// @param default_value The value to return if key is not found
+    /// @returns The configuration value or default
+    /// 
+    /// @example
+    /// ```
+    /// config.get("database.host")           // "localhost"
+    /// config.get("missing.key", "default")  // "default"
+    /// ```
+    fn get(key, default_value = null) {
+        // Implementation details...
+    }
+    
+    /// Sets a configuration value
+    /// 
+    /// @param key The configuration key (supports dot notation)
+    /// @param value The value to set
+    /// @returns Self for method chaining
+    fn set(key, value) {
+        // Implementation details...
+        self
+    }
+}
+```
+
+### 13.8. Docstring Format Conventions
+
+**Markdown Formatting:**
+Documentation supports Markdown for rich formatting.
+
+```
+/// # Math Utilities
+/// 
+/// This module provides **essential** mathematical functions:
+/// 
+/// - Basic arithmetic operations
+/// - Trigonometric functions  
+/// - Statistical calculations
+/// 
+/// ## Usage
+/// 
+/// ```rustleaf
+/// use math::{sin, cos, mean}
+/// 
+/// var angle = PI / 4
+/// var x = cos(angle)
+/// var y = sin(angle)
+/// 
+/// var numbers = [1, 2, 3, 4, 5]
+/// var average = mean(numbers)
+/// ```
+/// 
+/// > **Note**: All angle parameters are in radians.
+```
+
+**Structured Tags:**
+```
+/// Brief description of the function
+/// 
+/// Longer description with multiple paragraphs
+/// explaining the behavior and use cases.
+/// 
+/// @param name description
+/// @param name description (optional)
+/// @returns description
+/// @throws ErrorType description of when this error occurs
+/// @example
+/// ```
+/// code example
+/// ```
+/// @see related_function
+/// @since version 1.2.0
+/// @deprecated Use new_function instead
+```
+
+### 13.9. Runtime Access to Docstrings
+
+Documentation is accessible at runtime for dynamic introspection and tooling.
+
+**Documentation Access Functions:**
+```
+/// Gets the documentation for a function
+/// 
+/// @param function_ref The function to get documentation for
+/// @returns The documentation string or null if not documented
+fn get_doc(function_ref) {
+    // Implementation provided by runtime
+}
+
+/// Gets documentation for a class
+/// 
+/// @param class_ref The class to get documentation for  
+/// @returns The class documentation or null
+fn get_class_doc(class_ref) {
+    // Implementation provided by runtime
+}
+
+/// Gets documentation for a specific method
+/// 
+/// @param class_ref The class containing the method
+/// @param method_name The name of the method
+/// @returns The method documentation or null
+fn get_method_doc(class_ref, method_name) {
+    // Implementation provided by runtime
+}
+```
+
+**Runtime Documentation Examples:**
+```
+/// Calculates the square of a number
+/// 
+/// @param x The number to square
+/// @returns The square of x
+fn square(x) {
+    x * x
+}
+
+// Access documentation at runtime
+var doc = get_doc(square)
+print(doc)
+// Output: "Calculates the square of a number\n\n@param x The number to square\n@returns The square of x"
+
+// Documentation for classes
+var class_doc = get_class_doc(Point)
+print(class_doc)
+// Output: "Represents a point in 2D space\n\nThis class provides basic geometric operations..."
+
+// Documentation for methods
+var method_doc = get_method_doc(Point, "distance_to_origin")
+print(method_doc)
+// Output: "Calculates the distance from this point to the origin..."
+```
+
+### 13.10. Tooling Integration
+
+Documentation integrates with development tools for enhanced developer experience.
+
+**IDE Integration:**
+- Hover tooltips show formatted documentation
+- Auto-completion includes parameter information
+- Quick documentation lookup with keyboard shortcuts
+- Inline parameter hints during function calls
+
+**Documentation Generation:**
+- Export documentation to HTML/Markdown formats
+- Generate API reference documentation
+- Extract examples for testing
+- Validate documentation completeness
+
+**Linting and Validation:**
+- Warn about undocumented public functions
+- Validate `@param` tags match function parameters
+- Check that `@returns` is present for non-void functions
+- Verify example code syntax
+
+**Example Tool Usage:**
+```
+/// Validates an email address
+/// 
+/// @param email The email address to validate
+/// @returns True if the email is valid, false otherwise
+/// 
+/// @example
+/// ```
+/// validate_email("user@example.com")  // true
+/// validate_email("invalid-email")     // false
+/// ```
+fn validate_email(email) {
+    // Implementation
+}
+
+// IDE shows on hover:
+// validate_email(email)
+// 
+// Validates an email address
+// 
+// Parameters:
+//   email - The email address to validate
+// 
+// Returns:
+//   True if the email is valid, false otherwise
+```
+
+**Documentation Coverage:**
+```bash
+# Generate documentation coverage report
+rustleaf doc --coverage
+
+# Output:
+# Documentation Coverage Report
+# ============================
+# 
+# Functions:        85% (17/20)
+# Classes:          90% (9/10)
+# Public methods:   78% (14/18)
+# 
+# Missing documentation:
+# - function calculate_tax (line 45)
+# - method User.validate (line 123)
+# - class DatabaseError (line 200)
+```
+
+## 14. Memory Model
+
+RustLeaf provides automatic memory management with predictable semantics for value copying, reference sharing, and garbage collection. This chapter defines how values are stored, copied, and shared in memory, ensuring memory safety while maintaining performance and predictability.
+
+### 14.1. Value Semantics
+
+RustLeaf uses different semantics for different types to balance performance and intuitive behavior.
+
+**Primitive Value Copying:**
+Primitive types are copied by value on assignment and parameter passing.
+
+```
+// Primitives are copied
+var a = 42
+var b = a        // b gets a copy of a's value
+a = 100          // a changes, b remains 42
+print(b)         // 42
+
+// String copying (strings are immutable)
+var str1 = "hello"
+var str2 = str1  // str2 gets a copy of the string
+str1 = "world"   // str1 points to new string, str2 unchanged
+print(str2)      // "hello"
+
+// Boolean and null copying
+var flag1 = true
+var flag2 = flag1  // Copy
+flag1 = false      // flag2 remains true
+```
+
+**Primitive Types (Copy Semantics):**
+- `int` - Integer values
+- `float` - Floating-point values  
+- `bool` - Boolean values
+- `null` - Null value
+- `string` - Immutable strings (copy-on-write)
+
+### 14.2. Reference Semantics
+
+Collections and objects use reference semantics for efficiency and expected behavior.
+
+**Collection Reference Sharing:**
+Lists and dictionaries are passed by reference.
+
+```
+// Lists are shared by reference
+var list1 = [1, 2, 3]
+var list2 = list1    // list2 references the same list
+list1.append(4)      // Modifies the shared list
+print(list2)         // [1, 2, 3, 4] - sees the change
+
+// Dictionaries are shared by reference
+var dict1 = {a: 1, b: 2}
+var dict2 = dict1    // dict2 references the same dict
+dict1.merge({c: 3})  // Modifies the shared dict
+print(dict2)         // {a: 1, b: 2, c: 3} - sees the change
+
+// Objects are shared by reference
+class Point {
+    var x, y;
+    static fn new(x, y) {
+        var p = Point()
+        p.x = x
+        p.y = y
+        p
+    }
+}
+
+var p1 = Point.new(1, 2)
+var p2 = p1          // p2 references the same object
+p1.x = 10            // Modifies the shared object
+print(p2.x)          // 10 - sees the change
+```
+
+**Reference Types:**
+- `list` - Mutable sequences
+- `dict` - Mutable key-value mappings
+- `function` - Function objects
+- `object` - Class instances
+- `RustValue` - Custom Rust-implemented types
+
+**Function Parameter Passing:**
+```
+fn modify_primitive(x) {
+    x = 999          // Only modifies local copy
+}
+
+fn modify_collection(list) {
+    list.append(4)   // Modifies the shared list
+}
+
+var num = 42
+var arr = [1, 2, 3]
+
+modify_primitive(num)    // num remains 42
+modify_collection(arr)   // arr becomes [1, 2, 3, 4]
+
+print(num)  // 42
+print(arr)  // [1, 2, 3, 4]
+```
+
+### 14.3. Garbage Collection
+
+RustLeaf provides automatic memory management with garbage collection to prevent memory leaks and ensure memory safety.
+
+**Automatic Collection:**
+Memory is automatically reclaimed when values are no longer reachable.
+
+```
+fn create_data() {
+    var large_list = range(0, 10000)  // Allocates memory
+    large_list.map(fn(x) { x * x })   // More allocation
+    // large_list becomes unreachable when function returns
+    // Memory is automatically reclaimed by GC
+}
+
+create_data()
+// All memory from create_data() is eligible for collection
+```
+
+**Circular Reference Handling:**
+The garbage collector automatically handles circular references.
+
+```
+// Create circular references
+var node1 = {value: 1, next: null}
+var node2 = {value: 2, next: node1}
+node1.next = node2  // Circular reference: node1 -> node2 -> node1
+
+// Later, when nodes go out of scope
+node1 = null
+node2 = null
+// GC will collect both nodes despite the cycle
+```
+
+**Collection Triggers:**
+- Automatic collection during memory pressure
+- Collection when heap size thresholds are exceeded
+- Collection during idle periods
+- No manual collection interface (fully automatic)
+
+**Memory Safety Guarantees:**
+- No use-after-free errors
+- No memory leaks from unreachable objects
+- No null pointer dereferences
+- Automatic cleanup of circular references
+
+### 14.4. Resource Management
+
+Resources beyond memory require explicit management using structured cleanup patterns.
+
+**Automatic Resource Cleanup:**
+The `with` statement provides deterministic resource cleanup.
+
+```
+// File resources are cleaned up automatically
+with file = open("data.txt") {
+    var content = file.read()
+    process_content(content)
+}  // file.close() called automatically, even if error occurs
+
+// Multiple resources cleaned up in reverse order
+with db = connect_database(), cache = connect_cache() {
+    var data = db.query("SELECT * FROM users")
+    cache.store(data)
+}  // cache.close() then db.close() called automatically
+```
+
+**Resource Cleanup Protocol:**
+Objects can implement cleanup behavior:
+
+```
+class DatabaseConnection {
+    var connection_handle;
+    
+    fn close() {
+        if self.connection_handle != null {
+            release_connection(self.connection_handle)
+            self.connection_handle = null
+        }
+    }
+}
+
+// Used with 'with' statement
+with conn = DatabaseConnection.new("localhost") {
+    conn.execute("INSERT INTO logs VALUES ('action')")
+}  // conn.close() called automatically
+```
+
+**Error Safety:**
+Resource cleanup occurs even when errors are raised:
+
+```
+with file = open("output.txt") {
+    try {
+        dangerous_operation(file)
+    } catch e {
+        print("Error occurred: ${e}")
+        raise(e)  // Re-raise the error
+    }
+}  // file.close() still called despite the error
+```
+
+**Manual Resource Management:**
+For cases where `with` statements aren't suitable:
+
+```
+var connection = create_connection()
+try {
+    use_connection(connection)
+} finally {
+    connection.close()  // Manual cleanup
+}
+```
+
+**Resource Lifetime Rules:**
+1. Resources should be acquired as late as possible
+2. Resources should be released as early as possible  
+3. Use `with` statements for automatic cleanup
+4. Implement `close()` methods for custom resources
+5. Resources are not garbage collected - they require explicit cleanup
+
+**Best Practices:**
+```
+// Good: Use with statement
+with file = open("data.txt") {
+    process_file(file)
+}
+
+// Avoid: Manual resource management
+var file = open("data.txt")
+process_file(file)
+file.close()  // Easy to forget, won't happen on errors
+
+// Good: Custom resource with cleanup
+class TempDirectory {
+    var path;
+    
+    static fn new(prefix) {
+        var temp = TempDirectory()
+        temp.path = create_temp_dir(prefix)
+        temp
+    }
+    
+    fn close() {
+        remove_directory(self.path)
+    }
+}
+
+with temp = TempDirectory.new("work") {
+    create_files_in(temp.path)
+}  // Directory automatically removed
+```
+
+**Memory vs. Resource Distinction:**
+- **Memory**: Managed automatically by garbage collection
+- **Resources**: Require explicit management with deterministic cleanup
+- **Files, network connections, locks**: Always resources, never just memory
+- **Large data structures**: Memory, cleaned up by GC
+- **Temporary objects**: Memory, cleaned up by GC
+
+## 15. Execution Model
+
+RustLeaf follows a predictable execution model with well-defined evaluation order, exception handling, and context management. This chapter specifies how programs execute, expressions evaluate, and errors propagate through the system.
+
+### 15.1. Program Execution
+
+RustLeaf programs execute from top-level code without requiring a special entry point function.
+
+**Top-level Execution:**
+Programs start executing from the first statement in the main file.
+
+```
+// This executes immediately when the program runs
+print("Program starting...")
+
+var config = load_config()
+print("Config loaded: ${config}")
+
+// Functions are defined but not executed
+fn main_logic() {
+    print("Running main logic")
+}
+
+// This executes immediately
+main_logic()
+
+print("Program complete")
+```
+
+**Module Execution:**
+Modules execute their top-level code when first imported.
+
+```
+// File: utils.rustleaf
+print("Loading utils module...")
+
+var UTILS_VERSION = "1.0"
+
+fn helper() {
+    "helper function"
+}
+
+print("Utils module loaded")
+
+// File: main.rustleaf
+print("Starting main")
+use utils  // Triggers execution of utils.rustleaf
+           // Output: "Loading utils module..."
+           //         "Utils module loaded"
+print("Utils imported")
+```
+
+**Execution Phases:**
+1. **Parse phase**: Source code is parsed into AST
+2. **Import phase**: Module dependencies are loaded and executed
+3. **Execution phase**: Top-level statements execute in order
+4. **Cleanup phase**: Resources are cleaned up when program exits
+
+### 15.2. Expression Evaluation Order
+
+Expressions are evaluated in a predictable left-to-right order.
+
+**Left-to-Right Evaluation:**
+All expressions evaluate their operands from left to right.
+
+```
+// Function calls evaluated left to right
+result = first() + second() + third()
+// Execution order: first(), then second(), then third()
+
+// Property access evaluated left to right
+value = obj.get_property().process().finalize()
+// Execution order: obj.get_property(), then .process(), then .finalize()
+
+// Array access evaluated left to right
+item = get_array()[get_index()]
+// Execution order: get_array(), then get_index()
+```
+
+**Function Argument Evaluation:**
+Arguments are evaluated left to right before the function is called.
+
+```
+fn log_and_return(name, value) {
+    print("Evaluating: ${name}")
+    value
+}
+
+// Arguments evaluated left to right
+result = combine(
+    log_and_return("first", 1),   // Executes first
+    log_and_return("second", 2),  // Executes second
+    log_and_return("third", 3)    // Executes third
+)
+// Output: "Evaluating: first"
+//         "Evaluating: second" 
+//         "Evaluating: third"
+// Then combine() is called with (1, 2, 3)
+```
+
+**Assignment Evaluation Order:**
+In assignments, the right-hand side is evaluated before the left-hand side.
+
+```
+// RHS evaluated first, then LHS
+get_object().field = compute_value()
+// Execution order: compute_value(), then get_object(), then assignment
+
+// Complex assignment
+items[get_index()] = process_data()
+// Execution order: process_data(), then get_index(), then items lookup, then assignment
+```
+
+**Short-Circuit Evaluation:**
+Logical operators `and` and `or` use short-circuit evaluation.
+
+```
+// Short-circuit AND
+if expensive_check() and quick_check() {
+    // quick_check() only runs if expensive_check() returns true
+}
+
+// Short-circuit OR
+result = cached_value() or compute_expensive()
+// compute_expensive() only runs if cached_value() returns null or false
+
+// Practical example
+if user != null and user.is_admin() {
+    // user.is_admin() only called if user is not null
+    admin_action()
+}
+```
+
+**Method Chaining Evaluation:**
+Method chains evaluate left to right.
+
+```
+result = data
+    .filter(fn(x) { x > 0 })     // First
+    .map(fn(x) { x * 2 })        // Second  
+    .reduce(fn(a, b) { a + b })  // Third
+
+// Equivalent to:
+var temp1 = data.filter(fn(x) { x > 0 })
+var temp2 = temp1.map(fn(x) { x * 2 })
+var result = temp2.reduce(fn(a, b) { a + b })
+```
+
+### 15.3. Function Call Semantics
+
+Function calls follow consistent semantics for parameter passing, execution context, and return values.
+
+**Parameter Passing:**
+Parameters are passed according to their type's semantics (value or reference).
+
+```
+fn modify_data(num, list, obj) {
+    num = 999        // Only affects local copy
+    list.append(4)   // Modifies shared list
+    obj.field = "new" // Modifies shared object
+}
+
+var number = 42
+var array = [1, 2, 3]
+var object = {field: "old"}
+
+modify_data(number, array, object)
+
+print(number)      // 42 (unchanged - copy semantics)
+print(array)       // [1, 2, 3, 4] (modified - reference semantics)
+print(object.field) // "new" (modified - reference semantics)
+```
+
+**Variable Arguments:**
+Functions with *args and **kwargs handle variable arguments.
+
+```
+fn variadic_function(required, optional = "default", *args, **kwargs) {
+    print("Required: ${required}")
+    print("Optional: ${optional}")
+    print("Args: ${args}")
+    print("Kwargs: ${kwargs}")
+}
+
+variadic_function("hello", "world", 1, 2, 3, name: "test", flag: true)
+// Output: Required: hello
+//         Optional: world
+//         Args: [1, 2, 3]
+//         Kwargs: {name: "test", flag: true}
+```
+
+**Return Value Semantics:**
+Functions return the last expression value, or null if no explicit return.
+
+```
+fn explicit_return() {
+    if condition {
+        return "early"  // Explicit return
+    }
+    "normal"           // Implicit return
+}
+
+fn no_return() {
+    print("side effect")
+    // Implicitly returns null
+}
+
+var result1 = explicit_return()  // "early" or "normal"
+var result2 = no_return()        // null
+```
+
+**Closure Capture:**
+Closures capture variables by reference from their lexical scope.
+
+```
+fn create_counter(start) {
+    var count = start
+    
+    fn increment() {
+        count = count + 1  // Captures 'count' by reference
+        count
+    }
+    
+    increment  // Return the closure
+}
+
+var counter1 = create_counter(0)
+var counter2 = create_counter(10)
+
+print(counter1())  // 1
+print(counter1())  // 2
+print(counter2())  // 11
+print(counter1())  // 3 (independent state)
+```
+
+**Recursion Limits:**
+Recursion is limited to prevent stack overflow.
+
+```
+fn factorial(n) {
+    if n <= 1 {
+        1
+    } else {
+        n * factorial(n - 1)  // Recursive call
+    }
+}
+
+factorial(1000)   // Works fine
+factorial(1001)   // Error: Maximum recursion depth (1000) exceeded
+```
+
+### 15.4. Exception Handling
+
+Exceptions propagate up the call stack until caught or the program terminates.
+
+**Exception Propagation:**
+Uncaught exceptions unwind the stack and terminate the program.
+
+```
+fn level3() {
+    raise("Error in level3")
+}
+
+fn level2() {
+    level3()  // Exception propagates through here
+}
+
+fn level1() {
+    level2()  // Exception propagates through here
+}
+
+// Exception will terminate program with stack trace:
+// Error: Error in level3
+//   at level3() (main.rustleaf:2:5)
+//   at level2() (main.rustleaf:6:5)  
+//   at level1() (main.rustleaf:10:5)
+//   at main.rustleaf:13:1
+level1()
+```
+
+**Exception Catching:**
+Try-catch blocks catch exceptions and prevent propagation.
+
+```
+fn risky_operation() {
+    if random() < 0.5 {
+        raise("Random failure")
+    }
+    "success"
+}
+
+try {
+    var result = risky_operation()
+    print("Success: ${result}")
+} catch e {
+    print("Caught error: ${e}")
+    // Exception is handled, execution continues
+}
+
+print("Program continues...")
+```
+
+**Exception in Expressions:**
+Exceptions can occur in any expression and propagate immediately.
+
+```
+// Exception during function call
+var result = compute() + risky_function() + finalize()
+// If risky_function() raises, compute() result is discarded
+// and finalize() never executes
+
+// Exception during property access
+var value = obj.safe_property + obj.risky_property + obj.final_property  
+// If obj.risky_property raises, obj.final_property never accessed
+```
+
+### 15.5. Resource Cleanup
+
+Resources are cleaned up deterministically using structured patterns.
+
+**With Statement Cleanup:**
+Resources are cleaned up in reverse order of acquisition.
+
+```
+with file1 = open("first.txt"), file2 = open("second.txt") {
+    process_files(file1, file2)
+}
+// Cleanup order: file2.close(), then file1.close()
+```
+
+**Cleanup During Exceptions:**
+Resources are cleaned up even when exceptions occur.
+
+```
+with file = open("data.txt") {
+    try {
+        dangerous_processing(file)
+    } catch e {
+        print("Error during processing: ${e}")
+        raise(e)  // Re-raise
+    }
+}  // file.close() still called despite the exception
+```
+
+**Nested Resource Management:**
+Nested with statements clean up in proper order.
+
+```
+with outer = acquire_outer() {
+    with inner = acquire_inner() {
+        if error_condition {
+            raise("Something went wrong")
+        }
+        use_resources(outer, inner)
+    }  // inner.close() called first
+}  // outer.close() called second
+
+// Cleanup occurs even if exception is raised:
+// 1. inner.close() 
+// 2. outer.close()
+// 3. Exception propagates
+```
+
+**Manual Cleanup Timing:**
+Without structured cleanup, resources must be managed manually.
+
+```
+var resource = acquire_resource()
+try {
+    use_resource(resource)
+} catch e {
+    print("Error: ${e}")
+    // Must manually clean up before re-raising
+    resource.close()
+    raise(e)
+} 
+// Must manually clean up in success case too
+resource.close()
+```
+
+**Execution Context Hierarchy:**
+RustLeaf maintains nested execution contexts for proper scoping.
+
+```
+// Global context
+var global_var = "global"
+
+fn outer_function() {
+    // Function context (nested in global)
+    var function_var = "function"
+    
+    fn inner_function() {
+        // Inner function context (nested in outer function)
+        var inner_var = "inner"
+        
+        // All variables accessible due to lexical scoping
+        print(global_var)    // "global"
+        print(function_var)  // "function"  
+        print(inner_var)     // "inner"
+    }
+    
+    inner_function()
+    // inner_var not accessible here
+}
+
+outer_function()
+// function_var and inner_var not accessible here
+```
+
+**Variable Lifetime and Initialization:**
+Variables are not hoisted and must be declared before use.
+
+```
+// Error: Cannot use variable before declaration
+print(x)  // Error: Undefined variable 'x'
+var x = 42
+
+// Block scoping
+{
+    var block_var = "block"
+    print(block_var)  // OK
+}
+print(block_var)  // Error: Undefined variable 'block_var'
+
+// Class field initialization
+class Example {
+    var field1 = "initialized";  // Initialized at object creation
+    var field2;                  // Initialized to null at object creation
+    
+    static fn new() {
+        var obj = Example()  // field1="initialized", field2=null
+        obj.field2 = "set"   // Modified after creation
+        obj
+    }
+}
+```
+
+## 16. RustValue Integration
+
+RustLeaf provides seamless integration with custom types implemented in Rust through the RustValue system. This enables extending the language with high-performance, native functionality while maintaining type safety and consistent behavior. This chapter defines how RustValues behave from RustLeaf code perspective.
+
+### 16.1. RustValue Trait
+
+RustValues are custom types implemented in Rust that integrate seamlessly with RustLeaf's type system.
+
+**Core Capabilities:**
+RustValues provide a minimal, generic interface for attribute access and type identification.
+
+```
+// RustValue types behave like regular RustLeaf objects
+var point = Point.new(3.0, 4.0)  // Point is a RustValue type
+
+// Field access works transparently
+print(point.x)           // 3.0
+print(point.y)           // 4.0
+
+// Method calls work transparently  
+print(point.distance())  // 5.0
+
+// Type identification
+print(type(point))       // "Point"
+```
+
+**Attribute Resolution:**
+RustValues handle all attribute access through a generic resolution system.
+
+```
+// Field access
+var value = custom_object.some_field    // Calls get_attr("some_field")
+custom_object.some_field = new_value    // Calls set_attr("some_field", new_value)
+
+// Method access
+var method = custom_object.some_method  // Calls get_attr("some_method") 
+var result = custom_object.some_method(args)  // Method call
+
+// Dynamic access
+var field_name = "dynamic_field"
+var value = custom_object[field_name]   // Dynamic attribute access
+```
+
+**Error Handling:**
+RustValue operations integrate with RustLeaf's exception system.
+
+```
+var obj = CustomType.new()
+
+try {
+    var value = obj.nonexistent_field
+} catch e {
+    print("Error: ${e}")  // "Error: Unknown attribute: nonexistent_field"
+}
+
+try {
+    obj.read_only_field = "new value"  
+} catch e {
+    print("Error: ${e}")  // "Error: Cannot modify read-only field: read_only_field"
+}
+```
+
+### 16.2. Value Enum
+
+RustValues are integrated into RustLeaf's value system as first-class citizens.
+
+**Type Integration:**
+RustValues work seamlessly with all RustLeaf operations.
+
+```
+// RustValues in collections
+var objects = [Point.new(1, 2), Point.new(3, 4), Point.new(5, 6)]
+var distances = objects.map(fn(p) { p.distance() })
+
+// RustValues in dictionaries
+var registry = {
+    "origin": Point.new(0, 0),
+    "unit_x": Point.new(1, 0),
+    "unit_y": Point.new(0, 1)
+}
+
+// RustValues as function parameters
+fn process_point(point) {
+    print("Processing point at (${point.x}, ${point.y})")
+    point.distance()
+}
+
+process_point(Point.new(2, 3))
+```
+
+**Memory Semantics:**
+RustValues follow reference semantics like other RustLeaf objects.
+
+```
+var p1 = Point.new(1, 2)
+var p2 = p1          // p2 references the same RustValue
+
+// Mutation affects both references (if the RustValue allows mutation)
+p1.move_to(5, 6)     // Hypothetical mutating method
+print(p2.x)          // 5 (sees the change if RustValue is mutable)
+
+// Immutable RustValues work like expected
+var config = Config.load("app.json")
+var backup = config  // Both reference the same immutable config
+```
+
+**Garbage Collection:**
+RustValues are managed by the garbage collector like other values.
+
+```
+fn create_temporary() {
+    var temp = LargeDataStructure.new()
+    temp.process()
+    // temp becomes unreachable when function exits
+    // GC will clean up the RustValue
+}
+
+create_temporary()
+// LargeDataStructure is eligible for collection
+```
+
+### 16.3. Field Access
+
+RustValues can expose fields with configurable access patterns.
+
+**Read-Only Fields:**
+Some fields may be read-only to maintain invariants.
+
+```
+var file = File.open("data.txt")
+print(file.path)         // "/path/to/data.txt" (read-only)
+print(file.size)         // 1024 (read-only, computed)
+
+// file.path = "new.txt"  // Error: Cannot modify read-only field
+```
+
+**Read-Write Fields:**
+Other fields may allow modification.
+
+```
+var config = Config.new()
+config.timeout = 30      // OK - read-write field
+config.host = "localhost" // OK - read-write field
+
+print(config.timeout)    // 30
+print(config.host)       // "localhost"
+```
+
+**Computed Fields:**
+Fields can be computed dynamically.
+
+```
+var rect = Rectangle.new(10, 20)
+print(rect.width)        // 10 (stored field)
+print(rect.height)       // 20 (stored field)  
+print(rect.area)         // 200 (computed: width * height)
+print(rect.perimeter)    // 60 (computed: 2 * (width + height))
+```
+
+**Field Validation:**
+Field assignments can include validation.
+
+```
+var person = Person.new()
+person.age = 25          // OK
+person.age = -5          // Error: Age cannot be negative
+person.email = "invalid" // Error: Invalid email format
+```
+
+### 16.4. Method Dispatch
+
+RustValues can provide methods that integrate with RustLeaf's method system.
+
+**Native Methods:**
+RustValues can expose Rust-implemented methods.
+
+```
+var vector = Vector3.new(1.0, 2.0, 3.0)
+var length = vector.magnitude()      // Native Rust method
+var normalized = vector.normalize()  // Returns new Vector3
+var dot_product = vector.dot(other_vector)
+```
+
+**Method Overriding:**
+RustValue methods can override built-in methods for custom behavior.
+
+```
+// Custom string representation
+var point = Point.new(3, 4)
+print(str(point))        // "(3, 4)" - custom op_str implementation
+
+// Custom equality
+var p1 = Point.new(1, 2)
+var p2 = Point.new(1, 2)
+print(p1 == p2)          // true - custom op_eq implementation
+
+// Custom arithmetic
+var v1 = Vector.new(1, 2)
+var v2 = Vector.new(3, 4)
+var sum = v1 + v2        // Vector(4, 6) - custom op_add implementation
+```
+
+**Method Chaining:**
+RustValue methods support chaining where appropriate.
+
+```
+var text = TextProcessor.new()
+var result = text
+    .load_file("input.txt")
+    .remove_comments()
+    .normalize_whitespace()  
+    .save_to("output.txt")
+```
+
+**Variadic Methods:**
+RustValue methods can accept variable arguments.
+
+```
+var logger = Logger.new()
+logger.log("info", "User logged in")
+logger.log("error", "Database error", error_code: 500, retry: true)
+```
+
+### 16.5. Type Coercion
+
+RustValues use explicit conversion rather than automatic coercion.
+
+**Explicit Conversion:**
+RustValues convert to primitives through explicit methods or operators.
+
+```
+var number_wrapper = NumberWrapper.new(42)
+
+// Explicit conversion required
+var as_int = int(number_wrapper)     // 42 (if conversion supported)
+var as_str = str(number_wrapper)     // "NumberWrapper(42)"
+var as_float = float(number_wrapper) // 42.0 (if conversion supported)
+
+// No automatic coercion
+// var result = number_wrapper + 5   // Error: Cannot add NumberWrapper and int
+var result = int(number_wrapper) + 5 // 47 (explicit conversion)
+```
+
+**Collection Conversion:**
+RustValues can convert to standard collections.
+
+```
+var rust_list = RustList.new([1, 2, 3, 4, 5])
+var rustleaf_list = list(rust_list)  // [1, 2, 3, 4, 5]
+
+var rust_map = RustMap.new()
+rust_map.insert("a", 1)
+rust_map.insert("b", 2)
+var rustleaf_dict = dict(rust_map)   // {a: 1, b: 2}
+```
+
+**Truthiness:**
+RustValues follow strict truthiness rules like other types.
+
+```
+var custom_obj = CustomType.new()
+
+// Only null and bool have truthiness
+// if custom_obj { }              // Error: Only null and bool have truthiness
+if custom_obj != null { }         // OK - explicit null check
+if custom_obj.is_valid() { }      // OK - explicit method call
+```
+
+### 16.6. Lifetime Management
+
+RustValues are managed consistently with RustLeaf's memory model.
+
+**Automatic Management:**
+RustValues are automatically managed by the garbage collector.
+
+```
+fn process_data() {
+    var processor = DataProcessor.new()
+    processor.load_large_dataset()
+    var results = processor.analyze()
+    results  // Return results, processor becomes unreachable
+}
+
+var analysis = process_data()
+// DataProcessor is cleaned up automatically
+// Results remain accessible
+```
+
+**Resource Cleanup:**
+RustValues that manage resources should support the cleanup protocol.
+
+```
+// RustValues can implement close() for resource cleanup
+with connection = DatabaseConnection.connect("localhost") {
+    var data = connection.query("SELECT * FROM users")
+    process_data(data)
+}  // connection.close() called automatically
+
+// Custom resources
+with temp_file = TempFile.create() {
+    temp_file.write("temporary data")
+    var content = temp_file.read()
+}  // temp_file cleanup removes the file
+```
+
+**Shared Ownership:**
+Multiple RustLeaf variables can reference the same RustValue.
+
+```
+var original = SharedResource.new()
+var reference1 = original
+var reference2 = original
+
+// All variables reference the same RustValue
+original.modify_state()
+print(reference1.get_state())  // Sees the modification
+print(reference2.get_state())  // Sees the modification
+```
+
+**Integration Examples:**
+
+**File System Integration:**
+```
+var file = File.open("config.json")
+print(file.path)          // "/path/to/config.json"
+print(file.size)          // 1024
+print(file.exists)        // true
+
+var content = file.read()
+file.write("new content")
+file.close()
+```
+
+**Network Integration:**
+```
+var client = HttpClient.new()
+client.timeout = 30
+client.headers.set("User-Agent", "RustLeaf/1.0")
+
+var response = client.get("https://api.example.com/data")
+print(response.status)    // 200
+print(response.body)      // Response content
+```
+
+**Data Processing Integration:**
+```
+var parser = JsonParser.new()
+var data = parser.parse(json_string)
+
+// RustValue seamlessly works with RustLeaf collections
+for item in data.items {
+    print("${item.name}: ${item.value}")
+}
+
+var filtered = data.items.filter(fn(item) { item.active })
+```
+
+**Performance Integration:**
+```
+var matrix = Matrix.new(1000, 1000)
+matrix.fill_random()
+
+// Native performance for compute-heavy operations
+var determinant = matrix.determinant()    // Fast native computation
+var inverse = matrix.invert()             // Fast native computation
+
+// Seamless integration with RustLeaf
+var matrices = [matrix, inverse]
+var results = matrices.map(fn(m) { m.trace() })
+```
+
+## 17. Macros
+
+RustLeaf provides a powerful macro system for AST transformation and code generation. Macros operate on the parse tree during module loading, enabling compile-time code transformation, boilerplate elimination, and domain-specific language creation. This chapter defines macro syntax, processing, and capabilities.
+
+### 17.1. Macro Syntax
+
+Macros use Rust-style syntax with `#[macro_name]` annotations placed above declarations.
+
+**Basic Macro Syntax:**
+```
+#[macro_name]
+fn target_function() {
+    // Original function
+}
+```
+
+**Parameterized Macros:**
+```
+#[macro_name(param1, param2)]
+fn target_function() {
+    // Function with macro parameters
+}
+
+#[macro_name(key: "value", flag: true)]
+class TargetClass {
+    // Class with named parameters
+}
+```
+
+**Multiple Macros:**
+```
+#[first_macro]
+#[second_macro(config: "production")]
+#[third_macro]
+fn heavily_decorated_function() {
+    // Multiple macros applied in declaration order
+}
+```
+
+**Macro Targets:**
+Macros can be applied to various language constructs:
+
+```
+// Functions
+#[test]
+fn test_addition() {
+    assert(2 + 2 == 4)
+}
+
+// Classes
+#[serializable]
+class User {
+    var name;
+    var email;
+}
+
+// Methods
+class Database {
+    #[cached(ttl: 300)]
+    fn expensive_query(sql) {
+        // Database query implementation
+    }
+}
+
+// Variables
+#[config("database.host")]
+var db_host = "localhost";
+
+// Modules (at file level)
+#[api_version("v1")]
+// Module-level macro at top of file
+```
+
+### 17.2. Macro Application Rules
+
+Macros are applied during module loading, before code execution.
+
+**Processing Phase:**
+Macros transform the AST before any code runs.
+
+```
+// File: math_utils.rustleaf
+
+#[benchmark]
+fn calculate_fibonacci(n) {
+    if n <= 1 {
+        n
+    } else {
+        calculate_fibonacci(n - 1) + calculate_fibonacci(n - 2)
+    }
+}
+
+// When this module is imported:
+// 1. Parse the file into AST
+// 2. Process #[benchmark] macro - transforms the function
+// 3. Execute module top-level code with transformed AST
+```
+
+**Macro Composition:**
+Multiple macros on the same item are processed in declaration order.
+
+```
+#[validate_params]
+#[cache_result]
+#[log_calls]
+fn complex_operation(data) {
+    // Processed in order:
+    // 1. validate_params transforms the function
+    // 2. cache_result transforms the result from step 1
+    // 3. log_calls transforms the result from step 2
+}
+```
+
+**Scope and Access:**
+Macros have unrestricted access to all language constructs and scope.
+
+```
+// Macro can access and modify:
+var private_config = {secret: "hidden"}
+
+#[custom_macro]
+fn public_function() {
+    // Macro can read/modify private_config
+    // Macro can access any module-level variables
+    // Macro can generate code that uses any identifiers
+}
+```
+
+### 17.3. Built-in Macros
+
+RustLeaf provides standard macros for common development tasks.
+
+**Testing Macros:**
+```
+#[test]
+fn test_user_creation() {
+    var user = User.new("Alice", "alice@example.com")
+    assert(user.name == "Alice")
+    assert(user.email == "alice@example.com")
+}
+
+#[test]
+fn test_error_handling() {
+    try {
+        invalid_operation()
+        assert(false, "Should have raised an error")
+    } catch e {
+        assert(str(e).contains("Invalid"))
+    }
+}
+```
+
+**Deprecation Macros:**
+```
+#[deprecated("Use new_api() instead")]
+fn old_api() {
+    // Legacy implementation
+    new_api()
+}
+
+#[deprecated("This class will be removed in v2.0", since: "1.5.0")]
+class LegacyProcessor {
+    // Deprecated class
+}
+```
+
+**Performance Macros:**
+```
+#[benchmark]
+fn performance_critical_function() {
+    // Function execution is automatically timed
+    // Results logged or collected for analysis
+}
+
+#[profile]
+fn memory_intensive_operation() {
+    // Memory usage tracked during execution
+}
+```
+
+**Documentation Macros:**
+```
+#[example]
+fn api_usage_example() {
+    // This function serves as a living example
+    // May be extracted for documentation
+    var client = ApiClient.new()
+    client.authenticate("token")
+    var data = client.fetch_data()
+    data.process()
+}
+```
+
+### 17.4. User-defined Macros
+
+Users can define custom macros that transform the AST.
+
+**Macro Declaration:**
+Custom macros are functions marked with `#[macro]`.
+
+```
+#[macro]
+fn log_execution(ast_node) {
+    if ast_node.type != "function" {
+        raise("@log_execution can only be applied to functions")
+    }
+    
+    var function_name = ast_node.name
+    var original_body = ast_node.body
+    
+    // Create new function body with logging
+    var new_body = parse("""
+        {
+            print("Entering function: ${function_name}")
+            var start_time = current_time()
+            
+            var result = ${original_body}
+            
+            var end_time = current_time()
+            print("Exiting function: ${function_name}, took: ${end_time - start_time}ms")
+            result
+        }
+    """)
+    
+    // Return modified AST node
+    ast_node.body = new_body
+    ast_node
+}
+```
+
+**Macro Usage:**
+```
+#[log_execution]
+fn calculate_result(data) {
+    // Original function implementation
+    process_data(data)
+}
+
+// After macro processing, equivalent to:
+fn calculate_result(data) {
+    print("Entering function: calculate_result")
+    var start_time = current_time()
+    
+    var result = {
+        process_data(data)  // Original body
+    }
+    
+    var end_time = current_time()
+    print("Exiting function: calculate_result, took: ${end_time - start_time}ms")
+    result
+}
+```
+
+**Parameterized Custom Macros:**
+```
+#[macro]
+fn retry(ast_node, max_attempts: 3, delay: 1000) {
+    if ast_node.type != "function" {
+        raise("@retry can only be applied to functions")
+    }
+    
+    var original_body = ast_node.body
+    
+    var new_body = parse("""
+        {
+            var attempts = 0
+            while attempts < ${max_attempts} {
+                try {
+                    ${original_body}
+                } catch e {
+                    attempts = attempts + 1
+                    if attempts >= ${max_attempts} {
+                        raise(e)
+                    }
+                    sleep(${delay})
+                }
+            }
+        }
+    """)
+    
+    ast_node.body = new_body
+    ast_node
+}
+
+// Usage
+#[retry(max_attempts: 5, delay: 2000)]
+fn unreliable_network_call() {
+    fetch_data_from_api()
+}
+```
+
+### 17.5. Macro Processing
+
+Macros receive AST nodes and return transformed AST nodes.
+
+**AST Node Structure:**
+Macros work with structured representations of code.
+
+```
+// Example AST node for a function
+{
+    type: "function",
+    name: "example_function",
+    parameters: [
+        {name: "param1", default: null},
+        {name: "param2", default: "default_value"}
+    ],
+    body: {
+        type: "block",
+        statements: [...]
+    },
+    modifiers: ["pub", "static"],  // If applicable
+    location: {file: "example.rustleaf", line: 10, column: 1}
+}
+```
+
+**Code Generation:**
+Macros can generate new code using the `parse()` function.
+
+```
+#[macro]
+fn property_accessor(ast_node) {
+    if ast_node.type != "class" {
+        raise("@property_accessor only applies to classes")
+    }
+    
+    var new_methods = []
+    
+    // Generate getter and setter for each field
+    for field in ast_node.fields {
+        var getter = parse("""
+            fn get_${field.name}() {
+                self.${field.name}
+            }
+        """)
+        
+        var setter = parse("""
+            fn set_${field.name}(value) {
+                self.${field.name} = value
+                self
+            }
+        """)
+        
+        new_methods.append(getter)
+        new_methods.append(setter)
+    }
+    
+    // Add generated methods to the class
+    ast_node.methods.extend(new_methods)
+    ast_node
+}
+
+// Usage
+#[property_accessor]
+class User {
+    var name;
+    var email;
+    var age;
+}
+
+// Generates methods: get_name(), set_name(), get_email(), set_email(), etc.
+```
+
+### 17.6. AST Transformation
+
+Macros can perform complex AST transformations.
+
+**Code Injection:**
+```
+#[macro]
+fn inject_validation(ast_node) {
+    if ast_node.type != "function" {
+        raise("@inject_validation only applies to functions")
+    }
+    
+    // Inject validation at the beginning of function
+    var validation_code = parse("""
+        if args.len() != ${ast_node.parameters.len()} {
+            raise("Invalid number of arguments")
+        }
+    """)
+    
+    // Prepend validation to function body
+    ast_node.body.statements.insert(0, validation_code)
+    ast_node
+}
+```
+
+**Code Wrapping:**
+```
+#[macro]
+fn transaction(ast_node) {
+    var original_body = ast_node.body
+    
+    var wrapped_body = parse("""
+        {
+            var tx = database.begin_transaction()
+            try {
+                var result = ${original_body}
+                tx.commit()
+                result
+            } catch e {
+                tx.rollback()
+                raise(e)
+            }
+        }
+    """)
+    
+    ast_node.body = wrapped_body
+    ast_node
+}
+```
+
+**Multiple Item Generation:**
+```
+#[macro]
+fn crud_operations(ast_node) {
+    if ast_node.type != "class" {
+        raise("@crud_operations only applies to classes")
+    }
+    
+    var class_name = ast_node.name
+    var module_items = []
+    
+    // Generate CRUD functions
+    var create_fn = parse("""
+        fn create_${class_name}(data) {
+            var instance = ${class_name}()
+            for key, value in data.items() {
+                instance[key] = value
+            }
+            database.save(instance)
+            instance
+        }
+    """)
+    
+    var read_fn = parse("""
+        fn read_${class_name}(id) {
+            database.find(${class_name}, id)
+        }
+    """)
+    
+    module_items.append(create_fn)
+    module_items.append(read_fn)
+    
+    // Return the original class plus generated functions
+    [ast_node] + module_items
+}
+```
+
+### 17.7. Macro Evaluation Order
+
+Macros are processed in a predictable order during module loading.
+
+**Processing Order:**
+1. **File parsing**: Source code parsed into initial AST
+2. **Macro resolution**: Macro functions are identified and loaded
+3. **Macro application**: Macros applied in declaration order
+4. **Final AST**: Transformed AST ready for execution
+
+**Declaration Order Processing:**
+```
+#[first_macro]
+#[second_macro]
+#[third_macro]
+fn example() {
+    // Processing order:
+    // 1. first_macro receives original AST
+    // 2. second_macro receives result from first_macro
+    // 3. third_macro receives result from second_macro
+    // 4. Final transformed function is used
+}
+```
+
+**Module Dependencies:**
+Macros from imported modules are available for use.
+
+```
+// File: macros/logging.rustleaf
+#[macro]
+pub fn debug_trace(ast_node) {
+    // Macro implementation
+}
+
+// File: main.rustleaf
+use macros::logging::debug_trace;
+
+#[debug_trace]
+fn main_function() {
+    // Uses imported macro
+}
+```
+
+**Error Handling:**
+Macro errors halt module loading with detailed error messages.
+
+```
+#[invalid_macro_usage]
+var not_a_function = 42
+
+// Error: Macro 'invalid_macro_usage' cannot be applied to variable declarations
+//   at main.rustleaf:2:1
+//   Macro defined at macros/validation.rustleaf:15:1
+```
+
+**Macro Scope and Hygiene:**
+Macros have unlimited access to generate any code.
+
+```
+#[macro]
+fn full_access_macro(ast_node) {
+    // Can access any variable in scope
+    var secret_value = get_module_variable("secret_config")
+    
+    // Can generate code that uses private functions
+    var new_code = parse("""
+        {
+            var private_data = access_private_function()
+            var result = ${ast_node.body}
+            log_to_private_channel(result)
+            result
+        }
+    """)
+    
+    ast_node.body = new_code
+    ast_node
+}
+```
+
+**Complex Transformation Example:**
+```
+#[macro]
+fn state_machine(ast_node) {
+    // Transform a class into a state machine
+    var states = []
+    var transitions = []
+    
+    // Analyze class to extract state information
+    for method in ast_node.methods {
+        if method.name.starts_with("state_") {
+            states.append(method.name.replace("state_", ""))
+        }
+        if method.name.starts_with("transition_") {
+            transitions.append(parse_transition(method))
+        }
+    }
+    
+    // Generate state machine logic
+    var state_machine_code = generate_state_machine(states, transitions)
+    
+    // Inject state machine into class
+    ast_node.methods.extend(state_machine_code)
+    ast_node.fields.append(parse("var current_state = \"${states[0]}\";"))
+    
+    ast_node
+}
+
+#[state_machine]
+class OrderProcessor {
+    fn state_pending() { /* ... */ }
+    fn state_processing() { /* ... */ }
+    fn state_completed() { /* ... */ }
+    
+    fn transition_start_processing() { /* ... */ }
+    fn transition_complete_order() { /* ... */ }
+}
+// Becomes a full state machine with transition validation
+```
+
+---
+
+## A. Grammar Summary
+
+This appendix provides a complete BNF-style grammar for RustLeaf. The grammar uses the following notation:
+- `::=` means "is defined as"
+- `|` separates alternatives
+- `*` means zero or more repetitions
+- `+` means one or more repetitions
+- `?` means optional (zero or one)
+- `( )` groups elements
+- Terminal symbols are in quotes
+
+```bnf
+Program ::= ModuleItem*
+
+ModuleItem ::= ImportStatement
+            | FunctionDeclaration
+            | ClassDeclaration
+            | VariableDeclaration
+            | Statement
+
+ImportStatement ::= "use" ImportPath ImportClause? ";"
+ImportPath ::= Identifier ("::" Identifier)*
+ImportClause ::= "::" "*"
+              | "::" "{" ImportList "}"
+              | "::" Identifier
+ImportList ::= Identifier ("," Identifier)* ","?
+
+FunctionDeclaration ::= Visibility? "fn" Identifier "(" ParameterList? ")" Block
+ParameterList ::= Parameter ("," Parameter)* ("," "*" Identifier)? ("," "**" Identifier)?
+Parameter ::= Identifier ("=" Expression)?
+
+ClassDeclaration ::= Visibility? "class" Identifier "{" ClassMember* "}"
+ClassMember ::= Visibility? "var" Identifier ("=" Expression)? ";"
+             | Visibility? "static"? FunctionDeclaration
+
+Visibility ::= "pub"
+
+VariableDeclaration ::= "var" Identifier ("=" Expression)? ";"
+
+Statement ::= ExpressionStatement
+           | VariableDeclaration
+           | Block
+           | IfStatement
+           | WhileStatement
+           | ForStatement
+           | MatchStatement
+           | TryStatement
+           | WithStatement
+           | BreakStatement
+           | ContinueStatement
+           | ReturnStatement
+           | EmptyStatement
+
+ExpressionStatement ::= Expression ";"
+EmptyStatement ::= ";"
+
+Block ::= "{" Statement* "}"
+
+IfStatement ::= "if" Expression Block ("else" "if" Expression Block)* ("else" Block)?
+
+WhileStatement ::= "while" Expression Block
+
+ForStatement ::= "for" Identifier ("," Identifier)? "in" Expression Block
+
+MatchStatement ::= "match" Expression "{" MatchArm* "}"
+MatchArm ::= "case" Pattern ("if" Expression)? Block
+
+TryStatement ::= "try" Block ("catch" Identifier Block)? ("finally" Block)?
+
+WithStatement ::= "with" WithBinding ("," WithBinding)* Block
+WithBinding ::= Identifier "=" Expression
+
+BreakStatement ::= "break" Expression? ";"
+ContinueStatement ::= "continue" ";"
+ReturnStatement ::= "return" Expression? ";"
+
+Expression ::= AssignmentExpression
+
+AssignmentExpression ::= ConditionalExpression
+                      | ConditionalExpression AssignmentOperator AssignmentExpression
+
+AssignmentOperator ::= "=" | "+=" | "-=" | "*=" | "/=" | "%="
+
+ConditionalExpression ::= LogicalOrExpression
+                       | LogicalOrExpression "?" Expression ":" ConditionalExpression
+
+LogicalOrExpression ::= LogicalAndExpression
+                     | LogicalOrExpression "or" LogicalAndExpression
+
+LogicalAndExpression ::= BitwiseOrExpression
+                      | LogicalAndExpression "and" BitwiseOrExpression
+
+BitwiseOrExpression ::= BitwiseXorExpression
+                     | BitwiseOrExpression "|" BitwiseXorExpression
+
+BitwiseXorExpression ::= BitwiseAndExpression
+                      | BitwiseXorExpression "^" BitwiseAndExpression
+
+BitwiseAndExpression ::= EqualityExpression
+                      | BitwiseAndExpression "&" EqualityExpression
+
+EqualityExpression ::= RelationalExpression
+                    | EqualityExpression ("==" | "!=") RelationalExpression
+
+RelationalExpression ::= ShiftExpression
+                      | RelationalExpression ("<" | ">" | "<=" | ">=" | "in" | "is") ShiftExpression
+
+ShiftExpression ::= AdditiveExpression
+                 | ShiftExpression ("<<" | ">>") AdditiveExpression
+
+AdditiveExpression ::= MultiplicativeExpression
+                    | AdditiveExpression ("+" | "-") MultiplicativeExpression
+
+MultiplicativeExpression ::= ExponentiationExpression
+                          | MultiplicativeExpression ("*" | "/" | "%") ExponentiationExpression
+
+ExponentiationExpression ::= UnaryExpression
+                          | UnaryExpression "**" ExponentiationExpression
+
+UnaryExpression ::= PostfixExpression
+                 | ("+" | "-" | "not" | "~") UnaryExpression
+
+PostfixExpression ::= PrimaryExpression
+                   | PostfixExpression "." Identifier
+                   | PostfixExpression "[" Expression "]"
+                   | PostfixExpression "(" ArgumentList? ")"
+
+ArgumentList ::= Argument ("," Argument)*
+Argument ::= Expression
+          | "*" Expression
+          | "**" Expression
+
+PrimaryExpression ::= Identifier
+                   | Literal
+                   | "(" Expression ")"
+                   | ListLiteral
+                   | DictLiteral
+                   | BlockExpression
+                   | IfExpression
+                   | MatchExpression
+                   | TryExpression
+                   | AnonymousFunction
+
+ListLiteral ::= "[" (Expression ("," Expression)* ","?)? "]"
+
+DictLiteral ::= "{" (DictEntry ("," DictEntry)* ","?)? "}"
+DictEntry ::= Expression ":" Expression
+
+BlockExpression ::= Block
+
+IfExpression ::= "if" Expression Block ("else" "if" Expression Block)* ("else" Block)?
+
+MatchExpression ::= "match" Expression "{" MatchArm* "}"
+
+TryExpression ::= "try" Block ("catch" Identifier Block)?
+
+AnonymousFunction ::= "fn" "(" ParameterList? ")" Block
+
+Pattern ::= LiteralPattern
+         | VariablePattern
+         | WildcardPattern
+         | ListPattern
+         | DictPattern
+         | RangePattern
+         | OrPattern
+
+LiteralPattern ::= Literal
+
+VariablePattern ::= Identifier
+
+WildcardPattern ::= "_"
+
+ListPattern ::= "[" (ListPatternElement ("," ListPatternElement)* ","?)? "]"
+ListPatternElement ::= Pattern | "*" Identifier
+
+DictPattern ::= "{" (DictPatternEntry ("," DictPatternEntry)* ","?)? "}"
+DictPatternEntry ::= StringLiteral ":" Pattern
+
+RangePattern ::= Expression ".." Expression
+              | Expression "..=" Expression
+
+OrPattern ::= Pattern ("|" Pattern)+
+
+Literal ::= IntegerLiteral
+         | FloatLiteral
+         | StringLiteral
+         | BooleanLiteral
+         | NullLiteral
+
+IntegerLiteral ::= DecimalLiteral | HexLiteral | OctalLiteral | BinaryLiteral
+DecimalLiteral ::= [0-9]+
+HexLiteral ::= "0x" [0-9a-fA-F]+
+OctalLiteral ::= "0o" [0-7]+
+BinaryLiteral ::= "0b" [01]+
+
+FloatLiteral ::= [0-9]+ "." [0-9]+ ([eE] [+-]? [0-9]+)?
+              | [0-9]+ [eE] [+-]? [0-9]+
+
+StringLiteral ::= "\"" StringChar* "\""
+               | "r\"" RawStringChar* "\""
+StringChar ::= [^"\\\n] | EscapeSequence
+RawStringChar ::= [^"]
+EscapeSequence ::= "\\" ("n" | "t" | "r" | "\\" | "\"" | "'" | "0" | UnicodeEscape)
+UnicodeEscape ::= "u" "{" [0-9a-fA-F]+ "}"
+
+BooleanLiteral ::= "true" | "false"
+
+NullLiteral ::= "null"
+
+Identifier ::= [a-zA-Z_] [a-zA-Z0-9_]*
+
+Comment ::= "//" [^\n]* "\n"
+         | "/*" CommentChar* "*/"
+CommentChar ::= [^*] | "*" [^/]
+
+Whitespace ::= [ \t\n\r]+
+```
+
+## B. Operator Precedence
+
+This appendix lists all operators in RustLeaf in order of precedence, from highest to lowest. Operators with the same precedence level are evaluated according to their associativity.
+
+| Precedence | Operator(s) | Description | Associativity |
+|------------|-------------|-------------|---------------|
+| 1 (Highest) | `()` `[]` `.` | Function call, indexing, property access | Left-to-right |
+| 2 | `+` `-` `not` `~` | Unary plus, minus, logical not, bitwise not | Right-to-left |
+| 3 | `**` | Exponentiation | Right-to-left |
+| 4 | `*` `/` `%` | Multiplication, division, modulo | Left-to-right |
+| 5 | `+` `-` | Addition, subtraction | Left-to-right |
+| 6 | `<<` `>>` | Bitwise left shift, right shift | Left-to-right |
+| 7 | `&` | Bitwise AND | Left-to-right |
+| 8 | `^` | Bitwise XOR | Left-to-right |
+| 9 | `\|` | Bitwise OR | Left-to-right |
+| 10 | `<` `<=` `>` `>=` `in` `is` | Comparison operators | Left-to-right |
+| 11 | `==` `!=` | Equality operators | Left-to-right |
+| 12 | `and` | Logical AND | Left-to-right |
+| 13 | `or` | Logical OR | Left-to-right |
+| 14 | `?:` | Ternary conditional | Right-to-left |
+| 15 (Lowest) | `=` `+=` `-=` `*=` `/=` `%=` | Assignment operators | Right-to-left |
+
+### Precedence Examples
+
+```
+// Unary operators bind tighter than binary
+-x + y      // Equivalent to: (-x) + y
+not a and b // Equivalent to: (not a) and b
+
+// Exponentiation is right-associative
+2 ** 3 ** 2 // Equivalent to: 2 ** (3 ** 2) = 2 ** 9 = 512
+
+// Multiplication before addition
+2 + 3 * 4   // Equivalent to: 2 + (3 * 4) = 14
+
+// Comparison before logical
+x > 0 and y < 10  // Equivalent to: (x > 0) and (y < 10)
+
+// Assignment is lowest precedence
+x = y + z   // Equivalent to: x = (y + z)
+```
+
+### Associativity Rules
+
+**Left-to-right associativity:**
+- Binary operators of same precedence are evaluated left to right
+- Example: `a - b + c` is equivalent to `(a - b) + c`
+
+**Right-to-left associativity:**
+- Unary operators and assignment operators
+- Example: `x = y = z` is equivalent to `x = (y = z)`
+- Example: `a ** b ** c` is equivalent to `a ** (b ** c)`
+
+### Parentheses Override
+
+Parentheses can be used to override the default precedence and associativity:
+
+```
+(2 + 3) * 4    // = 20 (not 14)
+2 ** (3 ** 2)  // = 512 (explicit right-associativity)
+x = (y = z)    // Explicit assignment order
+```
+
+## C. Reserved Words
+
+This appendix lists all reserved words (keywords) in RustLeaf. These identifiers cannot be used as variable names, function names, class names, or other user-defined identifiers.
+
+### Control Flow Keywords
+- `if` - Conditional expression/statement
+- `else` - Alternative branch in conditional
+- `match` - Pattern matching expression/statement
+- `case` - Pattern case in match expression
+- `while` - While loop statement
+- `for` - For loop statement
+- `in` - Iterator keyword in for loops and membership testing
+- `break` - Break out of loop with optional value
+- `continue` - Continue to next loop iteration
+- `return` - Return from function with optional value
+
+### Declaration Keywords
+- `var` - Variable declaration
+- `fn` - Function declaration
+- `class` - Class declaration
+- `static` - Static method/variable modifier
+- `pub` - Public visibility modifier
+- `use` - Module import statement
+
+### Literal Keywords
+- `true` - Boolean true literal
+- `false` - Boolean false literal
+- `null` - Null literal
+
+### Exception Handling Keywords
+- `try` - Try block for exception handling
+- `catch` - Catch block for exception handling
+- `finally` - Finally block for cleanup
+- `raise` - Raise an exception
+
+### Resource Management Keywords
+- `with` - Resource management statement
+
+### Logical Operators
+- `and` - Logical AND operator
+- `or` - Logical OR operator
+- `not` - Logical NOT operator
+- `is` - Identity comparison operator
+
+### Module System Keywords
+- `super` - Reference to parent module
+- `root` - Reference to project root module
+
+### Type System Keywords
+- `self` - Reference to current object instance
+
+### Macro Keywords
+- `macro` - Macro definition (used in attributes)
+
+### Reserved for Future Use
+
+The following keywords are reserved for potential future language features:
+
+- `async` - Asynchronous functions
+- `await` - Awaiting asynchronous operations
+- `const` - Constant declarations
+- `enum` - Enumeration types
+- `impl` - Implementation blocks
+- `interface` - Interface definitions
+- `let` - Alternative variable declaration
+- `mut` - Mutability modifier
+- `private` - Private visibility
+- `protected` - Protected visibility
+- `struct` - Structure types
+- `trait` - Trait definitions
+- `type` - Type aliases
+- `union` - Union types
+- `unsafe` - Unsafe operations
+- `where` - Where clauses
+
+### Contextual Keywords
+
+Some identifiers have special meaning only in specific contexts and can be used as regular identifiers elsewhere:
+
+- `new` - Common constructor method name (not reserved)
+- `close` - Common cleanup method name (not reserved)
+- `get` - Common getter method prefix (not reserved)
+- `set` - Common setter method prefix (not reserved)
+
+### Usage Notes
+
+1. **Case Sensitivity**: All keywords are lowercase and case-sensitive. `If`, `IF`, or `iF` are not keywords and can be used as identifiers.
+
+2. **No Raw Identifiers**: Unlike some languages, RustLeaf does not provide a mechanism to use keywords as identifiers (e.g., no `r#keyword` syntax).
+
+3. **Future Compatibility**: Using any of the "Reserved for Future Use" keywords will result in a parse error, ensuring forward compatibility when these features are implemented.
+
+4. **Operator Words**: The logical operators `and`, `or`, `not`, and `is` are keywords rather than symbols to improve readability.
+
+### Examples
+
+```
+// Valid identifiers (not keywords)
+var data = 42
+var user_name = "Alice"
+var MyClass = SomeClass()
+
+// Invalid identifiers (keywords)
+// var if = 42        // Error: 'if' is a keyword
+// var class = "foo"  // Error: 'class' is a keyword
+// fn and() {}        // Error: 'and' is a keyword
+
+// Contextual keywords can be used as identifiers
+var new = 123          // Valid: 'new' is not a keyword
+fn get_value() {}      // Valid: 'get' is not a keyword
+var close = true       // Valid: 'close' is not a keyword
+```
+
+## D. Built-in Function Reference
+
+This appendix provides a comprehensive reference for all built-in functions available in RustLeaf. These functions are automatically available in the global scope without requiring imports.
+
+### Type Functions
+
+#### `type(value)`
+Returns the type name of a value as a string.
+
+**Parameters:**
+- `value`: Any value
+
+**Returns:** String representing the type name
+
+**Examples:**
+```
+type(42)           // "int"
+type(3.14)         // "float"
+type("hello")      // "string"
+type(true)         // "bool"
+type(null)         // "null"
+type([1, 2, 3])    // "list"
+type({"a": 1})     // "dict"
+type(fn() {})      // "function"
+```
+
+### String Functions
+
+#### `str(value)`
+Converts a value to its string representation.
+
+**Parameters:**
+- `value`: Any value
+
+**Returns:** String representation of the value
+
+**Examples:**
+```
+str(42)            // "42"
+str(3.14)          // "3.14"
+str(true)          // "true"
+str([1, 2, 3])     // "[1, 2, 3]"
+str({"a": 1})      // "{\"a\": 1}"
+```
+
+### Numeric Functions
+
+#### `int(value)`
+Converts a value to an integer.
+
+**Parameters:**
+- `value`: Numeric value or string
+
+**Returns:** Integer representation
+
+**Raises:** Runtime error if conversion is not possible
+
+**Examples:**
+```
+int(3.14)          // 3
+int("42")          // 42
+int("3.14")        // 3
+int(true)          // 1
+int(false)         // 0
+```
+
+#### `float(value)`
+Converts a value to a floating-point number.
+
+**Parameters:**
+- `value`: Numeric value or string
+
+**Returns:** Float representation
+
+**Raises:** Runtime error if conversion is not possible
+
+**Examples:**
+```
+float(42)          // 42.0
+float("3.14")      // 3.14
+float(true)        // 1.0
+float(false)       // 0.0
+```
+
+### Collection Functions
+
+#### `range(start, end, step?)`
+Creates a sequence of numbers from start to end (exclusive).
+
+**Parameters:**
+- `start`: Starting value (inclusive)
+- `end`: Ending value (exclusive)  
+- `step`: Step size (optional, defaults to 1)
+
+**Returns:** Range object (iterable)
+
+**Examples:**
+```
+range(0, 5)        // 0, 1, 2, 3, 4
+range(1, 10, 2)    // 1, 3, 5, 7, 9
+range(10, 0, -1)   // 10, 9, 8, 7, 6, 5, 4, 3, 2, 1
+```
+
+#### `enumerate(iterable)`
+Returns enumerated pairs of (index, value) for an iterable.
+
+**Parameters:**
+- `iterable`: Any iterable value
+
+**Returns:** Iterator of (index, value) pairs
+
+**Examples:**
+```
+for i, item in enumerate(["a", "b", "c"]) {
+    print(i, item)  // 0 a, 1 b, 2 c
+}
+```
+
+### Error Functions
+
+#### `raise(message_or_object)`
+Raises a runtime error with the given message or error object.
+
+**Parameters:**
+- `message_or_object`: String message or error object
+
+**Raises:** Always raises an error
+
+**Examples:**
+```
+raise("Something went wrong")
+
+raise({
+    type: "ValidationError",
+    message: "Invalid input",
+    code: 400
+})
+```
+
+#### `assert(condition, message?)`
+Asserts that a condition is true, raising an error if false.
+
+**Parameters:**
+- `condition`: Boolean condition to check
+- `message`: Optional error message (defaults to "Assertion failed")
+
+**Raises:** Runtime error if condition is false
+
+**Examples:**
+```
+assert(x > 0)
+assert(list.len() > 0, "List cannot be empty")
+assert(type(value) == "string", "Expected string value")
+```
+
+### Input/Output Functions
+
+#### `print(...values)`
+Prints values to standard output, separated by spaces.
+
+**Parameters:**
+- `...values`: Variable number of values to print
+
+**Returns:** null
+
+**Examples:**
+```
+print("Hello")                    // Hello
+print("x =", 42)                 // x = 42
+print("Values:", 1, 2, 3)        // Values: 1 2 3
+```
+
+#### `input(prompt?)`
+Reads a line of input from standard input.
+
+**Parameters:**
+- `prompt`: Optional prompt string to display
+
+**Returns:** String containing the user input (without trailing newline)
+
+**Examples:**
+```
+var name = input("Enter your name: ")
+var age = int(input("Enter your age: "))
+```
+
+### Utility Functions
+
+#### `len(collection)`
+Returns the length of a collection. **Note:** This is available as both a global function and as methods on collections.
+
+**Parameters:**
+- `collection`: List, dict, or string
+
+**Returns:** Integer length
+
+**Examples:**
+```
+len([1, 2, 3])     // 3
+len({"a": 1})      // 1
+len("hello")       // 5
+
+// Equivalent method calls:
+[1, 2, 3].len()    // 3
+{"a": 1}.len()     // 1
+"hello".len()      // 5
+```
+
+#### `hash(value)`
+Returns a hash value for the given value.
+
+**Parameters:**
+- `value`: Any hashable value
+
+**Returns:** Integer hash value
+
+**Examples:**
+```
+hash("hello")      // Some integer
+hash(42)           // Some integer
+hash([1, 2])       // Runtime error - lists are not hashable
+```
+
+#### `id(value)`
+Returns a unique identifier for the value.
+
+**Parameters:**
+- `value`: Any value
+
+**Returns:** Integer representing object identity
+
+**Examples:**
+```
+var a = [1, 2, 3]
+var b = [1, 2, 3]
+var c = a
+
+id(a) == id(c)     // true (same object)
+id(a) == id(b)     // false (different objects)
+```
+
+### Global Variables
+
+#### `args`
+List of command-line arguments passed to the script.
+
+**Type:** List of strings
+
+**Example:**
+```
+// If script is run with: rustleaf script.rl arg1 arg2
+print(args)  // ["script.rl", "arg1", "arg2"]
+```
+
+### Function Signatures Summary
+
+```
+// Type functions
+type(value: any) -> string
+str(value: any) -> string
+int(value: any) -> int
+float(value: any) -> float
+
+// Collection functions  
+range(start: int, end: int, step?: int) -> Range
+enumerate(iterable: any) -> Iterator
+
+// Error functions
+raise(message_or_object: any) -> never
+assert(condition: bool, message?: string) -> null
+
+// I/O functions
+print(...values: any) -> null
+input(prompt?: string) -> string
+
+// Utility functions
+len(collection: list|dict|string) -> int
+hash(value: any) -> int
+id(value: any) -> int
+
+// Global variables
+args: list<string>
+```
+
+### Notes
+
+1. **Availability**: All built-in functions are available in global scope without imports.
+
+2. **Method Equivalents**: Some functions like `len()` are also available as methods on objects (e.g., `list.len()`).
+
+3. **Error Handling**: Functions that can fail (like `int()`, `float()`) raise runtime errors rather than returning special values.
+
+4. **Variadic Functions**: Functions like `print()` accept a variable number of arguments using the `...` syntax.
+
+5. **Type Coercion**: Conversion functions perform explicit type coercion and may raise errors for invalid conversions.
+
+## E. Error Codes
+
+This appendix defines the standard error codes and error types used throughout RustLeaf. Understanding these codes helps in debugging and error handling.
+
+### Error Categories
+
+RustLeaf errors are categorized into several types, each with specific error codes and characteristics.
+
+### Parse Errors (1000-1999)
+
+Parse errors occur during the parsing phase when source code contains syntax errors.
+
+#### 1001: Unexpected Token
+**Description:** An unexpected token was encountered during parsing.
+**Example:**
+```
+var x = 42 } // Error 1001: Unexpected token '}'
+```
+
+#### 1002: Unterminated String Literal  
+**Description:** A string literal was not properly closed.
+**Example:**
+```
+var msg = "Hello world // Error 1002: Unterminated string literal
+```
+
+#### 1003: Invalid Number Format
+**Description:** A numeric literal has invalid syntax.
+**Example:**
+```
+var x = 123.45.67 // Error 1003: Invalid number format
+```
+
+#### 1004: Invalid Character
+**Description:** An invalid character was found in the source code.
+**Example:**
+```
+var x = 42@  // Error 1004: Invalid character '@'
+```
+
+#### 1005: Mismatched Brackets
+**Description:** Opening and closing brackets do not match.
+**Example:**
+```
+var list = [1, 2, 3}  // Error 1005: Expected ']' but found '}'
+```
+
+#### 1006: Expected Expression
+**Description:** An expression was expected but not found.
+**Example:**
+```
+var x = +  // Error 1006: Expected expression after '+'
+```
+
+#### 1007: Invalid Assignment Target
+**Description:** The left side of an assignment is not a valid target.
+**Example:**
+```
+42 = x  // Error 1007: Invalid assignment target
+```
+
+### Runtime Errors (2000-2999)
+
+Runtime errors occur during script execution.
+
+#### 2001: Type Error
+**Description:** An operation was attempted on an incompatible type.
+**Example:**
+```
+"hello" + 42  // Error 2001: Cannot add string and int
+```
+
+#### 2002: Undefined Variable
+**Description:** A variable was used before being declared.
+**Example:**
+```
+print(undefined_var)  // Error 2002: Variable 'undefined_var' is not defined
+```
+
+#### 2003: Index Out of Bounds
+**Description:** An index access was outside the valid range.
+**Example:**
+```
+var list = [1, 2, 3]
+print(list[5])  // Error 2003: Index 5 out of bounds for list of length 3
+```
+
+#### 2004: Key Not Found
+**Description:** A dictionary key was not found.
+**Example:**
+```
+var dict = {"a": 1}
+print(dict["b"])  // Error 2004: Key 'b' not found in dict
+```
+
+#### 2005: Division by Zero
+**Description:** An attempt was made to divide by zero.
+**Example:**
+```
+var result = 10 / 0  // Error 2005: Division by zero
+```
+
+#### 2006: Invalid Function Call
+**Description:** A non-callable value was called as a function.
+**Example:**
+```
+var x = 42
+x()  // Error 2006: Value of type 'int' is not callable
+```
+
+#### 2007: Wrong Number of Arguments
+**Description:** A function was called with the wrong number of arguments.
+**Example:**
+```
+fn add(a, b) { a + b }
+add(1)  // Error 2007: Function 'add' expects 2 arguments, got 1
+```
+
+#### 2008: Attribute Not Found
+**Description:** An attribute was accessed on an object that doesn't have it.
+**Example:**
+```
+var obj = {}
+print(obj.missing)  // Error 2008: Object has no attribute 'missing'
+```
+
+#### 2009: Immutable Assignment
+**Description:** An attempt was made to modify an immutable value.
+**Example:**
+```
+// This would apply if we had immutable values
+```
+
+#### 2010: Stack Overflow
+**Description:** The call stack exceeded its maximum depth.
+**Example:**
+```
+fn infinite_recursion() {
+    infinite_recursion()
+}
+infinite_recursion()  // Error 2010: Maximum call stack depth exceeded
+```
+
+### Module Errors (3000-3999)
+
+Module system related errors.
+
+#### 3001: Module Not Found
+**Description:** An imported module could not be found.
+**Example:**
+```
+use non_existent_module::something;  // Error 3001: Module 'non_existent_module' not found
+```
+
+#### 3002: Circular Import
+**Description:** A circular dependency was detected between modules.
+**Example:**
+```
+// In module A: use B::something
+// In module B: use A::something  
+// Error 3002: Circular import detected: A -> B -> A
+```
+
+#### 3003: Export Not Found
+**Description:** An imported name is not exported by the target module.
+**Example:**
+```
+use some_module::private_function;  // Error 3003: 'private_function' is not exported by 'some_module'
+```
+
+#### 3004: Invalid Module Path
+**Description:** A module path has invalid syntax.
+**Example:**
+```
+use ::invalid::path;  // Error 3004: Invalid module path
+```
+
+### Pattern Matching Errors (4000-4999)
+
+Errors related to pattern matching.
+
+#### 4001: Pattern Match Failure
+**Description:** No pattern matched the given value.
+**Example:**
+```
+match value {
+    case 1 { "one" }
+    case 2 { "two" }
+    // No default case
+}
+// Error 4001: No pattern matched value '3'
+```
+
+#### 4002: Invalid Pattern
+**Description:** A pattern has invalid syntax or semantics.
+**Example:**
+```
+match value {
+    case [a, a] { /* ... */ }  // Error 4002: Variable 'a' appears multiple times in pattern
+}
+```
+
+### Macro Errors (5000-5999)
+
+Errors related to macro processing.
+
+#### 5001: Macro Not Found
+**Description:** A referenced macro was not defined.
+**Example:**
+```
+#[undefined_macro]
+fn test() {}  // Error 5001: Macro 'undefined_macro' not found
+```
+
+#### 5002: Macro Application Error
+**Description:** A macro failed during application.
+**Example:**
+```
+// If a macro raises an error during transformation
+// Error 5002: Macro 'some_macro' failed: Invalid AST transformation
+```
+
+#### 5003: Invalid Macro Target
+**Description:** A macro was applied to an invalid target.
+**Example:**
+```
+#[test]
+var x = 42;  // Error 5003: Macro 'test' cannot be applied to variable declarations
+```
+
+### User-Defined Errors (6000+)
+
+Error codes 6000 and above are reserved for user-defined errors in scripts.
+
+#### User Error Example
+```
+fn validate_age(age) {
+    if age < 0 {
+        raise({
+            code: 6001,
+            type: "ValidationError", 
+            message: "Age cannot be negative",
+            value: age
+        })
+    }
+}
+```
+
+### Error Object Structure
+
+All runtime errors in RustLeaf follow a consistent structure:
+
+```
+{
+    code: int,           // Error code (as defined above)
+    type: string,        // Error type name
+    message: string,     // Human-readable error message
+    line?: int,          // Line number where error occurred
+    column?: int,        // Column number where error occurred
+    file?: string,       // File where error occurred
+    stack?: [string],    // Stack trace
+    context?: dict       // Additional context information
+}
+```
+
+### Error Handling Best Practices
+
+1. **Specific Catching**: Catch specific error types when possible:
+   ```
+   try {
+       risky_operation()
+   } catch e {
+       if e.code == 2003 {
+           // Handle index out of bounds specifically
+       } else {
+           // Handle other errors
+       }
+   }
+   ```
+
+2. **Error Propagation**: Re-raise errors with additional context:
+   ```
+   try {
+       dangerous_function()
+   } catch e {
+       raise({
+           code: e.code,
+           type: e.type,
+           message: "Failed in process_data: " + e.message,
+           original: e
+       })
+   }
+   ```
+
+3. **User-Friendly Messages**: Provide meaningful error messages:
+   ```
+   if age < 0 {
+       raise({
+           code: 6001,
+           type: "ValidationError",
+           message: "Age must be a positive number, got: " + str(age)
+       })
+   }
+   ```
+
+### Implementation Notes
+
+1. **Error Codes**: Error codes are stable across versions and can be relied upon for programmatic error handling.
+
+2. **Error Types**: Error type strings are also stable and provide a more readable way to categorize errors.
+
+3. **Stack Traces**: Stack traces include function names and line numbers when available.
+
+4. **Context Information**: The `context` field may contain additional debugging information specific to the error type.
+
+## F. Implementation Limits
+
+This appendix specifies the minimum requirements and limits that RustLeaf implementations must support. These limits ensure portability and predictable behavior across different implementations.
+
+### Numeric Limits
+
+#### Integer Limits
+- **Minimum range**: -2^63 to 2^63-1 (64-bit signed integers)
+- **Maximum value**: 9,223,372,036,854,775,807
+- **Minimum value**: -9,223,372,036,854,775,808
+- **Overflow behavior**: Runtime error on overflow/underflow
+
+#### Floating-Point Limits
+- **Precision**: IEEE 754 double precision (64-bit)
+- **Maximum finite value**: Approximately 1.7976931348623157e+308
+- **Minimum positive value**: Approximately 2.2250738585072014e-308
+- **Special values**: Supports NaN and infinity
+- **Precision**: 15-17 significant decimal digits
+
+### String Limits
+
+#### String Length
+- **Maximum length**: 2^32-1 characters (4,294,967,295)
+- **Character encoding**: UTF-8
+- **Memory limit**: Limited by available system memory
+
+#### String Literals
+- **Maximum literal length**: 2^16-1 characters (65,535) in source code
+- **Escape sequences**: Must support all standard escape sequences
+- **Unicode support**: Full Unicode support via UTF-8 encoding
+
+### Collection Limits
+
+#### List Limits
+- **Maximum elements**: 2^32-1 elements (4,294,967,295)
+- **Nesting depth**: Limited by available stack space (typically 1000+ levels)
+- **Element types**: Any valid RustLeaf value
+- **Memory limit**: Limited by available system memory
+
+#### Dictionary Limits
+- **Maximum entries**: 2^32-1 key-value pairs (4,294,967,295)
+- **Key types**: Strings, integers, floats, booleans (hashable types only)
+- **Value types**: Any valid RustLeaf value
+- **Memory limit**: Limited by available system memory
+
+### Identifier Limits
+
+#### Variable and Function Names
+- **Maximum length**: 1024 characters
+- **Character set**: Unicode letters, digits, and underscores
+- **First character**: Must be letter or underscore
+- **Case sensitivity**: Case-sensitive
+
+#### Module Path Limits
+- **Maximum path depth**: 32 levels (e.g., `a::b::c::...`)
+- **Maximum component length**: 256 characters per path component
+- **Total path length**: 2048 characters maximum
+
+### Call Stack Limits
+
+#### Function Calls
+- **Maximum call depth**: 1000 function calls
+- **Recursion limit**: Same as call depth (1000)
+- **Overflow behavior**: Runtime error with stack overflow message
+
+#### Parameter Limits
+- **Maximum parameters per function**: 255 parameters
+- **Maximum arguments per call**: 255 arguments
+- **Variadic arguments**: No limit beyond memory constraints
+
+### Source Code Limits
+
+#### File Size
+- **Maximum file size**: 64 MB per source file
+- **Maximum lines**: 2,000,000 lines per file
+- **Line length**: No specific limit (limited by memory)
+
+#### Parsing Limits
+- **Maximum nesting depth**: 256 levels (blocks, expressions, etc.)
+- **Maximum tokens per file**: 16,777,216 (2^24)
+- **Comment length**: No specific limit
+
+### Memory Limits
+
+#### Heap Memory
+- **Available memory**: Limited by system available memory
+- **Garbage collection**: Implementation-defined trigger points
+- **Memory growth**: Must handle graceful degradation on memory pressure
+
+#### Variable Scope
+- **Maximum variables per scope**: 65,536 variables
+- **Maximum scopes**: Limited by call stack depth
+- **Closure captures**: Limited by memory availability
+
+### Execution Limits
+
+#### Runtime Limits
+- **Maximum execution time**: Implementation-defined (may be configurable)
+- **Script timeout**: May be imposed by hosting environment
+- **Resource cleanup**: Must occur within reasonable time bounds
+
+#### Concurrency
+- **Thread safety**: Single-threaded execution model
+- **Reentrancy**: Not required (implementation-defined)
+
+### Error Handling Limits
+
+#### Error Propagation
+- **Maximum error chain depth**: 1000 nested errors
+- **Error message length**: 4096 characters maximum
+- **Stack trace depth**: Limited by call stack depth
+
+#### Exception Context
+- **Context data size**: 1 MB maximum per error object
+- **Nested error objects**: Maximum depth of 100 levels
+
+### File System Limits
+
+#### Module Loading
+- **Maximum modules per program**: 10,000 modules
+- **Module cache size**: Implementation-defined
+- **File system access**: Subject to OS limits
+
+#### Import Resolution
+- **Maximum import depth**: 100 levels of imports
+- **Circular import detection**: Must detect within 1000 import attempts
+
+### Platform-Specific Considerations
+
+#### Minimum System Requirements
+- **Available RAM**: 64 MB minimum for basic scripts
+- **Stack size**: 8 MB minimum stack space
+- **File handles**: Ability to open 100+ files simultaneously
+
+#### Performance Requirements
+- **Startup time**: Must start within 1 second on reference hardware
+- **Memory overhead**: Maximum 10 MB base memory usage
+- **Garbage collection**: Maximum 10ms pause times for small heaps
+
+### Conformance Testing
+
+Implementations should provide mechanisms to verify these limits:
+
+```
+// Example limit verification functions
+fn test_limits() {
+    // Test maximum integer
+    var max_int = 9_223_372_036_854_775_807
+    assert(type(max_int) == "int")
+    
+    // Test string length
+    var long_string = "a".repeat(1000)
+    assert(long_string.len() == 1000)
+    
+    // Test call stack depth
+    fn recursive_test(depth) {
+        if depth <= 0 {
+            return depth
+        }
+        return recursive_test(depth - 1)
+    }
+    
+    // This should work without stack overflow
+    assert(recursive_test(500) == 0)
+}
+```
+
+### Implementation Flexibility
+
+While these limits define minimum requirements, implementations may:
+
+1. **Exceed Limits**: Provide higher limits where feasible
+2. **Configuration**: Allow limits to be configured by users
+3. **Dynamic Limits**: Adjust limits based on available resources
+4. **Platform Optimization**: Optimize for specific platforms while maintaining minimums
+
+### Limit Violation Behavior
+
+When limits are exceeded, implementations must:
+
+1. **Graceful Degradation**: Provide clear error messages
+2. **Resource Cleanup**: Clean up allocated resources
+3. **Error Reporting**: Include relevant context in error messages
+4. **No Corruption**: Never corrupt data or state when limits are hit
+
+### Examples of Limit Errors
+
+```
+// Stack overflow
+fn infinite_recursion() {
+    infinite_recursion()
+}
+// Error: Maximum call stack depth (1000) exceeded
+
+// String too long in source
+var huge_string = "very long string literal..."  // > 65535 chars
+// Error: String literal exceeds maximum length (65535 characters)
+
+// Too many function parameters
+fn too_many_params(p1, p2, /* ... */, p256) {}  // > 255 params
+// Error: Function has too many parameters (maximum 255)
+```
+
+These limits ensure that RustLeaf implementations are both practical and predictable across different platforms and use cases.
