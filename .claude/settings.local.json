@@ -10,7 +10,11 @@
       "Bash(awk:*)",
       "Bash(ls:*)",
       "Bash(grep:*)",
-      "Bash(sed:*)"
+      "Bash(sed:*)",
+      "Bash(cat:*)",
+      "Bash(find:*)",
+      "Bash(timeout 10s cargo run -- parse test.rustleaf)",
+      "Bash(gtimeout 10s cargo run -- parse test.rustleaf)"
     ],
     "deny": []
   }

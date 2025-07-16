@@ -6,3 +6,4 @@ pub mod value;
 pub use lexer::*;
 pub use parser::*;
 pub use value::*;
+pub use eval::*;

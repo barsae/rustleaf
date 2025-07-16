@@ -1,0 +1,7 @@
+var list = [1, 2, 3, 4];
+print("List:", list);
+print("List length:", len(list));
+
+var dict = {"name": "RustLeaf", "version": "0.1"};
+print("Dict:", dict);
+print("Name:", dict["name"]);
