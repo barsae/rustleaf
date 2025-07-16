@@ -566,11 +566,14 @@ pub fn memo(ast_node) {
     // Generate cache storage
     var cache_var = "__memo_cache_" + ast_node.name
     
+    // Create a modified copy of the function
+    var new_node = ast_node.clone()
+    
     // Wrap the original function body
-    var original_body = ast_node.body
+    var original_body = new_node.body
     
     // Create new function body that checks cache
-    ast_node.body = parse_expr("""
+    new_node.body = parse("""
         {
             var key = stringify_args(args)
             if ${cache_var}.has(key) {
@@ -583,10 +586,13 @@ pub fn memo(ast_node) {
         }
     """)
     
-    // Add cache initialization before function
-    ast_node.prepend_statement(
-        parse_stmt("var ${cache_var} = {}")
-    )
+    // Return a block containing cache init and the function
+    parse("""
+        {
+            var ${cache_var} = {};
+            ${new_node}
+        }
+    """)
 }
 
 // File: main.rustleaf
@@ -607,16 +613,21 @@ print(fibonacci(40))  // Fast due to memoization
 ### Attribute Processing
 
 ```
-// Attributes receive the AST node they're attached to
-// They can modify it in place or replace it entirely
+// Attributes receive the AST node and return a new AST node
+// The returned node replaces the original in the parse tree
 
 #[attribute]
 pub fn log_calls(ast_node) {
-    var original_body = ast_node.body
-    var fn_name = ast_node.name
+    if ast_node.type != "function" {
+        raise("@log_calls can only be applied to functions")
+    }
     
-    // Wrap body with logging
-    ast_node.body = parse_expr("""
+    var fn_name = ast_node.name
+    var new_node = ast_node.clone()
+    
+    // Wrap the function body with logging
+    var original_body = new_node.body
+    new_node.body = parse("""
         {
             print("Calling ${fn_name} with args:", args)
             var result = ${original_body}
@@ -624,6 +635,9 @@ pub fn log_calls(ast_node) {
             result
         }
     """)
+    
+    // Return the modified function
+    new_node
 }
 
 // Usage
