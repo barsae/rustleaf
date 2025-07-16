@@ -50,15 +50,13 @@ fn run_file(file_path: &str) -> Result<(), Box<dyn std::error::Error>> {
     let source = fs::read_to_string(file_path)?;
     
     // Tokenize
-    let mut lexer = Lexer::new(&source);
-    let (tokens, lex_errors) = lexer.tokenize();
-    
-    if !lex_errors.is_empty() {
-        for error in &lex_errors {
-            eprintln!("Lexer error: {}", error);
+    let tokens = match Lexer::new(&source) {
+        Ok(tokens) => tokens,
+        Err(lex_errors) => {
+            eprintln!("Lexer errors: {}", lex_errors);
+            return Err("Lexing failed".into());
         }
-        return Err("Lexing failed".into());
-    }
+    };
     
     // Parse
     let mut parser = RustLeafParser::new(tokens);
@@ -84,15 +82,13 @@ fn parse_file(file_path: &str) -> Result<(), Box<dyn std::error::Error>> {
     let source = fs::read_to_string(file_path)?;
     
     // Tokenize
-    let mut lexer = Lexer::new(&source);
-    let (tokens, lex_errors) = lexer.tokenize();
-    
-    if !lex_errors.is_empty() {
-        for error in &lex_errors {
-            eprintln!("Lexer error: {}", error);
+    let tokens = match Lexer::new(&source) {
+        Ok(tokens) => tokens,
+        Err(lex_errors) => {
+            eprintln!("Lexer errors: {}", lex_errors);
+            return Err("Lexing failed".into());
         }
-        return Err("Lexing failed".into());
-    }
+    };
     
     // Parse
     let mut parser = RustLeafParser::new(tokens);

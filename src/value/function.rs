@@ -33,6 +33,11 @@ pub fn get_builtin_functions() -> Vec<BuiltinFunctionInfo> {
             function: builtin_type,
             arity: Some(1),
         },
+        BuiltinFunctionInfo {
+            name: "assert",
+            function: builtin_assert,
+            arity: None, // 1-2 arguments
+        },
     ]
 }
 
@@ -78,4 +83,34 @@ fn builtin_type(args: &[Value], _env: &mut Environment) -> Result<Value, Runtime
     }
 
     Ok(Value::String(args[0].type_name().to_string()))
+}
+
+fn builtin_assert(args: &[Value], _env: &mut Environment) -> Result<Value, RuntimeError> {
+    if args.is_empty() || args.len() > 2 {
+        return Err(RuntimeError::new(
+            format!("assert() takes 1 or 2 arguments ({} given)", args.len()),
+            ErrorType::TypeError,
+        ));
+    }
+
+    let condition = &args[0];
+    let is_truthy = condition.is_truthy()?;
+
+    if !is_truthy {
+        let message = if args.len() == 2 {
+            match &args[1] {
+                Value::String(s) => s.clone(),
+                _ => args[1].to_display_string(),
+            }
+        } else {
+            "Assertion failed".to_string()
+        };
+
+        return Err(RuntimeError::new(
+            message,
+            ErrorType::AssertionError,
+        ));
+    }
+
+    Ok(Value::Null)
 }

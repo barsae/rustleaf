@@ -2,12 +2,12 @@ use rustleaf::{Lexer, Parser, AstNode};
 
 /// Common test utilities for parser tests
 pub fn parse_source(input: &str) -> Result<AstNode, String> {
-    let mut lexer = Lexer::new(input);
-    let (tokens, lexer_errors) = lexer.tokenize();
-    
-    if !lexer_errors.is_empty() {
-        return Err(format!("Lexer errors: {:?}", lexer_errors));
-    }
+    let tokens = match Lexer::new(input) {
+        Ok(tokens) => tokens,
+        Err(lexer_errors) => {
+            return Err(format!("Lexer errors: {}", lexer_errors));
+        }
+    };
     
     let mut parser = Parser::new(tokens);
     match parser.parse() {

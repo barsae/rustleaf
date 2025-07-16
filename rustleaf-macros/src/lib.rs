@@ -5,9 +5,12 @@ use syn::{
     parse_macro_input, 
     punctuated::Punctuated,
     token::{Comma, FatArrow},
-    Ident, Token
+    Ident, Token, LitStr,
 };
+use std::fs;
+use std::path::Path;
 
+// Binary ops implementation
 struct BinaryOpLevel {
     method_name: Ident,
     next_method: Ident,
@@ -122,4 +125,111 @@ pub fn binary_ops(args: TokenStream, input: TokenStream) -> TokenStream {
     };
     
     TokenStream::from(expanded)
+}
+
+// Test discovery implementation
+#[proc_macro_attribute]
+pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
+    let test_dir = parse_macro_input!(args as LitStr);
+    let test_dir_path = test_dir.value();
+    
+    // Read directory and find .rustleaf files
+    let test_files = match discover_rustleaf_files(&test_dir_path) {
+        Ok(files) => files,
+        Err(e) => panic!("Failed to read test directory '{}': {}", test_dir_path, e),
+    };
+    
+    // Generate test_file helper function
+    let test_file_helper = quote! {
+        fn test_file(path: &str) {
+            let source = std::fs::read_to_string(path)
+                .unwrap_or_else(|_| panic!("Failed to read test file: {}", path));
+            
+            let tokens = rustleaf::Lexer::new(&source).unwrap();
+            
+            let mut parser = rustleaf::Parser::new(tokens);
+            let ast = parser.parse().unwrap();
+            
+            let mut evaluator = rustleaf::Evaluator::new();
+            evaluator.evaluate(&ast).unwrap();
+        }
+    };
+    
+    // Generate individual test functions
+    let test_functions = test_files.iter().map(|(test_name, file_path)| {
+        let test_fn_name = syn::Ident::new(test_name, proc_macro2::Span::call_site());
+        quote! {
+            #[test]
+            fn #test_fn_name() {
+                test_file(#file_path);
+            }
+        }
+    });
+    
+    let expanded = quote! {
+        #test_file_helper
+        
+        #(#test_functions)*
+    };
+    
+    TokenStream::from(expanded)
+}
+
+fn discover_rustleaf_files(test_dir: &str) -> Result<Vec<(String, String)>, std::io::Error> {
+    let mut test_files = Vec::new();
+    let test_path = Path::new(test_dir);
+    
+    if !test_path.exists() {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::NotFound,
+            format!("Test directory does not exist: {}", test_dir)
+        ));
+    }
+    
+    for entry in fs::read_dir(test_path)? {
+        let entry = entry?;
+        let path = entry.path();
+        
+        if path.is_file() {
+            if let Some(extension) = path.extension() {
+                if extension == "rustleaf" {
+                    let file_path = path.to_string_lossy().to_string();
+                    
+                    // Generate test function name: strip "./tests/" and convert to function name
+                    let test_name = generate_test_name(&file_path);
+                    
+                    test_files.push((test_name, file_path));
+                }
+            }
+        }
+    }
+    
+    test_files.sort_by(|a, b| a.0.cmp(&b.0)); // Sort by test name for consistent ordering
+    Ok(test_files)
+}
+
+fn generate_test_name(file_path: &str) -> String {
+    // Strip "./tests/" prefix if present
+    let relative_path = if file_path.starts_with("./tests/") {
+        &file_path[8..] // Remove "./tests/"
+    } else if file_path.starts_with("tests/") {
+        &file_path[6..] // Remove "tests/"
+    } else {
+        file_path
+    };
+    
+    // Remove .rustleaf extension and convert path separators to underscores
+    let without_extension = if let Some(stem) = Path::new(relative_path).file_stem() {
+        let parent = Path::new(relative_path).parent().unwrap_or(Path::new(""));
+        if parent.as_os_str().is_empty() {
+            stem.to_string_lossy().to_string()
+        } else {
+            format!("{}/{}", parent.to_string_lossy(), stem.to_string_lossy())
+        }
+    } else {
+        relative_path.to_string()
+    };
+    
+    // Convert path separators to underscores
+    without_extension.replace('/', "_").replace('\\', "_")
 }
