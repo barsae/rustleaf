@@ -1,3 +1,6 @@
+[workspace]
+members = [".", "rustleaf-macros"]
+
 [package]
 name = "rustleaf"
 version = "0.1.0"
@@ -15,3 +18,4 @@ path = "src/lib.rs"
 clap = { version = "4.0", features = ["derive"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+rustleaf-macros = { path = "rustleaf-macros" }

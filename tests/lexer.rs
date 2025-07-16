@@ -1,7 +1,7 @@
 use rustleaf::{Lexer, TokenType, LiteralValue};
 
 #[test]
-fn test_keywords() {
+fn lexer_keywords() {
     let mut lexer = Lexer::new("var fn if else while for true false null");
     let (tokens, errors) = lexer.tokenize();
     
@@ -21,7 +21,7 @@ fn test_keywords() {
 }
 
 #[test]
-fn test_identifiers() {
+fn lexer_identifiers() {
     let mut lexer = Lexer::new("identifier _private camelCase snake_case CONSTANT x123");
     let (tokens, errors) = lexer.tokenize();
     
@@ -41,7 +41,7 @@ fn test_identifiers() {
 }
 
 #[test]
-fn test_integer_literals() {
+fn lexer_integer_literals() {
     let mut lexer = Lexer::new("42 1_000_000 0xFF 0xff 0o77 0b1010 0b1111_0000");
     let (tokens, errors) = lexer.tokenize();
     
@@ -63,7 +63,7 @@ fn test_integer_literals() {
 }
 
 #[test]
-fn test_float_literals() {
+fn lexer_float_literals() {
     let mut lexer = Lexer::new("3.14159 1.0 0.1 .5 42. 1_234.567_890 1e10 2.5e-4 1E+6");
     let (tokens, errors) = lexer.tokenize();
     
@@ -83,7 +83,7 @@ fn test_float_literals() {
 }
 
 #[test]
-fn test_float_edge_cases() {
+fn lexer_float_edge_cases() {
     // Test the specific edge cases mentioned in the review
     let mut lexer = Lexer::new("42. 42.e10 0. 123.e-5");
     let (tokens, errors) = lexer.tokenize();
@@ -104,7 +104,7 @@ fn test_float_edge_cases() {
 }
 
 #[test]
-fn test_string_literals() {
+fn lexer_string_literals() {
     let mut lexer = Lexer::new(r#""Hello, world!" "Line 1\nLine 2" "Unicode: \u{1F604}""#);
     let (tokens, errors) = lexer.tokenize();
     
@@ -121,7 +121,7 @@ fn test_string_literals() {
 }
 
 #[test]
-fn test_triple_quoted_strings() {
+fn lexer_triple_quoted_strings() {
     let mut lexer = Lexer::new(r#""""This is a
 multi-line string
 with preserved formatting""""#);
@@ -135,7 +135,7 @@ with preserved formatting""""#);
 }
 
 #[test]
-fn test_raw_strings() {
+fn lexer_raw_strings() {
     let mut lexer = Lexer::new(r#"r"C:\Users\Name\Documents" r"\n is not a newline""#);
     let (tokens, errors) = lexer.tokenize();
     
@@ -151,7 +151,7 @@ fn test_raw_strings() {
 }
 
 #[test]
-fn test_operators() {
+fn lexer_operators() {
     let mut lexer = Lexer::new("+ - * / % ** += -= *= /= %= == != < > <= >= & | ^ ~ << >>");
     let (tokens, errors) = lexer.tokenize();
     
@@ -174,7 +174,7 @@ fn test_operators() {
 }
 
 #[test]
-fn test_punctuation() {
+fn lexer_punctuation() {
     let mut lexer = Lexer::new("( ) { } [ ] , . : :: ; ->");
     let (tokens, errors) = lexer.tokenize();
     
@@ -193,7 +193,7 @@ fn test_punctuation() {
 }
 
 #[test]
-fn test_comments() {
+fn lexer_comments() {
     let mut lexer = Lexer::new("// This is a single-line comment\n/// Doc comment\n/* Multi-line\n   comment */\n/** Doc block */");
     let (tokens, errors) = lexer.tokenize();
     
@@ -212,7 +212,7 @@ fn test_comments() {
 }
 
 #[test]
-fn test_newlines() {
+fn lexer_newlines() {
     let mut lexer = Lexer::new("line1\nline2\r\nline3\rline4");
     let (tokens, errors) = lexer.tokenize();
     
@@ -224,7 +224,7 @@ fn test_newlines() {
 }
 
 #[test]
-fn test_mixed_tokens() {
+fn lexer_mixed_tokens() {
     let mut lexer = Lexer::new("var count = 42\nfn calculate(x) { x * 2 }");
     let (tokens, errors) = lexer.tokenize();
     
@@ -247,7 +247,7 @@ fn test_mixed_tokens() {
 }
 
 #[test]
-fn test_whitespace_handling() {
+fn lexer_whitespace_handling() {
     let mut lexer = Lexer::new("var   x   =   42");
     let (tokens, errors) = lexer.tokenize();
     
@@ -263,7 +263,7 @@ fn test_whitespace_handling() {
 }
 
 #[test]
-fn test_position_tracking() {
+fn lexer_position_tracking() {
     let mut lexer = Lexer::new("var x\n= 42");
     let (tokens, _) = lexer.tokenize();
     
@@ -285,7 +285,7 @@ fn test_position_tracking() {
 }
 
 #[test]
-fn test_error_handling() {
+fn lexer_error_handling() {
     let mut lexer = Lexer::new("var x = @invalid");
     let (tokens, errors) = lexer.tokenize();
     
@@ -301,7 +301,7 @@ fn test_error_handling() {
 }
 
 #[test]
-fn test_unterminated_string() {
+fn lexer_unterminated_string() {
     let mut lexer = Lexer::new(r#"var s = "unterminated"#);
     let (_, errors) = lexer.tokenize();
     
@@ -310,7 +310,7 @@ fn test_unterminated_string() {
 }
 
 #[test]
-fn test_invalid_escape_sequence() {
+fn lexer_invalid_escape_sequence() {
     let mut lexer = Lexer::new(r#""invalid \x escape""#);
     let (_, errors) = lexer.tokenize();
     
@@ -319,7 +319,7 @@ fn test_invalid_escape_sequence() {
 }
 
 #[test]
-fn test_leading_zeros_error() {
+fn lexer_leading_zeros_error() {
     let mut lexer = Lexer::new("012");
     let (_, errors) = lexer.tokenize();
     
@@ -328,7 +328,7 @@ fn test_leading_zeros_error() {
 }
 
 #[test]
-fn test_invalid_hex_literal() {
+fn lexer_invalid_hex_literal() {
     let mut lexer = Lexer::new("0x");
     let (_, errors) = lexer.tokenize();
     
@@ -337,7 +337,7 @@ fn test_invalid_hex_literal() {
 }
 
 #[test]
-fn test_nested_comments() {
+fn lexer_nested_comments() {
     let mut lexer = Lexer::new("/* outer /* inner */ still in outer */");
     let (tokens, errors) = lexer.tokenize();
     
@@ -349,7 +349,7 @@ fn test_nested_comments() {
 }
 
 #[test]
-fn test_unicode_in_strings() {
+fn lexer_unicode_in_strings() {
     let mut lexer = Lexer::new(r#""Hello, 世界! 🌍""#);
     let (tokens, errors) = lexer.tokenize();
     
@@ -359,7 +359,7 @@ fn test_unicode_in_strings() {
 }
 
 #[test]
-fn test_unicode_escape() {
+fn lexer_unicode_escape() {
     let mut lexer = Lexer::new(r#""\u{1F604}""#);
     let (tokens, errors) = lexer.tokenize();
     
@@ -369,7 +369,7 @@ fn test_unicode_escape() {
 }
 
 #[test]
-fn test_bom_handling() {
+fn lexer_bom_handling() {
     let input_with_bom = format!("{}{}", '\u{FEFF}', "var x = 42");
     let mut lexer = Lexer::new(&input_with_bom);
     let (tokens, errors) = lexer.tokenize();
@@ -380,7 +380,7 @@ fn test_bom_handling() {
 }
 
 #[test]
-fn test_all_keywords_exhaustive() {
+fn lexer_all_keywords_exhaustive() {
     let keywords = "and break case catch class continue else false finally fn for from if in is match not null of or pub raise require return self static super true try use var while with";
     let mut lexer = Lexer::new(keywords);
     let (tokens, errors) = lexer.tokenize();
@@ -398,7 +398,7 @@ fn test_all_keywords_exhaustive() {
 }
 
 #[test]
-fn test_file_size_warning() {
+fn lexer_file_size_warning() {
     // Create a string > 10MB but < 100MB
     let large_content = "x".repeat(11 * 1024 * 1024); // 11MB
     let lexer = Lexer::new(&large_content);
@@ -411,7 +411,7 @@ fn test_file_size_warning() {
 }
 
 #[test]
-fn test_file_size_no_warning() {
+fn lexer_file_size_no_warning() {
     // Create a small string < 10MB
     let small_content = "var x = 42\n".repeat(1000); // Much less than 10MB
     let lexer = Lexer::new(&small_content);
@@ -422,7 +422,7 @@ fn test_file_size_no_warning() {
 }
 
 #[test]
-fn test_file_size_limit_exceeded() {
+fn lexer_file_size_limit_exceeded() {
     // Create a string > 100MB (this should return an Err)
     // Note: This test may be slow and use a lot of memory
     let huge_content = "x".repeat(101 * 1024 * 1024); // 101MB

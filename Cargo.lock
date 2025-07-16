@@ -151,8 +151,18 @@ name = "rustleaf"
 version = "0.1.0"
 dependencies = [
  "clap",
+ "rustleaf-macros",
  "serde",
  "serde_json",
+]
+
+[[package]]
+name = "rustleaf-macros"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]
