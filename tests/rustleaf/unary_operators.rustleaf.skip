@@ -1,0 +1,5 @@
+assert(-5 == -5);
+assert(+42 == 42);
+assert(!false == true);
+assert(!true == false);
+assert(~5 == -6);

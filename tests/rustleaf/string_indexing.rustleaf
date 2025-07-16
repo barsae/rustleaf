@@ -1,0 +1,4 @@
+var text = "rustleaf";
+assert(text[0] == "r");
+assert(text[3] == "t");
+assert(text[7] == "f");

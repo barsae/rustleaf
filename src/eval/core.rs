@@ -87,10 +87,51 @@ impl Evaluator {
                 self.evaluate_program(items)
             },
 
-            _ => Err(RuntimeError::new(
-                format!("Evaluation not implemented for {:?}", node),
-                ErrorType::RuntimeError,
-            )),
+            // Expression forms
+            AstNode::Match { .. } => {
+                todo!("Match expressions not implemented yet")
+            },
+            AstNode::Try { .. } => {
+                todo!("Try expressions not implemented yet")
+            },
+            AstNode::AnonymousFunction { .. } => {
+                todo!("Anonymous functions not implemented yet")
+            },
+            
+            // Statement forms
+            AstNode::FunctionDeclaration { .. } => {
+                todo!("Function declarations not implemented yet")
+            },
+            AstNode::ClassDeclaration { .. } => {
+                todo!("Class declarations not implemented yet")
+            },
+            AstNode::ImportStatement { .. } => {
+                todo!("Import statements not implemented yet")
+            },
+            AstNode::WhileStatement { .. } => {
+                todo!("While statements not implemented yet")
+            },
+            AstNode::ForStatement { .. } => {
+                todo!("For statements not implemented yet")
+            },
+            AstNode::MatchStatement { .. } => {
+                todo!("Match statements not implemented yet")
+            },
+            AstNode::TryStatement { .. } => {
+                todo!("Try statements not implemented yet")
+            },
+            AstNode::WithStatement { .. } => {
+                todo!("With statements not implemented yet")
+            },
+            AstNode::BreakStatement { .. } => {
+                todo!("Break statements not implemented yet")
+            },
+            AstNode::ContinueStatement { .. } => {
+                todo!("Continue statements not implemented yet")
+            },
+            AstNode::ReturnStatement { .. } => {
+                todo!("Return statements not implemented yet")
+            },
         }
     }
 
