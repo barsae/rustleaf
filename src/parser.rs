@@ -1,4 +1,4 @@
-use crate::lang::lexer::{Token, TokenType, LiteralValue};
+use crate::lexer::{Token, TokenType, LiteralValue};
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -52,7 +52,7 @@ pub enum AstNode {
     },
     Try {
         body: Box<AstNode>,
-        catch_clause: Option<CatchClause>,
+        catch_clause: Option<Box<CatchClause>>,
         location: SourceLocation,
     },
     Block {
@@ -208,7 +208,7 @@ pub enum Pattern {
 #[derive(Debug, Clone, PartialEq)]
 pub struct CatchClause {
     pub variable: String,
-    pub body: AstNode,
+    pub body: Box<AstNode>,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -444,11 +444,11 @@ impl Parser {
         
         if self.match_token(&TokenType::Static) {
             if self.check(&TokenType::Fn) {
-                if let Some(AstNode::FunctionDeclaration { .. }) = self.parse_function_declaration(member_visibility.clone()) {
+                if let Some(declaration) = self.parse_function_declaration(member_visibility.clone()) {
                     return Some(ClassMember::Method {
                         visibility: member_visibility,
                         is_static: true,
-                        declaration: self.parse_function_declaration(member_visibility)?,
+                        declaration,
                     });
                 }
             }
@@ -771,7 +771,7 @@ impl Parser {
             let catch_body = self.parse_block()?;
             Some(CatchClause {
                 variable,
-                body: catch_body,
+                body: Box::new(catch_body),
             })
         } else {
             None
@@ -1355,7 +1355,7 @@ impl Parser {
             let catch_body = self.parse_block()?;
             Some(CatchClause {
                 variable,
-                body: catch_body,
+                body: Box::new(catch_body),
             })
         } else {
             None
@@ -1363,7 +1363,7 @@ impl Parser {
         
         Some(AstNode::Try {
             body,
-            catch_clause,
+            catch_clause: catch_clause.map(Box::new),
             location,
         })
     }
