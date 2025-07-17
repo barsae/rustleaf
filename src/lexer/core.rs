@@ -5,9 +5,12 @@ use crate::lexer::token::{Token, TokenType};
 
 pub struct Lexer;
 
+type TokenizeResult = Result<(Vec<Token>, Vec<LexWarning>, Vec<LexError>), LexErrors>;
+
 impl Lexer {
     /// Main entry point for lexical analysis.
     /// Prints warnings to stderr and returns Result<Vec<Token>, LexErrors>.
+    #[allow(clippy::new_ret_no_self)]
     pub fn new(input: &str) -> Result<Vec<Token>, LexErrors> {
         let (tokens, warnings, errors) = Self::tokenize_internal(input)?;
 
@@ -35,9 +38,7 @@ impl Lexer {
         }
     }
 
-    fn tokenize_internal(
-        input: &str,
-    ) -> Result<(Vec<Token>, Vec<LexWarning>, Vec<LexError>), LexErrors> {
+    fn tokenize_internal(input: &str) -> TokenizeResult {
         let keywords = create_keywords_map();
 
         // Check file size and issue warnings/errors according to spec
