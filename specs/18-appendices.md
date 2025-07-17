@@ -85,8 +85,11 @@ AssignmentOperator ::= "=" | "+=" | "-=" | "*=" | "/=" | "%="
 ConditionalExpression ::= LogicalOrExpression
                        | LogicalOrExpression "?" Expression ":" ConditionalExpression
 
-LogicalOrExpression ::= LogicalAndExpression
-                     | LogicalOrExpression "or" LogicalAndExpression
+LogicalOrExpression ::= LogicalXorExpression
+                     | LogicalOrExpression "or" LogicalXorExpression
+
+LogicalXorExpression ::= LogicalAndExpression
+                      | LogicalXorExpression "xor" LogicalAndExpression
 
 LogicalAndExpression ::= BitwiseOrExpression
                       | LogicalAndExpression "and" BitwiseOrExpression
@@ -235,9 +238,10 @@ This appendix lists all operators in RustLeaf in order of precedence, from highe
 | 10 | `<` `<=` `>` `>=` `in` `is` | Comparison operators | Left-to-right |
 | 11 | `==` `!=` | Equality operators | Left-to-right |
 | 12 | `and` | Logical AND | Left-to-right |
-| 13 | `or` | Logical OR | Left-to-right |
-| 14 | `?:` | Ternary conditional | Right-to-left |
-| 15 (Lowest) | `=` `+=` `-=` `*=` `/=` `%=` | Assignment operators | Right-to-left |
+| 13 | `xor` | Logical XOR | Left-to-right |
+| 14 | `or` | Logical OR | Left-to-right |
+| 15 | `?:` | Ternary conditional | Right-to-left |
+| 16 (Lowest) | `=` `+=` `-=` `*=` `/=` `%=` | Assignment operators | Right-to-left |
 
 ### Precedence Examples
 
@@ -254,6 +258,9 @@ not a and b // Equivalent to: (not a) and b
 
 // Comparison before logical
 x > 0 and y < 10  // Equivalent to: (x > 0) and (y < 10)
+
+// Logical precedence: and, then xor, then or
+a and b xor c or d  // Equivalent to: ((a and b) xor c) or d
 
 // Assignment is lowest precedence
 x = y + z   // Equivalent to: x = (y + z)
@@ -321,6 +328,7 @@ This appendix lists all reserved words (keywords) in RustLeaf. These identifiers
 ### Logical Operators
 - `and` - Logical AND operator
 - `or` - Logical OR operator
+- `xor` - Logical XOR operator
 - `not` - Logical NOT operator
 - `is` - Identity comparison operator
 
@@ -372,7 +380,7 @@ Some identifiers have special meaning only in specific contexts and can be used 
 
 3. **Future Compatibility**: Using any of the "Reserved for Future Use" keywords will result in a parse error, ensuring forward compatibility when these features are implemented.
 
-4. **Operator Words**: The logical operators `and`, `or`, `not`, and `is` are keywords rather than symbols to improve readability.
+4. **Operator Words**: The logical operators `and`, `or`, `xor`, `not`, and `is` are keywords rather than symbols to improve readability.
 
 ### Examples
 

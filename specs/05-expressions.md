@@ -369,6 +369,7 @@ Operate on values with truthiness.
 ```
 and // Logical AND (short-circuit)
 or  // Logical OR (short-circuit)
+xor // Logical XOR (exclusive-or)
 ```
 
 **Truthiness Rules:**
@@ -381,15 +382,21 @@ or  // Logical OR (short-circuit)
 ```
 print(true and false)   // false
 print(true or false)    // true
+print(true xor false)   // true
+print(true xor true)    // false
 print(null or true)     // true
 
 // Short-circuit behavior
 var x = true
 var y = (x or print("not evaluated"))
 
+// XOR does not short-circuit - both operands are always evaluated
+print(true xor print("always evaluated"))  // "always evaluated" is printed
+
 // Type errors
 // if 0 and true { }    // Error: int has no truthiness
 // if [] or true { }    // Error: list has no truthiness
+// if 1 xor true { }    // Error: int has no truthiness
 ```
 
 #### 5.5.4. Bitwise Operators
@@ -434,14 +441,17 @@ Operators are evaluated according to precedence levels (highest to lowest):
 8.  |
 9.  ==, !=, <, >, <=, >=
 10. and
-11. or
+11. xor
+12. or
 ```
 
 **Examples:**
 ```
-2 + 3 * 4        // 14 (not 20)
+2 + 3 * 4         // 14 (not 20)
 not true or false // false (not is higher precedence)
-1 << 2 + 1       // 8 (+ before <<)
+1 << 2 + 1        // 8 (+ before <<)
+true and false xor true  // true (and before xor)
+true xor false or false  // true (xor before or)
 ```
 
 ### 5.6. Assignment Expressions
@@ -832,6 +842,9 @@ op_or(other)       // |
 op_xor(other)      // ^
 op_lshift(other)   // <<
 op_rshift(other)   // >>
+
+// Logical
+op_logical_xor(other)  // xor
 
 // Unary
 op_neg()           // - (unary)

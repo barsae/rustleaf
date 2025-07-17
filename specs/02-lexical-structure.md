@@ -120,7 +120,7 @@ TokenType =
     // Keywords (see Section 2.9)
     | Var | Fn | If | Else | While | For | Match | Case | Try | Catch 
     | Finally | With | Break | Continue | Return | Class | Static | Self
-    | Use | Pub | Raise | And | Or | Not | In | Is | True | False | Null
+    | Use | Pub | Raise | And | Or | Xor | Not | In | Is | True | False | Null
     
     // Identifiers
     | Identifier
@@ -286,7 +286,7 @@ and         else        if          not         self        use
 break       false       in          null        static      var
 case        finally     is          or          true        while
 catch       fn          match       pub         try         with
-class       for         not         raise       return
+class       for         not         raise       return      xor
 continue    from        of          require     super
 ```
 
@@ -294,9 +294,9 @@ continue    from        of          require     super
 - All keywords are fully reserved in all contexts
 - Keywords are case-sensitive (e.g., `If` is an identifier, not a keyword)
 - No context-sensitive keywords exist
-- **Logical operator keywords (`and`, `or`, `not`) must use only English words**
+- **Logical operator keywords (`and`, `or`, `xor`, `not`) must use only English words**
   - These keywords cannot be localized or translated
-  - Only the exact ASCII spellings `and`, `or`, and `not` are recognized
+  - Only the exact ASCII spellings `and`, `or`, `xor`, and `not` are recognized
   - Alternative symbols or Unicode equivalents are not permitted
 
 **Future Reserved Words:**
