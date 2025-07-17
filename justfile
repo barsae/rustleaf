@@ -25,6 +25,44 @@ need-rebase:
         echo "Up to date with main"
     fi
 
+# Show status of all worktree branches relative to main
+worktree-status:
+    #!/bin/bash
+    echo "Worktree branch status relative to main:"
+    echo "========================================"
+    
+    # Get all worktree paths and branches
+    git worktree list --porcelain | grep -E '^worktree|^branch' | while read -r line; do
+        if [[ $line == worktree* ]]; then
+            worktree_path=${line#worktree }
+            read -r branch_line
+            branch_name=${branch_line#branch refs/heads/}
+            
+            # Skip main branch
+            if [ "$branch_name" = "main" ]; then
+                continue
+            fi
+            
+            # Get ahead/behind counts
+            ahead=$(git rev-list --count main..$branch_name 2>/dev/null || echo "0")
+            behind=$(git rev-list --count $branch_name..main 2>/dev/null || echo "0")
+            
+            # Format branch name with path
+            branch_display="$branch_name ($(basename "$worktree_path"))"
+            
+            # Show status
+            if [ "$ahead" -eq 0 ] && [ "$behind" -eq 0 ]; then
+                echo "✅ $branch_display: up to date"
+            elif [ "$behind" -eq 0 ]; then
+                echo "⬆️  $branch_display: $ahead commits ahead"
+            elif [ "$ahead" -eq 0 ]; then
+                echo "⬇️  $branch_display: $behind commits behind"
+            else
+                echo "🔀 $branch_display: $ahead ahead, $behind behind"
+            fi
+        fi
+    done
+
 # Fast-forward merge from worker branch
 merge-ff:
     git merge --ff-only {{current_branch}}

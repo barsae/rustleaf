@@ -1,17 +1,11 @@
----
-description: "Complete the full Worktree Agent Flow with intelligent commit structuring"
----
-
 # Complete Merge Workflow
 
 Execute the complete Worktree Agent Flow to integrate finished work.
 
-## Context
-- Current git status: !git status
-
 ## Your task
 
 1. **Handle uncommitted work first**:
+   - Check git status: !git status
    - If there are uncommitted changes, run the `/commit` command first
    - Return here after committing
 
@@ -26,9 +20,12 @@ Execute the complete Worktree Agent Flow to integrate finished work.
 
 4. **Fast-forward merge from worker branch**:
    - !just merge-ff
-   - If this fails, main - stop and report
+   - If this fails, stop and report
 
 5. **Release lease - return to worker branch**:
    - !just checkout-worker-branch
+   - The worker branch will now be up-to-date with main after the merge - no further action needed 
 
-The worker branch should already be up-to-date with main after the merge.
+6. **Provide summary**:
+   - Write a *very* brief summary
+   - !just worktree-status
