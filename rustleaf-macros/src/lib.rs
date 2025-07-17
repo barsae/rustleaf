@@ -146,19 +146,37 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
     };
 
     // Generate individual test functions that use include_str!
-    let test_functions = test_files.iter().map(|(test_name, file_path)| {
+    let test_functions = test_files.iter().map(|(test_name, file_path, should_panic)| {
         let test_fn_name = syn::Ident::new(test_name, proc_macro2::Span::call_site());
-        quote! {
-            #[test]
-            fn #test_fn_name() {
-                let source = include_str!(#file_path);
+        
+        if *should_panic {
+            quote! {
+                #[test]
+                #[should_panic(expected = "Assertion failed")]
+                fn #test_fn_name() {
+                    let source = include_str!(#file_path);
 
-                let tokens = rustleaf::Lexer::new(source).unwrap();
-                let mut parser = rustleaf::Parser::new(tokens);
-                let ast = parser.parse().unwrap();
+                    let tokens = rustleaf::Lexer::new(source).unwrap();
+                    let mut parser = rustleaf::Parser::new(tokens);
+                    let ast = parser.parse().unwrap();
 
-                let mut evaluator = rustleaf::Evaluator::new();
-                evaluator.evaluate(&ast).unwrap();
+                    let mut evaluator = rustleaf::Evaluator::new();
+                    evaluator.evaluate(&ast).unwrap();
+                }
+            }
+        } else {
+            quote! {
+                #[test]
+                fn #test_fn_name() {
+                    let source = include_str!(#file_path);
+
+                    let tokens = rustleaf::Lexer::new(source).unwrap();
+                    let mut parser = rustleaf::Parser::new(tokens);
+                    let ast = parser.parse().unwrap();
+
+                    let mut evaluator = rustleaf::Evaluator::new();
+                    evaluator.evaluate(&ast).unwrap();
+                }
             }
         }
     });
@@ -170,7 +188,7 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
     TokenStream::from(expanded)
 }
 
-fn discover_rustleaf_files(test_dir: &str) -> Result<Vec<(String, String)>, std::io::Error> {
+fn discover_rustleaf_files(test_dir: &str) -> Result<Vec<(String, String, bool)>, std::io::Error> {
     let mut test_files = Vec::new();
     let test_path = Path::new(test_dir);
 
@@ -193,12 +211,15 @@ fn discover_rustleaf_files(test_dir: &str) -> Result<Vec<(String, String)>, std:
                     // Generate test function name: strip "./tests/" and convert to function name
                     let test_name = generate_test_name(&file_path);
 
+                    // Check if this is a panic test (ends with _panic.rustleaf)
+                    let filename = path.file_name().unwrap().to_string_lossy();
+                    let should_panic = filename.ends_with("_panic.rustleaf");
+
                     // For include_str!, construct path relative to where the macro is called
                     // The macro is called from tests/rustleaf.rs, so we need rustleaf/filename.rustleaf
-                    let filename = path.file_name().unwrap().to_string_lossy();
                     let include_path = format!("rustleaf/{}", filename);
 
-                    test_files.push((test_name, include_path));
+                    test_files.push((test_name, include_path, should_panic));
                 }
             }
         }
