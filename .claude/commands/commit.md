@@ -18,14 +18,14 @@ description: "Commit work in progress to the current worker branch with intellig
    
    **STOP AND REPORT IF ANY ISSUES ARE FOUND. DO NOT ATTEMPT TO FIX ISSUES.**
 
-2. **Commit all changes systematically**:
+2. **Run pre-commit formatting**:
+   - !cargo fmt
+
+3. **Commit all changes systematically**:
    - Review all staged and unstaged changes
    - Add untracked files that should be committed
    - Create logical, well-described commits using multiple commits if needed
    - Follow the repository's existing commit message style
    - Stage and commit all changes systematically
-
-3. **Run post-commit formatting**:
-   - !just fmt
 
 Create meaningful commit messages that describe what was changed and why. If there are many different types of changes, split them into separate logical commits.

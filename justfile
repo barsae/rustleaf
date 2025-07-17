@@ -12,13 +12,6 @@ test:
 clippy:
     cargo clippy -- -D warnings
 
-# Format code with cargo fmt and commit if changes were made
-fmt:
-    cargo fmt
-    @if ! git diff --quiet; then \
-        git add -A && git commit -m "Apply cargo fmt"; \
-    fi
-
 # Check if we need to rebase (main has commits we don't)
 need-rebase:
     @count=$(git rev-list --count HEAD..main); \
