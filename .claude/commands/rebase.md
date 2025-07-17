@@ -9,14 +9,13 @@ NOTE: There is no remote origin. This entire process will be local-only using wo
 
 ## Context
 - Current git status: !git status
-- Commits since main: !git log --oneline main..HEAD
 
 ## Your task
 
-1. **Check if there's anything to rebase**:
-   - Count commits since main: !git rev-list --count main..HEAD
-   - If 0 commits and no uncommitted changes: Report "Already up to date" and stop
-   - If 0 commits but uncommitted changes: Report "No commits to rebase, only working directory changes" and stop
+1. **Check if we need to rebase**:
+   - !just need-rebase
+   - If "Up to date with main" and no uncommitted changes: Report "Already up to date" and stop
+   - If "Up to date with main" but uncommitted changes: Report "No rebase needed, only working directory changes" and stop
 
 2. **Handle uncommitted work if rebasing**:
    - If there are uncommitted changes, make a temporary commit: !just make-temp-stash-commit

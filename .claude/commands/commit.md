@@ -26,7 +26,6 @@ description: "Commit work in progress to the current worker branch with intellig
    - Stage and commit all changes systematically
 
 3. **Run post-commit formatting**:
-   - !cargo fmt
-   - !git diff --quiet || (git add -A && git commit -m "Apply cargo fmt")
+   - !just fmt
 
 Create meaningful commit messages that describe what was changed and why. If there are many different types of changes, split them into separate logical commits.
