@@ -120,14 +120,17 @@ fn builtin_assert(args: &[Value], _env: &mut Environment) -> Result<Value, Runti
 fn builtin_assert_approx_eq(args: &[Value], _env: &mut Environment) -> Result<Value, RuntimeError> {
     if args.len() < 2 || args.len() > 3 {
         return Err(RuntimeError::new(
-            format!("assert_approx_eq() takes 2 or 3 arguments ({} given)", args.len()),
+            format!(
+                "assert_approx_eq() takes 2 or 3 arguments ({} given)",
+                args.len()
+            ),
             ErrorType::TypeError,
         ));
     }
 
     let a = &args[0];
     let b = &args[1];
-    
+
     // Check if both values are numeric (int or float)
     let (a_num, b_num) = match (a, b) {
         (Value::Float(f1), Value::Float(f2)) => (*f1, *f2),

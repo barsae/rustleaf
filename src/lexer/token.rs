@@ -47,33 +47,33 @@ pub enum TokenType {
     NullLiteral,
 
     // Operators
-    Plus,           // +
-    Minus,          // -
-    Star,           // *
-    Slash,          // /
-    Percent,        // %
-    StarStar,       // **
-    Equal,          // =
-    PlusEqual,      // +=
-    MinusEqual,     // -=
-    StarEqual,      // *=
-    SlashEqual,     // /=
-    PercentEqual,   // %=
-    EqualEqual,     // ==
-    Bang,           // !
-    BangEqual,      // !=
-    Less,           // <
-    Greater,        // >
-    LessEqual,      // <=
-    GreaterEqual,   // >=
-    Ampersand,      // &
+    Plus,               // +
+    Minus,              // -
+    Star,               // *
+    Slash,              // /
+    Percent,            // %
+    StarStar,           // **
+    Equal,              // =
+    PlusEqual,          // +=
+    MinusEqual,         // -=
+    StarEqual,          // *=
+    SlashEqual,         // /=
+    PercentEqual,       // %=
+    EqualEqual,         // ==
+    Bang,               // !
+    BangEqual,          // !=
+    Less,               // <
+    Greater,            // >
+    LessEqual,          // <=
+    GreaterEqual,       // >=
+    Ampersand,          // &
     AmpersandAmpersand, // &&
-    Pipe,           // |
-    PipePipe,       // ||
-    Caret,          // ^
-    Tilde,          // ~
-    LessLess,       // <<
-    GreaterGreater, // >>
+    Pipe,               // |
+    PipePipe,           // ||
+    Caret,              // ^
+    Tilde,              // ~
+    LessLess,           // <<
+    GreaterGreater,     // >>
 
     // Punctuation
     LeftParen,    // (

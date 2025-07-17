@@ -179,7 +179,8 @@ impl Parser {
                 // Check if this looks like a dict literal (empty {} or key: value pattern)
                 if self.check_ahead(1, &TokenType::RightBrace) // empty {}
                     || (self.check_ahead(1, &TokenType::StringLiteral) && self.check_ahead(2, &TokenType::Colon)) // "key":
-                    || (self.check_ahead(1, &TokenType::Identifier) && self.check_ahead(2, &TokenType::Colon)) // key:
+                    || (self.check_ahead(1, &TokenType::Identifier) && self.check_ahead(2, &TokenType::Colon))
+                // key:
                 {
                     self.parse_dict_literal()
                 } else {
