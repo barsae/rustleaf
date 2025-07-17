@@ -218,8 +218,12 @@ fn discover_rustleaf_files(test_dir: &str) -> Result<Vec<(String, String, bool)>
                     let should_panic = filename.ends_with("_panic.rustleaf");
 
                     // For include_str!, construct path relative to where the macro is called
-                    // The macro is called from tests/rustleaf.rs, so we need rustleaf/filename.rustleaf
-                    let include_path = format!("rustleaf/{}", filename);
+                    // Extract just the subdirectory name from test_dir and filename
+                    let test_dir_name = Path::new(test_dir)
+                        .file_name()
+                        .unwrap_or_else(|| std::ffi::OsStr::new(""))
+                        .to_string_lossy();
+                    let include_path = format!("{}/{}", test_dir_name, filename);
 
                     test_files.push((test_name, include_path, should_panic));
                 }
