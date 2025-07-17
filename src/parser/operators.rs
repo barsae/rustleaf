@@ -4,8 +4,9 @@ use crate::parser::Parser;
 use rustleaf_macros::binary_ops;
 
 #[binary_ops(
-    parse_logical_or -> parse_logical_and: [PipePipe => Or, Or],
-    parse_logical_and -> parse_bitwise_or: [AmpersandAmpersand => And, And],
+    parse_logical_or -> parse_logical_xor: [Or],
+    parse_logical_xor -> parse_logical_and: [Xor],
+    parse_logical_and -> parse_bitwise_or: [And],
     parse_bitwise_or -> parse_bitwise_xor: [Pipe => BitwiseOr],
     parse_bitwise_xor -> parse_bitwise_and: [Caret => BitwiseXor],
     parse_bitwise_and -> parse_equality: [Ampersand => BitwiseAnd],

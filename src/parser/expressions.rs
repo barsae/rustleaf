@@ -442,10 +442,6 @@ impl Parser {
                 self.advance();
                 Some(UnaryOperator::Minus)
             }
-            TokenType::Bang => {
-                self.advance();
-                Some(UnaryOperator::Not)
-            }
             TokenType::Not => {
                 self.advance();
                 Some(UnaryOperator::Not)

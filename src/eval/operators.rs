@@ -25,6 +25,14 @@ impl Evaluator {
                 }
                 self.evaluate(right)
             }
+            BinaryOperator::Xor => {
+                // XOR does not short-circuit - both operands are always evaluated
+                let left_val = self.evaluate(left)?;
+                let right_val = self.evaluate(right)?;
+                let left_truthy = left_val.is_truthy()?;
+                let right_truthy = right_val.is_truthy()?;
+                Ok(Value::Bool(left_truthy ^ right_truthy))
+            }
             _ => {
                 let left_val = self.evaluate(left)?;
                 let right_val = self.evaluate(right)?;

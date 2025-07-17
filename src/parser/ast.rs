@@ -167,6 +167,7 @@ pub enum BinaryOperator {
     // Logical
     And,
     Or,
+    Xor,
     // Bitwise
     BitwiseAnd,
     BitwiseOr,
