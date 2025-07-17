@@ -38,6 +38,7 @@ pub fn create_keywords_map() -> HashMap<String, TokenType> {
     keywords.insert("var".to_string(), TokenType::Var);
     keywords.insert("while".to_string(), TokenType::While);
     keywords.insert("with".to_string(), TokenType::With);
+    keywords.insert("xor".to_string(), TokenType::Xor);
 
     keywords
 }

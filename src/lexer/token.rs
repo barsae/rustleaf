@@ -36,6 +36,7 @@ pub enum TokenType {
     Var,
     While,
     With,
+    Xor,
 
     // Identifiers and literals
     Identifier,
@@ -47,33 +48,30 @@ pub enum TokenType {
     NullLiteral,
 
     // Operators
-    Plus,               // +
-    Minus,              // -
-    Star,               // *
-    Slash,              // /
-    Percent,            // %
-    StarStar,           // **
-    Equal,              // =
-    PlusEqual,          // +=
-    MinusEqual,         // -=
-    StarEqual,          // *=
-    SlashEqual,         // /=
-    PercentEqual,       // %=
-    EqualEqual,         // ==
-    Bang,               // !
-    BangEqual,          // !=
-    Less,               // <
-    Greater,            // >
-    LessEqual,          // <=
-    GreaterEqual,       // >=
-    Ampersand,          // &
-    AmpersandAmpersand, // &&
-    Pipe,               // |
-    PipePipe,           // ||
-    Caret,              // ^
-    Tilde,              // ~
-    LessLess,           // <<
-    GreaterGreater,     // >>
+    Plus,           // +
+    Minus,          // -
+    Star,           // *
+    Slash,          // /
+    Percent,        // %
+    StarStar,       // **
+    Equal,          // =
+    PlusEqual,      // +=
+    MinusEqual,     // -=
+    StarEqual,      // *=
+    SlashEqual,     // /=
+    PercentEqual,   // %=
+    EqualEqual,     // ==
+    BangEqual,      // !=
+    Less,           // <
+    Greater,        // >
+    LessEqual,      // <=
+    GreaterEqual,   // >=
+    Ampersand,      // &
+    Pipe,           // |
+    Caret,          // ^
+    Tilde,          // ~
+    LessLess,       // <<
+    GreaterGreater, // >>
 
     // Punctuation
     LeftParen,    // (

@@ -317,13 +317,13 @@ impl<'a> TokenScanner<'a> {
                         start_offset,
                     ))
                 } else {
-                    Some(self.make_token(
-                        TokenType::Bang,
-                        "!",
+                    self.error(
+                        "Unexpected character '!' - use 'not' for logical negation".to_string(),
                         start_line,
                         start_column,
                         start_offset,
-                    ))
+                    );
+                    None
                 }
             }
             '<' => {
@@ -382,13 +382,13 @@ impl<'a> TokenScanner<'a> {
             }
             '&' => {
                 if self.match_char('&') {
-                    Some(self.make_token(
-                        TokenType::AmpersandAmpersand,
-                        "&&",
+                    self.error(
+                        "Unexpected '&&' - use 'and' for logical AND".to_string(),
                         start_line,
                         start_column,
                         start_offset,
-                    ))
+                    );
+                    None
                 } else {
                     Some(self.make_token(
                         TokenType::Ampersand,
@@ -401,13 +401,13 @@ impl<'a> TokenScanner<'a> {
             }
             '|' => {
                 if self.match_char('|') {
-                    Some(self.make_token(
-                        TokenType::PipePipe,
-                        "||",
+                    self.error(
+                        "Unexpected '||' - use 'or' for logical OR".to_string(),
                         start_line,
                         start_column,
                         start_offset,
-                    ))
+                    );
+                    None
                 } else {
                     Some(self.make_token(
                         TokenType::Pipe,
