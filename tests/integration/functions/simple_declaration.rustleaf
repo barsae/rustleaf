@@ -1,0 +1,7 @@
+// Test basic function declaration and call
+fn greet() {
+    "Hello, World!"
+}
+
+var result = greet();
+assert(result == "Hello, World!");

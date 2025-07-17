@@ -4,6 +4,12 @@ use crate::parser::Parser;
 
 impl Parser {
     pub fn parse_module_item(&mut self) -> Option<AstNode> {
+        // Skip comments
+        if self.peek().token_type == TokenType::Comment {
+            self.advance();
+            return None;
+        }
+
         match self.peek().token_type {
             TokenType::Use => self.parse_import_statement(),
             TokenType::Fn => self.parse_function_declaration(Visibility::Private),

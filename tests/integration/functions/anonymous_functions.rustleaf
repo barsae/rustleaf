@@ -1,0 +1,28 @@
+// Test basic anonymous function
+var double = fn(x) { x * 2 };
+var result1 = double(7);
+assert(result1 == 14);
+
+// Test anonymous function with default parameters
+var greet = fn(name, greeting = "Hello") {
+    greeting + ", " + name + "!"
+};
+
+var result2 = greet("Alice");
+assert(result2 == "Hello, Alice!");
+
+var result3 = greet("Bob", "Hi");
+assert(result3 == "Hi, Bob!");
+
+// Test immediately invoked function expression (IIFE)
+var result4 = fn(a, b) { a + b }(10, 20);
+assert(result4 == 30);
+
+// Test returning anonymous function
+fn make_multiplier(factor) {
+    fn(x) { x * factor }
+}
+
+var triple = make_multiplier(3);
+var result5 = triple(10);
+assert(result5 == 30);

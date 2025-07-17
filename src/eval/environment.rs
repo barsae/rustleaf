@@ -92,4 +92,24 @@ impl Environment {
     pub fn get_builtin(&self, name: &str) -> Option<&BuiltinFunctionInfo> {
         self.builtins.get(name)
     }
+
+    pub fn is_nested_scope(&self) -> bool {
+        self.scopes.len() > 1
+    }
+
+    pub fn capture_closure(&self) -> HashMap<String, Value> {
+        let mut closure = HashMap::new();
+
+        // Capture all variables from all scopes (except global)
+        for scope in &self.scopes[..self.scopes.len()] {
+            for (name, value) in scope {
+                // Only capture if not already captured (inner scopes override outer)
+                if !closure.contains_key(name) {
+                    closure.insert(name.clone(), value.clone());
+                }
+            }
+        }
+
+        closure
+    }
 }

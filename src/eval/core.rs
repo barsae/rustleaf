@@ -100,14 +100,17 @@ impl Evaluator {
             AstNode::Try { .. } => {
                 todo!("Try expressions not implemented yet")
             }
-            AstNode::AnonymousFunction { .. } => {
-                todo!("Anonymous functions not implemented yet")
-            }
+            AstNode::AnonymousFunction {
+                parameters, body, ..
+            } => self.evaluate_anonymous_function(parameters, body),
 
             // Statement forms
-            AstNode::FunctionDeclaration { .. } => {
-                todo!("Function declarations not implemented yet")
-            }
+            AstNode::FunctionDeclaration {
+                name,
+                parameters,
+                body,
+                ..
+            } => self.evaluate_function_declaration(name, parameters, body),
             AstNode::ClassDeclaration { .. } => {
                 todo!("Class declarations not implemented yet")
             }
@@ -117,9 +120,13 @@ impl Evaluator {
             AstNode::WhileStatement { .. } => {
                 todo!("While statements not implemented yet")
             }
-            AstNode::ForStatement { .. } => {
-                todo!("For statements not implemented yet")
-            }
+            AstNode::ForStatement {
+                variable,
+                index_variable,
+                iterable,
+                body,
+                ..
+            } => self.evaluate_for_statement(variable, index_variable, iterable, body),
             AstNode::MatchStatement { .. } => {
                 todo!("Match statements not implemented yet")
             }
@@ -135,9 +142,7 @@ impl Evaluator {
             AstNode::ContinueStatement { .. } => {
                 todo!("Continue statements not implemented yet")
             }
-            AstNode::ReturnStatement { .. } => {
-                todo!("Return statements not implemented yet")
-            }
+            AstNode::ReturnStatement { value, .. } => self.evaluate_return_statement(value),
         }
     }
 

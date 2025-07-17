@@ -1,4 +1,4 @@
-use crate::parser::AstNode;
+use crate::parser::{AstNode, Parameter};
 use std::collections::HashMap;
 use std::fmt;
 
@@ -19,7 +19,7 @@ pub enum Value {
 #[derive(Debug, Clone, PartialEq)]
 pub struct Function {
     pub name: Option<String>,
-    pub parameters: Vec<String>,
+    pub parameters: Vec<Parameter>,
     pub body: AstNode,
     pub closure: Option<HashMap<String, Value>>,
     pub is_builtin: bool,
@@ -119,6 +119,7 @@ pub struct RuntimeError {
     pub message: String,
     pub error_type: ErrorType,
     pub stack_trace: Vec<String>,
+    pub return_value: Option<Value>,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -142,12 +143,22 @@ impl RuntimeError {
             message,
             error_type,
             stack_trace: Vec::new(),
+            return_value: None,
         }
     }
 
     pub fn with_stack_trace(mut self, trace: Vec<String>) -> Self {
         self.stack_trace = trace;
         self
+    }
+
+    pub fn with_return_value(mut self, value: Value) -> Self {
+        self.return_value = Some(value);
+        self
+    }
+
+    pub fn is_return(&self) -> bool {
+        self.message == "RETURN_VALUE" || self.message == "RETURN_NULL"
     }
 }
 

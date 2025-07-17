@@ -1,6 +1,6 @@
 use super::core::Evaluator;
 use crate::parser::AstNode;
-use crate::value::types::{ErrorType, RuntimeError, Value};
+use crate::value::types::{ErrorType, Function, RuntimeError, Value};
 use std::collections::HashMap;
 
 impl Evaluator {
@@ -32,11 +32,8 @@ impl Evaluator {
                         ))
                     }
                 } else {
-                    // User-defined function - not implemented yet
-                    Err(RuntimeError::new(
-                        "User-defined functions not implemented yet".to_string(),
-                        ErrorType::RuntimeError,
-                    ))
+                    // User-defined function
+                    self.call_user_function(&func, &args)
                 }
             }
             _ => Err(RuntimeError::new(
@@ -213,5 +210,88 @@ impl Evaluator {
         } else {
             Ok(Value::Null)
         }
+    }
+
+    pub(crate) fn call_user_function(
+        &mut self,
+        function: &Function,
+        args: &[Value],
+    ) -> Result<Value, RuntimeError> {
+        // Create new scope for function execution
+        self.environment.push_scope();
+
+        // Add closure variables to the scope if present
+        if let Some(closure) = &function.closure {
+            for (name, value) in closure {
+                self.environment.define(name.clone(), value.clone());
+            }
+        }
+
+        // Bind parameters to arguments
+        let mut arg_index = 0;
+        let mut varargs = Vec::new();
+        let kwargs = HashMap::new();
+
+        for param in &function.parameters {
+            if param.variadic {
+                // Collect remaining positional arguments
+                while arg_index < args.len() {
+                    varargs.push(args[arg_index].clone());
+                    arg_index += 1;
+                }
+                self.environment
+                    .define(param.name.clone(), Value::List(varargs.clone()));
+            } else if param.keyword_variadic {
+                // For now, just create empty dict - keyword arguments not fully implemented
+                self.environment
+                    .define(param.name.clone(), Value::Dict(kwargs.clone()));
+            } else {
+                // Regular parameter
+                let value = if arg_index < args.len() {
+                    args[arg_index].clone()
+                } else if let Some(default_expr) = &param.default_value {
+                    // Evaluate default value
+                    self.evaluate(default_expr)?
+                } else {
+                    return Err(RuntimeError::new(
+                        format!("Missing required argument: {}", param.name),
+                        ErrorType::TypeError,
+                    ));
+                };
+
+                self.environment.define(param.name.clone(), value);
+                arg_index += 1;
+            }
+        }
+
+        // Check for too many arguments (unless we have varargs)
+        if arg_index < args.len() && !function.parameters.iter().any(|p| p.variadic) {
+            self.environment.pop_scope();
+            return Err(RuntimeError::new(
+                format!(
+                    "Too many arguments: expected {}, got {}",
+                    function.parameters.len(),
+                    args.len()
+                ),
+                ErrorType::TypeError,
+            ));
+        }
+
+        // Execute function body
+        let result = match self.evaluate(&function.body) {
+            Ok(value) => Ok(value),
+            Err(err) => {
+                if err.is_return() {
+                    // Handle return statement
+                    Ok(err.return_value.unwrap_or(Value::Null))
+                } else {
+                    Err(err)
+                }
+            }
+        };
+
+        // Clean up scope
+        self.environment.pop_scope();
+        result
     }
 }

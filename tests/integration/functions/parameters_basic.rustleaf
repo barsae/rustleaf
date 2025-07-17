@@ -1,0 +1,15 @@
+// Test function with required parameters
+fn add(a, b) {
+    a + b
+}
+
+var sum = add(3, 5);
+assert(sum == 8);
+
+// Test function with single parameter
+fn double(x) {
+    x * 2
+}
+
+var doubled = double(7);
+assert(doubled == 14);

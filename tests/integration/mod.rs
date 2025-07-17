@@ -21,3 +21,7 @@ mod operator_tests {}
 // Builtin function tests
 #[rustleaf_tests("tests/integration/builtins")]
 mod builtin_tests {}
+
+// Function declaration and invocation tests
+#[rustleaf_tests("tests/integration/functions")]
+mod function_tests {}

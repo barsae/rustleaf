@@ -16,6 +16,26 @@ impl Parser {
             TokenType::Continue => self.parse_continue_statement(),
             TokenType::Return => self.parse_return_statement(),
             TokenType::Var => self.parse_variable_declaration(),
+            TokenType::Fn => {
+                // Function declarations inside blocks
+                let location = self.current_location();
+                self.consume(TokenType::Fn, "Expected 'fn'")?;
+                let name = self.consume_identifier("Expected function name")?;
+
+                self.consume(TokenType::LeftParen, "Expected '(' after function name")?;
+                let parameters = self.parse_parameter_list();
+                self.consume(TokenType::RightParen, "Expected ')' after parameters")?;
+
+                let body = self.parse_block()?;
+
+                Some(AstNode::FunctionDeclaration {
+                    visibility: Visibility::Private,
+                    name,
+                    parameters,
+                    body: Box::new(body),
+                    location,
+                })
+            }
             TokenType::Semicolon => {
                 self.advance(); // consume semicolon
                 None // Empty statement
@@ -37,6 +57,56 @@ impl Parser {
             TokenType::Continue => self.parse_continue_statement(),
             TokenType::Return => self.parse_return_statement(),
             TokenType::Var => self.parse_variable_declaration(),
+            TokenType::Fn => {
+                // Check if this is a function declaration (has identifier after fn)
+                // or anonymous function (has left paren after fn)
+                if self.check_ahead(1, &TokenType::Identifier) {
+                    // Function declaration inside blocks
+                    let location = self.current_location();
+                    self.consume(TokenType::Fn, "Expected 'fn'")?;
+                    let name = self.consume_identifier("Expected function name")?;
+
+                    self.consume(TokenType::LeftParen, "Expected '(' after function name")?;
+                    let parameters = self.parse_parameter_list();
+                    self.consume(TokenType::RightParen, "Expected ')' after parameters")?;
+
+                    let body = self.parse_block()?;
+
+                    Some(AstNode::FunctionDeclaration {
+                        visibility: Visibility::Private,
+                        name,
+                        parameters,
+                        body: Box::new(body),
+                        location,
+                    })
+                } else {
+                    // Anonymous function - parse as expression
+                    let saved_pos = self.current;
+                    if let Some(expr) = self.parse_expression() {
+                        // If there's a semicolon, treat as expression statement
+                        if self.check(&TokenType::Semicolon) {
+                            self.advance(); // consume semicolon
+                            Some(AstNode::ExpressionStatement {
+                                expression: Box::new(expr),
+                                location: self.current_location(),
+                            })
+                        } else {
+                            // No semicolon - check if we're at the end of block
+                            self.skip_newlines();
+                            if self.check(&TokenType::RightBrace) {
+                                // Final expression without semicolon
+                                Some(expr)
+                            } else {
+                                // Not at end, this is an error - restore and use normal parsing
+                                self.current = saved_pos;
+                                self.parse_expression_statement()
+                            }
+                        }
+                    } else {
+                        None
+                    }
+                }
+            }
             TokenType::Semicolon => {
                 self.advance(); // consume semicolon
                 None // Empty statement
@@ -114,13 +184,16 @@ impl Parser {
 
         let mut else_ifs = Vec::new();
 
-        while self.match_token(&TokenType::Else) && self.check(&TokenType::If) {
+        while self.check(&TokenType::Else) && self.check_ahead(1, &TokenType::If) {
+            self.advance(); // consume 'else'
             self.advance(); // consume 'if'
             let else_if_condition = self.parse_expression()?;
             let else_if_body = self.parse_block()?;
             else_ifs.push((else_if_condition, else_if_body));
         }
 
+        // Skip newlines before looking for else clause
+        self.skip_newlines();
         let else_branch = if self.match_token(&TokenType::Else) {
             Some(Box::new(self.parse_block()?))
         } else {
