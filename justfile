@@ -14,11 +14,12 @@ clippy:
 
 # Check if we need to rebase (main has commits we don't)
 need-rebase:
-    @count=$(git rev-list --count HEAD..main); \
-    if [ $$count -gt 0 ]; then \
-        echo "Need to rebase: $$count commits behind main"; \
-    else \
-        echo "Up to date with main"; \
+    #!/bin/bash
+    count=$(git rev-list --count HEAD..main)
+    if [ $count -gt 0 ]; then
+        echo "Need to rebase: $count commits behind main"
+    else
+        echo "Up to date with main"
     fi
 
 # Fast-forward merge from worker branch
