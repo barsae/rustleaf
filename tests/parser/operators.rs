@@ -261,6 +261,27 @@ fn parser_binary_logical_expressions() {
     ],
 }"#,
     );
+
+    // Logical XOR
+    let ast = parse_source("x xor y;").expect("Should parse logical XOR");
+    assert_debug_eq(
+        &ast,
+        r#"Program {
+    items: [
+        ExpressionStatement {
+            expression: BinaryOp {
+                left: Identifier(
+                    "x",
+                ),
+                operator: Xor,
+                right: Identifier(
+                    "y",
+                ),
+            },
+        },
+    ],
+}"#,
+    );
 }
 
 #[test]

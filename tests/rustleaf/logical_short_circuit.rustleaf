@@ -1,6 +1,8 @@
-assert(true && true);
-assert(!(false && true));
-assert(true || false);
-assert(!(false || false));
-var x = false && assert(false, "Should not execute");
+assert(true and true);
+assert(not (false and true));
+assert(true or false);
+assert(not (false or false));
+assert(true xor false);
+assert(not (true xor true));
+var x = false and assert(false, "Should not execute");
 assert(x == false);
