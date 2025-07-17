@@ -18,3 +18,11 @@ Before committing changes, always run these verification steps:
 3. **Linting**: `cargo clippy -- -D warnings`
    - Checks for common mistakes and style issues
    - **Policy**: All warnings must be fixed before committing
+
+## Post-Commit Formatting
+
+After committing, run formatting as a separate commit:
+
+1. **Format Code**: `cargo fmt`
+2. **Check if formatting changed anything**: `git diff`
+3. **If there are changes**: `git add -A && git commit -m "Apply cargo fmt"`
