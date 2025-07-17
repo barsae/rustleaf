@@ -60,13 +60,16 @@ pub enum TokenType {
     SlashEqual,     // /=
     PercentEqual,   // %=
     EqualEqual,     // ==
+    Bang,           // !
     BangEqual,      // !=
     Less,           // <
     Greater,        // >
     LessEqual,      // <=
     GreaterEqual,   // >=
     Ampersand,      // &
+    AmpersandAmpersand, // &&
     Pipe,           // |
+    PipePipe,       // ||
     Caret,          // ^
     Tilde,          // ~
     LessLess,       // <<

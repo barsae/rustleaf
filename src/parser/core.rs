@@ -87,6 +87,14 @@ impl Parser {
         }
     }
 
+    pub fn check_ahead(&self, offset: usize, token_type: &TokenType) -> bool {
+        if self.current + offset >= self.tokens.len() {
+            false
+        } else {
+            &self.tokens[self.current + offset].token_type == token_type
+        }
+    }
+
     pub fn match_token(&mut self, token_type: &TokenType) -> bool {
         if self.check(token_type) {
             self.advance();

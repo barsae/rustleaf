@@ -151,7 +151,8 @@ impl Parser {
             | TokenType::FloatLiteral
             | TokenType::StringLiteral
             | TokenType::BooleanLiteral
-            | TokenType::NullLiteral => {
+            | TokenType::NullLiteral
+            | TokenType::Null => {
                 let token = self.advance();
                 token.value.map(|value| AstNode::Literal(value, location))
             }
@@ -175,16 +176,24 @@ impl Parser {
             }
             TokenType::LeftBracket => self.parse_list_literal(),
             TokenType::LeftBrace => {
-                // Try to parse as block expression first, fall back to dict literal
-                let saved_position = self.current;
-
-                // Try parsing as block expression
-                if let Some(block) = self.parse_block() {
-                    Some(block)
-                } else {
-                    // Restore position and try as dict literal
-                    self.current = saved_position;
+                // Check if this looks like a dict literal (empty {} or key: value pattern)
+                if self.check_ahead(1, &TokenType::RightBrace) // empty {}
+                    || (self.check_ahead(1, &TokenType::StringLiteral) && self.check_ahead(2, &TokenType::Colon)) // "key":
+                    || (self.check_ahead(1, &TokenType::Identifier) && self.check_ahead(2, &TokenType::Colon)) // key:
+                {
                     self.parse_dict_literal()
+                } else {
+                    // Try to parse as block expression first, fall back to dict literal
+                    let saved_position = self.current;
+
+                    // Try parsing as block expression
+                    if let Some(block) = self.parse_block() {
+                        Some(block)
+                    } else {
+                        // Restore position and try as dict literal
+                        self.current = saved_position;
+                        self.parse_dict_literal()
+                    }
                 }
             }
             TokenType::If => self.parse_if_expression(),
@@ -248,20 +257,20 @@ impl Parser {
 
             entries.push((key, value));
 
-            // Infinite loop protection: ensure we always make progress
-            if self.current == position_before {
-                panic!(
-                    "Parser stuck in dict literal: no progress made at position {}",
-                    self.current
-                );
-            }
-
             if !self.match_token(&TokenType::Comma) {
                 break;
             }
 
             if self.check(&TokenType::RightBrace) {
                 break;
+            }
+
+            // Infinite loop protection: ensure we always make progress
+            if self.current == position_before {
+                panic!(
+                    "Parser stuck in dict literal: no progress made at position {}",
+                    self.current
+                );
             }
         }
 
@@ -275,19 +284,32 @@ impl Parser {
         self.consume(TokenType::If, "Expected 'if'")?;
 
         let condition = Box::new(self.parse_expression()?);
-        let then_branch = Box::new(self.parse_block()?);
+        let then_branch = Box::new(if self.check(&TokenType::LeftBrace) {
+            self.parse_block()?
+        } else {
+            self.parse_expression()?
+        });
 
         let mut else_ifs = Vec::new();
 
-        while self.match_token(&TokenType::Else) && self.check(&TokenType::If) {
+        while self.check(&TokenType::Else) && self.check_ahead(1, &TokenType::If) {
+            self.advance(); // consume 'else'
             self.advance(); // consume 'if'
             let else_if_condition = self.parse_expression()?;
-            let else_if_body = self.parse_block()?;
+            let else_if_body = if self.check(&TokenType::LeftBrace) {
+                self.parse_block()?
+            } else {
+                self.parse_expression()?
+            };
             else_ifs.push((else_if_condition, else_if_body));
         }
 
         let else_branch = if self.match_token(&TokenType::Else) {
-            Some(Box::new(self.parse_block()?))
+            Some(Box::new(if self.check(&TokenType::LeftBrace) {
+                self.parse_block()?
+            } else {
+                self.parse_expression()?
+            }))
         } else {
             None
         };
@@ -418,6 +440,10 @@ impl Parser {
             TokenType::Minus => {
                 self.advance();
                 Some(UnaryOperator::Minus)
+            }
+            TokenType::Bang => {
+                self.advance();
+                Some(UnaryOperator::Not)
             }
             TokenType::Not => {
                 self.advance();

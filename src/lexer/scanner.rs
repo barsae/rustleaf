@@ -317,13 +317,13 @@ impl<'a> TokenScanner<'a> {
                         start_offset,
                     ))
                 } else {
-                    self.error(
-                        "Unexpected character '!'".to_string(),
+                    Some(self.make_token(
+                        TokenType::Bang,
+                        "!",
                         start_line,
                         start_column,
                         start_offset,
-                    );
-                    None
+                    ))
                 }
             }
             '<' => {
@@ -380,15 +380,43 @@ impl<'a> TokenScanner<'a> {
                     ))
                 }
             }
-            '&' => Some(self.make_token(
-                TokenType::Ampersand,
-                "&",
-                start_line,
-                start_column,
-                start_offset,
-            )),
+            '&' => {
+                if self.match_char('&') {
+                    Some(self.make_token(
+                        TokenType::AmpersandAmpersand,
+                        "&&",
+                        start_line,
+                        start_column,
+                        start_offset,
+                    ))
+                } else {
+                    Some(self.make_token(
+                        TokenType::Ampersand,
+                        "&",
+                        start_line,
+                        start_column,
+                        start_offset,
+                    ))
+                }
+            }
             '|' => {
-                Some(self.make_token(TokenType::Pipe, "|", start_line, start_column, start_offset))
+                if self.match_char('|') {
+                    Some(self.make_token(
+                        TokenType::PipePipe,
+                        "||",
+                        start_line,
+                        start_column,
+                        start_offset,
+                    ))
+                } else {
+                    Some(self.make_token(
+                        TokenType::Pipe,
+                        "|",
+                        start_line,
+                        start_column,
+                        start_offset,
+                    ))
+                }
             }
             ':' => {
                 if self.match_char(':') {

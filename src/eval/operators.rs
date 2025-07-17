@@ -77,6 +77,10 @@ impl Evaluator {
             (Value::Int(a), Value::Float(b)) => Ok(Value::Float(*a as f64 + b)),
             (Value::Float(a), Value::Int(b)) => Ok(Value::Float(a + *b as f64)),
             (Value::String(a), Value::String(b)) => Ok(Value::String(format!("{}{}", a, b))),
+            (Value::String(a), Value::Int(b)) => Ok(Value::String(format!("{}{}", a, b))),
+            (Value::String(a), Value::Float(b)) => Ok(Value::String(format!("{}{}", a, b))),
+            (Value::Int(a), Value::String(b)) => Ok(Value::String(format!("{}{}", a, b))),
+            (Value::Float(a), Value::String(b)) => Ok(Value::String(format!("{}{}", a, b))),
             _ => Err(RuntimeError::new(
                 format!("Cannot add {} and {}", left.type_name(), right.type_name()),
                 ErrorType::TypeError,
