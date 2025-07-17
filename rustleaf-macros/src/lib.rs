@@ -146,40 +146,42 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
     };
 
     // Generate individual test functions that use include_str!
-    let test_functions = test_files.iter().map(|(test_name, file_path, should_panic)| {
-        let test_fn_name = syn::Ident::new(test_name, proc_macro2::Span::call_site());
-        
-        if *should_panic {
-            quote! {
-                #[test]
-                #[should_panic(expected = "Assertion failed")]
-                fn #test_fn_name() {
-                    let source = include_str!(#file_path);
+    let test_functions = test_files
+        .iter()
+        .map(|(test_name, file_path, should_panic)| {
+            let test_fn_name = syn::Ident::new(test_name, proc_macro2::Span::call_site());
 
-                    let tokens = rustleaf::Lexer::new(source).unwrap();
-                    let mut parser = rustleaf::Parser::new(tokens);
-                    let ast = parser.parse().unwrap();
+            if *should_panic {
+                quote! {
+                    #[test]
+                    #[should_panic(expected = "Assertion failed")]
+                    fn #test_fn_name() {
+                        let source = include_str!(#file_path);
 
-                    let mut evaluator = rustleaf::Evaluator::new();
-                    evaluator.evaluate(&ast).unwrap();
+                        let tokens = rustleaf::Lexer::new(source).unwrap();
+                        let mut parser = rustleaf::Parser::new(tokens);
+                        let ast = parser.parse().unwrap();
+
+                        let mut evaluator = rustleaf::Evaluator::new();
+                        evaluator.evaluate(&ast).unwrap();
+                    }
+                }
+            } else {
+                quote! {
+                    #[test]
+                    fn #test_fn_name() {
+                        let source = include_str!(#file_path);
+
+                        let tokens = rustleaf::Lexer::new(source).unwrap();
+                        let mut parser = rustleaf::Parser::new(tokens);
+                        let ast = parser.parse().unwrap();
+
+                        let mut evaluator = rustleaf::Evaluator::new();
+                        evaluator.evaluate(&ast).unwrap();
+                    }
                 }
             }
-        } else {
-            quote! {
-                #[test]
-                fn #test_fn_name() {
-                    let source = include_str!(#file_path);
-
-                    let tokens = rustleaf::Lexer::new(source).unwrap();
-                    let mut parser = rustleaf::Parser::new(tokens);
-                    let ast = parser.parse().unwrap();
-
-                    let mut evaluator = rustleaf::Evaluator::new();
-                    evaluator.evaluate(&ast).unwrap();
-                }
-            }
-        }
-    });
+        });
 
     let expanded = quote! {
         #(#test_functions)*
