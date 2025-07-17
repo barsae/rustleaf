@@ -12,6 +12,13 @@ test:
 clippy:
     cargo clippy -- -D warnings
 
+# Format code with cargo fmt and commit if changes were made
+fmt:
+    cargo fmt
+    @if ! git diff --quiet; then \
+        git add -A && git commit -m "Apply cargo fmt"; \
+    fi
+
 # Fast-forward merge from worker branch
 merge-ff:
     git merge --ff-only $(basename $(pwd))
