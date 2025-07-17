@@ -12,9 +12,9 @@ description: "Commit work in progress to the current worker branch with intellig
 ## Your task
 
 1. **Run pre-commit verification steps**:
-   - !RUSTFLAGS="-D warnings" cargo check
-   - !RUSTFLAGS="-D warnings" cargo test  
-   - !cargo clippy -- -D warnings
+   - !just check
+   - !just test  
+   - !just clippy
    
    **STOP AND REPORT IF ANY ISSUES ARE FOUND. DO NOT ATTEMPT TO FIX ISSUES.**
 

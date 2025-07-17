@@ -7,7 +7,7 @@ description: "Complete the full Worktree Agent Flow with intelligent commit stru
 Execute the complete Worktree Agent Flow to integrate finished work.
 
 ## Context
-- Worker branch: !WORKER_BRANCH=$(git branch --show-current) && echo $WORKER_BRANCH
+- Worker branch: !basename $(pwd)
 - Current git status: !git status
 - Commits since main: !git log --oneline main..HEAD
 - Recent main history: !git log --oneline main -5
@@ -29,10 +29,10 @@ Execute the complete Worktree Agent Flow to integrate finished work.
    - If this fails, another agent has the lease - stop and report
 
 4. **Fast-forward merge from worker branch**:
-   - !git merge --ff-only $WORKER_BRANCH
+   - !just merge-ff
    - If this fails, main has diverged - stop and report
 
 5. **Release lease - return to worker branch**:
-   - !git checkout $WORKER_BRANCH
+   - !just checkout-worker-branch
 
 The worker branch should already be up-to-date with main after the merge.
