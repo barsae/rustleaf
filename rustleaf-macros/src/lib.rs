@@ -210,10 +210,10 @@ fn discover_rustleaf_files(test_dir: &str) -> Result<Vec<(String, String)>, std:
 
 fn generate_test_name(file_path: &str) -> String {
     // Strip "./tests/" prefix if present
-    let relative_path = if file_path.starts_with("./tests/") {
-        &file_path[8..] // Remove "./tests/"
-    } else if file_path.starts_with("tests/") {
-        &file_path[6..] // Remove "tests/"
+    let relative_path = if let Some(stripped) = file_path.strip_prefix("./tests/") {
+        stripped // Remove "./tests/"
+    } else if let Some(stripped) = file_path.strip_prefix("tests/") {
+        stripped // Remove "tests/"
     } else {
         file_path
     };
@@ -231,5 +231,5 @@ fn generate_test_name(file_path: &str) -> String {
     };
 
     // Convert path separators to underscores
-    without_extension.replace('/', "_").replace('\\', "_")
+    without_extension.replace(['/', '\\'], "_")
 }
