@@ -1,14 +1,14 @@
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::{
-    parse::{Parse, ParseStream}, 
-    parse_macro_input, 
-    punctuated::Punctuated,
-    token::{Comma, FatArrow},
-    Ident, Token, LitStr,
-};
 use std::fs;
 use std::path::Path;
+use syn::{
+    parse::{Parse, ParseStream},
+    parse_macro_input,
+    punctuated::Punctuated,
+    token::{Comma, FatArrow},
+    Ident, LitStr, Token,
+};
 
 // Binary ops implementation
 struct BinaryOpLevel {
@@ -28,10 +28,16 @@ impl Parse for OpMapping {
         if input.peek(FatArrow) {
             input.parse::<FatArrow>()?;
             let binary_op = input.parse()?;
-            Ok(OpMapping { token_type, binary_op })
+            Ok(OpMapping {
+                token_type,
+                binary_op,
+            })
         } else {
             let binary_op = token_type.clone();
-            Ok(OpMapping { token_type, binary_op })
+            Ok(OpMapping {
+                token_type,
+                binary_op,
+            })
         }
     }
 }
@@ -45,7 +51,7 @@ impl Parse for BinaryOpLevel {
         let content;
         syn::bracketed!(content in input);
         let operators = content.parse_terminated(OpMapping::parse, Comma)?;
-        
+
         Ok(BinaryOpLevel {
             method_name,
             next_method,
@@ -69,13 +75,13 @@ impl Parse for BinaryOpsInput {
 pub fn binary_ops(args: TokenStream, input: TokenStream) -> TokenStream {
     let input_ast = parse_macro_input!(input as syn::ItemImpl);
     let ops_input = parse_macro_input!(args as BinaryOpsInput);
-    
+
     let mut methods = Vec::new();
-    
+
     for level in ops_input.levels {
         let method_name = &level.method_name;
         let next_method = &level.next_method;
-        
+
         let match_arms = level.operators.iter().map(|op| {
             let token_type = &op.token_type;
             let binary_op = &op.binary_op;
@@ -86,17 +92,17 @@ pub fn binary_ops(args: TokenStream, input: TokenStream) -> TokenStream {
                 }
             }
         });
-        
+
         let method = quote! {
             pub fn #method_name(&mut self) -> Option<AstNode> {
                 let mut expr = self.#next_method()?;
-                
+
                 loop {
                     let op = match &self.peek().token_type {
                         #(#match_arms)*
                         _ => break,
                     };
-                    
+
                     let location = self.current_location();
                     let right = self.#next_method()?;
                     expr = AstNode::BinaryOp {
@@ -106,24 +112,24 @@ pub fn binary_ops(args: TokenStream, input: TokenStream) -> TokenStream {
                         location,
                     };
                 }
-                
+
                 Some(expr)
             }
         };
-        
+
         methods.push(method);
     }
-    
+
     let self_ty = &input_ast.self_ty;
     let existing_items = &input_ast.items;
-    
+
     let expanded = quote! {
         impl #self_ty {
             #(#existing_items)*
             #(#methods)*
         }
     };
-    
+
     TokenStream::from(expanded)
 }
 
@@ -132,78 +138,72 @@ pub fn binary_ops(args: TokenStream, input: TokenStream) -> TokenStream {
 pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
     let test_dir = parse_macro_input!(args as LitStr);
     let test_dir_path = test_dir.value();
-    
+
     // Read directory and find .rustleaf files
     let test_files = match discover_rustleaf_files(&test_dir_path) {
         Ok(files) => files,
         Err(e) => panic!("Failed to read test directory '{}': {}", test_dir_path, e),
     };
-    
-    // Generate test_file helper function
-    let test_file_helper = quote! {
-        fn test_file(path: &str) {
-            let source = std::fs::read_to_string(path)
-                .unwrap_or_else(|_| panic!("Failed to read test file: {}", path));
-            
-            let tokens = rustleaf::Lexer::new(&source).unwrap();
-            
-            let mut parser = rustleaf::Parser::new(tokens);
-            let ast = parser.parse().unwrap();
-            
-            let mut evaluator = rustleaf::Evaluator::new();
-            evaluator.evaluate(&ast).unwrap();
-        }
-    };
-    
-    // Generate individual test functions
+
+    // Generate individual test functions that use include_str!
     let test_functions = test_files.iter().map(|(test_name, file_path)| {
         let test_fn_name = syn::Ident::new(test_name, proc_macro2::Span::call_site());
         quote! {
             #[test]
             fn #test_fn_name() {
-                test_file(#file_path);
+                let source = include_str!(#file_path);
+
+                let tokens = rustleaf::Lexer::new(source).unwrap();
+                let mut parser = rustleaf::Parser::new(tokens);
+                let ast = parser.parse().unwrap();
+
+                let mut evaluator = rustleaf::Evaluator::new();
+                evaluator.evaluate(&ast).unwrap();
             }
         }
     });
-    
+
     let expanded = quote! {
-        #test_file_helper
-        
         #(#test_functions)*
     };
-    
+
     TokenStream::from(expanded)
 }
 
 fn discover_rustleaf_files(test_dir: &str) -> Result<Vec<(String, String)>, std::io::Error> {
     let mut test_files = Vec::new();
     let test_path = Path::new(test_dir);
-    
+
     if !test_path.exists() {
         return Err(std::io::Error::new(
             std::io::ErrorKind::NotFound,
-            format!("Test directory does not exist: {}", test_dir)
+            format!("Test directory does not exist: {}", test_dir),
         ));
     }
-    
+
     for entry in fs::read_dir(test_path)? {
         let entry = entry?;
         let path = entry.path();
-        
+
         if path.is_file() {
             if let Some(extension) = path.extension() {
                 if extension == "rustleaf" {
                     let file_path = path.to_string_lossy().to_string();
-                    
+
                     // Generate test function name: strip "./tests/" and convert to function name
                     let test_name = generate_test_name(&file_path);
-                    
-                    test_files.push((test_name, file_path));
+
+                    // For include_str!, construct path relative to where the macro is called
+                    // The macro is called from tests/rustleaf.rs, so we need rustleaf/filename.rustleaf
+                    let filename = path.file_name().unwrap().to_string_lossy();
+                    let include_path = format!("rustleaf/{}", filename);
+
+                    test_files.push((test_name, include_path));
                 }
             }
         }
     }
-    
+
     test_files.sort_by(|a, b| a.0.cmp(&b.0)); // Sort by test name for consistent ordering
     Ok(test_files)
 }
@@ -217,7 +217,7 @@ fn generate_test_name(file_path: &str) -> String {
     } else {
         file_path
     };
-    
+
     // Remove .rustleaf extension and convert path separators to underscores
     let without_extension = if let Some(stem) = Path::new(relative_path).file_stem() {
         let parent = Path::new(relative_path).parent().unwrap_or(Path::new(""));
@@ -229,7 +229,7 @@ fn generate_test_name(file_path: &str) -> String {
     } else {
         relative_path.to_string()
     };
-    
+
     // Convert path separators to underscores
     without_extension.replace('/', "_").replace('\\', "_")
 }

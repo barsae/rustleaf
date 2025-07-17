@@ -1,7 +1,7 @@
-use std::collections::HashMap;
-use crate::value::types::{Value, RuntimeError, ErrorType};
-use crate::parser::AstNode;
 use super::core::Evaluator;
+use crate::parser::AstNode;
+use crate::value::types::{ErrorType, RuntimeError, Value};
+use std::collections::HashMap;
 
 impl Evaluator {
     pub(crate) fn evaluate_function_call(
@@ -10,7 +10,7 @@ impl Evaluator {
         arguments: &[crate::parser::Argument],
     ) -> Result<Value, RuntimeError> {
         let func_value = self.evaluate(function)?;
-        
+
         // Evaluate arguments
         let mut args = Vec::new();
         for arg in arguments {
@@ -21,7 +21,9 @@ impl Evaluator {
         match func_value {
             Value::Function(func) => {
                 if func.is_builtin {
-                    if let Some(builtin) = self.environment.get_builtin(&func.name.unwrap_or_default()) {
+                    if let Some(builtin) =
+                        self.environment.get_builtin(&func.name.unwrap_or_default())
+                    {
                         (builtin.function)(&args, &mut self.environment)
                     } else {
                         Err(RuntimeError::new(
@@ -36,7 +38,7 @@ impl Evaluator {
                         ErrorType::RuntimeError,
                     ))
                 }
-            },
+            }
             _ => Err(RuntimeError::new(
                 format!("{} is not callable", func_value.type_name()),
                 ErrorType::TypeError,
@@ -50,31 +52,38 @@ impl Evaluator {
         property: &str,
     ) -> Result<Value, RuntimeError> {
         let obj_value = self.evaluate(object)?;
-        
+
         match obj_value {
             Value::Object(obj) => {
                 if let Some(value) = obj.fields.get(property) {
                     Ok(value.clone())
                 } else {
                     Err(RuntimeError::new(
-                        format!("'{}' object has no attribute '{}'", obj.class_name, property),
+                        format!(
+                            "'{}' object has no attribute '{}'",
+                            obj.class_name, property
+                        ),
                         ErrorType::AttributeError,
                     ))
                 }
-            },
+            }
             Value::Dict(dict) => {
                 if let Some(value) = dict.get(property) {
                     Ok(value.clone())
                 } else {
                     Ok(Value::Null)
                 }
-            },
+            }
             Value::Null => Err(RuntimeError::new(
                 "Cannot access property of null".to_string(),
                 ErrorType::AttributeError,
             )),
             _ => Err(RuntimeError::new(
-                format!("'{}' object has no attribute '{}'", obj_value.type_name(), property),
+                format!(
+                    "'{}' object has no attribute '{}'",
+                    obj_value.type_name(),
+                    property
+                ),
                 ErrorType::AttributeError,
             )),
         }
@@ -87,13 +96,13 @@ impl Evaluator {
     ) -> Result<Value, RuntimeError> {
         let obj_value = self.evaluate(object)?;
         let index_value = self.evaluate(index)?;
-        
+
         match obj_value {
             Value::List(list) => {
                 if let Value::Int(i) = index_value {
                     let len = list.len() as i64;
                     let idx = if i < 0 { len + i } else { i };
-                    
+
                     if idx >= 0 && (idx as usize) < list.len() {
                         Ok(list[idx as usize].clone())
                     } else {
@@ -108,7 +117,7 @@ impl Evaluator {
                         ErrorType::TypeError,
                     ))
                 }
-            },
+            }
             Value::Dict(dict) => {
                 if let Value::String(key) = index_value {
                     Ok(dict.get(&key).cloned().unwrap_or(Value::Null))
@@ -118,14 +127,16 @@ impl Evaluator {
                         ErrorType::TypeError,
                     ))
                 }
-            },
+            }
             Value::String(s) => {
                 if let Value::Int(i) = index_value {
                     let len = s.len() as i64;
                     let idx = if i < 0 { len + i } else { i };
-                    
+
                     if idx >= 0 && (idx as usize) < s.len() {
-                        Ok(Value::String(s.chars().nth(idx as usize).unwrap().to_string()))
+                        Ok(Value::String(
+                            s.chars().nth(idx as usize).unwrap().to_string(),
+                        ))
                     } else {
                         Err(RuntimeError::new(
                             "String index out of range".to_string(),
@@ -138,7 +149,7 @@ impl Evaluator {
                         ErrorType::TypeError,
                     ))
                 }
-            },
+            }
             _ => Err(RuntimeError::new(
                 format!("'{}' object is not subscriptable", obj_value.type_name()),
                 ErrorType::TypeError,
@@ -146,7 +157,10 @@ impl Evaluator {
         }
     }
 
-    pub(crate) fn evaluate_list_literal(&mut self, elements: &[AstNode]) -> Result<Value, RuntimeError> {
+    pub(crate) fn evaluate_list_literal(
+        &mut self,
+        elements: &[AstNode],
+    ) -> Result<Value, RuntimeError> {
         let mut list = Vec::new();
         for element in elements {
             list.push(self.evaluate(element)?);
@@ -154,12 +168,15 @@ impl Evaluator {
         Ok(Value::List(list))
     }
 
-    pub(crate) fn evaluate_dict_literal(&mut self, entries: &[(AstNode, AstNode)]) -> Result<Value, RuntimeError> {
+    pub(crate) fn evaluate_dict_literal(
+        &mut self,
+        entries: &[(AstNode, AstNode)],
+    ) -> Result<Value, RuntimeError> {
         let mut dict = HashMap::new();
         for (key_node, value_node) in entries {
             let key_value = self.evaluate(key_node)?;
             let value = self.evaluate(value_node)?;
-            
+
             if let Value::String(key) = key_value {
                 dict.insert(key, value);
             } else {
@@ -183,14 +200,14 @@ impl Evaluator {
         if cond_value.is_truthy()? {
             return self.evaluate(then_branch);
         }
-        
+
         for (elif_cond, elif_body) in else_ifs {
             let elif_value = self.evaluate(elif_cond)?;
             if elif_value.is_truthy()? {
                 return self.evaluate(elif_body);
             }
         }
-        
+
         if let Some(else_body) = else_branch {
             self.evaluate(else_body)
         } else {

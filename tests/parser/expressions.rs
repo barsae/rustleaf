@@ -1,11 +1,11 @@
-use super::common::{parse_source, assert_debug_eq};
+use super::common::{assert_debug_eq, parse_source};
 
 /// Tests for expression parsing (property access, function calls, assignments, etc.)
 
 #[test]
 fn parser_assignment_expression() {
     let ast = parse_source("x = 42;").expect("Should parse assignment");
-    
+
     let actual = format!("{:#?}", ast);
     let expected = r#"Program {
     items: [
@@ -30,7 +30,9 @@ fn parser_assignment_expression() {
 #[test]
 fn parser_property_access() {
     let ast = parse_source("object.property;").expect("Should parse property access");
-    assert_debug_eq(&ast, r#"Program {
+    assert_debug_eq(
+        &ast,
+        r#"Program {
     items: [
         ExpressionStatement {
             expression: PropertyAccess {
@@ -41,13 +43,16 @@ fn parser_property_access() {
             },
         },
     ],
-}"#);
+}"#,
+    );
 }
 
 #[test]
 fn parser_chained_property_access() {
     let ast = parse_source("a.b.c;").expect("Should parse chained property access");
-    assert_debug_eq(&ast, r#"Program {
+    assert_debug_eq(
+        &ast,
+        r#"Program {
     items: [
         ExpressionStatement {
             expression: PropertyAccess {
@@ -61,13 +66,16 @@ fn parser_chained_property_access() {
             },
         },
     ],
-}"#);
+}"#,
+    );
 }
 
 #[test]
 fn parser_index_access() {
     let ast = parse_source("array[0];").expect("Should parse index access");
-    assert_debug_eq(&ast, r#"Program {
+    assert_debug_eq(
+        &ast,
+        r#"Program {
     items: [
         ExpressionStatement {
             expression: IndexAccess {
@@ -82,13 +90,16 @@ fn parser_index_access() {
             },
         },
     ],
-}"#);
+}"#,
+    );
 }
 
 #[test]
 fn parser_function_call() {
     let ast = parse_source("func();").expect("Should parse function call");
-    assert_debug_eq(&ast, r#"Program {
+    assert_debug_eq(
+        &ast,
+        r#"Program {
     items: [
         ExpressionStatement {
             expression: FunctionCall {
@@ -99,13 +110,16 @@ fn parser_function_call() {
             },
         },
     ],
-}"#);
+}"#,
+    );
 }
 
 #[test]
 fn parser_function_call_with_arguments() {
     let ast = parse_source("add(1, 2);").expect("Should parse function call with arguments");
-    assert_debug_eq(&ast, r#"Program {
+    assert_debug_eq(
+        &ast,
+        r#"Program {
     items: [
         ExpressionStatement {
             expression: FunctionCall {
@@ -135,13 +149,16 @@ fn parser_function_call_with_arguments() {
             },
         },
     ],
-}"#);
+}"#,
+    );
 }
 
 #[test]
 fn parser_complex_nested_expression() {
     let ast = parse_source("func(a[0].prop, b + c * d);").expect("Should parse complex expression");
-    assert_debug_eq(&ast, r#"Program {
+    assert_debug_eq(
+        &ast,
+        r#"Program {
     items: [
         ExpressionStatement {
             expression: FunctionCall {
@@ -189,5 +206,6 @@ fn parser_complex_nested_expression() {
             },
         },
     ],
-}"#);
+}"#,
+    );
 }

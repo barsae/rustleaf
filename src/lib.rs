@@ -1,9 +1,12 @@
+pub mod eval;
 pub mod lexer;
 pub mod parser;
-pub mod eval;
 pub mod value;
 
+pub use eval::{Environment, Evaluator};
 pub use lexer::*;
-pub use parser::{AstNode, BinaryOperator, UnaryOperator, AssignmentOperator, Argument, SourceLocation, Parser, Visibility};
+pub use parser::{
+    Argument, AssignmentOperator, AstNode, BinaryOperator, Parser, SourceLocation, UnaryOperator,
+    Visibility,
+};
 pub use value::*;
-pub use eval::{Evaluator, Environment};

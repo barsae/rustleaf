@@ -1,6 +1,6 @@
-use crate::value::types::{Value, RuntimeError, ErrorType};
-use crate::parser::{AstNode, BinaryOperator, UnaryOperator};
 use super::core::Evaluator;
+use crate::parser::{AstNode, BinaryOperator, UnaryOperator};
+use crate::value::types::{ErrorType, RuntimeError, Value};
 
 impl Evaluator {
     pub(crate) fn evaluate_binary_op(
@@ -17,14 +17,14 @@ impl Evaluator {
                     return Ok(left_val);
                 }
                 self.evaluate(right)
-            },
+            }
             BinaryOperator::Or => {
                 let left_val = self.evaluate(left)?;
                 if left_val.is_truthy()? {
                     return Ok(left_val);
                 }
                 self.evaluate(right)
-            },
+            }
             _ => {
                 let left_val = self.evaluate(left)?;
                 let right_val = self.evaluate(right)?;
@@ -84,27 +84,43 @@ impl Evaluator {
         }
     }
 
-    pub(crate) fn subtract_values(&self, left: &Value, right: &Value) -> Result<Value, RuntimeError> {
+    pub(crate) fn subtract_values(
+        &self,
+        left: &Value,
+        right: &Value,
+    ) -> Result<Value, RuntimeError> {
         match (left, right) {
             (Value::Int(a), Value::Int(b)) => Ok(Value::Int(a - b)),
             (Value::Float(a), Value::Float(b)) => Ok(Value::Float(a - b)),
             (Value::Int(a), Value::Float(b)) => Ok(Value::Float(*a as f64 - b)),
             (Value::Float(a), Value::Int(b)) => Ok(Value::Float(a - *b as f64)),
             _ => Err(RuntimeError::new(
-                format!("Cannot subtract {} and {}", left.type_name(), right.type_name()),
+                format!(
+                    "Cannot subtract {} and {}",
+                    left.type_name(),
+                    right.type_name()
+                ),
                 ErrorType::TypeError,
             )),
         }
     }
 
-    pub(crate) fn multiply_values(&self, left: &Value, right: &Value) -> Result<Value, RuntimeError> {
+    pub(crate) fn multiply_values(
+        &self,
+        left: &Value,
+        right: &Value,
+    ) -> Result<Value, RuntimeError> {
         match (left, right) {
             (Value::Int(a), Value::Int(b)) => Ok(Value::Int(a * b)),
             (Value::Float(a), Value::Float(b)) => Ok(Value::Float(a * b)),
             (Value::Int(a), Value::Float(b)) => Ok(Value::Float(*a as f64 * b)),
             (Value::Float(a), Value::Int(b)) => Ok(Value::Float(a * *b as f64)),
             _ => Err(RuntimeError::new(
-                format!("Cannot multiply {} and {}", left.type_name(), right.type_name()),
+                format!(
+                    "Cannot multiply {} and {}",
+                    left.type_name(),
+                    right.type_name()
+                ),
                 ErrorType::TypeError,
             )),
         }
@@ -121,12 +137,16 @@ impl Evaluator {
                 } else {
                     Ok(Value::Int(a / b))
                 }
-            },
+            }
             (Value::Float(a), Value::Float(b)) => Ok(Value::Float(a / b)),
             (Value::Int(a), Value::Float(b)) => Ok(Value::Float(*a as f64 / b)),
             (Value::Float(a), Value::Int(b)) => Ok(Value::Float(a / *b as f64)),
             _ => Err(RuntimeError::new(
-                format!("Cannot divide {} and {}", left.type_name(), right.type_name()),
+                format!(
+                    "Cannot divide {} and {}",
+                    left.type_name(),
+                    right.type_name()
+                ),
                 ErrorType::TypeError,
             )),
         }
@@ -143,12 +163,16 @@ impl Evaluator {
                 } else {
                     Ok(Value::Int(a % b))
                 }
-            },
+            }
             (Value::Float(a), Value::Float(b)) => Ok(Value::Float(a % b)),
             (Value::Int(a), Value::Float(b)) => Ok(Value::Float(*a as f64 % b)),
             (Value::Float(a), Value::Int(b)) => Ok(Value::Float(a % *b as f64)),
             _ => Err(RuntimeError::new(
-                format!("Cannot modulo {} and {}", left.type_name(), right.type_name()),
+                format!(
+                    "Cannot modulo {} and {}",
+                    left.type_name(),
+                    right.type_name()
+                ),
                 ErrorType::TypeError,
             )),
         }
@@ -162,12 +186,16 @@ impl Evaluator {
                 } else {
                     Ok(Value::Int(a.pow(*b as u32)))
                 }
-            },
+            }
             (Value::Float(a), Value::Float(b)) => Ok(Value::Float(a.powf(*b))),
             (Value::Int(a), Value::Float(b)) => Ok(Value::Float((*a as f64).powf(*b))),
             (Value::Float(a), Value::Int(b)) => Ok(Value::Float(a.powf(*b as f64))),
             _ => Err(RuntimeError::new(
-                format!("Cannot exponentiate {} and {}", left.type_name(), right.type_name()),
+                format!(
+                    "Cannot exponentiate {} and {}",
+                    left.type_name(),
+                    right.type_name()
+                ),
                 ErrorType::TypeError,
             )),
         }
@@ -182,13 +210,20 @@ impl Evaluator {
             (Value::Float(a), Value::Float(b)) => Ok(Value::Bool(op(*a, *b))),
             (Value::Int(a), Value::Float(b)) => Ok(Value::Bool(op(*a as f64, *b))),
             (Value::Float(a), Value::Int(b)) => Ok(Value::Bool(op(*a, *b as f64))),
-            (Value::String(a), Value::String(b)) => Ok(Value::Bool(op(0.0, match a.cmp(b) {
-                std::cmp::Ordering::Less => -1.0,
-                std::cmp::Ordering::Greater => 1.0,
-                std::cmp::Ordering::Equal => 0.0,
-            }))),
+            (Value::String(a), Value::String(b)) => Ok(Value::Bool(op(
+                0.0,
+                match a.cmp(b) {
+                    std::cmp::Ordering::Less => -1.0,
+                    std::cmp::Ordering::Greater => 1.0,
+                    std::cmp::Ordering::Equal => 0.0,
+                },
+            ))),
             _ => Err(RuntimeError::new(
-                format!("Cannot compare {} and {}", left.type_name(), right.type_name()),
+                format!(
+                    "Cannot compare {} and {}",
+                    left.type_name(),
+                    right.type_name()
+                ),
                 ErrorType::TypeError,
             )),
         }
@@ -235,7 +270,7 @@ impl Evaluator {
                 } else {
                     Ok(Value::Int(a << b))
                 }
-            },
+            }
             _ => Err(RuntimeError::new(
                 "Left shift requires integers".to_string(),
                 ErrorType::TypeError,
@@ -254,7 +289,7 @@ impl Evaluator {
                 } else {
                     Ok(Value::Int(a >> b))
                 }
-            },
+            }
             _ => Err(RuntimeError::new(
                 "Right shift requires integers".to_string(),
                 ErrorType::TypeError,
@@ -268,7 +303,7 @@ impl Evaluator {
         operand: &AstNode,
     ) -> Result<Value, RuntimeError> {
         let value = self.evaluate(operand)?;
-        
+
         match operator {
             UnaryOperator::Plus => match value {
                 Value::Int(_) | Value::Float(_) => Ok(value),
@@ -288,7 +323,7 @@ impl Evaluator {
             UnaryOperator::Not => {
                 let truthy = value.is_truthy()?;
                 Ok(Value::Bool(!truthy))
-            },
+            }
             UnaryOperator::BitwiseNot => match value {
                 Value::Int(i) => Ok(Value::Int(!i)),
                 _ => Err(RuntimeError::new(

@@ -10,7 +10,11 @@ pub struct LexError {
 
 impl fmt::Display for LexError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Lexical error at {}:{}: {}", self.line, self.column, self.message)
+        write!(
+            f,
+            "Lexical error at {}:{}: {}",
+            self.line, self.column, self.message
+        )
     }
 }
 
@@ -34,15 +38,15 @@ impl LexErrors {
     pub fn new(errors: Vec<LexError>) -> Self {
         Self { errors }
     }
-    
+
     pub fn is_empty(&self) -> bool {
         self.errors.is_empty()
     }
-    
+
     pub fn len(&self) -> usize {
         self.errors.len()
     }
-    
+
     pub fn iter(&self) -> impl Iterator<Item = &LexError> {
         self.errors.iter()
     }

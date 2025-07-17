@@ -1,4 +1,4 @@
-use crate::lexer::{Token, LiteralValue};
+use crate::lexer::{LiteralValue, Token};
 use std::fmt;
 
 #[derive(Clone, PartialEq)]
@@ -72,7 +72,7 @@ pub enum AstNode {
         body: Box<AstNode>,
         location: SourceLocation,
     },
-    
+
     // Statements
     ExpressionStatement {
         expression: Box<AstNode>,
@@ -140,7 +140,7 @@ pub enum AstNode {
         value: Option<Box<AstNode>>,
         location: SourceLocation,
     },
-    
+
     // Module level
     Program {
         items: Vec<AstNode>,
@@ -151,25 +151,49 @@ pub enum AstNode {
 #[derive(Debug, Clone, PartialEq)]
 pub enum BinaryOperator {
     // Arithmetic
-    Add, Subtract, Multiply, Divide, Modulo, Power,
+    Add,
+    Subtract,
+    Multiply,
+    Divide,
+    Modulo,
+    Power,
     // Comparison
-    Equal, NotEqual, Less, Greater, LessEqual, GreaterEqual,
+    Equal,
+    NotEqual,
+    Less,
+    Greater,
+    LessEqual,
+    GreaterEqual,
     // Logical
-    And, Or,
+    And,
+    Or,
     // Bitwise
-    BitwiseAnd, BitwiseOr, BitwiseXor, LeftShift, RightShift,
+    BitwiseAnd,
+    BitwiseOr,
+    BitwiseXor,
+    LeftShift,
+    RightShift,
     // Membership
-    In, Is,
+    In,
+    Is,
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum UnaryOperator {
-    Plus, Minus, Not, BitwiseNot,
+    Plus,
+    Minus,
+    Not,
+    BitwiseNot,
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum AssignmentOperator {
-    Assign, AddAssign, SubtractAssign, MultiplyAssign, DivideAssign, ModuloAssign,
+    Assign,
+    AddAssign,
+    SubtractAssign,
+    MultiplyAssign,
+    DivideAssign,
+    ModuloAssign,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -201,7 +225,11 @@ pub enum Pattern {
     Wildcard,
     List(Vec<Pattern>),
     Dict(Vec<(String, Pattern)>),
-    Range { start: AstNode, end: AstNode, inclusive: bool },
+    Range {
+        start: AstNode,
+        end: AstNode,
+        inclusive: bool,
+    },
     Or(Vec<Pattern>),
 }
 
@@ -269,7 +297,10 @@ pub struct ParseError {
 
 impl fmt::Display for ParseError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Parse error at {}:{}: {}", 
-               self.location.line, self.location.column, self.message)
+        write!(
+            f,
+            "Parse error at {}:{}: {}",
+            self.location.line, self.location.column, self.message
+        )
     }
 }

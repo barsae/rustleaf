@@ -1,7 +1,7 @@
-use std::collections::HashMap;
-use crate::value::types::{Value, RuntimeError, ErrorType, Function};
-use crate::value::function::{get_builtin_functions, BuiltinFunctionInfo};
 use crate::parser::AstNode;
+use crate::value::function::{get_builtin_functions, BuiltinFunctionInfo};
+use crate::value::types::{ErrorType, Function, RuntimeError, Value};
+use std::collections::HashMap;
 
 #[derive(Debug, Clone)]
 pub struct Environment {
@@ -21,12 +21,12 @@ impl Environment {
             scopes: vec![HashMap::new()], // Global scope
             builtins: HashMap::new(),
         };
-        
+
         // Add builtin functions
         for builtin in get_builtin_functions() {
             env.builtins.insert(builtin.name.to_string(), builtin);
         }
-        
+
         env
     }
 
@@ -59,7 +59,10 @@ impl Environment {
             return Ok(Value::Function(Function {
                 name: Some(name.to_string()),
                 parameters: vec![], // Builtins handle their own parameters
-                body: AstNode::Block { statements: vec![], location: Default::default() },
+                body: AstNode::Block {
+                    statements: vec![],
+                    location: Default::default(),
+                },
                 closure: None,
                 is_builtin: true,
             }));
@@ -90,4 +93,3 @@ impl Environment {
         self.builtins.get(name)
     }
 }
-

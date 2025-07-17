@@ -2,9 +2,9 @@ mod common;
 
 mod basic;
 mod declarations;
-mod statements;
 mod expressions;
-mod operators;
 mod literals;
+mod operators;
+mod statements;
 
 // Note: parser_old.rs contains the original combined test file for reference

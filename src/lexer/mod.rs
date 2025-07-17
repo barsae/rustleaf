@@ -1,13 +1,13 @@
-mod token;
-mod error;
-mod keywords;
-mod strings;
-mod numbers;
 mod comments;
-mod identifiers;
-mod scanner;
 mod core;
+mod error;
+mod identifiers;
+mod keywords;
+mod numbers;
+mod scanner;
+mod strings;
+mod token;
 
-pub use token::*;
-pub use error::*;
 pub use core::*;
+pub use error::*;
+pub use token::*;

@@ -1,11 +1,11 @@
-use crate::value::types::{Value, RuntimeError, ErrorType};
-use crate::parser::{AstNode, AssignmentOperator};
 use super::core::Evaluator;
+use crate::parser::{AssignmentOperator, AstNode};
+use crate::value::types::{ErrorType, RuntimeError, Value};
 
 impl Evaluator {
     pub(crate) fn evaluate_block(&mut self, statements: &[AstNode]) -> Result<Value, RuntimeError> {
         self.environment.push_scope();
-        
+
         let mut result = Value::Null;
         for (i, stmt) in statements.iter().enumerate() {
             if i == statements.len() - 1 {
@@ -15,7 +15,7 @@ impl Evaluator {
                 self.evaluate(stmt)?;
             }
         }
-        
+
         self.environment.pop_scope();
         Ok(result)
     }
@@ -30,7 +30,7 @@ impl Evaluator {
         } else {
             Value::Null
         };
-        
+
         self.environment.define(name.to_string(), val.clone());
         Ok(val)
     }
@@ -42,7 +42,7 @@ impl Evaluator {
         value: &AstNode,
     ) -> Result<Value, RuntimeError> {
         let new_value = self.evaluate(value)?;
-        
+
         match target {
             AstNode::Identifier(name, _) => {
                 let final_value = match operator {
@@ -50,19 +50,29 @@ impl Evaluator {
                     _ => {
                         let current = self.environment.get(name)?;
                         match operator {
-                            AssignmentOperator::AddAssign => self.add_values(&current, &new_value)?,
-                            AssignmentOperator::SubtractAssign => self.subtract_values(&current, &new_value)?,
-                            AssignmentOperator::MultiplyAssign => self.multiply_values(&current, &new_value)?,
-                            AssignmentOperator::DivideAssign => self.divide_values(&current, &new_value)?,
-                            AssignmentOperator::ModuloAssign => self.modulo_values(&current, &new_value)?,
+                            AssignmentOperator::AddAssign => {
+                                self.add_values(&current, &new_value)?
+                            }
+                            AssignmentOperator::SubtractAssign => {
+                                self.subtract_values(&current, &new_value)?
+                            }
+                            AssignmentOperator::MultiplyAssign => {
+                                self.multiply_values(&current, &new_value)?
+                            }
+                            AssignmentOperator::DivideAssign => {
+                                self.divide_values(&current, &new_value)?
+                            }
+                            AssignmentOperator::ModuloAssign => {
+                                self.modulo_values(&current, &new_value)?
+                            }
                             _ => unreachable!(),
                         }
                     }
                 };
-                
+
                 self.environment.set(name, final_value.clone())?;
                 Ok(final_value)
-            },
+            }
             _ => Err(RuntimeError::new(
                 "Complex assignment targets not implemented yet".to_string(),
                 ErrorType::RuntimeError,

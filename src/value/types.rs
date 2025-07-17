@@ -1,6 +1,6 @@
+use crate::parser::AstNode;
 use std::collections::HashMap;
 use std::fmt;
-use crate::parser::AstNode;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Value {
@@ -57,7 +57,7 @@ impl Value {
             Value::Null => "null",
             Value::Bool(_) => "bool",
             Value::Int(_) => "int",
-            Value::Float(_) => "float", 
+            Value::Float(_) => "float",
             Value::String(_) => "string",
             Value::List(_) => "list",
             Value::Dict(_) => "dict",
@@ -86,26 +86,23 @@ impl Value {
             Value::Float(f) => f.to_string(),
             Value::String(s) => s.clone(),
             Value::List(elements) => {
-                let items: Vec<String> = elements.iter()
-                    .map(|v| v.to_display_string())
-                    .collect();
+                let items: Vec<String> = elements.iter().map(|v| v.to_display_string()).collect();
                 format!("[{}]", items.join(", "))
-            },
+            }
             Value::Dict(map) => {
-                let items: Vec<String> = map.iter()
+                let items: Vec<String> = map
+                    .iter()
                     .map(|(k, v)| format!("{}: {}", k, v.to_display_string()))
                     .collect();
                 format!("{{{}}}", items.join(", "))
-            },
-            Value::Function(f) => {
-                match &f.name {
-                    Some(name) => format!("<function {}>", name),
-                    None => "<anonymous function>".to_string(),
-                }
+            }
+            Value::Function(f) => match &f.name {
+                Some(name) => format!("<function {}>", name),
+                None => "<anonymous function>".to_string(),
             },
             Value::Object(obj) => {
                 format!("<{} object>", obj.class_name)
-            },
+            }
             Value::RustValue(rv) => rv.to_string(),
         }
     }

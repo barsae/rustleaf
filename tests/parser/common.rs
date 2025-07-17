@@ -1,4 +1,4 @@
-use rustleaf::{Lexer, Parser, AstNode};
+use rustleaf::{AstNode, Lexer, Parser};
 
 /// Common test utilities for parser tests
 pub fn parse_source(input: &str) -> Result<AstNode, String> {
@@ -8,7 +8,7 @@ pub fn parse_source(input: &str) -> Result<AstNode, String> {
             return Err(format!("Lexer errors: {}", lexer_errors));
         }
     };
-    
+
     let mut parser = Parser::new(tokens);
     match parser.parse() {
         Ok(ast) => Ok(ast),

@@ -3,10 +3,40 @@ use std::fmt;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum TokenType {
     // Keywords
-    And, Break, Case, Catch, Class, Continue, Else, False, Finally, Fn, For,
-    From, If, In, Is, Match, Not, Null, Of, Or, Pub, Raise, Require, Return,
-    Self_, Static, Super, True, Try, Use, Var, While, With,
-    
+    And,
+    Break,
+    Case,
+    Catch,
+    Class,
+    Continue,
+    Else,
+    False,
+    Finally,
+    Fn,
+    For,
+    From,
+    If,
+    In,
+    Is,
+    Match,
+    Not,
+    Null,
+    Of,
+    Or,
+    Pub,
+    Raise,
+    Require,
+    Return,
+    Self_,
+    Static,
+    Super,
+    True,
+    Try,
+    Use,
+    Var,
+    While,
+    With,
+
     // Identifiers and literals
     Identifier,
     IntegerLiteral,
@@ -15,7 +45,7 @@ pub enum TokenType {
     RawStringLiteral,
     BooleanLiteral,
     NullLiteral,
-    
+
     // Operators
     Plus,           // +
     Minus,          // -
@@ -41,25 +71,25 @@ pub enum TokenType {
     Tilde,          // ~
     LessLess,       // <<
     GreaterGreater, // >>
-    
+
     // Punctuation
-    LeftParen,      // (
-    RightParen,     // )
-    LeftBrace,      // {
-    RightBrace,     // }
-    LeftBracket,    // [
-    RightBracket,   // ]
-    Comma,          // ,
-    Dot,            // .
-    Colon,          // :
-    DoubleColon,    // ::
-    Semicolon,      // ;
-    Arrow,          // ->
-    
+    LeftParen,    // (
+    RightParen,   // )
+    LeftBrace,    // {
+    RightBrace,   // }
+    LeftBracket,  // [
+    RightBracket, // ]
+    Comma,        // ,
+    Dot,          // .
+    Colon,        // :
+    DoubleColon,  // ::
+    Semicolon,    // ;
+    Arrow,        // ->
+
     // Special
     Newline,
     Eof,
-    
+
     // Comments (preserved for tooling)
     Comment,
     DocComment,
@@ -106,6 +136,10 @@ impl Token {
 
 impl fmt::Display for Token {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{:?}({}) at {}:{}", self.token_type, self.lexeme, self.line, self.column)
+        write!(
+            f,
+            "{:?}({}) at {}:{}",
+            self.token_type, self.lexeme, self.line, self.column
+        )
     }
 }

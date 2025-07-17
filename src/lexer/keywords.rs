@@ -1,9 +1,9 @@
-use std::collections::HashMap;
 use crate::lexer::token::TokenType;
+use std::collections::HashMap;
 
 pub fn create_keywords_map() -> HashMap<String, TokenType> {
     let mut keywords = HashMap::new();
-    
+
     // Insert all keywords
     keywords.insert("and".to_string(), TokenType::And);
     keywords.insert("break".to_string(), TokenType::Break);
@@ -38,6 +38,6 @@ pub fn create_keywords_map() -> HashMap<String, TokenType> {
     keywords.insert("var".to_string(), TokenType::Var);
     keywords.insert("while".to_string(), TokenType::While);
     keywords.insert("with".to_string(), TokenType::With);
-    
+
     keywords
 }

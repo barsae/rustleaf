@@ -1,5 +1,5 @@
 use clap::{Parser, Subcommand};
-use rustleaf::{Lexer, Parser as RustLeafParser, Evaluator};
+use rustleaf::{Evaluator, Lexer, Parser as RustLeafParser};
 use std::fs;
 
 #[derive(Parser)]
@@ -48,7 +48,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 fn run_file(file_path: &str) -> Result<(), Box<dyn std::error::Error>> {
     let source = fs::read_to_string(file_path)?;
-    
+
     // Tokenize
     let tokens = match Lexer::new(&source) {
         Ok(tokens) => tokens,
@@ -57,7 +57,7 @@ fn run_file(file_path: &str) -> Result<(), Box<dyn std::error::Error>> {
             return Err("Lexing failed".into());
         }
     };
-    
+
     // Parse
     let mut parser = RustLeafParser::new(tokens);
     let ast = match parser.parse() {
@@ -69,18 +69,18 @@ fn run_file(file_path: &str) -> Result<(), Box<dyn std::error::Error>> {
             return Err("Parsing failed".into());
         }
     };
-    
+
     // Evaluate
     let mut evaluator = Evaluator::new();
     let result = evaluator.evaluate(&ast)?;
-    
+
     println!("Result: {}", result);
     Ok(())
 }
 
 fn parse_file(file_path: &str) -> Result<(), Box<dyn std::error::Error>> {
     let source = fs::read_to_string(file_path)?;
-    
+
     // Tokenize
     let tokens = match Lexer::new(&source) {
         Ok(tokens) => tokens,
@@ -89,7 +89,7 @@ fn parse_file(file_path: &str) -> Result<(), Box<dyn std::error::Error>> {
             return Err("Lexing failed".into());
         }
     };
-    
+
     // Parse
     let mut parser = RustLeafParser::new(tokens);
     let ast = match parser.parse() {
@@ -101,7 +101,7 @@ fn parse_file(file_path: &str) -> Result<(), Box<dyn std::error::Error>> {
             return Err("Parsing failed".into());
         }
     };
-    
+
     println!("AST: {:#?}", ast);
     Ok(())
 }

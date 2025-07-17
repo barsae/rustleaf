@@ -1,8 +1,8 @@
-pub mod environment;
 pub mod core;
-pub mod operators;
+pub mod environment;
 pub mod expressions;
+pub mod operators;
 pub mod statements;
 
-pub use environment::Environment;
 pub use core::Evaluator;
+pub use environment::Environment;

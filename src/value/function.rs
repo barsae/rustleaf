@@ -1,5 +1,5 @@
-use crate::value::types::{Value, RuntimeError, ErrorType};
 use crate::eval::Environment;
+use crate::value::types::{ErrorType, RuntimeError, Value};
 
 pub type BuiltinFunction = fn(&[Value], &mut Environment) -> Result<Value, RuntimeError>;
 
@@ -50,7 +50,7 @@ fn builtin_print(args: &[Value], _env: &mut Environment) -> Result<Value, Runtim
             .collect::<Vec<_>>()
             .join(" ")
     };
-    
+
     println!("{}", output);
     Ok(Value::Null)
 }
@@ -106,10 +106,7 @@ fn builtin_assert(args: &[Value], _env: &mut Environment) -> Result<Value, Runti
             "Assertion failed".to_string()
         };
 
-        return Err(RuntimeError::new(
-            message,
-            ErrorType::AssertionError,
-        ));
+        return Err(RuntimeError::new(message, ErrorType::AssertionError));
     }
 
     Ok(Value::Null)

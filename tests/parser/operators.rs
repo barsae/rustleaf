@@ -1,11 +1,11 @@
-use super::common::{parse_source, assert_debug_eq};
+use super::common::{assert_debug_eq, parse_source};
 
 /// Tests for operator parsing (binary, unary, precedence, parentheses)
 
 #[test]
 fn parser_simple_arithmetic() {
     let ast = parse_source("var result = 2 + 3;").expect("Should parse arithmetic");
-    
+
     let actual = format!("{:#?}", ast);
     let expected = r#"Program {
     items: [
@@ -29,7 +29,7 @@ fn parser_simple_arithmetic() {
         },
     ],
 }"#;
-    
+
     assert_eq!(actual, expected);
 }
 
@@ -37,7 +37,7 @@ fn parser_simple_arithmetic() {
 fn parser_binary_arithmetic_expressions() {
     // Addition
     let ast = parse_source("2 + 3;").expect("Should parse addition");
-    
+
     let actual = format!("{:#?}", ast);
     let expected = r#"Program {
     items: [
@@ -59,27 +59,30 @@ fn parser_binary_arithmetic_expressions() {
     ],
 }"#;
     assert_eq!(actual, expected);
-    
+
     // Subtraction
     let ast = parse_source("10 - 5;").expect("Should parse subtraction");
     let actual = format!("{:#?}", ast);
     assert!(actual.contains("Subtract"), "Expected subtraction operator");
-    
+
     // Multiplication
     let ast = parse_source("4 * 5;").expect("Should parse multiplication");
     let actual = format!("{:#?}", ast);
-    assert!(actual.contains("Multiply"), "Expected multiplication operator");
-    
+    assert!(
+        actual.contains("Multiply"),
+        "Expected multiplication operator"
+    );
+
     // Division
     let ast = parse_source("20 / 4;").expect("Should parse division");
     let actual = format!("{:#?}", ast);
     assert!(actual.contains("Divide"), "Expected division operator");
-    
+
     // Modulo
     let ast = parse_source("10 % 3;").expect("Should parse modulo");
     let actual = format!("{:#?}", ast);
     assert!(actual.contains("Modulo"), "Expected modulo operator");
-    
+
     // Power
     let ast = parse_source("2 ** 3;").expect("Should parse power");
     let actual = format!("{:#?}", ast);
@@ -90,7 +93,9 @@ fn parser_binary_arithmetic_expressions() {
 fn parser_binary_comparison_expressions() {
     // Equal
     let ast = parse_source("x == y;").expect("Should parse equality");
-    assert_debug_eq(&ast, r#"Program {
+    assert_debug_eq(
+        &ast,
+        r#"Program {
     items: [
         ExpressionStatement {
             expression: BinaryOp {
@@ -104,11 +109,14 @@ fn parser_binary_comparison_expressions() {
             },
         },
     ],
-}"#);
-    
+}"#,
+    );
+
     // Not equal
     let ast = parse_source("x != y;").expect("Should parse inequality");
-    assert_debug_eq(&ast, r#"Program {
+    assert_debug_eq(
+        &ast,
+        r#"Program {
     items: [
         ExpressionStatement {
             expression: BinaryOp {
@@ -122,11 +130,14 @@ fn parser_binary_comparison_expressions() {
             },
         },
     ],
-}"#);
-    
+}"#,
+    );
+
     // Less than
     let ast = parse_source("x < y;").expect("Should parse less than");
-    assert_debug_eq(&ast, r#"Program {
+    assert_debug_eq(
+        &ast,
+        r#"Program {
     items: [
         ExpressionStatement {
             expression: BinaryOp {
@@ -140,11 +151,14 @@ fn parser_binary_comparison_expressions() {
             },
         },
     ],
-}"#);
-    
+}"#,
+    );
+
     // Greater than
     let ast = parse_source("x > y;").expect("Should parse greater than");
-    assert_debug_eq(&ast, r#"Program {
+    assert_debug_eq(
+        &ast,
+        r#"Program {
     items: [
         ExpressionStatement {
             expression: BinaryOp {
@@ -158,11 +172,14 @@ fn parser_binary_comparison_expressions() {
             },
         },
     ],
-}"#);
-    
+}"#,
+    );
+
     // Less than or equal
     let ast = parse_source("x <= y;").expect("Should parse less than or equal");
-    assert_debug_eq(&ast, r#"Program {
+    assert_debug_eq(
+        &ast,
+        r#"Program {
     items: [
         ExpressionStatement {
             expression: BinaryOp {
@@ -176,11 +193,14 @@ fn parser_binary_comparison_expressions() {
             },
         },
     ],
-}"#);
-    
+}"#,
+    );
+
     // Greater than or equal
     let ast = parse_source("x >= y;").expect("Should parse greater than or equal");
-    assert_debug_eq(&ast, r#"Program {
+    assert_debug_eq(
+        &ast,
+        r#"Program {
     items: [
         ExpressionStatement {
             expression: BinaryOp {
@@ -194,14 +214,17 @@ fn parser_binary_comparison_expressions() {
             },
         },
     ],
-}"#);
+}"#,
+    );
 }
 
 #[test]
 fn parser_binary_logical_expressions() {
     // Logical AND
     let ast = parse_source("x and y;").expect("Should parse logical AND");
-    assert_debug_eq(&ast, r#"Program {
+    assert_debug_eq(
+        &ast,
+        r#"Program {
     items: [
         ExpressionStatement {
             expression: BinaryOp {
@@ -215,11 +238,14 @@ fn parser_binary_logical_expressions() {
             },
         },
     ],
-}"#);
-    
+}"#,
+    );
+
     // Logical OR
     let ast = parse_source("x or y;").expect("Should parse logical OR");
-    assert_debug_eq(&ast, r#"Program {
+    assert_debug_eq(
+        &ast,
+        r#"Program {
     items: [
         ExpressionStatement {
             expression: BinaryOp {
@@ -233,14 +259,17 @@ fn parser_binary_logical_expressions() {
             },
         },
     ],
-}"#);
+}"#,
+    );
 }
 
 #[test]
 fn parser_binary_bitwise_expressions() {
     // Bitwise AND
     let ast = parse_source("x & y;").expect("Should parse bitwise AND");
-    assert_debug_eq(&ast, r#"Program {
+    assert_debug_eq(
+        &ast,
+        r#"Program {
     items: [
         ExpressionStatement {
             expression: BinaryOp {
@@ -254,11 +283,14 @@ fn parser_binary_bitwise_expressions() {
             },
         },
     ],
-}"#);
-    
+}"#,
+    );
+
     // Bitwise OR
     let ast = parse_source("x | y;").expect("Should parse bitwise OR");
-    assert_debug_eq(&ast, r#"Program {
+    assert_debug_eq(
+        &ast,
+        r#"Program {
     items: [
         ExpressionStatement {
             expression: BinaryOp {
@@ -272,11 +304,14 @@ fn parser_binary_bitwise_expressions() {
             },
         },
     ],
-}"#);
-    
+}"#,
+    );
+
     // Bitwise XOR
     let ast = parse_source("x ^ y;").expect("Should parse bitwise XOR");
-    assert_debug_eq(&ast, r#"Program {
+    assert_debug_eq(
+        &ast,
+        r#"Program {
     items: [
         ExpressionStatement {
             expression: BinaryOp {
@@ -290,11 +325,14 @@ fn parser_binary_bitwise_expressions() {
             },
         },
     ],
-}"#);
-    
+}"#,
+    );
+
     // Left shift
     let ast = parse_source("x << 2;").expect("Should parse left shift");
-    assert_debug_eq(&ast, r#"Program {
+    assert_debug_eq(
+        &ast,
+        r#"Program {
     items: [
         ExpressionStatement {
             expression: BinaryOp {
@@ -310,11 +348,14 @@ fn parser_binary_bitwise_expressions() {
             },
         },
     ],
-}"#);
-    
+}"#,
+    );
+
     // Right shift
     let ast = parse_source("x >> 2;").expect("Should parse right shift");
-    assert_debug_eq(&ast, r#"Program {
+    assert_debug_eq(
+        &ast,
+        r#"Program {
     items: [
         ExpressionStatement {
             expression: BinaryOp {
@@ -330,14 +371,17 @@ fn parser_binary_bitwise_expressions() {
             },
         },
     ],
-}"#);
+}"#,
+    );
 }
 
 #[test]
 fn parser_unary_expressions() {
     // Unary plus
     let ast = parse_source("+x;").expect("Should parse unary plus");
-    assert_debug_eq(&ast, r#"Program {
+    assert_debug_eq(
+        &ast,
+        r#"Program {
     items: [
         ExpressionStatement {
             expression: UnaryOp {
@@ -348,11 +392,14 @@ fn parser_unary_expressions() {
             },
         },
     ],
-}"#);
-    
+}"#,
+    );
+
     // Unary minus
     let ast = parse_source("-x;").expect("Should parse unary minus");
-    assert_debug_eq(&ast, r#"Program {
+    assert_debug_eq(
+        &ast,
+        r#"Program {
     items: [
         ExpressionStatement {
             expression: UnaryOp {
@@ -363,11 +410,14 @@ fn parser_unary_expressions() {
             },
         },
     ],
-}"#);
-    
+}"#,
+    );
+
     // Logical NOT
     let ast = parse_source("not x;").expect("Should parse logical NOT");
-    assert_debug_eq(&ast, r#"Program {
+    assert_debug_eq(
+        &ast,
+        r#"Program {
     items: [
         ExpressionStatement {
             expression: UnaryOp {
@@ -378,11 +428,14 @@ fn parser_unary_expressions() {
             },
         },
     ],
-}"#);
-    
+}"#,
+    );
+
     // Bitwise NOT
     let ast = parse_source("~x;").expect("Should parse bitwise NOT");
-    assert_debug_eq(&ast, r#"Program {
+    assert_debug_eq(
+        &ast,
+        r#"Program {
     items: [
         ExpressionStatement {
             expression: UnaryOp {
@@ -393,14 +446,17 @@ fn parser_unary_expressions() {
             },
         },
     ],
-}"#);
+}"#,
+    );
 }
 
 #[test]
 fn parser_operator_precedence() {
     // Multiplication has higher precedence than addition
     let ast = parse_source("2 + 3 * 4;").expect("Should parse with correct precedence");
-    assert_debug_eq(&ast, r#"Program {
+    assert_debug_eq(
+        &ast,
+        r#"Program {
     items: [
         ExpressionStatement {
             expression: BinaryOp {
@@ -426,11 +482,14 @@ fn parser_operator_precedence() {
             },
         },
     ],
-}"#);
-    
+}"#,
+    );
+
     // Exponentiation has higher precedence than multiplication
     let ast = parse_source("2 * 3 ** 4;").expect("Should parse power precedence");
-    assert_debug_eq(&ast, r#"Program {
+    assert_debug_eq(
+        &ast,
+        r#"Program {
     items: [
         ExpressionStatement {
             expression: BinaryOp {
@@ -456,13 +515,16 @@ fn parser_operator_precedence() {
             },
         },
     ],
-}"#);
+}"#,
+    );
 }
 
 #[test]
 fn parser_parenthesized_expressions() {
     let ast = parse_source("(2 + 3) * 4;").expect("Should parse parenthesized expression");
-    assert_debug_eq(&ast, r#"Program {
+    assert_debug_eq(
+        &ast,
+        r#"Program {
     items: [
         ExpressionStatement {
             expression: BinaryOp {
@@ -488,5 +550,6 @@ fn parser_parenthesized_expressions() {
             },
         },
     ],
-}"#);
+}"#,
+    );
 }

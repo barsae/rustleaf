@@ -7,11 +7,18 @@ use rustleaf::{AstNode, SourceLocation};
 #[test]
 fn parser_empty_program() {
     let ast = parse_source("").expect("Should parse empty program");
-    
-    assert_eq!(ast, AstNode::Program {
-        items: vec![],
-        location: SourceLocation { line: 1, column: 1, byte_offset: 0 },
-    });
+
+    assert_eq!(
+        ast,
+        AstNode::Program {
+            items: vec![],
+            location: SourceLocation {
+                line: 1,
+                column: 1,
+                byte_offset: 0
+            },
+        }
+    );
 }
 
 #[test]
@@ -23,7 +30,7 @@ fn parser_multiple_statements() {
             return a + b;
         }
     "#;
-    
+
     let _ast = parse_source(source).expect("Should parse multiple statements");
 }
 
@@ -45,11 +52,11 @@ fn parser_nested_while_loops() {
 #[test]
 fn parser_source_location_tracking() {
     let ast = parse_source("var x = 42;").expect("Should parse with location tracking");
-    
+
     if let AstNode::Program { items, location } = ast {
         assert_eq!(location.line, 1);
         assert_eq!(location.column, 1);
-        
+
         match &items[0] {
             AstNode::VariableDeclaration { location, .. } => {
                 assert_eq!(location.line, 1);
