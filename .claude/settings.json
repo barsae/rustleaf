@@ -1,24 +1,20 @@
 {
   "permissions": {
     "allow": [
-      "Bash(cargo run:*)",
-      "Bash(cargo:*)",
-      "Bash(mv:*)",
-      "Bash(mkdir:*)",
-      "Bash(git add:*)",
-      "Bash(rm:*)",
       "Bash(awk:*)",
-      "Bash(ls:*)",
-      "Bash(grep:*)",
-      "Bash(sed:*)",
+      "Bash(cargo:*)",
       "Bash(cat:*)",
-      "Bash(find:*)",
-      "Bash(timeout 10s cargo run -- parse test.rustleaf)",
-      "Bash(gtimeout 10s cargo run -- parse test.rustleaf)",
       "Bash(cp:*)",
-      "Bash(RUST_BACKTRACE=1 cargo test -- rustleaf_block_expressions --nocapture)",
-      "Bash(RUSTFLAGS=\"-D warnings\" cargo check)",
-      "Bash(RUSTFLAGS=\"-D warnings\" cargo test)"
+      "Bash(find:*)",
+      "Bash(git add:*)",
+      "Bash(git checkout:*)",
+      "Bash(git merge:*)",
+      "Bash(grep:*)",
+      "Bash(ls:*)",
+      "Bash(mkdir:*)",
+      "Bash(mv:*)",
+      "Bash(rm:*)",
+      "Bash(sed:*)"
     ],
     "deny": []
   }
