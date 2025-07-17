@@ -1,4 +1,4 @@
-use crate::value::value::{Value, RuntimeError, ErrorType};
+use crate::value::types::{Value, RuntimeError, ErrorType};
 use crate::eval::Environment;
 
 pub type BuiltinFunction = fn(&[Value], &mut Environment) -> Result<Value, RuntimeError>;

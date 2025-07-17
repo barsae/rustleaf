@@ -136,7 +136,7 @@ impl fmt::Debug for AstNode {
             // Add other variants as needed
             _ => {
                 // Fallback for any variants we haven't explicitly handled
-                write!(f, "{:?}", self)
+                write!(f, "<unhandled AstNode variant>")
             }
         }
     }

@@ -1,10 +1,16 @@
-use crate::value::value::{Value, RuntimeError, ErrorType};
+use crate::value::types::{Value, RuntimeError};
 use crate::parser::AstNode;
 use crate::lexer::LiteralValue;
 use super::environment::Environment;
 
 pub struct Evaluator {
     pub(crate) environment: Environment,
+}
+
+impl Default for Evaluator {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl Evaluator {

@@ -3,7 +3,7 @@ use crate::parser::ast::*;
 
 pub struct Parser {
     tokens: Vec<Token>,
-    current: usize,
+    pub current: usize,
     errors: Vec<ParseError>,
 }
 
@@ -24,9 +24,17 @@ impl Parser {
         self.skip_newlines();
         
         while !self.is_at_end() {
+            let position_before = self.current;
+            
             if let Some(item) = self.parse_module_item() {
                 items.push(item);
             }
+            
+            // Infinite loop protection: ensure we always make progress
+            if self.current == position_before {
+                panic!("Parser stuck: no progress made at position {}", self.current);
+            }
+            
             self.skip_newlines();
         }
         

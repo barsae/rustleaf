@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use crate::value::value::{Value, RuntimeError, ErrorType};
+use crate::value::types::{Value, RuntimeError, ErrorType};
 use crate::parser::AstNode;
 use super::core::Evaluator;
 

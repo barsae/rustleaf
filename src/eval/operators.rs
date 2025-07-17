@@ -1,4 +1,4 @@
-use crate::value::value::{Value, RuntimeError, ErrorType};
+use crate::value::types::{Value, RuntimeError, ErrorType};
 use crate::parser::{AstNode, BinaryOperator, UnaryOperator};
 use super::core::Evaluator;
 
@@ -182,7 +182,11 @@ impl Evaluator {
             (Value::Float(a), Value::Float(b)) => Ok(Value::Bool(op(*a, *b))),
             (Value::Int(a), Value::Float(b)) => Ok(Value::Bool(op(*a as f64, *b))),
             (Value::Float(a), Value::Int(b)) => Ok(Value::Bool(op(*a, *b as f64))),
-            (Value::String(a), Value::String(b)) => Ok(Value::Bool(op(0.0, if a < b { -1.0 } else if a > b { 1.0 } else { 0.0 }))),
+            (Value::String(a), Value::String(b)) => Ok(Value::Bool(op(0.0, match a.cmp(b) {
+                std::cmp::Ordering::Less => -1.0,
+                std::cmp::Ordering::Greater => 1.0,
+                std::cmp::Ordering::Equal => 0.0,
+            }))),
             _ => Err(RuntimeError::new(
                 format!("Cannot compare {} and {}", left.type_name(), right.type_name()),
                 ErrorType::TypeError,

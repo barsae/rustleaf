@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use crate::value::value::{Value, RuntimeError, ErrorType, Function};
+use crate::value::types::{Value, RuntimeError, ErrorType, Function};
 use crate::value::function::{get_builtin_functions, BuiltinFunctionInfo};
 use crate::parser::AstNode;
 
@@ -7,6 +7,12 @@ use crate::parser::AstNode;
 pub struct Environment {
     scopes: Vec<HashMap<String, Value>>,
     builtins: HashMap<String, BuiltinFunctionInfo>,
+}
+
+impl Default for Environment {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl Environment {
@@ -85,12 +91,3 @@ impl Environment {
     }
 }
 
-impl Default for crate::parser::SourceLocation {
-    fn default() -> Self {
-        crate::parser::SourceLocation {
-            line: 0,
-            column: 0,
-            byte_offset: 0,
-        }
-    }
-}

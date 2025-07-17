@@ -244,7 +244,7 @@ pub struct WithBinding {
     pub value: AstNode,
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct SourceLocation {
     pub line: usize,
     pub column: usize,

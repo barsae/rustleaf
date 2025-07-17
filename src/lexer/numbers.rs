@@ -174,9 +174,7 @@ impl<'a> NumberScanner<'a> {
         
         while !self.is_at_end() {
             let c = self.peek();
-            if c.is_ascii_hexdigit() {
-                self.advance();
-            } else if c == '_' && self.peek_next().is_ascii_hexdigit() {
+            if c.is_ascii_hexdigit() || (c == '_' && self.peek_next().is_ascii_hexdigit()) {
                 self.advance();
             } else {
                 break;
@@ -209,9 +207,7 @@ impl<'a> NumberScanner<'a> {
         
         while !self.is_at_end() {
             let c = self.peek();
-            if matches!(c, '0'..='7') {
-                self.advance();
-            } else if c == '_' && matches!(self.peek_next(), '0'..='7') {
+            if matches!(c, '0'..='7') || (c == '_' && matches!(self.peek_next(), '0'..='7')) {
                 self.advance();
             } else {
                 break;
@@ -244,9 +240,7 @@ impl<'a> NumberScanner<'a> {
         
         while !self.is_at_end() {
             let c = self.peek();
-            if matches!(c, '0' | '1') {
-                self.advance();
-            } else if c == '_' && matches!(self.peek_next(), '0' | '1') {
+            if matches!(c, '0' | '1') || (c == '_' && matches!(self.peek_next(), '0' | '1')) {
                 self.advance();
             } else {
                 break;

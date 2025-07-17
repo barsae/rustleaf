@@ -15,11 +15,59 @@ impl Parser {
             TokenType::Break => self.parse_break_statement(),
             TokenType::Continue => self.parse_continue_statement(),
             TokenType::Return => self.parse_return_statement(),
+            TokenType::Var => self.parse_variable_declaration(),
             TokenType::Semicolon => {
                 self.advance(); // consume semicolon
                 None // Empty statement
             }
             _ => self.parse_expression_statement(),
+        }
+    }
+    
+    pub fn parse_statement_in_block(&mut self) -> Option<AstNode> {
+        match self.peek().token_type {
+            TokenType::LeftBrace => self.parse_block(),
+            TokenType::If => self.parse_if_statement(),
+            TokenType::While => self.parse_while_statement(),
+            TokenType::For => self.parse_for_statement(),
+            TokenType::Match => self.parse_match_statement(),
+            TokenType::Try => self.parse_try_statement(),
+            TokenType::With => self.parse_with_statement(),
+            TokenType::Break => self.parse_break_statement(),
+            TokenType::Continue => self.parse_continue_statement(),
+            TokenType::Return => self.parse_return_statement(),
+            TokenType::Var => self.parse_variable_declaration(),
+            TokenType::Semicolon => {
+                self.advance(); // consume semicolon
+                None // Empty statement
+            }
+            _ => {
+                // For expressions in blocks, check if this might be the final expression
+                let saved_pos = self.current;
+                if let Some(expr) = self.parse_expression() {
+                    // If there's a semicolon, treat as expression statement
+                    if self.check(&TokenType::Semicolon) {
+                        self.advance(); // consume semicolon
+                        Some(AstNode::ExpressionStatement {
+                            expression: Box::new(expr),
+                            location: self.current_location(),
+                        })
+                    } else {
+                        // No semicolon - check if we're at the end of block
+                        self.skip_newlines();
+                        if self.check(&TokenType::RightBrace) {
+                            // Final expression without semicolon
+                            Some(expr)
+                        } else {
+                            // Not at end, this is an error - restore and use normal parsing
+                            self.current = saved_pos;
+                            self.parse_expression_statement()
+                        }
+                    }
+                } else {
+                    None
+                }
+            }
         }
     }
     
@@ -31,9 +79,18 @@ impl Parser {
         
         self.skip_newlines();
         while !self.check(&TokenType::RightBrace) && !self.is_at_end() {
-            if let Some(stmt) = self.parse_statement() {
+            let position_before = self.current;
+            
+            // Try to parse statement, but handle final expression specially
+            if let Some(stmt) = self.parse_statement_in_block() {
                 statements.push(stmt);
             }
+            
+            // Infinite loop protection: ensure we always make progress
+            if self.current == position_before {
+                panic!("Parser stuck in block: no progress made at position {}", self.current);
+            }
+            
             self.skip_newlines();
         }
         
@@ -125,9 +182,17 @@ impl Parser {
         
         let mut arms = Vec::new();
         while !self.check(&TokenType::RightBrace) && !self.is_at_end() {
+            let position_before = self.current;
+            
             if let Some(arm) = self.parse_match_arm() {
                 arms.push(arm);
             }
+            
+            // Infinite loop protection: ensure we always make progress
+            if self.current == position_before {
+                panic!("Parser stuck in match arms: no progress made at position {}", self.current);
+            }
+            
             self.skip_newlines();
         }
         
@@ -184,8 +249,15 @@ impl Parser {
                 let mut patterns = Vec::new();
                 
                 while !self.check(&TokenType::RightBracket) && !self.is_at_end() {
+                    let position_before = self.current;
+                    
                     if let Some(pattern) = self.parse_pattern() {
                         patterns.push(pattern);
+                    }
+                    
+                    // Infinite loop protection: ensure we always make progress
+                    if self.current == position_before {
+                        panic!("Parser stuck in array pattern: no progress made at position {}", self.current);
                     }
                     
                     if !self.match_token(&TokenType::Comma) {
@@ -201,11 +273,18 @@ impl Parser {
                 let mut entries = Vec::new();
                 
                 while !self.check(&TokenType::RightBrace) && !self.is_at_end() {
+                    let position_before = self.current;
+                    
                     if let Some(key_token) = self.match_string_literal() {
                         self.consume(TokenType::Colon, "Expected ':' after dict key")?;
                         if let Some(pattern) = self.parse_pattern() {
                             entries.push((key_token, pattern));
                         }
+                    }
+                    
+                    // Infinite loop protection: ensure we always make progress
+                    if self.current == position_before {
+                        panic!("Parser stuck in dict pattern: no progress made at position {}", self.current);
                     }
                     
                     if !self.match_token(&TokenType::Comma) {
@@ -328,9 +407,18 @@ impl Parser {
     }
     
     pub fn parse_expression_statement(&mut self) -> Option<AstNode> {
+        self.parse_expression_statement_with_semicolon(true)
+    }
+    
+    pub fn parse_expression_statement_with_semicolon(&mut self, require_semicolon: bool) -> Option<AstNode> {
         let location = self.current_location();
         let expression = Box::new(self.parse_expression()?);
-        self.consume(TokenType::Semicolon, "Expected ';' after expression")?;
+        
+        if require_semicolon {
+            self.consume(TokenType::Semicolon, "Expected ';' after expression")?;
+        } else if self.check(&TokenType::Semicolon) {
+            self.advance(); // Consume optional semicolon
+        }
         
         Some(AstNode::ExpressionStatement {
             expression,

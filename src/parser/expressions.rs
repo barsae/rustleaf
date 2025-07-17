@@ -175,7 +175,17 @@ impl Parser {
                 self.parse_list_literal()
             }
             TokenType::LeftBrace => {
-                self.parse_dict_literal()
+                // Try to parse as block expression first, fall back to dict literal
+                let saved_position = self.current;
+                
+                // Try parsing as block expression
+                if let Some(block) = self.parse_block() {
+                    Some(block)
+                } else {
+                    // Restore position and try as dict literal
+                    self.current = saved_position;
+                    self.parse_dict_literal()
+                }
             }
             TokenType::If => {
                 self.parse_if_expression()
@@ -203,8 +213,15 @@ impl Parser {
         let mut elements = Vec::new();
         
         while !self.check(&TokenType::RightBracket) && !self.is_at_end() {
+            let position_before = self.current;
+            
             if let Some(expr) = self.parse_expression() {
                 elements.push(expr);
+            }
+            
+            // Infinite loop protection: ensure we always make progress
+            if self.current == position_before {
+                panic!("Parser stuck in array literal: no progress made at position {}", self.current);
             }
             
             if !self.match_token(&TokenType::Comma) {
@@ -231,11 +248,18 @@ impl Parser {
         let mut entries = Vec::new();
         
         while !self.check(&TokenType::RightBrace) && !self.is_at_end() {
+            let position_before = self.current;
+            
             let key = self.parse_expression()?;
             self.consume(TokenType::Colon, "Expected ':' after dict key")?;
             let value = self.parse_expression()?;
             
             entries.push((key, value));
+            
+            // Infinite loop protection: ensure we always make progress
+            if self.current == position_before {
+                panic!("Parser stuck in dict literal: no progress made at position {}", self.current);
+            }
             
             if !self.match_token(&TokenType::Comma) {
                 break;
@@ -295,9 +319,17 @@ impl Parser {
         
         let mut arms = Vec::new();
         while !self.check(&TokenType::RightBrace) && !self.is_at_end() {
+            let position_before = self.current;
+            
             if let Some(arm) = self.parse_match_arm() {
                 arms.push(arm);
             }
+            
+            // Infinite loop protection: ensure we always make progress
+            if self.current == position_before {
+                panic!("Parser stuck in match expression arms: no progress made at position {}", self.current);
+            }
+            
             self.skip_newlines();
         }
         

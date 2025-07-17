@@ -1,4 +1,4 @@
-use crate::value::value::{RustValue, Value};
+use crate::value::types::{RustValue, Value};
 
 // Example implementation of RustValue for demonstration
 #[derive(Debug, Clone)]

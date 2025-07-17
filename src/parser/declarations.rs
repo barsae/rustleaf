@@ -20,6 +20,10 @@ impl Parser {
             }
             TokenType::Class => self.parse_class_declaration(Visibility::Private),
             TokenType::Var => self.parse_variable_declaration(),
+            // Tokens that are clearly not valid at module level - skip them
+            TokenType::RightBrace | TokenType::RightBracket | TokenType::RightParen => {
+                None
+            }
             _ => self.parse_statement(),
         }
     }
@@ -28,10 +32,9 @@ impl Parser {
         let location = self.current_location();
         self.consume(TokenType::Use, "Expected 'use'")?;
         
-        let mut path = Vec::new();
-        path.push(self.consume_identifier("Expected module name")?);
+        let path = vec![self.consume_identifier("Expected module name")?];
         
-        while self.match_token(&TokenType::DoubleColon) {
+        if self.match_token(&TokenType::DoubleColon) {
             if self.match_token(&TokenType::Star) {
                 let clause = ImportClause::All;
                 self.consume(TokenType::Semicolon, "Expected ';' after import statement")?;
@@ -109,9 +112,17 @@ impl Parser {
         
         let mut members = Vec::new();
         while !self.check(&TokenType::RightBrace) && !self.is_at_end() {
+            let position_before = self.current;
+            
             if let Some(member) = self.parse_class_member() {
                 members.push(member);
             }
+            
+            // Infinite loop protection: ensure we always make progress
+            if self.current == position_before {
+                panic!("Parser stuck in class members: no progress made at position {}", self.current);
+            }
+            
             self.skip_newlines();
         }
         
@@ -220,6 +231,7 @@ impl Parser {
     
     pub fn parse_variable_declaration(&mut self) -> Option<AstNode> {
         let location = self.current_location();
+        
         self.consume(TokenType::Var, "Expected 'var'")?;
         let name = self.consume_identifier("Expected variable name")?;
         

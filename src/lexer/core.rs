@@ -69,7 +69,7 @@ impl Lexer {
         let mut tokens = Vec::new();
         
         // Skip BOM if present
-        if input_chars.len() >= 1 && input_chars[0] == '\u{FEFF}' {
+        if !input_chars.is_empty() && input_chars[0] == '\u{FEFF}' {
             position += 1;
             byte_offset += 3; // BOM is 3 bytes in UTF-8
             // Don't increment column for BOM
