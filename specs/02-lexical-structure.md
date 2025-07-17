@@ -294,6 +294,10 @@ continue    from        of          require     super
 - All keywords are fully reserved in all contexts
 - Keywords are case-sensitive (e.g., `If` is an identifier, not a keyword)
 - No context-sensitive keywords exist
+- **Logical operator keywords (`and`, `or`, `not`) must use only English words**
+  - These keywords cannot be localized or translated
+  - Only the exact ASCII spellings `and`, `or`, and `not` are recognized
+  - Alternative symbols or Unicode equivalents are not permitted
 
 **Future Reserved Words:**
 The following words are reserved for potential future use:
