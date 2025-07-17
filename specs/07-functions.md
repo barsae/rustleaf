@@ -10,9 +10,9 @@ Functions are declared using the `fn` keyword followed by a name, parameter list
 ```
 FunctionDeclaration = "fn" Identifier "(" ParameterList? ")" Block
 ParameterList = Parameter ("," Parameter)*
-Parameter = Identifier ("=" Expression)?
-           | "*" Identifier
-           | "**" Identifier
+Parameter = Identifier ("=" Literal)?
+          | "*" Identifier
+          | "**" Identifier
 ```
 
 **Declaration Rules:**
@@ -93,6 +93,49 @@ Functions can accept positional parameters, parameters with defaults, rest param
    greet("Bob", "Hi")          // "Hi, Bob!"
    ```
 
+   **Default Parameter Rules:**
+   - Default values must be literals only (no expressions, variables, or function calls)
+   - Default values are evaluated fresh on each function call
+   - Collection literals (`[]`, `{}`) create new instances on each call
+   - For complex defaults, use `null` and compute the value in the function body
+   
+   **Valid Default Literals:**
+   - Numbers: `42`, `3.14`, `-1`
+   - Strings: `"hello"`, `''`
+   - Booleans: `true`, `false`
+   - Null: `null`
+   - Empty collections: `[]`, `{}`
+   
+   **Examples:**
+   ```
+   fn connect(host, port = 80, secure = false) {
+       // Valid: literal defaults
+   }
+   
+   fn process(items = [], options = {}) {
+       // Valid: each call gets fresh empty collections
+       items.append("processed")
+       options.set("processed", true)
+   }
+   
+   // For complex defaults, use null pattern
+   fn log_message(msg, timestamp = null) {
+       if timestamp == null {
+           timestamp = get_current_time()
+       }
+       print("[${timestamp}] ${msg}")
+   }
+   
+   // Invalid examples
+   fn bad_defaults(x, y = x + 1) {
+       // Error: expressions not allowed in defaults
+   }
+   
+   fn also_bad(data, processor = get_processor()) {
+       // Error: function calls not allowed in defaults
+   }
+   ```
+
 3. **Rest Parameters** (`*args`): Collect remaining positional arguments
    ```
    fn printf(format, *args) {
@@ -114,20 +157,23 @@ Functions can accept positional parameters, parameters with defaults, rest param
    ```
 
 **Parameter Rules:**
-- Parameters are evaluated left-to-right
-- Default values are evaluated when function is defined, not called
+- Parameters are evaluated left-to-right at call time
+- Default values are literals only and evaluated fresh on each call
 - Parameter order: required, defaults, *args, **kwargs
 - Only one `*args` and one `**kwargs` allowed
 - Parameters after `*args` are keyword-only
+- Default parameters can be skipped by position if followed by keyword arguments
 
-**Parameter Destructuring:**
-Parameters can use destructuring patterns:
+**Parameter Simplicity:**
+Parameters are simple identifiers only. For complex data processing, use destructuring in the function body:
 ```
-fn process_point({x, y}) {
+fn process_point(point) {
+    var {x, y} = point
     print("Point at (${x}, ${y})")
 }
 
-fn head_tail([first, *rest]) {
+fn head_tail(list) {
+    var [first, *rest] = list
     print("First: ${first}, Rest: ${rest}")
 }
 
@@ -149,6 +195,16 @@ complex_function(1)                    // required=1, default=10, args=[], kwarg
 complex_function(1, 2)                 // required=1, default=2, args=[], kwargs={}
 complex_function(1, 2, 3, 4)          // required=1, default=2, args=[3,4], kwargs={}
 complex_function(1, 2, 3, x=10, y=20) // required=1, default=2, args=[3], kwargs={x:10,y:20}
+
+// Skipping defaults with keyword arguments
+fn config(name, debug = false, verbose = false, output = "stdout") {
+    print("${name}: debug=${debug}, verbose=${verbose}, output=${output}")
+}
+
+config("app")                           // name="app", debug=false, verbose=false, output="stdout"
+config("app", true)                     // name="app", debug=true, verbose=false, output="stdout"
+config("app", output="file.log")        // name="app", debug=false, verbose=false, output="file.log"
+config("app", verbose=true, debug=true) // name="app", debug=true, verbose=true, output="stdout"
 
 // Keyword-only parameters (after *args)
 fn format_message(*parts, sep=" ", end="\n") {
@@ -373,6 +429,13 @@ print(double(21))  // 42
 // With default parameters
 var greet = fn(name, greeting = "Hello") {
     "${greeting}, ${name}!"
+}
+
+// Defaults in anonymous functions follow same rules - literals only
+var make_id = fn(prefix = "id", start = 0) {
+    // All calls start with same literal default
+    start += 1
+    "${prefix}_${start}"
 }
 
 // With *args and **kwargs
