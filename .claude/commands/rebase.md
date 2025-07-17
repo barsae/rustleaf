@@ -5,6 +5,7 @@ description: "Rebase current work-in-progress over latest main branch changes"
 # Rebase Work Over Main
 
 Update your work-in-progress with latest main branch changes without completing the merge workflow.
+NOTE: There is no remote origin. This entire process will be local-only using worktrees.
 
 ## Context
 - Current git status: !git status
