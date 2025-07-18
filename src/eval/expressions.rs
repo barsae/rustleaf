@@ -9,6 +9,14 @@ impl Evaluator {
         function: &AstNode,
         arguments: &[crate::parser::Argument],
     ) -> Result<Value, RuntimeError> {
+        // Check if this is a method call (function is PropertyAccess)
+        if let AstNode::PropertyAccess {
+            object, property, ..
+        } = function
+        {
+            return self.evaluate_method_call(object, property, arguments);
+        }
+
         let func_value = self.evaluate(function)?;
 
         // Evaluate arguments
@@ -40,6 +48,118 @@ impl Evaluator {
                 format!("{} is not callable", func_value.type_name()),
                 ErrorType::TypeError,
             )),
+        }
+    }
+
+    fn evaluate_method_call(
+        &mut self,
+        object: &AstNode,
+        method_name: &str,
+        arguments: &[crate::parser::Argument],
+    ) -> Result<Value, RuntimeError> {
+        let obj_value = self.evaluate(object)?;
+
+        // Evaluate arguments
+        let mut args = Vec::new();
+        for arg in arguments {
+            let value = self.evaluate(&arg.value)?;
+            args.push(value);
+        }
+
+        // Handle builtin methods first
+        match method_name {
+            "len" => {
+                if !args.is_empty() {
+                    return Err(RuntimeError::new(
+                        format!("len() takes no arguments ({} given)", args.len()),
+                        ErrorType::TypeError,
+                    ));
+                }
+
+                match obj_value {
+                    Value::String(s) => Ok(Value::Int(s.len() as i64)),
+                    Value::List(list) => Ok(Value::Int(list.len() as i64)),
+                    Value::Dict(dict) => Ok(Value::Int(dict.len() as i64)),
+                    Value::RustValue(ref rust_value) => {
+                        if let Some(length) = rust_value.len() {
+                            Ok(Value::Int(length))
+                        } else {
+                            Err(RuntimeError::new(
+                                format!(
+                                    "object of type '{}' has no len() method",
+                                    obj_value.type_name()
+                                ),
+                                ErrorType::AttributeError,
+                            ))
+                        }
+                    }
+                    _ => Err(RuntimeError::new(
+                        format!(
+                            "object of type '{}' has no len() method",
+                            obj_value.type_name()
+                        ),
+                        ErrorType::AttributeError,
+                    )),
+                }
+            }
+            _ => {
+                // Try property access first to get the function, then call it
+                match self.evaluate_property_access(object, method_name) {
+                    Ok(Value::Function(func)) => {
+                        // This is a function accessed as a property - call it normally
+                        if func.is_builtin {
+                            if let Some(builtin) =
+                                self.environment.get_builtin(&func.name.unwrap_or_default())
+                            {
+                                (builtin.function)(&args, &mut self.environment)
+                            } else {
+                                Err(RuntimeError::new(
+                                    "Builtin function not found".to_string(),
+                                    ErrorType::RuntimeError,
+                                ))
+                            }
+                        } else {
+                            self.call_user_function(&func, &args)
+                        }
+                    }
+                    Ok(_) => {
+                        // Property exists but is not a function
+                        Err(RuntimeError::new(
+                            format!("'{}' is not callable", method_name),
+                            ErrorType::TypeError,
+                        ))
+                    }
+                    Err(_) => {
+                        // Property doesn't exist, try as a method on object
+                        match obj_value {
+                            Value::Object(obj) => {
+                                if let Some(method) = obj.methods.get(method_name) {
+                                    // Add self as first argument
+                                    let mut method_args = vec![Value::Object(obj.clone())];
+                                    method_args.extend(args);
+                                    self.call_user_function(method, &method_args)
+                                } else {
+                                    Err(RuntimeError::new(
+                                        format!(
+                                            "'{}' object has no method '{}'",
+                                            obj.class_name, method_name
+                                        ),
+                                        ErrorType::AttributeError,
+                                    ))
+                                }
+                            }
+                            _ => Err(RuntimeError::new(
+                                format!(
+                                    "'{}' object has no method '{}'",
+                                    obj_value.type_name(),
+                                    method_name
+                                ),
+                                ErrorType::AttributeError,
+                            )),
+                        }
+                    }
+                }
+            }
         }
     }
 

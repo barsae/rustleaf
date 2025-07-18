@@ -353,6 +353,44 @@ impl Evaluator {
                     }
                 }
             }
+            Value::RustValue(ref rust_value) => {
+                // Clone the RustValue to check if it's iterable and for iteration
+                let mut iterable = rust_value.clone();
+                if iterable.is_iterable() {
+                    let mut index = 0i64;
+                    while let Some(item) = iterable.iter_next() {
+                        // Bind loop variable
+                        self.environment.define(variable.to_string(), item);
+
+                        // Bind index variable if present
+                        if let Some(index_var) = index_variable {
+                            self.environment
+                                .define(index_var.clone(), Value::Int(index));
+                        }
+
+                        // Execute body
+                        match self.evaluate(body) {
+                            Ok(value) => result = value,
+                            Err(err) => {
+                                if err.is_return() {
+                                    // Return from function, not just loop
+                                    self.environment.pop_scope();
+                                    return Err(err);
+                                }
+                                // For now, ignore other errors (break/continue would go here)
+                            }
+                        }
+
+                        index += 1;
+                    }
+                } else {
+                    self.environment.pop_scope();
+                    return Err(RuntimeError::new(
+                        format!("'{}' object is not iterable", iterable_value.type_name()),
+                        ErrorType::TypeError,
+                    ));
+                }
+            }
             _ => {
                 self.environment.pop_scope();
                 return Err(RuntimeError::new(

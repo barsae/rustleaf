@@ -40,6 +40,27 @@ pub trait RustValue: fmt::Debug {
     fn type_name(&self) -> &'static str;
     fn to_string(&self) -> String;
     fn clone_box(&self) -> Box<dyn RustValue>;
+
+    // Optional iteration methods - default to None for non-iterable types
+    fn iter_next(&mut self) -> Option<Value> {
+        None
+    }
+
+    fn iter_reset(&mut self) {
+        // Default no-op
+    }
+
+    fn is_iterable(&self) -> bool {
+        false
+    }
+
+    fn len(&self) -> Option<i64> {
+        None
+    }
+
+    fn is_empty(&self) -> bool {
+        self.len() == Some(0)
+    }
 }
 
 impl Clone for Box<dyn RustValue> {

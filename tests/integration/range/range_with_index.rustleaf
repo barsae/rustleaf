@@ -1,0 +1,17 @@
+// Test range iteration with index variables
+
+var values = [];
+var indices = [];
+
+for value, index in range(10, 15) {
+    values = values + [value];
+    indices = indices + [index];
+}
+
+assert(values.len() == 5);
+assert(values[0] == 10);
+assert(values[4] == 14);
+
+assert(indices.len() == 5);
+assert(indices[0] == 0);
+assert(indices[4] == 4);

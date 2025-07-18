@@ -1,0 +1,9 @@
+// Test range error conditions
+
+// This test should fail - zero step not allowed
+try {
+    var r = range(0, 10, 0);
+    assert(false, "Should have raised error for zero step");
+} catch e {
+    assert(true);
+}

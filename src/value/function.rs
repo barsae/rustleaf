@@ -1,6 +1,7 @@
 #![allow(clippy::result_large_err)]
 
 use crate::eval::Environment;
+use crate::value::rust_value::RangeIterator;
 use crate::value::types::{ErrorType, RuntimeError, Value};
 
 pub type BuiltinFunction = fn(&[Value], &mut Environment) -> Result<Value, RuntimeError>;
@@ -24,11 +25,6 @@ pub fn get_builtin_functions() -> Vec<BuiltinFunctionInfo> {
             name: "print",
             function: builtin_print,
             arity: None, // Variadic
-        },
-        BuiltinFunctionInfo {
-            name: "len",
-            function: builtin_len,
-            arity: Some(1),
         },
         BuiltinFunctionInfo {
             name: "type",
@@ -55,6 +51,11 @@ pub fn get_builtin_functions() -> Vec<BuiltinFunctionInfo> {
             function: builtin_is_unit,
             arity: Some(1),
         },
+        BuiltinFunctionInfo {
+            name: "range",
+            function: builtin_range,
+            arity: None, // 1-3 arguments
+        },
     ]
 }
 
@@ -70,25 +71,6 @@ fn builtin_print(args: &[Value], _env: &mut Environment) -> Result<Value, Runtim
 
     println!("{}", output);
     Ok(Value::Unit)
-}
-
-fn builtin_len(args: &[Value], _env: &mut Environment) -> Result<Value, RuntimeError> {
-    if args.len() != 1 {
-        return Err(RuntimeError::new(
-            format!("len() takes exactly 1 argument ({} given)", args.len()),
-            ErrorType::TypeError,
-        ));
-    }
-
-    match &args[0] {
-        Value::String(s) => Ok(Value::Int(s.len() as i64)),
-        Value::List(list) => Ok(Value::Int(list.len() as i64)),
-        Value::Dict(dict) => Ok(Value::Int(dict.len() as i64)),
-        _ => Err(RuntimeError::new(
-            format!("object of type '{}' has no len()", args[0].type_name()),
-            ErrorType::TypeError,
-        )),
-    }
 }
 
 fn builtin_type(args: &[Value], _env: &mut Environment) -> Result<Value, RuntimeError> {
@@ -217,4 +199,58 @@ fn builtin_is_unit(args: &[Value], _env: &mut Environment) -> Result<Value, Runt
 
     let is_unit = matches!(args[0], Value::Unit);
     Ok(Value::Bool(is_unit))
+}
+
+fn builtin_range(args: &[Value], _env: &mut Environment) -> Result<Value, RuntimeError> {
+    if args.is_empty() || args.len() > 3 {
+        return Err(RuntimeError::new(
+            format!("range() takes 1 to 3 arguments ({} given)", args.len()),
+            ErrorType::TypeError,
+        ));
+    }
+
+    // Extract arguments and convert to integers
+    let get_int_arg = |value: &Value, arg_name: &str| -> Result<i64, RuntimeError> {
+        match value {
+            Value::Int(i) => Ok(*i),
+            _ => Err(RuntimeError::new(
+                format!("range() {} must be an integer", arg_name),
+                ErrorType::TypeError,
+            )),
+        }
+    };
+
+    let (start, end, step) = match args.len() {
+        1 => {
+            // range(end) - start from 0
+            let end = get_int_arg(&args[0], "argument")?;
+            (0, end, 1)
+        }
+        2 => {
+            // range(start, end) - step defaults to 1
+            let start = get_int_arg(&args[0], "start")?;
+            let end = get_int_arg(&args[1], "end")?;
+            (start, end, 1)
+        }
+        3 => {
+            // range(start, end, step)
+            let start = get_int_arg(&args[0], "start")?;
+            let end = get_int_arg(&args[1], "end")?;
+            let step = get_int_arg(&args[2], "step")?;
+
+            if step == 0 {
+                return Err(RuntimeError::new(
+                    "range() step argument must not be zero".to_string(),
+                    ErrorType::ValueError,
+                ));
+            }
+
+            (start, end, step)
+        }
+        _ => unreachable!(), // Already checked args.len() above
+    };
+
+    // Create lazy range iterator
+    let range_iter = RangeIterator::new(start, end, step);
+    Ok(Value::RustValue(Box::new(range_iter)))
 }

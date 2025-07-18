@@ -1,0 +1,18 @@
+// Test basic range creation and properties
+
+// Single argument range
+var r1 = range(5);
+assert(type(r1) == "range");
+assert(r1.len() == 5);
+
+// Two argument range  
+var r2 = range(2, 7);
+assert(r2.len() == 5);
+
+// Three argument range
+var r3 = range(1, 10, 2);
+assert(r3.len() == 5);
+
+// Negative step
+var r4 = range(10, 0, -2);
+assert(r4.len() == 5);
