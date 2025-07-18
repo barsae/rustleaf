@@ -40,6 +40,22 @@ if type(value) == "int" {
 }
 ```
 
+### 3.1.1. Functions vs Methods
+
+RustLeaf distinguishes between functions and methods based on how they are called:
+
+**Functions**: Called directly by name, not bound to an instance
+- `type(value)` - returns the type name
+- `print("hello")` - outputs to console  
+- `str(42)` - converts to string
+
+**Methods**: Called on an instance using dot notation
+- `"hello".upper()` - converts string to uppercase
+- `[1, 2].append(3)` - adds element to list
+- `point.distance()` - calls method on custom object
+
+Both functions and methods can be either builtin (provided by the language) or user-defined.
+
 ### 3.2. Primitive Types
 
 Primitive types are the fundamental building blocks of the type system. They are immutable (except for their container in variables) and have value semantics.
@@ -77,6 +93,7 @@ The unit type represents the absence of a meaningful return value.
 - Single value that cannot be written as a literal
 - Returned by functions without explicit return value
 - Returned by `return` statements without an expression
+- Returned by expressions without meaningful values (empty blocks, unmatched conditionals, etc.)
 - Used as sentinel value in iterator protocol
 - Does not participate in boolean contexts (prevents iterator misuse)
 
@@ -424,11 +441,11 @@ Functions are first-class values that encapsulate executable code.
 - Capture variables from enclosing scope (closures)
 
 **Function Categories:**
-1. **Regular Functions**: Defined with `fn` at module or class level
+1. **Regular Functions**: Defined with `fn` at module level
 2. **Lambda Functions**: Anonymous functions created with `fn(params) { body }`
 3. **Methods**: Functions defined within a class (receive implicit `self`)
-4. **Bound Methods**: Methods bound to a specific instance
-5. **Built-in Functions**: Functions provided by the runtime
+4. **Builtin Functions**: Global functions provided by the runtime
+5. **Builtin Methods**: Methods provided by the runtime on builtin types
 
 **Function Operations:**
 - Call: `function(args...)`

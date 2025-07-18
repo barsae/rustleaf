@@ -202,15 +202,23 @@ with file = open("output.txt") {
 ```
 
 **Manual Resource Management:**
-For cases where `with` statements aren't suitable:
+Note: RustLeaf does not have finally blocks. Use `with` statements for cleanup:
 
 ```
+// Preferred approach
+with connection = create_connection() {
+    use_connection(connection)
+}  // connection.close() called automatically
+
+// Or manual cleanup with explicit calls
 var connection = create_connection()
 try {
     use_connection(connection)
-} finally {
+} catch e {
     connection.close()  // Manual cleanup
+    raise(e)
 }
+connection.close()  // Manual cleanup on success
 ```
 
 **Resource Lifetime Rules:**

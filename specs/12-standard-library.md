@@ -1,6 +1,6 @@
 # 12. Standard Library
 
-RustLeaf provides a rich standard library of methods for built-in types. These methods are available on all instances of their respective types and provide common operations for strings, lists, dictionaries, and objects. This chapter defines all standard library methods, their signatures, behavior, and usage patterns.
+RustLeaf provides a rich standard library of methods for builtin types. These methods are available on all instances of their respective types and provide common operations for strings, lists, dictionaries, and objects. This chapter defines all standard library methods, their signatures, behavior, and usage patterns.
 
 ### 12.1. String Methods
 
@@ -519,7 +519,7 @@ while true {
 
 **Method Call Resolution:**
 1. Look for method on object's class
-2. Look for method on built-in type (if applicable)
+2. Look for method on builtin type (if applicable)
 3. Raise error if method not found
 
 **Method Chaining:**

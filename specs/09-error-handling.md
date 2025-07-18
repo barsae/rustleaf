@@ -1,6 +1,6 @@
 # 9. Error Handling
 
-RustLeaf provides error handling through exceptions that can be raised and caught. Any value can be raised as an error, and errors propagate up the call stack until caught. This chapter defines error raising, catching, propagation, and cleanup semantics.
+RustLeaf provides error handling through errors that can be raised and caught. Any value can be raised as an error, and errors propagate up the call stack until caught. This chapter defines error raising, catching, propagation, and cleanup semantics.
 
 ### 9.1. Error Types
 
@@ -195,33 +195,7 @@ try {
 }
 ```
 
-### 9.4. Finally Blocks
-
-Note: RustLeaf does not have finally blocks. Use `with` statements for cleanup:
-
-```
-// Instead of try-finally, use with:
-with resource = acquire_resource() {
-    try {
-        use_resource(resource)
-    } catch e {
-        print("Error using resource: ${e}")
-        raise(e)
-    }
-}  // resource.close() called automatically
-
-// Equivalent to try-catch-finally pattern:
-with file = open("data.txt") {
-    try {
-        process(file)
-    } catch e {
-        log_error(e)
-        raise(e)
-    }
-}  // file.close() always runs
-```
-
-### 9.5. Error Propagation
+### 9.4. Error Propagation
 
 Errors propagate up the call stack until caught or the program terminates.
 
@@ -291,7 +265,7 @@ fn wrapper() {
 }
 ```
 
-### 9.6. Error Objects
+### 9.5. Error Objects
 
 While any value can be an error, objects provide structured error information.
 

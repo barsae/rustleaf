@@ -40,6 +40,7 @@ VariableDeclaration ::= "var" Identifier ("=" Expression)? ";"
 
 Statement ::= ExpressionStatement
            | VariableDeclaration
+           | AssignmentStatement
            | Block
            | IfStatement
            | WhileStatement
@@ -66,7 +67,7 @@ ForStatement ::= "for" Identifier ("," Identifier)? "in" Expression Block
 MatchStatement ::= "match" Expression "{" MatchArm* "}"
 MatchArm ::= "case" Pattern ("if" Expression)? Block
 
-TryStatement ::= "try" Block ("catch" Identifier Block)? ("finally" Block)?
+TryStatement ::= "try" Block "catch" Identifier Block
 
 WithStatement ::= "with" WithBinding ("," WithBinding)* Block
 WithBinding ::= Identifier "=" Expression
@@ -75,12 +76,15 @@ BreakStatement ::= "break" Expression? ";"
 ContinueStatement ::= "continue" ";"
 ReturnStatement ::= "return" Expression? ";"
 
-Expression ::= AssignmentExpression
-
-AssignmentExpression ::= ConditionalExpression
-                      | ConditionalExpression AssignmentOperator AssignmentExpression
+AssignmentStatement ::= LValue AssignmentOperator Expression ";"
 
 AssignmentOperator ::= "=" | "+=" | "-=" | "*=" | "/=" | "%="
+
+LValue ::= Identifier
+        | PostfixExpression "." Identifier
+        | PostfixExpression "[" Expression "]"
+
+Expression ::= ConditionalExpression
 
 ConditionalExpression ::= LogicalOrExpression
                        | LogicalOrExpression "?" Expression ":" ConditionalExpression
@@ -240,8 +244,7 @@ This appendix lists all operators in RustLeaf in order of precedence, from highe
 | 12 | `and` | Logical AND | Left-to-right |
 | 13 | `xor` | Logical XOR | Left-to-right |
 | 14 | `or` | Logical OR | Left-to-right |
-| 15 | `?:` | Ternary conditional | Right-to-left |
-| 16 (Lowest) | `=` `+=` `-=` `*=` `/=` `%=` | Assignment operators | Right-to-left |
+| 15 (Lowest) | `?:` | Ternary conditional | Right-to-left |
 
 ### Precedence Examples
 
@@ -262,8 +265,8 @@ x > 0 and y < 10  // Equivalent to: (x > 0) and (y < 10)
 // Logical precedence: and, then xor, then or
 a and b xor c or d  // Equivalent to: ((a and b) xor c) or d
 
-// Assignment is lowest precedence
-x = y + z   // Equivalent to: x = (y + z)
+// Ternary conditional is lowest precedence
+x > 0 ? y + z : w   // Equivalent to: x > 0 ? (y + z) : w
 ```
 
 ### Associativity Rules
@@ -273,9 +276,9 @@ x = y + z   // Equivalent to: x = (y + z)
 - Example: `a - b + c` is equivalent to `(a - b) + c`
 
 **Right-to-left associativity:**
-- Unary operators and assignment operators
-- Example: `x = y = z` is equivalent to `x = (y = z)`
+- Unary operators, exponentiation, and ternary conditional
 - Example: `a ** b ** c` is equivalent to `a ** (b ** c)`
+- Example: `a ? b ? c : d : e` is equivalent to `a ? (b ? c : d) : e`
 
 ### Parentheses Override
 
@@ -284,7 +287,7 @@ Parentheses can be used to override the default precedence and associativity:
 ```
 (2 + 3) * 4    // = 20 (not 14)
 2 ** (3 ** 2)  // = 512 (explicit right-associativity)
-x = (y = z)    // Explicit assignment order
+(a ? b : c) + d  // Force ternary evaluation first
 ```
 
 ## C. Reserved Words
@@ -317,10 +320,9 @@ This appendix lists all reserved words (keywords) in RustLeaf. These identifiers
 - `null` - Null literal
 
 ### Exception Handling Keywords
-- `try` - Try block for exception handling
-- `catch` - Catch block for exception handling
-- `finally` - Finally block for cleanup
-- `raise` - Raise an exception
+- `try` - Try block for error handling
+- `catch` - Catch block for error handling
+- `raise` - Raise an error
 
 ### Resource Management Keywords
 - `with` - Resource management statement

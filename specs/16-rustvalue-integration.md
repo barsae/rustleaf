@@ -42,7 +42,7 @@ var value = custom_object[field_name]   // Dynamic attribute access
 ```
 
 **Error Handling:**
-RustValue operations integrate with RustLeaf's exception system.
+RustValue operations integrate with RustLeaf's error system.
 
 ```
 var obj = CustomType.new()

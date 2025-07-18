@@ -456,7 +456,7 @@ true xor false or false  // true (xor before or)
 
 ### 5.6. Assignment Expressions
 
-Note: Assignment is a statement in RustLeaf, not an expression. See Section 4.4 for assignment syntax.
+Note: Assignment is a statement in RustLeaf, not an expression. See Section 6.4 for assignment syntax.
 
 ### 5.7. Conditional Expressions (if)
 
@@ -472,7 +472,7 @@ IfExpression = "if" Expression Block
 **Semantics:**
 - Condition must have truthiness (bool or null)
 - Evaluates to the value of the executed block
-- If no else clause and condition is false, evaluates to null
+- If no else clause and condition is false, evaluates to unit
 - All blocks use block expression rules (last expression is value)
 
 **Examples:**
@@ -485,10 +485,10 @@ var status = if score >= 90 {
     "needs improvement"
 }
 
-// Without else evaluates to null
+// Without else evaluates to unit
 var reward = if perfect_score {
     1000
-}  // reward is 1000 or null
+}  // reward is 1000 or unit
 
 // Nested if expressions
 var category = if age < 18 {
@@ -521,7 +521,7 @@ Guard = "if" Expression
 - Patterns are tested top-to-bottom
 - First matching pattern is selected
 - Guards provide additional conditions
-- Non-exhaustive matches are allowed (evaluates to null if no match)
+- Non-exhaustive matches are allowed (evaluates to unit if no match)
 - Variables bound in patterns are scoped to the case block
 
 **Examples:**
@@ -551,7 +551,7 @@ var description = match value {
 var result = match x {
     case 1 { "one" }
     case 2 { "two" }
-}  // result is null if x is not 1 or 2
+}  // result is unit if x is not 1 or 2
 
 // Pattern binding
 match point {
@@ -572,19 +572,17 @@ match point {
 
 ### 5.9. Try Expressions
 
-Try expressions handle errors by catching exceptions.
+Try expressions handle errors by catching them.
 
 **Syntax:**
 ```
 TryExpression = "try" Block 
                 "catch" Pattern Block
-                ("finally" Block)?
 ```
 
 **Semantics:**
 - Evaluates the try block
-- If an exception is raised, catches it and evaluates catch block
-- Finally block always executes but doesn't affect the expression value
+- If an error is raised, catches it and evaluates catch block
 - The expression evaluates to either the try or catch block value
 
 **Error Patterns:**
@@ -604,17 +602,14 @@ var result = try {
     0   // Error value
 }
 
-// With finally (for cleanup)
+// Use with statement for cleanup instead
 var data = try {
-    var file = open("data.json")
-    parse_json(file.read())
+    with file = open("data.json") {
+        parse_json(file.read())
+    }
 } catch e {
     print("Failed to load data")
     {}  // Empty dict as fallback
-} finally {
-    if file {
-        file.close()  // Always runs
-    }
 }
 
 // Pattern matching errors
@@ -639,7 +634,7 @@ BlockExpression = "{" Statement* Expression? "}"
 **Semantics:**
 - Executes all statements in order
 - The last expression (if present) is the block's value
-- If no final expression, evaluates to null
+- If no final expression, evaluates to unit
 - Creates a new scope for variables
 
 **Examples:**
@@ -662,8 +657,8 @@ var category = {
     }
 }
 
-// Empty block evaluates to null
-var nothing = {}  // null
+// Empty block evaluates to unit
+var nothing = {}  // unit
 
 // Scope isolation
 var outer = 10

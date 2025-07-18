@@ -1,6 +1,6 @@
 # 15. Execution Model
 
-RustLeaf follows a predictable execution model with well-defined evaluation order, exception handling, and context management. This chapter specifies how programs execute, expressions evaluate, and errors propagate through the system.
+RustLeaf follows a predictable execution model with well-defined evaluation order, error handling, and context management. This chapter specifies how programs execute, expressions evaluate, and errors propagate through the system.
 
 ### 15.1. Program Execution
 
@@ -249,12 +249,12 @@ factorial(1000)   // Works fine
 factorial(1001)   // Error: Maximum recursion depth (1000) exceeded
 ```
 
-### 15.4. Exception Handling
+### 15.4. Error Handling
 
-Exceptions propagate up the call stack until caught or the program terminates.
+Errors propagate up the call stack until caught or the program terminates.
 
-**Exception Propagation:**
-Uncaught exceptions unwind the stack and terminate the program.
+**Error Propagation:**
+Uncaught errors unwind the stack and terminate the program.
 
 ```
 fn level3() {
@@ -262,14 +262,14 @@ fn level3() {
 }
 
 fn level2() {
-    level3()  // Exception propagates through here
+    level3()  // Error propagates through here
 }
 
 fn level1() {
-    level2()  // Exception propagates through here
+    level2()  // Error propagates through here
 }
 
-// Exception will terminate program with stack trace:
+// Error will terminate program with stack trace:
 // Error: Error in level3
 //   at level3() (main.rustleaf:2:5)
 //   at level2() (main.rustleaf:6:5)  
@@ -278,8 +278,8 @@ fn level1() {
 level1()
 ```
 
-**Exception Catching:**
-Try-catch blocks catch exceptions and prevent propagation.
+**Error Catching:**
+Try-catch blocks catch errors and prevent propagation.
 
 ```
 fn risky_operation() {
@@ -294,22 +294,22 @@ try {
     print("Success: ${result}")
 } catch e {
     print("Caught error: ${e}")
-    // Exception is handled, execution continues
+    // Error is handled, execution continues
 }
 
 print("Program continues...")
 ```
 
-**Exception in Expressions:**
-Exceptions can occur in any expression and propagate immediately.
+**Errors in Expressions:**
+Errors can occur in any expression and propagate immediately.
 
 ```
-// Exception during function call
+// Error during function call
 var result = compute() + risky_function() + finalize()
 // If risky_function() raises, compute() result is discarded
 // and finalize() never executes
 
-// Exception during property access
+// Error during property access
 var value = obj.safe_property + obj.risky_property + obj.final_property  
 // If obj.risky_property raises, obj.final_property never accessed
 ```
@@ -328,8 +328,8 @@ with file1 = open("first.txt"), file2 = open("second.txt") {
 // Cleanup order: file2.close(), then file1.close()
 ```
 
-**Cleanup During Exceptions:**
-Resources are cleaned up even when exceptions occur.
+**Cleanup During Errors:**
+Resources are cleaned up even when errors occur.
 
 ```
 with file = open("data.txt") {
@@ -339,7 +339,7 @@ with file = open("data.txt") {
         print("Error during processing: ${e}")
         raise(e)  // Re-raise
     }
-}  // file.close() still called despite the exception
+}  // file.close() still called despite the error
 ```
 
 **Nested Resource Management:**
@@ -355,10 +355,10 @@ with outer = acquire_outer() {
     }  // inner.close() called first
 }  // outer.close() called second
 
-// Cleanup occurs even if exception is raised:
+// Cleanup occurs even if error is raised:
 // 1. inner.close() 
 // 2. outer.close()
-// 3. Exception propagates
+// 3. Error propagates
 ```
 
 **Manual Cleanup Timing:**

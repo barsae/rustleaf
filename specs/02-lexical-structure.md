@@ -284,9 +284,9 @@ Keywords are reserved identifiers with special syntactic meaning. They cannot be
 ```
 and         else        if          not         self        use
 break       false       in          null        static      var
-case        finally     is          or          true        while
-catch       fn          match       pub         try         with
-class       for         not         raise       return      xor
+case        fn          match       or          true        while
+catch       for         not         pub         try         with
+class       is          raise       return      xor
 continue    from        of          require     super
 ```
 

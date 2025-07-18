@@ -55,8 +55,9 @@ ExpressionStatement = Expression ";"
 **Expression Statement Rules:**
 - The expression is evaluated for its side effects
 - The resulting value is discarded
-- Commonly used for function calls, assignments, and method calls
+- Commonly used for function calls and method calls
 - Pure expressions without side effects are allowed but not useful
+- Assignment is handled as a separate statement type, not an expression statement
 
 **Examples:**
 ```
@@ -64,15 +65,6 @@ ExpressionStatement = Expression ";"
 print("Hello, World!");
 list.append(42);
 file.close();
-
-// Assignment statements  
-x = 10;
-obj.field = "value";
-arr[0] = 100;
-
-// Compound assignment
-count += 1;
-total *= 2;
 
 // Method calls
 list.sort();
@@ -122,7 +114,55 @@ var [x, y] = [1];        // Error: Pattern mismatch
 var {foo} = {bar: 1};    // Error: Key 'foo' not found
 ```
 
-### 6.4. Empty Statements
+### 6.4. Assignment Statements
+
+Assignment statements update the value stored in a variable or mutable location.
+
+**Syntax:**
+```
+AssignmentStatement = LValue AssignmentOperator Expression ";"
+LValue = Identifier
+       | Expression "." Identifier  
+       | Expression "[" Expression "]"
+AssignmentOperator = "=" | "+=" | "-=" | "*=" | "/=" | "%="
+```
+
+**Assignment Rules:**
+- Assignment is a statement, not an expression
+- Assignment does not return a value
+- Left-hand side must be a valid assignment target
+- Right-hand side is evaluated before the assignment
+- Cannot be used in conditional contexts or embedded in expressions
+
+**Examples:**
+```
+// Simple assignment
+x = 10;
+y = "hello";
+
+// Property assignment
+obj.field = "value";
+point.x = 100;
+
+// Index assignment  
+arr[0] = 42;
+dict["key"] = "value";
+
+// Compound assignment
+count += 1;
+total *= 2;
+name += " Smith";
+
+// Nested assignment targets
+matrix[0][1] = 99;
+obj.nested.field = "deep";
+
+// Invalid: assignment is not an expression
+// var result = (x = 5);    // Error
+// if x = 10 { }            // Error
+```
+
+### 6.5. Empty Statements
 
 An empty statement performs no operation.
 
@@ -150,7 +190,7 @@ if condition {
 }
 ```
 
-### 6.5. Block Statements
+### 6.6. Block Statements
 
 Block statements group multiple statements and create a new scope.
 
@@ -187,11 +227,11 @@ var result = {
 }
 ```
 
-### 6.6. Control Flow Statements
+### 6.7. Control Flow Statements
 
 Control flow statements alter the sequential execution of statements.
 
-#### 6.6.1. While Statements
+#### 6.7.1. While Statements
 
 While statements repeatedly execute a block while a condition is true.
 
@@ -236,7 +276,7 @@ while i < 100 {
 }
 ```
 
-#### 6.6.2. For Statements
+#### 6.7.2. For Statements
 
 For statements iterate over sequences using the iterator protocol.
 
@@ -327,7 +367,7 @@ The unit type represents "no meaningful value" and is used consistently througho
 - `op_next()` when iteration is complete
 - Any control flow that doesn't explicitly produce a value
 
-#### 6.6.3. Try-Catch Statements
+#### 6.7.3. Try-Catch Statements
 
 Try-catch statements handle errors that may occur during execution.
 
@@ -382,7 +422,7 @@ try {
 }
 ```
 
-#### 6.6.4. With Statements
+#### 6.7.4. With Statements
 
 With statements ensure resources are properly cleaned up after use.
 
@@ -444,7 +484,7 @@ with temp = TempDirectory.new("/tmp/work") {
 }  // Directory automatically removed
 ```
 
-#### 6.6.5. Break Statements
+#### 6.7.5. Break Statements
 
 Break statements exit from the nearest enclosing loop.
 
@@ -493,7 +533,7 @@ if condition {
 }
 ```
 
-#### 6.6.6. Continue Statements
+#### 6.7.6. Continue Statements
 
 Continue statements skip to the next iteration of the nearest enclosing loop.
 
@@ -535,7 +575,7 @@ fn example() {
 }
 ```
 
-#### 6.6.7. Return Statements
+#### 6.7.7. Return Statements
 
 Return statements exit from the current function with an optional value.
 
@@ -624,7 +664,7 @@ if x > 5 {
 }
 ```
 
-### 6.7. Import Statements
+### 6.8. Import Statements
 
 Import statements bring symbols from other modules into scope.
 
