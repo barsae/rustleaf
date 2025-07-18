@@ -31,8 +31,8 @@ fn example() {
 
 // Error: missing semicolon
 fn bad_example() {
-    print("first")    // Error: missing semicolon
-    print("second")   // This line is unreachable
+    print("first")    // Parse error: missing semicolon
+    print("second")   // Parser stops at previous error
 }
 
 // Block with multiple statements
@@ -329,7 +329,7 @@ The unit type represents "no meaningful value" and is used consistently througho
 
 #### 6.6.3. Try-Catch Statements
 
-Try-catch statements handle exceptions that may occur during execution.
+Try-catch statements handle errors that may occur during execution.
 
 **Syntax:**
 ```
@@ -337,16 +337,16 @@ TryStatement = "try" Block "catch" Pattern Block
 Pattern = Identifier | DictPattern
 ```
 
-**Exception Handling:**
-- Try block executes normally until an exception occurs
-- On exception, control transfers to catch block
-- Catch pattern binds the exception value
+**Error Handling:**
+- Try block executes normally until an error occurs
+- On error, control transfers to catch block
+- Catch pattern binds the error value
 - No finally clause (use `with` statement for cleanup)
 - Try-catch is also an expression form (see Section 5.9)
 
 **Examples:**
 ```
-// Basic exception handling
+// Basic error handling
 try {
     var result = risky_operation();
     process(result);
@@ -354,19 +354,19 @@ try {
     print("Error occurred: ${e}");
 }
 
-// Pattern matching on exception
+// Pattern matching on error
 try {
     validate_input(data);
 } catch {type, message} {
     print("${type} error: ${message}");
 }
 
-// Re-raising exceptions
+// Re-raising errors
 try {
     database_operation();
 } catch e {
     log_error(e);
-    raise(e);  // Re-raise the same exception
+    raise(e);  // Re-raise the same error
 }
 
 // Nested try-catch
@@ -396,7 +396,7 @@ Resource = Identifier "=" Expression
 **Resource Management:**
 - Each expression is evaluated and bound to its identifier
 - Block executes with resources available
-- After block (or on exception), resources are cleaned up
+- After block (or on error), resources are cleaned up
 - Cleanup calls `close()` method on each resource
 - Cleanup happens in reverse order of acquisition
 - If resource lacks `close()` method, no cleanup occurs
@@ -414,7 +414,7 @@ with input = open("input.txt"), output = create("output.txt") {
     output.write(input.read());
 }  // output.close() then input.close() called
 
-// With exception handling
+// With error handling
 try {
     with conn = connect_database() {
         conn.query("SELECT * FROM users");
@@ -648,9 +648,9 @@ ImportItem = Identifier ("as" Identifier)?
 - Imported symbols must be marked `pub` in source module
 
 **Module Resolution:**
-- Relative to current module's directory
-- `library::math` looks for `library/math.rustleaf`
-- No `mod.rs` or module republishing
+- Paths resolve relative to current module's directory
+- Use `super::` to access parent directory
+- See Chapter 10 for complete module resolution specification
 
 **Examples:**
 ```

@@ -38,9 +38,8 @@ use module_path::*;                 // Import all public items (discouraged)
 ```
 
 **Path Resolution:**
+- **Relative paths**: `use utils::math` (relative to current module's directory)
 - **Parent paths**: `use super::sibling_module` (parent directory)
-- **Root paths**: `use root::top_level_module` (project root, explicit)
-- **Absolute paths**: `use math::geometry` (from project root, default)
 
 **Import Examples:**
 ```
@@ -164,25 +163,29 @@ print(p1.distance_to(p2))       // OK - public method
 Module paths are resolved based on the filesystem structure and special keywords.
 
 **Resolution Rules:**
-1. **Absolute paths** start from project root (default)
-2. **Parent paths** start with `super::` (parent directory)
-3. **Root paths** start with `root::` (project root, explicit)
+1. **Relative paths** resolve from current module's directory (default)
+2. **Parent paths** start with `super::` to access parent directory
 
 **Path Resolution Algorithm:**
 ```
 use path::to::module
      ↓
-1. If path starts with "super::" → resolve relative to parent directory
-2. If path starts with "root::" → resolve from project root
-3. Otherwise → resolve from project root (absolute)
+1. If path starts with "super::" → resolve relative to parent directory of current module
+2. Otherwise → resolve relative to current module's directory
 ```
+
+**Exact Path Lookup:**
+- Module paths are resolved to exactly one file location
+- No directory searching or fallback paths
+- If the computed `.rustleaf` file doesn't exist, import fails with error
+- No standard library search paths or module discovery
 
 **Examples:**
 ```
 // Project structure:
-// src/
+// project/
 // ├── main.rustleaf
-// ├── utils.rustleaf
+// ├── utils.rustleaf  
 // ├── graphics/
 // │   ├── renderer.rustleaf
 // │   └── shapes/
@@ -190,28 +193,32 @@ use path::to::module
 // └── math/
 //     └── geometry.rustleaf
 
-// File: src/graphics/renderer.rustleaf
+// File: project/graphics/renderer.rustleaf (current module)
 
-use utils                          // → src/utils.rustleaf
-use math::geometry                 // → src/math/geometry.rustleaf  
-use shapes::circle                 // → src/graphics/shapes/circle.rustleaf
-use super::utils                   // → src/utils.rustleaf
-use root::math::geometry           // → src/math/geometry.rustleaf
+use shapes::circle                 // → project/graphics/shapes/circle.rustleaf
+use super::utils                   // → project/utils.rustleaf  
+use super::math::geometry          // → project/math/geometry.rustleaf
+
+// File: project/math/geometry.rustleaf (current module)
+
+use super::utils                   // → project/utils.rustleaf
+use super::graphics::renderer      // → project/graphics/renderer.rustleaf
 ```
 
 **Module File Mapping:**
-- `use utils` → `utils.rustleaf`
-- `use math::geometry` → `math/geometry.rustleaf`
-- `use graphics::shapes::circle` → `graphics/shapes/circle.rustleaf`
+- `use shapes::circle` → `shapes/circle.rustleaf` (relative to current module)
+- `use super::utils` → `../utils.rustleaf` (parent directory)
+- `use super::math::geometry` → `../math/geometry.rustleaf` (parent, then relative)
 
 ### 10.5. Module Loading
 
 Modules are loaded and executed when first imported.
 
 **Loading Behavior:**
-- Each module file is executed once when first imported
-- Module-level code runs during import (initialization)
-- No caching - modules are re-loaded on each import
+- Each module file is executed once when first imported during program execution
+- Multiple imports of the same module return the same module instance
+- Module-level code runs during first import (initialization)
+- No persistent file caching - modules are re-loaded fresh on each program run
 - Circular dependencies cause runtime errors
 
 **Module Initialization:**
@@ -266,6 +273,18 @@ use database  // This triggers database.rustleaf execution
 
 var conn = database.get_connection()
 print("Got connection: ${conn}")
+```
+
+**Module Instance Consistency:**
+```
+// File: main.rustleaf
+use database::{get_connection};
+get_connection();  // Uses one connection
+
+use database::{get_connection as get_conn2};  
+get_conn2();       // Uses another connection from SAME module instance
+
+print("Connections left: ${database.connection_pool.length}");  // 8
 ```
 
 ### 10.6. Module Scope
@@ -333,7 +352,7 @@ var dict = {a: 1}        // Built-in type
 ```
 
 **Circular Dependency Detection:**
-The runtime maintains an import stack to detect circular dependencies during module loading.
+The runtime maintains an import stack to detect circular dependencies during module loading. Detection happens at import time, not at function call time.
 
 ```
 // File: module_a.rustleaf
