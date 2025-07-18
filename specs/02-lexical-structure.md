@@ -457,7 +457,7 @@ NullLiteral = "null"
 
 The null literal represents the absence of a value. It is a keyword and cannot be used as an identifier.
 
-### Raw String Literals
+#### 2.10.6. Raw String Literals
 
 Raw string literals are enclosed in `r"..."` and treat backslashes literally:
 

@@ -147,6 +147,9 @@ PrimaryExpression ::= Identifier
                    | IfExpression
                    | MatchExpression
                    | TryExpression
+                   | WhileExpression
+                   | ForExpression
+                   | LoopExpression
                    | AnonymousFunction
 
 ListLiteral ::= "[" (Expression ("," Expression)* ","?)? "]"
@@ -161,6 +164,12 @@ IfExpression ::= "if" Expression Block ("else" "if" Expression Block)* ("else" B
 MatchExpression ::= "match" Expression "{" MatchArm* "}"
 
 TryExpression ::= "try" Block ("catch" Identifier Block)?
+
+WhileExpression ::= "while" Expression Block
+
+ForExpression ::= "for" Pattern "in" Expression Block
+
+LoopExpression ::= "loop" Block
 
 AnonymousFunction ::= "fn" "(" ParameterList? ")" Block
 
@@ -571,21 +580,11 @@ var age = int(input("Enter your age: "))
 
 ### Utility Functions
 
-#### `len(collection)`
-Returns the length of a collection. **Note:** This is available as both a global function and as methods on collections.
-
-**Parameters:**
-- `collection`: List, dict, or string
-
-**Returns:** Integer length
+#### Collection Length
+Returns the length of a collection using the `.len()` method.
 
 **Examples:**
 ```
-len([1, 2, 3])     // 3
-len({"a": 1})      // 1
-len("hello")       // 5
-
-// Equivalent method calls:
 [1, 2, 3].len()    // 3
 {"a": 1}.len()     // 1
 "hello".len()      // 5
@@ -685,7 +684,7 @@ print(...values: any) -> unit
 input(prompt?: string) -> string
 
 // Utility functions
-len(collection: list|dict|string) -> int
+collection.len() -> int
 hash(value: any) -> int
 id(value: any) -> int
 is_unit(value: any) -> bool
@@ -698,7 +697,7 @@ args: list<string>
 
 1. **Availability**: All built-in functions are available in global scope without imports.
 
-2. **Method Equivalents**: Some functions like `len()` are also available as methods on objects (e.g., `list.len()`).
+2. **Collection Methods**: Collections provide methods like `.len()` for accessing their properties.
 
 3. **Error Handling**: Functions that can fail (like `int()`, `float()`) raise runtime errors rather than returning special values.
 

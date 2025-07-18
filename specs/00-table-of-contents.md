@@ -75,6 +75,11 @@ Version 1.0
 [5.12. Object Literal Expressions](05-expressions.md#512-object-literal-expressions)  
 [5.13. List Literal Expressions](05-expressions.md#513-list-literal-expressions)  
 [5.14. Dict Literal Expressions](05-expressions.md#514-dict-literal-expressions)  
+[5.15. Loop Expressions](05-expressions.md#515-loop-expressions)  
+   [5.15.1. While Expressions](05-expressions.md#5151-while-expressions)  
+   [5.15.2. For Expressions](05-expressions.md#5152-for-expressions)  
+   [5.15.3. Loop Expressions](05-expressions.md#5153-loop-expressions)  
+   [5.15.4. Break and Continue in Expressions](05-expressions.md#5154-break-and-continue-in-expressions)  
 [Operator Overloading](05-expressions.md#operator-overloading)  
 
 ### 6. [Statements](06-statements.md)

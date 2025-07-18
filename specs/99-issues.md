@@ -15,23 +15,17 @@ This document captures known issues and inconsistencies identified in the RustLe
 
 ## Major Issues (Semantic Clarity)
 
-### MAJOR-001: Unit Type Return Value Inconsistencies
+### ~~MAJOR-001: Unit Type Return Value Inconsistencies~~ ✅ FIXED
 - **Description**: Multiple conflicting descriptions of when unit is returned
-- **Locations**: 
-  - `specs/03-types.md:94-98` - Says unit is "returned by functions without explicit return value"
-  - `specs/06-statements.md:366` - Says "Expression statements (the discarded value is not unit, but statements themselves produce unit)"
-- **Impact**: Fundamental ambiguity about expression evaluation semantics
-- **Priority**: High - affects core language semantics
-- **Recommendation**: Clarify and standardize unit type semantics across all sections
+- **Resolution**: Clarified that functions return unit when they end with a statement rather than an expression. Added clear examples showing the distinction.
+- **Files Updated**: `specs/03-types.md`, `specs/06-statements.md`
+- **Decision**: Adopted Rust-like semantics where statements perform actions, expressions produce values
 
-### MAJOR-002: Grammar vs Implementation Mismatches
-- **Description**: Appendix grammar conflicts with semantic descriptions
-- **Specific Cases**:
-  - `specs/18-appendices.md:75` shows `BreakStatement ::= "break" Expression? ";"`
-  - `specs/06-statements.md:494` shows break statements have no expression support
-- **Impact**: Grammar doesn't match semantic description, could cause parser implementation issues
-- **Priority**: High - affects language implementation
-- **Recommendation**: Align grammar with semantic specifications
+### ~~MAJOR-002: Grammar vs Implementation Mismatches~~ ✅ FIXED
+- **Description**: Appendix grammar conflicts with semantic descriptions for break statements and loop constructs
+- **Resolution**: Implemented Rust-like loop expressions with break value support. Loops can now be used as both statements (when value isn't needed) and expressions (when value is needed).
+- **Files Updated**: `specs/05-expressions.md`, `specs/06-statements.md`, `specs/18-appendices.md`, `specs/00-table-of-contents.md`
+- **Decision**: Added loop expressions (while, for, loop) that return values via break statements or unit if they complete normally
 
 ### MAJOR-003: Iterator Protocol Inconsistencies
 - **Description**: Iterator protocol mentions unit return but has inconsistent boolean context restrictions
@@ -52,32 +46,31 @@ This document captures known issues and inconsistencies identified in the RustLe
 - **Priority**: Low - cosmetic issue
 - **Recommendation**: Renumber sections or move raw string content to match ToC
 
-### MINOR-002: Method vs Function Usage Ambiguity
+### MINOR-002: Method vs Function Usage Ambiguity - RESOLVED
 - **Description**: Some examples use `.len()` method calls while others use `len()` function calls without clear rules
-- **Locations**: 
-  - `specs/12-standard-library.md:575-592` - Shows both forms as equivalent
-  - Various other sections mix usage patterns
-- **Impact**: Unclear when to use function vs method form
-- **Priority**: Low - both forms work, but consistency would be better
-- **Recommendation**: Establish clear guidelines for when to show function vs method forms
+- **Resolution**: Standardized all documentation to use `.len()` method form only. The `len()` function form is incorrect.
+- **Changes Made**:
+  - Updated `specs/18-appendices.md` to remove function form documentation
+  - Fixed all `len()` function calls in `specs/03-types.md` to use `.len()` method
+  - Clarified that collections provide `.len()` method, not global `len()` function
 
-### MINOR-003: Try-Catch Syntax Variations
+### MINOR-003: Try-Catch Syntax Variations - RESOLVED
 - **Description**: Try-catch syntax differs between statement and expression forms
-- **Locations**:
-  - `specs/06-statements.md:376` - Statement form syntax
-  - `specs/05-expressions.md:578` - Expression form syntax
-- **Impact**: Potential parser ambiguity, though likely resolved by context
-- **Priority**: Low - likely not a real issue
-- **Recommendation**: Verify syntax is truly identical or document differences
+- **Resolution**: Intentional design choice - identical syntax with context-dependent parsing
+- **Design Decision**: 
+  - Same syntax (`try Block catch Pattern Block`) works in both statement and expression contexts
+  - Parser distinguishes based on usage context (whether result is used)
+  - Consistent with RustLeaf's pattern for if/for statements vs expressions
+  - Maintains language simplicity while following established parsing practices
 
-### MINOR-004: Operator Precedence Table Formatting
+### MINOR-004: Operator Precedence Table Formatting - RESOLVED
 - **Description**: Section 5.5.5 and Appendix B show precedence with different formatting
-- **Locations**:
-  - `specs/05-expressions.md:434-446` - Numbered list format
-  - `specs/18-appendices.md:232-247` - Table format
-- **Impact**: Could lead to misinterpretation, though content is consistent
-- **Priority**: Low - content is correct, formatting differs
-- **Recommendation**: Use consistent formatting for precedence rules
+- **Resolution**: Replaced duplicated precedence list with cross-reference to appendix
+- **Changes Made**:
+  - Removed numbered list from `specs/05-expressions.md:431` 
+  - Added cross-reference to "Appendix B: Operator Precedence"
+  - Maintained comprehensive table format in appendix as single source of truth
+- **Benefits**: Eliminates duplication, prevents inconsistencies, improves maintainability
 
 ## Resolved Issues
 

@@ -91,7 +91,7 @@ The unit type represents the absence of a meaningful return value.
 **Properties:**
 - Type name: `"unit"`
 - Single value that cannot be written as a literal
-- Returned by functions without explicit return value
+- Returned by functions that end with a statement rather than an expression
 - Returned by `return` statements without an expression
 - Returned by expressions without meaningful values (empty blocks, unmatched conditionals, etc.)
 - Used as sentinel value in iterator protocol
@@ -105,17 +105,28 @@ The unit type represents the absence of a meaningful return value.
 
 **Examples:**
 ```
+// Function ending with statement returns unit
 fn void_function() {
-    print("side effect")
-    // Implicitly returns unit
+    print("side effect")  // Statement - executed for side effect
+    // No final expression, so returns unit
 }
 
-var result = void_function()
-print(type(result))    // "unit"
-print(is_unit(result)) // true
+// Function ending with expression returns that value
+fn value_function() {
+    print("side effect")  // Statement - executed for side effect
+    42                    // Expression - this is the return value
+}
+
+var result1 = void_function()   // result1 is unit
+var result2 = value_function()  // result2 is 42
+
+print(type(result1))    // "unit"
+print(type(result2))    // "int"
+print(is_unit(result1)) // true
+print(is_unit(result2)) // false
 
 // Type error: unit cannot be used in boolean contexts
-if result {            // Error: unit type not allowed in boolean context
+if result1 {            // Error: unit type not allowed in boolean context
     print("never reached")
 }
 
@@ -254,7 +265,7 @@ Strings are immutable sequences of Unicode characters.
 - Comparison: lexicographic ordering
 - Indexing: `str[index]` returns single-character string
 - Slicing: `str[start:end]` returns substring
-- Length: `len(str)` returns character count
+- Length: `str.len()` returns character count
 
 **String Methods:**
 - `split(delimiter)` - Split into list of strings
@@ -305,7 +316,7 @@ Lists are ordered, mutable sequences that can contain values of any type.
 - Creation: `[expr1, expr2, ...]`
 - Indexing: `list[index]` (negative indices count from end)
 - Slicing: `list[start:end]`
-- Length: `len(list)`
+- Length: `list.len()`
 - Membership: `value in list`
 - Concatenation: `list1 + list2` (returns new list)
 
@@ -330,7 +341,7 @@ nums.append(4)              // [1, 2, 3, 4]
 nums[0] = 10               // [10, 2, 3, 4]
 
 var mixed = [1, "hello", true, [2, 3]]
-print(len(mixed))          // 4
+print(mixed.len())         // 4
 print(mixed[3][1])         // 3
 
 // Functional methods
@@ -356,7 +367,7 @@ Dictionaries are mutable mappings from keys to values with preserved insertion o
 - Access: `dict[key]` (raises error if key not found)
 - Assignment: `dict[key] = value`
 - Membership: `key in dict`
-- Length: `len(dict)`
+- Length: `dict.len()`
 
 **Dict Methods:**
 - `get(key, default?)` - Get value or default if not found

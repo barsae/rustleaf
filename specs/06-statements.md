@@ -245,7 +245,8 @@ WhileStatement = "while" Expression Block
 - Executes block if condition is truthy
 - Continues until condition is falsy
 - Body may contain break/continue statements
-- While loops are statements, not expressions (cannot return values)
+- When used as a statement (not assigned to variable), the return value is discarded
+- See Section 5.15.1 for while expressions that return values
 
 **Examples:**
 ```
@@ -286,8 +287,14 @@ ForStatement = "for" Pattern "in" Expression Block
 Pattern = Identifier | ListPattern | DictPattern
 ```
 
+**Semantics:**
+- Iterates over the collection using iterator protocol
+- Pattern binds values on each iteration
+- When used as a statement (not assigned to variable), the return value is discarded
+- See Section 5.15.2 for for expressions that return values
+
 **Iterator Protocol:**
-For statements work with any object that implements the iterator protocol. See Section 12.5 for complete iterator protocol specification, including requirements for `op_iter()` and `op_next()` methods. Built-in types (list, dict, string) implement this protocol.
+For statements work with any object that implements the iterator protocol. See Section 12.5 for complete iterator protocol specification, including requirements for `op_iter()` and `op_next()` methods. Iterator completion is detected using `is_unit()` since unit values cannot be used in boolean contexts. Built-in types (list, dict, string) implement this protocol.
 
 **Examples:**
 ```
@@ -361,11 +368,15 @@ The unit type represents "no meaningful value" and is used consistently througho
 - All unit values are equal to each other
 
 **When Unit is Returned:**
-- Functions without explicit return statements
+- Functions that end with a statement rather than an expression
 - `return;` statements (return without a value)
-- Expression statements (the discarded value is not unit, but statements themselves produce unit)
 - `op_next()` when iteration is complete
 - Any control flow that doesn't explicitly produce a value
+
+**Statement vs Expression Semantics:**
+- Statements are executed for their side effects and don't produce values
+- Expression statements execute an expression for side effects but discard the result
+- Functions return the value of their last expression, or unit if they end with a statement
 
 #### 6.7.3. Try-Catch Statements
 
@@ -382,7 +393,8 @@ Pattern = Identifier | DictPattern
 - On error, control transfers to catch block
 - Catch pattern binds the error value
 - No finally clause (use `with` statement for cleanup)
-- Try-catch is also an expression form (see Section 5.9)
+- Try-catch uses identical syntax in both statement and expression forms (see Section 5.9)
+- Parser distinguishes based on context (whether result is used)
 
 **Examples:**
 ```
@@ -486,37 +498,46 @@ with temp = TempDirectory.new("/tmp/work") {
 
 #### 6.7.5. Break Statements
 
-Break statements exit from the nearest enclosing loop.
+Break statements exit from the nearest enclosing loop, optionally returning a value.
 
 **Syntax:**
 ```
-BreakStatement = "break" ";"
+BreakStatement = "break" Expression? ";"
 ```
 
 **Break Rules:**
-- Must appear within a while or for loop
+- Must appear within a while, for, or loop construct
 - Immediately exits the loop
 - Execution continues after the loop
 - Cannot break from nested loops to outer loops
-- Break in statement loops does not return a value
+- Expression is optional - defaults to unit if omitted
+- When loop is used as expression, break value becomes the loop's value
 
 **Examples:**
 ```
-// Break from while
+// Break from while statement (no value needed)
 while true {
     var cmd = read_command();
     if cmd == "exit" {
-        break;
+        break;  // Exit loop
     }
     execute(cmd);
 }
 
-// Break from for
+// Break from for statement  
 for item in large_list {
     if found_target(item) {
-        break;
+        break;  // Exit loop
     }
 }
+
+// Break with value in expression context
+var result = while condition {
+    if found {
+        break "success";  // Return value from loop
+    }
+    continue_processing();
+};
 
 // Break in nested loops (only breaks inner)
 for i in range(0, 10) {

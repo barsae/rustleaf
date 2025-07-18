@@ -428,22 +428,7 @@ print(16 >> 2)          // 4
 
 #### 5.5.5. Operator Precedence
 
-Operators are evaluated according to precedence levels (highest to lowest):
-
-```
-1.  **                          (right-associative)
-2.  - (unary), not, ~
-3.  *, /, %
-4.  +, -
-5.  <<, >>
-6.  &
-7.  ^
-8.  |
-9.  ==, !=, <, >, <=, >=
-10. and
-11. xor
-12. or
-```
+Operators are evaluated according to precedence levels from highest to lowest precedence. For the complete precedence table with associativity rules, see **Appendix B: Operator Precedence**.
 
 **Examples:**
 ```
@@ -584,6 +569,7 @@ TryExpression = "try" Block
 - Evaluates the try block
 - If an error is raised, catches it and evaluates catch block
 - The expression evaluates to either the try or catch block value
+- Uses identical syntax to try-catch statements (Section 6.7.3) - context determines usage
 
 **Error Patterns:**
 The catch clause can pattern match on the error:
@@ -807,6 +793,215 @@ var dynamic = {
     get_key(): get_value(),
     [computed_key]: computed_value
 }
+```
+
+### 5.15. Loop Expressions
+
+Loop expressions provide iteration with the ability to return values through break statements.
+
+**Loop Types:**
+- **While expressions**: Iterate while a condition is true
+- **For expressions**: Iterate over a collection
+- **Loop expressions**: Infinite loops (must break to exit)
+
+#### 5.15.1. While Expressions
+
+While expressions repeatedly evaluate a block while a condition is true.
+
+**Syntax:**
+```
+WhileExpression = "while" Expression Block
+```
+
+**Semantics:**
+- Evaluates condition before each iteration
+- Executes block if condition is truthy
+- Returns the value from `break` statement, or unit if condition becomes false
+- `break` without expression returns unit
+- `continue` skips to next iteration
+
+**Examples:**
+```
+// Find first even number
+var first_even = while i < numbers.len() {
+    if numbers[i] % 2 == 0 {
+        break numbers[i];  // Return the even number
+    }
+    i += 1;
+};
+// first_even is either the number or unit
+
+// Process until condition met
+var result = while true {
+    var input = get_input();
+    if input == "quit" {
+        break "user_quit";
+    }
+    if process(input) {
+        break "success";
+    }
+};
+print("Result: ${result}");
+
+// Loop that might not break
+var attempt_result = while attempts < max_attempts {
+    if try_operation() {
+        break "succeeded";
+    }
+    attempts += 1;
+};
+// attempt_result is "succeeded" or unit (if max attempts reached)
+```
+
+#### 5.15.2. For Expressions
+
+For expressions iterate over collections using the iterator protocol.
+
+**Syntax:**
+```
+ForExpression = "for" Pattern "in" Expression Block
+```
+
+**Semantics:**
+- Iterates over the collection using iterator protocol
+- Returns the value from `break` statement, or unit if iteration completes
+- Pattern binds values as in for statements
+- `break` without expression returns unit
+
+**Examples:**
+```
+// Find first matching item
+var found = for item in collection {
+    if item.matches(criteria) {
+        break item;
+    }
+};
+
+if is_unit(found) {
+    print("Not found");
+} else {
+    print("Found: ${found}");
+}
+
+// Process until specific condition
+var result = for name, value in config.items() {
+    if name == "database_url" {
+        break validate_url(value);
+    }
+};
+
+// Complex search with destructuring
+var match_data = for [key, data] in key_value_pairs {
+    if data.priority > threshold {
+        break {key: key, data: data, found_at: get_timestamp()};
+    }
+};
+```
+
+#### 5.15.3. Loop Expressions
+
+Loop expressions create infinite loops that must be exited with break.
+
+**Syntax:**
+```
+LoopExpression = "loop" Block
+```
+
+**Semantics:**
+- Executes block repeatedly forever
+- Must use `break` to exit and return value
+- `break` without expression returns unit
+- Useful for complex control flow
+
+**Examples:**
+```
+// Read-eval-print loop
+var exit_code = loop {
+    var input = read_line();
+    
+    if input == "quit" {
+        break 0;  // Normal exit
+    }
+    
+    if input == "error" {
+        break 1;  // Error exit
+    }
+    
+    try {
+        var result = evaluate(input);
+        print("Result: ${result}");
+    } catch e {
+        print("Error: ${e}");
+        if e.fatal {
+            break 2;  // Fatal error exit
+        }
+    }
+};
+
+// Retry with exponential backoff
+var final_result = loop {
+    try {
+        break attempt_operation();  // Success
+    } catch e {
+        if attempts >= max_attempts {
+            break null;  // Give up
+        }
+        sleep(delay);
+        delay *= 2;
+        attempts += 1;
+    }
+};
+```
+
+#### 5.15.4. Break and Continue in Expressions
+
+Break and continue statements work in loop expressions with specific semantics.
+
+**Break with Values:**
+```
+break;           // Returns unit from loop
+break value;     // Returns value from loop
+break compute(); // Returns computed value from loop
+```
+
+**Continue (No Values):**
+```
+continue;        // Skip to next iteration (for/while only)
+```
+
+**Nested Loops:**
+```
+var result = for outer in outer_collection {
+    for inner in inner_collection {
+        if complex_condition(outer, inner) {
+            break [outer, inner];  // Breaks inner loop only
+        }
+    }
+};
+```
+
+**Type Consistency:**
+All break statements in a loop must return compatible types:
+```
+// Valid: all breaks return int
+var result = while condition {
+    if case1 {
+        break 1;
+    }
+    if case2 {
+        break 2;
+    }
+};  // result has type int | unit
+
+// Invalid: incompatible break types
+var result = while condition {
+    if case1 {
+        break "string";  // string
+    }
+    if case2 {
+        break 42;        // int - type error
+    }
+};
 ```
 
 ### Operator Overloading

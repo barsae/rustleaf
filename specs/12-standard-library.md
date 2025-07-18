@@ -432,6 +432,7 @@ Advances the iterator and returns the next value. Returns unit when iteration is
 **Protocol Requirements:**
 - `op_iter()` must return an object with an `op_next()` method
 - `op_next()` must return unit (not null) when iteration is complete
+- Use `is_unit()` to test for completion (unit cannot be used in boolean contexts)
 - Iterators should be stateful - each call to `op_next()` advances position
 - Multiple calls to `op_iter()` should return independent iterators
 
