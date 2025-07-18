@@ -10,8 +10,35 @@ impl Evaluator {
         let mut result = Value::Unit;
         for (i, stmt) in statements.iter().enumerate() {
             if i == statements.len() - 1 {
-                // Last statement/expression is the block value
-                result = self.evaluate(stmt)?;
+                // Last item determines block value based on its type
+                match stmt {
+                    // If the last item is an expression statement, the block evaluates to unit
+                    AstNode::ExpressionStatement { .. } => {
+                        self.evaluate(stmt)?; // Execute the statement
+                        result = Value::Unit; // But return unit
+                    }
+                    // If the last item is any other statement, the block evaluates to unit
+                    AstNode::VariableDeclaration { .. }
+                    | AstNode::Assignment { .. }
+                    | AstNode::FunctionDeclaration { .. }
+                    | AstNode::ClassDeclaration { .. }
+                    | AstNode::ImportStatement { .. }
+                    | AstNode::WhileStatement { .. }
+                    | AstNode::ForStatement { .. }
+                    | AstNode::MatchStatement { .. }
+                    | AstNode::TryStatement { .. }
+                    | AstNode::WithStatement { .. }
+                    | AstNode::ReturnStatement { .. }
+                    | AstNode::BreakStatement { .. }
+                    | AstNode::ContinueStatement { .. } => {
+                        self.evaluate(stmt)?; // Execute the statement
+                        result = Value::Unit; // But return unit
+                    }
+                    // If the last item is a pure expression, it becomes the block value
+                    _ => {
+                        result = self.evaluate(stmt)?;
+                    }
+                }
             } else {
                 self.evaluate(stmt)?;
             }
