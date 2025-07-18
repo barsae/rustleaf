@@ -145,7 +145,8 @@ Version 1.0
 [12.2. List Methods](12-standard-library.md#122-list-methods)  
 [12.3. Dict Methods](12-standard-library.md#123-dict-methods)  
 [12.4. Object Methods](12-standard-library.md#124-object-methods)  
-[12.5. Method Resolution and Inheritance](12-standard-library.md#125-method-resolution-and-inheritance)  
+[12.5. Iterator Protocol](12-standard-library.md#125-iterator-protocol)  
+[12.6. Method Resolution and Inheritance](12-standard-library.md#126-method-resolution-and-inheritance)  
 
 ### 13. [Documentation Comments and Docstrings](13-documentation-comments.md)
 [13.1. Overview](13-documentation-comments.md#131-overview)  

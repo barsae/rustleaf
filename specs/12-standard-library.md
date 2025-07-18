@@ -417,7 +417,105 @@ p.has_field("age")         // true
 p.has_field("missing")     // false
 ```
 
-### 12.5. Method Resolution and Inheritance
+### 12.5. Iterator Protocol
+
+The iterator protocol enables objects to be used in `for` loops and other iteration contexts. Any object can become iterable by implementing the required methods.
+
+**Protocol Methods:**
+
+**op_iter() → iterator**
+Returns an iterator object for this collection. Called once at the start of iteration.
+
+**op_next() → value|unit**  
+Advances the iterator and returns the next value. Returns unit when iteration is complete.
+
+**Protocol Requirements:**
+- `op_iter()` must return an object with an `op_next()` method
+- `op_next()` must return unit (not null) when iteration is complete
+- Iterators should be stateful - each call to `op_next()` advances position
+- Multiple calls to `op_iter()` should return independent iterators
+
+**Built-in Implementations:**
+
+**String Iterator:**
+Iterates over individual characters.
+```
+for ch in "hello" {
+    print(ch)  // Prints: h, e, l, l, o
+}
+```
+
+**List Iterator:**
+Iterates over list elements in order.
+```
+for item in [1, 2, 3] {
+    print(item)  // Prints: 1, 2, 3
+}
+```
+
+**Dict Iterator:**
+Iterates over [key, value] pairs.
+```
+for key, value in {a: 1, b: 2} {
+    print("${key} = ${value}")  // Prints: a = 1, b = 2
+}
+```
+
+**Custom Iterator Example:**
+```
+class Range {
+    var start;
+    var end;
+    
+    static fn new(start, end) {
+        var r = Range();
+        r.start = start;
+        r.end = end;
+        r
+    }
+    
+    fn op_iter() {
+        var iter = RangeIterator();
+        iter.current = self.start;
+        iter.end = self.end;
+        iter
+    }
+}
+
+class RangeIterator {
+    var current;
+    var end;
+    
+    fn op_next() {
+        if self.current >= self.end {
+            return;  // Returns unit - iteration complete
+        }
+        var value = self.current;
+        self.current += 1;
+        value
+    }
+}
+
+// Usage
+for i in Range.new(0, 5) {
+    print(i)  // Prints: 0, 1, 2, 3, 4
+}
+```
+
+**Iterator Consumption:**
+Always check for unit to detect completion:
+```
+var iter = collection.op_iter();
+while true {
+    var next = iter.op_next();
+    if is_unit(next) {
+        break;  // Iteration complete
+    }
+    process(next);
+}
+```
+
+### 12.6. Method Resolution and Inheritance
 
 **Method Call Resolution:**
 1. Look for method on object's class

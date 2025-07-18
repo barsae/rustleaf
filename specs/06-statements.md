@@ -247,11 +247,7 @@ Pattern = Identifier | ListPattern | DictPattern
 ```
 
 **Iterator Protocol:**
-- Expression must return an object with `op_iter()` method
-- `op_iter()` returns an iterator object
-- Iterator must have `op_next()` method
-- `op_next()` returns next value or unit when done
-- Built-in types (list, dict, string) implement the protocol
+For statements work with any object that implements the iterator protocol. See Section 12.5 for complete iterator protocol specification, including requirements for `op_iter()` and `op_next()` methods. Built-in types (list, dict, string) implement this protocol.
 
 **Examples:**
 ```
@@ -316,13 +312,20 @@ for i in Range.new(0, 5) {
 ```
 
 **Unit Type:**
-The unit type is a special value that:
-- Cannot be written as a literal
-- Is returned by `return` statements without a value
-- Is returned by functions without explicit return
-- Is returned by `op_next()` when iteration is complete
-- Can be checked with `is_unit(value)` built-in function
+The unit type represents "no meaningful value" and is used consistently throughout RustLeaf for:
+
+**Unit Value Properties:**
+- Cannot be written as a literal in source code
 - Has type name `"unit"` when checked with `type()`
+- Can be checked with `is_unit(value)` built-in function
+- All unit values are equal to each other
+
+**When Unit is Returned:**
+- Functions without explicit return statements
+- `return;` statements (return without a value)
+- Expression statements (the discarded value is not unit, but statements themselves produce unit)
+- `op_next()` when iteration is complete
+- Any control flow that doesn't explicitly produce a value
 
 #### 6.6.3. Try-Catch Statements
 
@@ -548,25 +551,42 @@ ReturnStatement = "return" Expression? ";"
 - With expression, returns expression value
 - Cannot be used at module level
 
-**Unit Type and Return:**
+**Unit Return Behavior:**
+All functions that don't explicitly return a value will return unit:
+
 ```
-// These all return unit
+// Explicit unit return
 fn example1() {
-    return;  // Explicit return unit
+    return;  // Explicitly returns unit
 }
 
+// Implicit unit return - empty function body
 fn example2() {
-    // Implicit return unit (empty body)
+    // Function body is empty, implicitly returns unit
 }
 
+// Implicit unit return - statements only
 fn example3() {
-    print("hello");  // No return, so returns unit
+    print("hello");  // Statement executed for side effect
+    // No explicit return, so implicitly returns unit
 }
 
-// Check for unit
+// Implicit unit return - control flow without value
+fn example4(condition) {
+    if condition {
+        print("true case");
+        // No return here
+    } else {
+        print("false case"); 
+        // No return here either
+    }
+    // Function implicitly returns unit
+}
+
+// Check for unit return
 var result = example1();
 if is_unit(result) {
-    print("Function returned unit");
+    print("Function returned unit");  // This will always print
 }
 ```
 

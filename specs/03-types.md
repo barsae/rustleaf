@@ -78,12 +78,13 @@ The unit type represents the absence of a meaningful return value.
 - Returned by functions without explicit return value
 - Returned by `return` statements without an expression
 - Used as sentinel value in iterator protocol
-- Truthiness: unit is falsy in boolean contexts
+- Does not participate in boolean contexts (prevents iterator misuse)
 
 **Operations:**
 - Equality: unit values are equal to each other
 - Type check: `type(unit_value) == "unit"`
 - Unit test: `is_unit(value)` built-in function
+- Boolean context: Using unit in `if`, `while`, `and`, `or` is a type error
 
 **Examples:**
 ```
@@ -95,6 +96,19 @@ fn void_function() {
 var result = void_function()
 print(type(result))    // "unit"
 print(is_unit(result)) // true
+
+// Type error: unit cannot be used in boolean contexts
+if result {            // Error: unit type not allowed in boolean context
+    print("never reached")
+}
+
+// Correct iterator usage
+var next_value = iterator.op_next()
+if is_unit(next_value) {  // Correct: explicitly check for unit
+    print("Iterator exhausted")
+} else {
+    process(next_value)
+}
 
 // Iterator protocol
 fn op_next() {
@@ -215,6 +229,7 @@ Strings are immutable sequences of Unicode characters.
 - UTF-8 encoded internally
 - Immutable (operations return new strings)
 - Support for string interpolation
+- Implements iterator protocol (Section 12.5)
 
 **String Operations:**
 - Concatenation: `+` operator
@@ -267,6 +282,7 @@ Lists are ordered, mutable sequences that can contain values of any type.
 - Heterogeneous (can mix types)
 - Mutable (can be modified in place)
 - Dynamic size
+- Implements iterator protocol (Section 12.5)
 
 **List Operations:**
 - Creation: `[expr1, expr2, ...]`
@@ -316,6 +332,7 @@ Dictionaries are mutable mappings from keys to values with preserved insertion o
 - Values can be any type
 - Preserves insertion order
 - Mutable
+- Implements iterator protocol (Section 12.5)
 
 **Dict Operations:**
 - Creation: `{key1: value1, key2: value2, ...}`
