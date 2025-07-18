@@ -45,6 +45,11 @@ pub fn get_builtin_functions() -> Vec<BuiltinFunctionInfo> {
             function: builtin_assert_approx_eq,
             arity: None, // 2-3 arguments
         },
+        BuiltinFunctionInfo {
+            name: "raise",
+            function: builtin_raise,
+            arity: Some(1),
+        },
     ]
 }
 
@@ -176,4 +181,23 @@ fn builtin_assert_approx_eq(args: &[Value], _env: &mut Environment) -> Result<Va
     }
 
     Ok(Value::Null)
+}
+
+fn builtin_raise(args: &[Value], _env: &mut Environment) -> Result<Value, RuntimeError> {
+    if args.len() != 1 {
+        return Err(RuntimeError::new(
+            format!("raise() takes exactly 1 argument ({} given)", args.len()),
+            ErrorType::TypeError,
+        ));
+    }
+
+    // Create a RuntimeError from the raised value
+    let error_value = &args[0];
+    let message = error_value.to_display_string();
+
+    // Create a custom error that carries the raised value
+    let mut error = RuntimeError::new(message, ErrorType::RaisedError);
+    error.return_value = Some(error_value.clone());
+
+    Err(error)
 }

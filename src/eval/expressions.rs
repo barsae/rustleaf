@@ -294,4 +294,40 @@ impl Evaluator {
         self.environment.pop_scope();
         result
     }
+
+    pub(crate) fn evaluate_try_expression(
+        &mut self,
+        body: &AstNode,
+        catch_clause: Option<&crate::parser::CatchClause>,
+    ) -> Result<Value, RuntimeError> {
+        match self.evaluate(body) {
+            Ok(value) => Ok(value),
+            Err(error) => {
+                if let Some(catch) = catch_clause {
+                    // Enter new scope for catch block
+                    self.environment.push_scope();
+
+                    // Bind the error value to the catch variable
+                    let error_value = if let Some(raised_value) = error.return_value {
+                        raised_value
+                    } else {
+                        // Convert runtime error to string
+                        Value::String(error.message)
+                    };
+
+                    self.environment.define(catch.variable.clone(), error_value);
+
+                    // Execute catch block
+                    let result = self.evaluate(&catch.body);
+
+                    // Clean up scope
+                    self.environment.pop_scope();
+                    result
+                } else {
+                    // No catch clause, re-raise the error
+                    Err(error)
+                }
+            }
+        }
+    }
 }

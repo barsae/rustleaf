@@ -234,4 +234,56 @@ impl Evaluator {
         self.environment.pop_scope();
         Ok(result)
     }
+
+    pub(crate) fn evaluate_try_statement(
+        &mut self,
+        body: &AstNode,
+        catch_clause: Option<&crate::parser::CatchClause>,
+        finally_clause: Option<&AstNode>,
+    ) -> Result<Value, RuntimeError> {
+        let mut result = match self.evaluate(body) {
+            Ok(value) => Ok(value),
+            Err(error) => {
+                if let Some(catch) = catch_clause {
+                    // Enter new scope for catch block
+                    self.environment.push_scope();
+
+                    // Bind the error value to the catch variable
+                    let error_value = if let Some(raised_value) = error.return_value {
+                        raised_value
+                    } else {
+                        // Convert runtime error to string
+                        Value::String(error.message)
+                    };
+
+                    self.environment.define(catch.variable.clone(), error_value);
+
+                    // Execute catch block
+                    let catch_result = self.evaluate(&catch.body);
+
+                    // Clean up scope
+                    self.environment.pop_scope();
+                    catch_result
+                } else {
+                    // No catch clause, save the error for later
+                    Err(error)
+                }
+            }
+        };
+
+        // Execute finally block if present (always runs)
+        if let Some(finally_body) = finally_clause {
+            match self.evaluate(finally_body) {
+                Ok(_) => {
+                    // Finally block succeeded, return original result
+                }
+                Err(finally_error) => {
+                    // Finally block failed, this error takes precedence
+                    result = Err(finally_error);
+                }
+            }
+        }
+
+        result
+    }
 }

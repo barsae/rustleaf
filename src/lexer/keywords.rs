@@ -26,7 +26,7 @@ pub fn create_keywords_map() -> HashMap<String, TokenType> {
     keywords.insert("of".to_string(), TokenType::Of);
     keywords.insert("or".to_string(), TokenType::Or);
     keywords.insert("pub".to_string(), TokenType::Pub);
-    keywords.insert("raise".to_string(), TokenType::Raise);
+    // keywords.insert("raise".to_string(), TokenType::Raise); // raise is a function, not a keyword
     keywords.insert("require".to_string(), TokenType::Require);
     keywords.insert("return".to_string(), TokenType::Return);
     keywords.insert("root".to_string(), TokenType::Root);

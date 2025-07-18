@@ -137,6 +137,7 @@ pub enum ErrorType {
     ImportError,
     RuntimeError,
     AssertionError,
+    RaisedError,
 }
 
 impl RuntimeError {

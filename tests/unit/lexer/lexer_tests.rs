@@ -428,7 +428,7 @@ fn lexer_bom_handling() {
 
 #[test]
 fn lexer_all_keywords_exhaustive() {
-    let keywords = "and break case catch class continue else false finally fn for from if in is match not null of or pub raise require return self static super true try use var while with xor";
+    let keywords = "and break case catch class continue else false finally fn for from if in is match not null of or pub require return self static super true try use var while with xor";
     let tokens = Lexer::new(keywords).unwrap();
 
     // Should have all keywords + EOF

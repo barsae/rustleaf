@@ -97,9 +97,9 @@ impl Evaluator {
             AstNode::Match { .. } => {
                 todo!("Match expressions not implemented yet")
             }
-            AstNode::Try { .. } => {
-                todo!("Try expressions not implemented yet")
-            }
+            AstNode::Try {
+                body, catch_clause, ..
+            } => self.evaluate_try_expression(body, catch_clause.as_ref().map(|c| c.as_ref())),
             AstNode::AnonymousFunction {
                 parameters, body, ..
             } => self.evaluate_anonymous_function(parameters, body),
@@ -130,9 +130,16 @@ impl Evaluator {
             AstNode::MatchStatement { .. } => {
                 todo!("Match statements not implemented yet")
             }
-            AstNode::TryStatement { .. } => {
-                todo!("Try statements not implemented yet")
-            }
+            AstNode::TryStatement {
+                body,
+                catch_clause,
+                finally_clause,
+                ..
+            } => self.evaluate_try_statement(
+                body,
+                catch_clause.as_ref(),
+                finally_clause.as_ref().map(|f| f.as_ref()),
+            ),
             AstNode::WithStatement { .. } => {
                 todo!("With statements not implemented yet")
             }
