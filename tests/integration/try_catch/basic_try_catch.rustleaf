@@ -1,0 +1,8 @@
+var error_caught = false;
+try {
+    raise("test error");
+} catch e {
+    error_caught = true;
+    assert(e == "test error");
+}
+assert(error_caught == true);

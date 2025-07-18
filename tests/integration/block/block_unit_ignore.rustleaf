@@ -1,0 +1,7 @@
+var result = {
+    var a = 10;
+    var b = 20;
+    // Extra semicolon means there's no implicit value return, so it's unit
+    a + b;
+};
+assert(is_unit(result));

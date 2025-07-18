@@ -2,25 +2,57 @@
 
 use rustleaf_macros::rustleaf_tests;
 
-// Expression evaluation tests
-#[rustleaf_tests("tests/integration/expressions")]
-mod expression_tests {}
+// If expression tests
+#[rustleaf_tests("tests/integration/if")]
+mod if_tests {}
 
-// Statement execution tests
-#[rustleaf_tests("tests/integration/statements")]
-mod statement_tests {}
+// Logical expression tests
+#[rustleaf_tests("tests/integration/logical")]
+mod logical_tests {}
 
-// Data type tests
-#[rustleaf_tests("tests/integration/data_types")]
-mod data_type_tests {}
+// Math expression tests
+#[rustleaf_tests("tests/integration/math")]
+mod math_tests {}
+
+// Comparison expression tests
+#[rustleaf_tests("tests/integration/comparison")]
+mod comparison_tests {}
+
+// Block expression tests
+#[rustleaf_tests("tests/integration/block")]
+mod block_tests {}
+
+// Variable assignment tests
+#[rustleaf_tests("tests/integration/variables")]
+mod variable_tests {}
+
+// Try/catch statement tests
+#[rustleaf_tests("tests/integration/try_catch")]
+mod try_catch_tests {}
+
+// Dictionary tests
+#[rustleaf_tests("tests/integration/dicts")]
+mod dict_tests {}
+
+// List tests
+#[rustleaf_tests("tests/integration/lists")]
+mod list_tests {}
+
+// String tests
+#[rustleaf_tests("tests/integration/strings")]
+mod string_tests {}
+
+// Null value tests
+#[rustleaf_tests("tests/integration/null")]
+mod null_tests {}
 
 // Operator tests
 #[rustleaf_tests("tests/integration/operators")]
 mod operator_tests {}
 
-// Builtin function tests
-#[rustleaf_tests("tests/integration/builtins")]
-mod builtin_tests {}
+// Assert function tests
+#[rustleaf_tests("tests/integration/assert")]
+mod assert_tests {}
 
 // Function declaration and invocation tests
 #[rustleaf_tests("tests/integration/functions")]

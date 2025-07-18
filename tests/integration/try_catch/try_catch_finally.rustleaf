@@ -1,0 +1,12 @@
+var finally_executed = false;
+var error_caught = false;
+try {
+    raise("test error");
+} catch e {
+    error_caught = true;
+    assert(e == "test error");
+} finally {
+    finally_executed = true;
+}
+assert(error_caught == true);
+assert(finally_executed == true);
