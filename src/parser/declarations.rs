@@ -36,19 +36,50 @@ impl Parser {
         let location = self.current_location();
         self.consume(TokenType::Use, "Expected 'use'")?;
 
-        let path = vec![self.consume_identifier("Expected module name")?];
+        let (path, clause) = self.parse_import_path_and_clause()?;
 
-        if self.match_token(&TokenType::DoubleColon) {
-            if self.match_token(&TokenType::Star) {
-                let clause = ImportClause::All;
-                self.consume(TokenType::Semicolon, "Expected ';' after import statement")?;
-                return Some(AstNode::ImportStatement {
-                    path,
-                    clause: Some(clause),
-                    location,
-                });
+        self.consume(TokenType::Semicolon, "Expected ';' after import statement")?;
+        Some(AstNode::ImportStatement {
+            path,
+            clause,
+            location,
+        })
+    }
+
+    fn parse_import_path_and_clause(&mut self) -> Option<(ModulePath, Option<ImportClause>)> {
+        // Parse the module path root (super, root, or absolute)
+        let (root_type, first_segment) = if self.match_token(&TokenType::Super) {
+            self.consume(TokenType::DoubleColon, "Expected '::' after 'super'")?;
+            let segment = self.consume_identifier("Expected module name after 'super::'")?;
+            (ModulePathRoot::Super, segment)
+        } else if self.match_token(&TokenType::Root) {
+            self.consume(TokenType::DoubleColon, "Expected '::' after 'root'")?;
+            let segment = self.consume_identifier("Expected module name after 'root::'")?;
+            (ModulePathRoot::Root, segment)
+        } else {
+            let segment = self.consume_identifier("Expected module name")?;
+            (ModulePathRoot::Absolute, segment)
+        };
+
+        let mut path_segments = vec![first_segment];
+
+        // Parse path segments until we hit import clause syntax or end
+        while self.check(&TokenType::DoubleColon) {
+            // Look ahead to see what follows the ::
+            let saved_pos = self.current;
+            self.advance(); // consume ::
+
+            if self.check(&TokenType::Star) {
+                // This is ::* syntax
+                self.advance(); // consume *
+                let path = ModulePath {
+                    root_type,
+                    segments: path_segments,
+                };
+                return Some((path, Some(ImportClause::All)));
             } else if self.check(&TokenType::LeftBrace) {
-                self.advance(); // consume '{'
+                // This is ::{...} syntax
+                self.advance(); // consume {
                 let mut names = Vec::new();
                 names.push(self.consume_identifier("Expected identifier")?);
 
@@ -60,31 +91,40 @@ impl Parser {
                 }
 
                 self.consume(TokenType::RightBrace, "Expected '}'")?;
-                let clause = ImportClause::Named(names);
-                self.consume(TokenType::Semicolon, "Expected ';' after import statement")?;
-                return Some(AstNode::ImportStatement {
-                    path,
-                    clause: Some(clause),
-                    location,
-                });
+                let path = ModulePath {
+                    root_type,
+                    segments: path_segments,
+                };
+                return Some((path, Some(ImportClause::Named(names))));
+            } else if self.check(&TokenType::Identifier) {
+                let next_segment = self.consume_identifier("Expected identifier")?;
+
+                // Check if there's another :: after this identifier
+                if self.check(&TokenType::DoubleColon) {
+                    // This identifier is part of the path, continue parsing
+                    path_segments.push(next_segment);
+                    continue;
+                } else {
+                    // This identifier is a single import clause (import specific item)
+                    let path = ModulePath {
+                        root_type,
+                        segments: path_segments,
+                    };
+                    return Some((path, Some(ImportClause::Single(next_segment))));
+                }
             } else {
-                let name = self.consume_identifier("Expected identifier")?;
-                let clause = ImportClause::Single(name);
-                self.consume(TokenType::Semicolon, "Expected ';' after import statement")?;
-                return Some(AstNode::ImportStatement {
-                    path,
-                    clause: Some(clause),
-                    location,
-                });
+                // Invalid syntax, restore position and break
+                self.current = saved_pos;
+                break;
             }
         }
 
-        self.consume(TokenType::Semicolon, "Expected ';' after import statement")?;
-        Some(AstNode::ImportStatement {
-            path,
-            clause: None,
-            location,
-        })
+        // No import clause, just the module path
+        let path = ModulePath {
+            root_type,
+            segments: path_segments,
+        };
+        Some((path, None))
     }
 
     pub fn parse_function_declaration(&mut self, visibility: Visibility) -> Option<AstNode> {

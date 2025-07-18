@@ -29,6 +29,7 @@ pub fn create_keywords_map() -> HashMap<String, TokenType> {
     keywords.insert("raise".to_string(), TokenType::Raise);
     keywords.insert("require".to_string(), TokenType::Require);
     keywords.insert("return".to_string(), TokenType::Return);
+    keywords.insert("root".to_string(), TokenType::Root);
     keywords.insert("self".to_string(), TokenType::Self_);
     keywords.insert("static".to_string(), TokenType::Static);
     keywords.insert("super".to_string(), TokenType::Super);

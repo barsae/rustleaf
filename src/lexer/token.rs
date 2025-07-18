@@ -27,6 +27,7 @@ pub enum TokenType {
     Raise,
     Require,
     Return,
+    Root,
     Self_,
     Static,
     Super,

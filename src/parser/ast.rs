@@ -97,7 +97,7 @@ pub enum AstNode {
         location: SourceLocation,
     },
     ImportStatement {
-        path: Vec<String>,
+        path: ModulePath,
         clause: Option<ImportClause>,
         location: SourceLocation,
     },
@@ -258,6 +258,19 @@ pub enum ClassMember {
         is_static: bool,
         declaration: AstNode, // FunctionDeclaration
     },
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct ModulePath {
+    pub root_type: ModulePathRoot,
+    pub segments: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum ModulePathRoot {
+    Absolute, // Default: use math::geometry
+    Super,    // use super::sibling
+    Root,     // use root::top_level
 }
 
 #[derive(Debug, Clone, PartialEq)]
