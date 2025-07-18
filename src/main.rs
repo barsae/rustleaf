@@ -1,5 +1,5 @@
 use clap::{Parser, Subcommand};
-use rustleaf::{Evaluator, Lexer, Parser as RustLeafParser};
+use rustleaf::{Evaluator, Lexer, Parser as RustLeafParser, Repl};
 use std::fs;
 
 #[derive(Parser)]
@@ -34,10 +34,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         Commands::Run { file } => {
             run_file(&file)?;
         }
-        Commands::Repl => {
-            println!("RustLeaf REPL v{}", env!("CARGO_PKG_VERSION"));
-            println!("REPL not yet implemented");
-        }
+        Commands::Repl => match Repl::new() {
+            Ok(mut repl) => {
+                if let Err(e) = repl.run() {
+                    eprintln!("REPL error: {}", e);
+                    return Err(e.into());
+                }
+            }
+            Err(e) => {
+                eprintln!("Failed to initialize REPL: {}", e);
+                return Err(e.into());
+            }
+        },
         Commands::Parse { file } => {
             parse_file(&file)?;
         }

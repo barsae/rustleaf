@@ -8,8 +8,8 @@ pub struct Lexer;
 type TokenizeResult = Result<(Vec<Token>, Vec<LexWarning>, Vec<LexError>), LexErrors>;
 
 impl Lexer {
-    /// Main entry point for lexical analysis.
-    /// Prints warnings to stderr and returns Result<Vec<Token>, LexErrors>.
+    /// Main entry point for lexical analysis
+    /// Prints warnings to stderr
     #[allow(clippy::new_ret_no_self)]
     pub fn new(input: &str) -> Result<Vec<Token>, LexErrors> {
         let (tokens, warnings, errors) = Self::tokenize_internal(input)?;
@@ -26,8 +26,8 @@ impl Lexer {
         }
     }
 
-    /// Entry point for unit tests that need access to warnings.
-    /// Does not print warnings to stderr.
+    /// Entry point for unit tests that need access to warnings
+    /// Does not print warnings to stderr
     pub fn new_warnings(input: &str) -> Result<(Vec<Token>, Vec<LexWarning>), LexErrors> {
         let (tokens, warnings, errors) = Self::tokenize_internal(input)?;
 
@@ -80,8 +80,7 @@ impl Lexer {
         // Skip BOM if present
         if !input_chars.is_empty() && input_chars[0] == '\u{FEFF}' {
             position += 1;
-            byte_offset += 3; // BOM is 3 bytes in UTF-8
-                              // Don't increment column for BOM
+            byte_offset += 3;
         }
 
         while position < input_chars.len() {
