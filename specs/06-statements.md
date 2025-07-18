@@ -1,24 +1,39 @@
 # 6. Statements
 
-Statements are instructions that perform actions but do not produce values. This chapter defines the various statement types in RustLeaf, their syntax, and execution semantics. Unlike expressions, statements are executed for their side effects.
+Statements are syntactic constructs that either execute expressions for their side effects or perform special operations that cannot be expressions. This chapter defines the various statement types in RustLeaf, their syntax, and execution semantics.
 
-### 6.1. Statement Evaluation
+### 6.1. Statement Grammar
 
-Statements are executed sequentially within their containing block or module.
+The statement grammar follows a unified structure where most constructs are expressions, but certain operations are statement-only.
+
+**Statement Syntax:**
+```
+Statement = Expression ";" Statement?
+          | Assignment ";" Statement?
+          | Declaration ";" Statement?
+          | ControlFlow ";" Statement?
+          | Import ";" Statement?
+          | Expression  // final expression value (no semicolon)
+
+Assignment = LValue AssignOp Expression
+Declaration = "var" Pattern ("=" Expression)?
+ControlFlow = ReturnStmt | BreakStmt | ContinueStmt
+Import = "use" ModulePath ImportList
+```
 
 **Statement Execution Rules:**
 - Statements execute in the order they appear
-- Statements must be separated by semicolons, except for the last statement in a block
-- The last statement in a block may omit its semicolon if it's an expression whose value should be returned
+- Statements are separated by semicolons, except for the final expression in a block
+- The final expression in a block (without semicolon) becomes the block's value
 - Module-level statements execute when the module is loaded
-- Certain statements (break, continue, return) alter control flow
+- Control flow statements (break, continue, return) alter execution flow
 
 **Statement Categories:**
-1. **Expression statements** - Expressions executed for side effects
-2. **Variable declarations** - Introduce new variables
-3. **Control flow statements** - Alter execution flow
-4. **Import statements** - Import modules and symbols
-5. **Empty statements** - No operation
+1. **Expression statements** - Expressions executed for side effects (followed by semicolon)
+2. **Assignment** - Update variables or object properties (statement-only, not expressions)
+3. **Declaration** - Introduce new variables (statement-only)
+4. **Control flow** - Alter execution flow (statement-only)
+5. **Import** - Import modules and symbols (statement-only)
 
 **Semicolon Rules:**
 ```
@@ -57,7 +72,7 @@ ExpressionStatement = Expression ";"
 - The resulting value is discarded
 - Commonly used for function calls and method calls
 - Pure expressions without side effects are allowed but not useful
-- Assignment is handled as a separate statement type, not an expression statement
+- Assignment is **not** an expression and therefore cannot appear in expression statements
 
 **Examples:**
 ```
@@ -76,13 +91,13 @@ x + y;           // Computes sum, then discards it
 true and false;  // Evaluates to false, then discards it
 ```
 
-### 6.3. Variable Declaration Statements
+### 6.3. Declaration Statements
 
 Variables are declared using the `var` keyword, optionally with initialization.
 
 **Syntax:**
 ```
-VarStatement = "var" Pattern ("=" Expression)? ";"
+Declaration = "var" Pattern ("=" Expression)?
 Pattern = Identifier 
         | ListPattern
         | DictPattern
@@ -120,11 +135,11 @@ Assignment statements update the value stored in a variable or mutable location.
 
 **Syntax:**
 ```
-AssignmentStatement = LValue AssignmentOperator Expression ";"
+Assignment = LValue AssignOp Expression
 LValue = Identifier
        | Expression "." Identifier  
        | Expression "[" Expression "]"
-AssignmentOperator = "=" | "+=" | "-=" | "*=" | "/=" | "%="
+AssignOp = "=" | "+=" | "-=" | "*=" | "/=" | "%="
 ```
 
 **Assignment Rules:**
@@ -162,76 +177,30 @@ obj.nested.field = "deep";
 // if x = 10 { }            // Error
 ```
 
-### 6.5. Empty Statements
-
-An empty statement performs no operation.
-
-**Syntax:**
-```
-EmptyStatement = ";"
-```
-
-**Uses:**
-- Generated code placeholders
-- Syntactic requirements
-- Explicit "do nothing"
-
-**Examples:**
-```
-// Empty statement
-;
-
-// Empty block serves similar purpose
-{ }
-
-// In generated code
-if condition {
-    ; // Placeholder for future code
-}
-```
-
-### 6.6. Block Statements
-
-Block statements group multiple statements and create a new scope.
-
-**Syntax:**
-```
-BlockStatement = "{" Statement* "}"
-```
-
-**Block Statement vs Block Expression:**
-- Block statement: Used where a statement is expected, no value returned
-- Block expression: Used where an expression is expected, returns last expression value
-
-**Examples:**
-```
-// Block statement in if
-if condition {
-    var x = 10;
-    print(x);
-    // No value returned
-}
-
-// Block statement standalone
-{
-    var temp = calculate();
-    process(temp);
-    cleanup(temp);
-}
-
-// Block expression (note no semicolon after block)
-var result = {
-    var x = 10;
-    var y = 20;
-    x + y  // This value is returned
-}
-```
-
-### 6.7. Control Flow Statements
+### 6.5. Control Flow Statements
 
 Control flow statements alter the sequential execution of statements.
 
-#### 6.7.1. While Statements
+**Syntax:**
+```
+ControlFlow = ReturnStmt | BreakStmt | ContinueStmt
+
+ReturnStmt = "return" Expression?
+BreakStmt = "break" Expression?
+ContinueStmt = "continue"
+```
+
+**Control Flow Rules:**
+- These constructs are statements only, not expressions
+- They immediately alter execution flow
+- Cannot be used in expression contexts
+- Must appear in appropriate scopes (return in functions, break/continue in loops)
+
+### 6.6. Loop Statements
+
+Loop constructs (`while`, `for`, `loop`) use identical syntax in both statement and expression contexts. When used as statements, any return value is discarded. When used as expressions, they can return values via `break` statements.
+
+#### 6.6.1. While Statements
 
 While statements repeatedly execute a block while a condition is true.
 
@@ -246,7 +215,7 @@ WhileStatement = "while" Expression Block
 - Continues until condition is falsy
 - Body may contain break/continue statements
 - When used as a statement (not assigned to variable), the return value is discarded
-- See Section 5.15.1 for while expressions that return values
+- See Section 5.14.1 for while expressions that return values
 
 **Examples:**
 ```
@@ -277,7 +246,7 @@ while i < 100 {
 }
 ```
 
-#### 6.7.2. For Statements
+#### 6.6.2. For Statements
 
 For statements iterate over sequences using the iterator protocol.
 
@@ -291,7 +260,7 @@ Pattern = Identifier | ListPattern | DictPattern
 - Iterates over the collection using iterator protocol
 - Pattern binds values on each iteration
 - When used as a statement (not assigned to variable), the return value is discarded
-- See Section 5.15.2 for for expressions that return values
+- See Section 5.14.2 for for expressions that return values
 
 **Iterator Protocol:**
 For statements work with any object that implements the iterator protocol. See Section 12.5 for complete iterator protocol specification, including requirements for `op_iter()` and `op_next()` methods. Iterator completion is detected using `is_unit()` since unit values cannot be used in boolean contexts. Built-in types (list, dict, string) implement this protocol.
@@ -378,7 +347,7 @@ The unit type represents "no meaningful value" and is used consistently througho
 - Expression statements execute an expression for side effects but discard the result
 - Functions return the value of their last expression, or unit if they end with a statement
 
-#### 6.7.3. Try-Catch Statements
+### 6.7. Try-Catch Statements
 
 Try-catch statements handle errors that may occur during execution.
 
@@ -393,7 +362,7 @@ Pattern = Identifier | DictPattern
 - On error, control transfers to catch block
 - Catch pattern binds the error value
 - No finally clause (use `with` statement for cleanup)
-- Try-catch uses identical syntax in both statement and expression forms (see Section 5.9)
+- Try-catch uses identical syntax in both statement and expression forms (see Section 5.8)
 - Parser distinguishes based on context (whether result is used)
 
 **Examples:**
@@ -434,7 +403,7 @@ try {
 }
 ```
 
-#### 6.7.4. With Statements
+### 6.8. With Statements
 
 With statements ensure resources are properly cleaned up after use.
 
@@ -496,202 +465,15 @@ with temp = TempDirectory.new("/tmp/work") {
 }  // Directory automatically removed
 ```
 
-#### 6.7.5. Break Statements
+**Note:** Break, continue, and return statements are now covered in Section 6.5 (Control Flow Statements) since they follow the unified grammar structure.
 
-Break statements exit from the nearest enclosing loop, optionally returning a value.
-
-**Syntax:**
-```
-BreakStatement = "break" Expression? ";"
-```
-
-**Break Rules:**
-- Must appear within a while, for, or loop construct
-- Immediately exits the loop
-- Execution continues after the loop
-- Cannot break from nested loops to outer loops
-- Expression is optional - defaults to unit if omitted
-- When loop is used as expression, break value becomes the loop's value
-
-**Examples:**
-```
-// Break from while statement (no value needed)
-while true {
-    var cmd = read_command();
-    if cmd == "exit" {
-        break;  // Exit loop
-    }
-    execute(cmd);
-}
-
-// Break from for statement  
-for item in large_list {
-    if found_target(item) {
-        break;  // Exit loop
-    }
-}
-
-// Break with value in expression context
-var result = while condition {
-    if found {
-        break "success";  // Return value from loop
-    }
-    continue_processing();
-};
-
-// Break in nested loops (only breaks inner)
-for i in range(0, 10) {
-    for j in range(0, 10) {
-        if matrix[i][j] == target {
-            break;  // Only exits inner loop
-        }
-    }
-}
-
-// Error: break outside loop
-if condition {
-    break;  // Error: break not in loop
-}
-```
-
-#### 6.7.6. Continue Statements
-
-Continue statements skip to the next iteration of the nearest enclosing loop.
-
-**Syntax:**
-```
-ContinueStatement = "continue" ";"
-```
-
-**Continue Rules:**
-- Must appear within a while or for loop
-- Skips remaining statements in loop body
-- For while: re-evaluates condition
-- For for: advances to next iteration
-- Cannot continue outer loops from nested loops
-
-**Examples:**
-```
-// Skip even numbers
-for i in range(0, 10) {
-    if i % 2 == 0 {
-        continue;
-    }
-    print(i);  // Only prints odd numbers
-}
-
-// Continue in while
-var i = 0;
-while i < 100 {
-    i += 1;
-    if not is_valid(i) {
-        continue;
-    }
-    process(i);
-}
-
-// Error: continue outside loop
-fn example() {
-    continue;  // Error: continue not in loop
-}
-```
-
-#### 6.7.7. Return Statements
-
-Return statements exit from the current function with an optional value.
-
-**Syntax:**
-```
-ReturnStatement = "return" Expression? ";"
-```
-
-**Return Rules:**
-- Must appear within a function body
-- Immediately exits the function
-- Without expression, returns unit
-- With expression, returns expression value
-- Cannot be used at module level
-
-**Unit Return Behavior:**
-All functions that don't explicitly return a value will return unit:
-
-```
-// Explicit unit return
-fn example1() {
-    return;  // Explicitly returns unit
-}
-
-// Implicit unit return - empty function body
-fn example2() {
-    // Function body is empty, implicitly returns unit
-}
-
-// Implicit unit return - statements only
-fn example3() {
-    print("hello");  // Statement executed for side effect
-    // No explicit return, so implicitly returns unit
-}
-
-// Implicit unit return - control flow without value
-fn example4(condition) {
-    if condition {
-        print("true case");
-        // No return here
-    } else {
-        print("false case"); 
-        // No return here either
-    }
-    // Function implicitly returns unit
-}
-
-// Check for unit return
-var result = example1();
-if is_unit(result) {
-    print("Function returned unit");  // This will always print
-}
-```
-
-**Examples:**
-```
-// Return with value
-fn add(a, b) {
-    return a + b;
-}
-
-// Early return
-fn validate(data) {
-    if data == null {
-        return false;
-    }
-    if data.length == 0 {
-        return false;
-    }
-    return true;
-}
-
-// Return without value
-fn print_message(msg) {
-    if msg == "" {
-        return;  // Returns unit
-    }
-    print(msg);
-    // Implicit return unit
-}
-
-// Error: return outside function
-var x = 10;
-if x > 5 {
-    return x;  // Error: return not in function
-}
-```
-
-### 6.8. Import Statements
+### 6.9. Import Statements
 
 Import statements bring symbols from other modules into scope.
 
 **Syntax:**
 ```
-ImportStatement = "use" ModulePath ImportList ";"
+Import = "use" ModulePath ImportList
 ModulePath = Identifier ("::" Identifier)*
 ImportList = "::" "*"
            | "::" "{" ImportItem ("," ImportItem)* "}"

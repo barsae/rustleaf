@@ -13,18 +13,12 @@ This appendix provides a complete BNF-style grammar for RustLeaf. The grammar us
 ```bnf
 Program ::= ModuleItem*
 
-ModuleItem ::= ImportStatement
+ModuleItem ::= Import ";"
             | FunctionDeclaration
             | ClassDeclaration
-            | VariableDeclaration
+            | Declaration ";"
             | Statement
 
-ImportStatement ::= "use" ImportPath ImportClause? ";"
-ImportPath ::= Identifier ("::" Identifier)*
-ImportClause ::= "::" "*"
-              | "::" "{" ImportList "}"
-              | "::" Identifier
-ImportList ::= Identifier ("," Identifier)* ","?
 
 FunctionDeclaration ::= Visibility? "fn" Identifier "(" ParameterList? ")" Block
 ParameterList ::= Parameter ("," Parameter)* ("," "*" Identifier)? ("," "**" Identifier)?
@@ -36,49 +30,31 @@ ClassMember ::= Visibility? "var" Identifier ("=" Expression)? ";"
 
 Visibility ::= "pub"
 
-VariableDeclaration ::= "var" Identifier ("=" Expression)? ";"
 
-Statement ::= ExpressionStatement
-           | VariableDeclaration
-           | AssignmentStatement
-           | Block
-           | IfStatement
-           | WhileStatement
-           | ForStatement
-           | MatchStatement
-           | TryStatement
-           | WithStatement
-           | BreakStatement
-           | ContinueStatement
-           | ReturnStatement
-           | EmptyStatement
+Statement ::= Expression ";" Statement?
+           | Assignment ";" Statement?
+           | Declaration ";" Statement?
+           | ControlFlow ";" Statement?
+           | Import ";" Statement?
+           | Expression  // final expression value (no semicolon)
 
-ExpressionStatement ::= Expression ";"
-EmptyStatement ::= ";"
+Assignment ::= LValue AssignOp Expression
+Declaration ::= "var" Pattern ("=" Expression)?
+ControlFlow ::= ReturnStmt | BreakStmt | ContinueStmt
+Import ::= "use" ModulePath ImportList
+
+ReturnStmt ::= "return" Expression?
+BreakStmt ::= "break" Expression?
+ContinueStmt ::= "continue"
 
 Block ::= "{" Statement* "}"
 
-IfStatement ::= "if" Expression Block ("else" "if" Expression Block)* ("else" Block)?
-
-WhileStatement ::= "while" Expression Block
-
-ForStatement ::= "for" Pattern "in" Expression Block
-
-MatchStatement ::= "match" Expression "{" MatchArm* "}"
-MatchArm ::= "case" Pattern ("if" Expression)? Block
-
-TryStatement ::= "try" Block "catch" Identifier Block
-
-WithStatement ::= "with" WithBinding ("," WithBinding)* Block
-WithBinding ::= Identifier "=" Expression
-
-BreakStatement ::= "break" Expression? ";"
-ContinueStatement ::= "continue" ";"
-ReturnStatement ::= "return" Expression? ";"
-
-AssignmentStatement ::= LValue AssignmentOperator Expression ";"
-
-AssignmentOperator ::= "=" | "+=" | "-=" | "*=" | "/=" | "%="
+AssignOp ::= "=" | "+=" | "-=" | "*=" | "/=" | "%="
+ModulePath ::= Identifier ("::" Identifier)*
+ImportList ::= "::" "*"
+           | "::" "{" ImportItem ("," ImportItem)* "}"
+           | "::" Identifier
+ImportItem ::= Identifier ("as" Identifier)?
 
 LValue ::= Identifier
         | PostfixExpression "." Identifier
@@ -160,7 +136,7 @@ IfExpression ::= "if" Expression Block ("else" "if" Expression Block)* ("else" B
 
 MatchExpression ::= "match" Expression "{" MatchArm* "}"
 
-TryExpression ::= "try" Block ("catch" Identifier Block)?
+TryExpression ::= "try" Block "catch" Pattern Block
 
 WhileExpression ::= "while" Expression Block
 

@@ -2,6 +2,25 @@
 
 Expressions are constructs that evaluate to a value. RustLeaf is an expression-oriented language where most constructs produce values. This chapter defines the syntax, semantics, and evaluation rules for all expression forms.
 
+**Expressions vs Statements:**
+- **Expressions** evaluate to values and can be used anywhere a value is needed
+- **Statements** either execute expressions for side effects or perform operations that cannot be expressions
+- Assignment, variable declaration, and control flow (return/break/continue) are statements, not expressions
+- This prevents common pitfalls like `if (x = 5)` while maintaining expression-oriented design
+
+**What are Expressions:**
+- Literals, identifiers, function calls, method calls
+- Arithmetic, comparison, logical, and bitwise operations
+- Conditional expressions (`if`), match expressions, try expressions
+- Block expressions, anonymous functions, object/list/dict literals
+- Loop expressions (`while`, `for`, `loop`) that can return values via `break`
+
+**What are Statements (not expressions):**
+- Assignment (`x = 5`, `x += 1`)
+- Variable declaration (`var x = 5`)
+- Control flow (`return`, `break`, `continue`)
+- Import statements (`use module::item`)
+
 ### 5.1. Expression Evaluation
 
 Expressions are evaluated to produce values according to specific rules that ensure predictable behavior.
@@ -24,8 +43,8 @@ The logical operators `and` and `or` use short-circuit evaluation:
 **Examples:**
 ```
 // Left-to-right evaluation
-var x = 1
-var result = (x = 2) + (x = 3) + x  // Error: assignment is not an expression
+var x = 1;
+// var result = (x = 2) + (x = 3) + x;  // Error: assignment is not an expression
 
 // Function argument evaluation
 fn side_effect(n) {
@@ -565,7 +584,7 @@ TryExpression = "try" Block
 - Evaluates the try block
 - If an error is raised, catches it and evaluates catch block
 - The expression evaluates to either the try or catch block value
-- Uses identical syntax to try-catch statements (Section 6.7.3) - context determines usage
+- Uses identical syntax to try-catch statements (Section 6.7) - context determines usage
 
 **Error Patterns:**
 The catch clause can pattern match on the error:
