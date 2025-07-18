@@ -119,6 +119,23 @@ impl Parser {
         // Newlines are now handled as whitespace by the lexer, so this is a no-op
     }
 
+    pub fn skip_comments(&mut self) {
+        while self.check(&TokenType::Comment) {
+            self.advance();
+        }
+    }
+
+    pub fn skip_newlines_and_comments(&mut self) {
+        loop {
+            let before = self.current;
+            self.skip_newlines();
+            self.skip_comments();
+            if self.current == before {
+                break;
+            }
+        }
+    }
+
     pub fn match_string_literal(&mut self) -> Option<String> {
         if self.check(&TokenType::StringLiteral) {
             let token = self.advance();

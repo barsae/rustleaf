@@ -145,17 +145,18 @@ impl Parser {
         let location = self.current_location();
         self.consume(TokenType::LeftBrace, "Expected '{'")?;
 
-        self.skip_newlines();
+        self.skip_newlines_and_comments();
 
         let statements = self.parse_many(|parser| {
+            parser.skip_newlines_and_comments();
             if parser.check(&TokenType::RightBrace) {
                 None
             } else {
-                parser.skip_newlines();
                 parser.parse_statement_in_block()
             }
         });
 
+        self.skip_newlines_and_comments();
         self.consume(TokenType::RightBrace, "Expected '}'")?;
 
         Some(AstNode::Block {
