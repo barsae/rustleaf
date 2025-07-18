@@ -222,8 +222,8 @@ impl Evaluator {
 
         // Add closure variables to the scope if present
         if let Some(closure) = &function.closure {
-            for (name, value) in closure {
-                self.environment.define(name.clone(), value.clone());
+            for (name, value_ref) in closure {
+                self.environment.define_ref(name.clone(), value_ref.clone());
             }
         }
 
