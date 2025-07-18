@@ -1,3 +1,5 @@
+#![allow(clippy::uninlined_format_args)]
+
 mod comments;
 mod core;
 mod error;

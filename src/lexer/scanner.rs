@@ -506,7 +506,7 @@ impl<'a> TokenScanner<'a> {
 
             _ => {
                 self.error(
-                    format!("Unexpected character '{}'", c),
+                    format!("Unexpected character '{c}'"),
                     start_line,
                     start_column,
                     start_offset,

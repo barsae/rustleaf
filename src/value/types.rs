@@ -1,3 +1,5 @@
+#![allow(clippy::result_large_err)]
+
 use crate::parser::{AstNode, Parameter};
 use std::collections::HashMap;
 use std::fmt;

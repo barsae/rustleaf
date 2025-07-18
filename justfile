@@ -3,16 +3,10 @@
 rust_flags := "RUSTFLAGS=\"-D warnings\""
 current_branch := `basename $(pwd)`
 
-# Run cargo check with warnings as errors
-check:
-    {{rust_flags}} cargo check
-
-# Run tests with warnings as errors
+# Run chec, test, and clippy with warnings as errors
 test:
+    {{rust_flags}} cargo check
     {{rust_flags}} cargo test
-
-# Run clippy with warnings as errors
-clippy:
     cargo clippy -- -D warnings
 
 # Check if we need to rebase (main has commits we don't)

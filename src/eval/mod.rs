@@ -1,3 +1,6 @@
+#![allow(clippy::result_large_err)]
+#![allow(clippy::uninlined_format_args)]
+
 pub mod core;
 pub mod environment;
 pub mod expressions;

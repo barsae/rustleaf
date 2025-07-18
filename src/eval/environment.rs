@@ -69,7 +69,7 @@ impl Environment {
         }
 
         Err(RuntimeError::new(
-            format!("Undefined variable '{}'", name),
+            format!("Undefined variable '{name}'"),
             ErrorType::NameError,
         ))
     }
@@ -84,7 +84,7 @@ impl Environment {
         }
 
         Err(RuntimeError::new(
-            format!("Undefined variable '{}'", name),
+            format!("Undefined variable '{name}'"),
             ErrorType::NameError,
         ))
     }

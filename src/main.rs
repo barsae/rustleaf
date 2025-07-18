@@ -53,7 +53,7 @@ fn run_file(file_path: &str) -> Result<(), Box<dyn std::error::Error>> {
     let tokens = match Lexer::new(&source) {
         Ok(tokens) => tokens,
         Err(lex_errors) => {
-            eprintln!("Lexer errors: {}", lex_errors);
+            eprintln!("Lexer errors: {lex_errors}");
             return Err("Lexing failed".into());
         }
     };
@@ -64,7 +64,7 @@ fn run_file(file_path: &str) -> Result<(), Box<dyn std::error::Error>> {
         Ok(ast) => ast,
         Err(parse_errors) => {
             for error in &parse_errors {
-                eprintln!("Parse error: {}", error);
+                eprintln!("Parse error: {error}");
             }
             return Err("Parsing failed".into());
         }
@@ -74,7 +74,7 @@ fn run_file(file_path: &str) -> Result<(), Box<dyn std::error::Error>> {
     let mut evaluator = Evaluator::new();
     let result = evaluator.evaluate(&ast)?;
 
-    println!("Result: {}", result);
+    println!("Result: {result}");
     Ok(())
 }
 
@@ -85,7 +85,7 @@ fn parse_file(file_path: &str) -> Result<(), Box<dyn std::error::Error>> {
     let tokens = match Lexer::new(&source) {
         Ok(tokens) => tokens,
         Err(lex_errors) => {
-            eprintln!("Lexer errors: {}", lex_errors);
+            eprintln!("Lexer errors: {lex_errors}");
             return Err("Lexing failed".into());
         }
     };
@@ -96,12 +96,12 @@ fn parse_file(file_path: &str) -> Result<(), Box<dyn std::error::Error>> {
         Ok(ast) => ast,
         Err(parse_errors) => {
             for error in &parse_errors {
-                eprintln!("Parse error: {}", error);
+                eprintln!("Parse error: {error}");
             }
             return Err("Parsing failed".into());
         }
     };
 
-    println!("AST: {:#?}", ast);
+    println!("AST: {ast:#?}");
     Ok(())
 }

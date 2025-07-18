@@ -142,7 +142,7 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
     // Read directory and find .rustleaf files
     let test_files = match discover_rustleaf_files(&test_dir_path) {
         Ok(files) => files,
-        Err(e) => panic!("Failed to read test directory '{}': {}", test_dir_path, e),
+        Err(e) => panic!("Failed to read test directory '{test_dir_path}': {e}"),
     };
 
     // Generate individual test functions that use include_str!
@@ -215,7 +215,7 @@ fn discover_rustleaf_files(
     if !test_path.exists() {
         return Err(std::io::Error::new(
             std::io::ErrorKind::NotFound,
-            format!("Test directory does not exist: {}", test_dir),
+            format!("Test directory does not exist: {test_dir}"),
         ));
     }
 
@@ -242,7 +242,7 @@ fn discover_rustleaf_files(
                         .file_name()
                         .unwrap_or_else(|| std::ffi::OsStr::new(""))
                         .to_string_lossy();
-                    let include_path = format!("{}/{}", test_dir_name, filename);
+                    let include_path = format!("{test_dir_name}/{filename}");
 
                     test_files.push((test_name, include_path, should_panic, should_ignore));
                 }

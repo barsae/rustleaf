@@ -12,9 +12,7 @@ description: "Commit work in progress to the current worker branch with intellig
 ## Your task
 
 1. **Run pre-commit verification steps**:
-   - !just check
    - !just test  
-   - !just clippy
    
    **STOP AND REPORT IF ANY ISSUES ARE FOUND. DO NOT ATTEMPT TO FIX ISSUES.**
 

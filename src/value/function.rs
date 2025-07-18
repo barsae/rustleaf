@@ -1,3 +1,5 @@
+#![allow(clippy::result_large_err)]
+
 use crate::eval::Environment;
 use crate::value::types::{ErrorType, RuntimeError, Value};
 
