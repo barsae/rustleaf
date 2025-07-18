@@ -1,0 +1,17 @@
+// Test that unit type cannot be used in boolean contexts
+
+fn void_function() {
+    print("side effect");
+}
+
+var result = void_function();
+
+// This should raise a TypeError
+try {
+    if result {
+        print("This should not be reached");
+    }
+    assert(false, "Expected TypeError for unit in boolean context");
+} catch error {
+    print("Correctly caught error for unit in boolean context");
+}

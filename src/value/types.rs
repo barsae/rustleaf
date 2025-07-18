@@ -7,6 +7,7 @@ use std::fmt;
 #[derive(Debug, Clone, PartialEq)]
 pub enum Value {
     Null,
+    Unit,
     Bool(bool),
     Int(i64),
     Float(f64),
@@ -57,6 +58,7 @@ impl Value {
     pub fn type_name(&self) -> &str {
         match self {
             Value::Null => "null",
+            Value::Unit => "unit",
             Value::Bool(_) => "bool",
             Value::Int(_) => "int",
             Value::Float(_) => "float",
@@ -73,6 +75,10 @@ impl Value {
         match self {
             Value::Null => Ok(false),
             Value::Bool(b) => Ok(*b),
+            Value::Unit => Err(RuntimeError::new(
+                "unit type not allowed in boolean context".to_string(),
+                ErrorType::TypeError,
+            )),
             _ => Err(RuntimeError::new(
                 format!("{} has no truthiness", self.type_name()),
                 ErrorType::TypeError,
@@ -83,6 +89,7 @@ impl Value {
     pub fn to_display_string(&self) -> String {
         match self {
             Value::Null => "null".to_string(),
+            Value::Unit => "<unit>".to_string(),
             Value::Bool(b) => b.to_string(),
             Value::Int(i) => i.to_string(),
             Value::Float(f) => f.to_string(),
@@ -161,7 +168,9 @@ impl RuntimeError {
     }
 
     pub fn is_return(&self) -> bool {
-        self.message == "RETURN_VALUE" || self.message == "RETURN_NULL"
+        self.message == "RETURN_VALUE"
+            || self.message == "RETURN_NULL"
+            || self.message == "RETURN_UNIT"
     }
 }
 

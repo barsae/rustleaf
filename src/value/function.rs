@@ -50,6 +50,11 @@ pub fn get_builtin_functions() -> Vec<BuiltinFunctionInfo> {
             function: builtin_raise,
             arity: Some(1),
         },
+        BuiltinFunctionInfo {
+            name: "is_unit",
+            function: builtin_is_unit,
+            arity: Some(1),
+        },
     ]
 }
 
@@ -64,7 +69,7 @@ fn builtin_print(args: &[Value], _env: &mut Environment) -> Result<Value, Runtim
     };
 
     println!("{}", output);
-    Ok(Value::Null)
+    Ok(Value::Unit)
 }
 
 fn builtin_len(args: &[Value], _env: &mut Environment) -> Result<Value, RuntimeError> {
@@ -121,7 +126,7 @@ fn builtin_assert(args: &[Value], _env: &mut Environment) -> Result<Value, Runti
         return Err(RuntimeError::new(message, ErrorType::AssertionError));
     }
 
-    Ok(Value::Null)
+    Ok(Value::Unit)
 }
 
 fn builtin_assert_approx_eq(args: &[Value], _env: &mut Environment) -> Result<Value, RuntimeError> {
@@ -180,7 +185,7 @@ fn builtin_assert_approx_eq(args: &[Value], _env: &mut Environment) -> Result<Va
         return Err(RuntimeError::new(message, ErrorType::AssertionError));
     }
 
-    Ok(Value::Null)
+    Ok(Value::Unit)
 }
 
 fn builtin_raise(args: &[Value], _env: &mut Environment) -> Result<Value, RuntimeError> {
@@ -200,4 +205,16 @@ fn builtin_raise(args: &[Value], _env: &mut Environment) -> Result<Value, Runtim
     error.return_value = Some(error_value.clone());
 
     Err(error)
+}
+
+fn builtin_is_unit(args: &[Value], _env: &mut Environment) -> Result<Value, RuntimeError> {
+    if args.len() != 1 {
+        return Err(RuntimeError::new(
+            format!("is_unit() takes exactly 1 argument ({} given)", args.len()),
+            ErrorType::TypeError,
+        ));
+    }
+
+    let is_unit = matches!(args[0], Value::Unit);
+    Ok(Value::Bool(is_unit))
 }

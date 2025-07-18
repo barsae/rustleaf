@@ -57,3 +57,7 @@ mod assert_tests {}
 // Function declaration and invocation tests
 #[rustleaf_tests("tests/integration/functions")]
 mod function_tests {}
+
+// Unit type tests
+#[rustleaf_tests("tests/integration/unit")]
+mod unit_tests {}

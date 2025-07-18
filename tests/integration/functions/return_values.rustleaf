@@ -23,7 +23,7 @@ assert(result2 == 3);
 var result3 = find_first_positive([-1, -2, -3]);
 assert(result3 == null);
 
-// Test return without value (returns null)
+// Test return without value (returns unit)
 fn log_message(msg) {
     if msg == "" {
         return;
@@ -32,7 +32,7 @@ fn log_message(msg) {
 }
 
 var result4 = log_message("");
-assert(result4 == null);
+assert(is_unit(result4));
 
 var result5 = log_message("test");
 assert(result5 == "Logged: test");

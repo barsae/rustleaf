@@ -1,0 +1,27 @@
+// Test that functions without explicit return value return unit
+fn void_function() {
+    print("side effect");
+}
+
+var result = void_function();
+assert(type(result) == "unit");
+assert(is_unit(result));
+
+// Test that return without value returns unit
+fn empty_return() {
+    return;
+}
+
+var result2 = empty_return();
+assert(type(result2) == "unit");
+assert(is_unit(result2));
+
+// Test that print returns unit
+var print_result = print("hello");
+assert(type(print_result) == "unit");
+assert(is_unit(print_result));
+
+// Test that assert returns unit
+var assert_result = assert(true);
+assert(type(assert_result) == "unit");
+assert(is_unit(assert_result));

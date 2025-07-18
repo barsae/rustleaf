@@ -6,7 +6,7 @@ impl Evaluator {
     pub(crate) fn evaluate_block(&mut self, statements: &[AstNode]) -> Result<Value, RuntimeError> {
         self.environment.push_scope();
 
-        let mut result = Value::Null;
+        let mut result = Value::Unit;
         for (i, stmt) in statements.iter().enumerate() {
             if i == statements.len() - 1 {
                 // Last statement/expression is the block value
@@ -31,8 +31,8 @@ impl Evaluator {
             Value::Null
         };
 
-        self.environment.define(name.to_string(), val.clone());
-        Ok(val)
+        self.environment.define(name.to_string(), val);
+        Ok(Value::Unit)
     }
 
     pub(crate) fn evaluate_assignment(
@@ -81,7 +81,7 @@ impl Evaluator {
     }
 
     pub(crate) fn evaluate_program(&mut self, items: &[AstNode]) -> Result<Value, RuntimeError> {
-        let mut result = Value::Null;
+        let mut result = Value::Unit;
         for item in items {
             result = self.evaluate(item)?;
         }
@@ -110,8 +110,8 @@ impl Evaluator {
         };
 
         let value = Value::Function(function);
-        self.environment.define(name.to_string(), value.clone());
-        Ok(value)
+        self.environment.define(name.to_string(), value);
+        Ok(Value::Unit)
     }
 
     pub(crate) fn evaluate_anonymous_function(
@@ -150,8 +150,8 @@ impl Evaluator {
             )
         } else {
             Err(
-                RuntimeError::new("RETURN_NULL".to_string(), ErrorType::RuntimeError)
-                    .with_return_value(Value::Null),
+                RuntimeError::new("RETURN_UNIT".to_string(), ErrorType::RuntimeError)
+                    .with_return_value(Value::Unit),
             )
         }
     }
@@ -168,7 +168,7 @@ impl Evaluator {
         // Create new scope for loop
         self.environment.push_scope();
 
-        let mut result = Value::Null;
+        let mut result = Value::Unit;
 
         match iterable_value {
             Value::List(list) => {

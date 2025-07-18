@@ -1,0 +1,16 @@
+// Test unit type display and equality
+
+fn void_function() {
+    print("side effect");
+}
+
+var result = void_function();
+
+// Test that unit values are equal to each other
+fn another_void_function() {
+    var x = 42;
+}
+
+var result2 = another_void_function();
+assert(result == result2);
+assert(type(result) == type(result2));

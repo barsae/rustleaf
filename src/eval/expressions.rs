@@ -283,7 +283,7 @@ impl Evaluator {
             Err(err) => {
                 if err.is_return() {
                     // Handle return statement
-                    Ok(err.return_value.unwrap_or(Value::Null))
+                    Ok(err.return_value.unwrap_or(Value::Unit))
                 } else {
                     Err(err)
                 }
