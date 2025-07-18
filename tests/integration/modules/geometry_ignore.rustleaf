@@ -1,0 +1,34 @@
+// Geometry utilities module
+
+use math_utils::{PI, multiply};
+
+// Public class
+pub class Point {
+    pub var x;
+    pub var y;
+    
+    pub static fn new(x, y) {
+        var p = Point();
+        p.x = x;
+        p.y = y;
+        p
+    }
+    
+    pub fn distance_to(other) {
+        var dx = self.x - other.x;
+        var dy = self.y - other.y;
+        sqrt(dx * dx + dy * dy)
+    }
+}
+
+// Public function using imported items
+pub fn circle_area(radius) {
+    multiply(PI, multiply(radius, radius))
+}
+
+// Private square root approximation
+fn sqrt(x) {
+    x ** 0.5
+}
+
+pub var ORIGIN = Point.new(0.0, 0.0);

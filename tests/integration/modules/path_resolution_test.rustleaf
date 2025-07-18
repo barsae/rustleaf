@@ -1,0 +1,11 @@
+// Test path resolution with super::
+
+use subdir::child_module;
+
+// Test that child module can access parent items via super::
+var result = child_module.use_parent_items();
+assert(result > 4.1 and result < 4.2); // PI + 1.0
+
+assert(child_module.child_function() == "I'm in a subdirectory");
+
+print("Path resolution tests passed");

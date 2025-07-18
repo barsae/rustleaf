@@ -1,0 +1,12 @@
+// Child module in subdirectory
+
+// Import from parent directory
+use super::math_utils::{PI, add};
+
+pub fn child_function() {
+    "I'm in a subdirectory"
+}
+
+pub fn use_parent_items() {
+    add(PI, 1.0)
+}

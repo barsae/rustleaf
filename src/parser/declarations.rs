@@ -18,8 +18,9 @@ impl Parser {
                 match self.peek().token_type {
                     TokenType::Fn => self.parse_function_declaration(Visibility::Public),
                     TokenType::Class => self.parse_class_declaration(Visibility::Public),
+                    TokenType::Var => self.parse_variable_declaration_with_visibility(Visibility::Public),
                     _ => {
-                        self.error("Expected function or class declaration after 'pub'");
+                        self.error("Expected function, class, or variable declaration after 'pub'");
                         None
                     }
                 }
@@ -52,13 +53,9 @@ impl Parser {
             self.consume(TokenType::DoubleColon, "Expected '::' after 'super'")?;
             let segment = self.consume_identifier("Expected module name after 'super::'")?;
             (ModulePathRoot::Super, segment)
-        } else if self.match_token(&TokenType::Root) {
-            self.consume(TokenType::DoubleColon, "Expected '::' after 'root'")?;
-            let segment = self.consume_identifier("Expected module name after 'root::'")?;
-            (ModulePathRoot::Root, segment)
         } else {
             let segment = self.consume_identifier("Expected module name")?;
-            (ModulePathRoot::Absolute, segment)
+            (ModulePathRoot::Relative, segment)
         };
 
         let mut path_segments = vec![first_segment];
@@ -80,14 +77,14 @@ impl Parser {
             } else if self.check(&TokenType::LeftBrace) {
                 // This is ::{...} syntax
                 self.advance(); // consume {
-                let mut names = Vec::new();
-                names.push(self.consume_identifier("Expected identifier")?);
+                let mut items = Vec::new();
+                items.push(self.parse_import_item()?);
 
                 while self.match_token(&TokenType::Comma) {
                     if self.check(&TokenType::RightBrace) {
                         break;
                     }
-                    names.push(self.consume_identifier("Expected identifier")?);
+                    items.push(self.parse_import_item()?);
                 }
 
                 self.consume(TokenType::RightBrace, "Expected '}'")?;
@@ -95,7 +92,7 @@ impl Parser {
                     root_type,
                     segments: path_segments,
                 };
-                return Some((path, Some(ImportClause::Named(names))));
+                return Some((path, Some(ImportClause::Named(items))));
             } else if self.check(&TokenType::Identifier) {
                 let next_segment = self.consume_identifier("Expected identifier")?;
 
@@ -125,6 +122,45 @@ impl Parser {
             segments: path_segments,
         };
         Some((path, None))
+    }
+
+    fn parse_import_item(&mut self) -> Option<ImportItem> {
+        let name = self.consume_identifier("Expected identifier")?;
+        
+        // Check for "as" alias
+        let alias = if self.check(&TokenType::Identifier) && self.peek().lexeme == "as" {
+            self.advance(); // consume "as"
+            Some(self.consume_identifier("Expected alias name after 'as'")?)
+        } else {
+            None
+        };
+        
+        Some(ImportItem { name, alias })
+    }
+
+    pub fn parse_variable_declaration(&mut self) -> Option<AstNode> {
+        self.parse_variable_declaration_with_visibility(Visibility::Private)
+    }
+
+    pub fn parse_variable_declaration_with_visibility(&mut self, visibility: Visibility) -> Option<AstNode> {
+        let location = self.current_location();
+        self.consume(TokenType::Var, "Expected 'var'")?;
+        let name = self.consume_identifier("Expected variable name")?;
+
+        let value = if self.match_token(&TokenType::Equal) {
+            Some(Box::new(self.parse_expression()?))
+        } else {
+            None
+        };
+
+        self.consume(TokenType::Semicolon, "Expected ';' after variable declaration")?;
+
+        Some(AstNode::VariableDeclaration {
+            visibility,
+            name,
+            value,
+            location,
+        })
     }
 
     pub fn parse_function_declaration(&mut self, visibility: Visibility) -> Option<AstNode> {
@@ -278,27 +314,4 @@ impl Parser {
         parameters
     }
 
-    pub fn parse_variable_declaration(&mut self) -> Option<AstNode> {
-        let location = self.current_location();
-
-        self.consume(TokenType::Var, "Expected 'var'")?;
-        let name = self.consume_identifier("Expected variable name")?;
-
-        let value = if self.match_token(&TokenType::Equal) {
-            Some(Box::new(self.parse_expression()?))
-        } else {
-            None
-        };
-
-        self.consume(
-            TokenType::Semicolon,
-            "Expected ';' after variable declaration",
-        )?;
-
-        Some(AstNode::VariableDeclaration {
-            name,
-            value,
-            location,
-        })
-    }
 }

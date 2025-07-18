@@ -1,0 +1,11 @@
+// Module B - part of circular dependency test
+
+use module_a_panic; // This will cause circular dependency
+
+pub fn b_function() {
+    "Function from module B"
+}
+
+pub fn call_a() {
+    module_a_panic.a_function()
+}

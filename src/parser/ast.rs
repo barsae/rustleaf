@@ -79,6 +79,7 @@ pub enum AstNode {
         location: SourceLocation,
     },
     VariableDeclaration {
+        visibility: Visibility,
         name: String,
         value: Option<Box<AstNode>>,
         location: SourceLocation,
@@ -268,16 +269,21 @@ pub struct ModulePath {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum ModulePathRoot {
-    Absolute, // Default: use math::geometry
+    Relative, // Default: use math::geometry
     Super,    // use super::sibling
-    Root,     // use root::top_level
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum ImportClause {
-    All,
-    Named(Vec<String>),
-    Single(String),
+    All,                           // use module::*
+    Named(Vec<ImportItem>),        // use module::{item1, item2}
+    Single(String),                // use module::item
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct ImportItem {
+    pub name: String,
+    pub alias: Option<String>,     // for "as" renaming
 }
 
 #[derive(Debug, Clone, PartialEq)]

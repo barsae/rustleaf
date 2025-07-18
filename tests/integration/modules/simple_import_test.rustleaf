@@ -1,0 +1,8 @@
+// Simple module import test
+
+// Test namespace import
+use math_utils;
+assert(math_utils.PI == 3.14159);
+assert(math_utils.add(2, 3) == 5);
+
+print("Simple import test passed");

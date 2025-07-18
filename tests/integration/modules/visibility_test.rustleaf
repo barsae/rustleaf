@@ -1,0 +1,9 @@
+// Test visibility controls
+
+use math_utils;
+
+// Should work - public items
+assert(math_utils.PI == 3.14159);
+assert(math_utils.add(1, 1) == 2);
+
+print("Visibility tests passed");

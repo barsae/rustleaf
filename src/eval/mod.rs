@@ -7,5 +7,8 @@ pub mod expressions;
 pub mod operators;
 pub mod statements;
 
+#[cfg(test)]
+mod tests;
+
 pub use core::Evaluator;
 pub use environment::Environment;

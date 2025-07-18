@@ -1,0 +1,17 @@
+// Test module initialization and state persistence
+
+// First import - should trigger initialization
+use counter_module;
+var initial_count = counter_module.get_count();
+assert(initial_count == 1); // Should be 1 after initialization
+
+// Increment the counter
+var new_count = counter_module.increment();
+assert(new_count == 2);
+
+// Import again with different syntax - should reuse same module instance
+use counter_module::{get_count};
+var same_count = get_count();
+assert(same_count == 2); // Should still be 2, not reset
+
+print("Module initialization tests passed");

@@ -151,6 +151,7 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
             .iter()
             .map(|(test_name, file_path, should_panic, should_ignore)| {
                 let test_fn_name = syn::Ident::new(test_name, proc_macro2::Span::call_site());
+                let test_dir_lit = syn::LitStr::new(&test_dir_path, proc_macro2::Span::call_site());
 
                 if *should_ignore {
                     quote! {
@@ -163,14 +164,18 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                             let mut parser = rustleaf::Parser::new(tokens);
                             let ast = parser.parse().unwrap();
 
-                            let mut evaluator = rustleaf::Evaluator::new();
+                            // Get the directory of the test file for module resolution
+                            let test_file_path = std::path::Path::new(#file_path);
+                            let test_dir = std::path::Path::new(#test_dir_lit);
+                            let mut evaluator = rustleaf::Evaluator::new_with_base_dir(test_dir);
+                            evaluator.set_current_file(&test_dir.join(test_file_path.file_name().unwrap()));
                             evaluator.evaluate(&ast).unwrap();
                         }
                     }
                 } else if *should_panic {
                     quote! {
                         #[test]
-                        #[should_panic(expected = "Assertion failed")]
+                        #[should_panic]
                         fn #test_fn_name() {
                             let source = include_str!(#file_path);
 
@@ -178,7 +183,11 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                             let mut parser = rustleaf::Parser::new(tokens);
                             let ast = parser.parse().unwrap();
 
-                            let mut evaluator = rustleaf::Evaluator::new();
+                            // Get the directory of the test file for module resolution
+                            let test_file_path = std::path::Path::new(#file_path);
+                            let test_dir = std::path::Path::new(#test_dir_lit);
+                            let mut evaluator = rustleaf::Evaluator::new_with_base_dir(test_dir);
+                            evaluator.set_current_file(&test_dir.join(test_file_path.file_name().unwrap()));
                             evaluator.evaluate(&ast).unwrap();
                         }
                     }
@@ -192,7 +201,11 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                             let mut parser = rustleaf::Parser::new(tokens);
                             let ast = parser.parse().unwrap();
 
-                            let mut evaluator = rustleaf::Evaluator::new();
+                            // Get the directory of the test file for module resolution
+                            let test_file_path = std::path::Path::new(#file_path);
+                            let test_dir = std::path::Path::new(#test_dir_lit);
+                            let mut evaluator = rustleaf::Evaluator::new_with_base_dir(test_dir);
+                            evaluator.set_current_file(&test_dir.join(test_file_path.file_name().unwrap()));
                             evaluator.evaluate(&ast).unwrap();
                         }
                     }

@@ -1,0 +1,16 @@
+// Module with initialization and state
+
+var count = 0;
+
+// Module initialization runs when first imported
+print("Counter module initializing, count = " + count);
+count = count + 1;
+
+pub fn get_count() {
+    count
+}
+
+pub fn increment() {
+    count = count + 1;
+    count
+}

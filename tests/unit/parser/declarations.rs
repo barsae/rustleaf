@@ -125,7 +125,7 @@ fn parser_import_statement() {
     if let rustleaf::AstNode::Program { items, .. } = ast {
         match &items[0] {
             rustleaf::AstNode::ImportStatement { path, clause, .. } => {
-                assert_eq!(path.root_type, ModulePathRoot::Absolute);
+                assert_eq!(path.root_type, ModulePathRoot::Relative);
                 assert_eq!(path.segments, vec!["std".to_string()]);
                 assert!(
                     clause.is_none(),
@@ -144,7 +144,7 @@ fn parser_import_with_path_segments() {
     if let rustleaf::AstNode::Program { items, .. } = ast {
         match &items[0] {
             rustleaf::AstNode::ImportStatement { path, clause, .. } => {
-                assert_eq!(path.root_type, ModulePathRoot::Absolute);
+                assert_eq!(path.root_type, ModulePathRoot::Relative);
                 assert_eq!(
                     path.segments,
                     vec!["math".to_string(), "geometry".to_string()]
@@ -173,13 +173,13 @@ fn parser_import_super() {
 }
 
 #[test]
-fn parser_import_root() {
-    let ast = parse_source("use root::utils::logger;").expect("Should parse root import");
+fn parser_import_relative_path() {
+    let ast = parse_source("use utils::logger;").expect("Should parse relative import");
 
     if let rustleaf::AstNode::Program { items, .. } = ast {
         match &items[0] {
             rustleaf::AstNode::ImportStatement { path, clause, .. } => {
-                assert_eq!(path.root_type, ModulePathRoot::Root);
+                assert_eq!(path.root_type, ModulePathRoot::Relative);
                 assert_eq!(path.segments, vec!["utils".to_string()]);
                 assert_eq!(*clause, Some(ImportClause::Single("logger".to_string())));
             }
@@ -195,7 +195,7 @@ fn parser_import_all() {
     if let rustleaf::AstNode::Program { items, .. } = ast {
         match &items[0] {
             rustleaf::AstNode::ImportStatement { path, clause, .. } => {
-                assert_eq!(path.root_type, ModulePathRoot::Absolute);
+                assert_eq!(path.root_type, ModulePathRoot::Relative);
                 assert_eq!(
                     path.segments,
                     vec!["math".to_string(), "constants".to_string()]
@@ -215,19 +215,22 @@ fn parser_import_named() {
     if let rustleaf::AstNode::Program { items, .. } = ast {
         match &items[0] {
             rustleaf::AstNode::ImportStatement { path, clause, .. } => {
-                assert_eq!(path.root_type, ModulePathRoot::Absolute);
+                assert_eq!(path.root_type, ModulePathRoot::Relative);
                 assert_eq!(
                     path.segments,
                     vec!["math".to_string(), "geometry".to_string()]
                 );
-                assert_eq!(
-                    *clause,
-                    Some(ImportClause::Named(vec![
-                        "Point".to_string(),
-                        "Line".to_string(),
-                        "Circle".to_string()
-                    ]))
-                );
+                if let Some(ImportClause::Named(items)) = clause {
+                    assert_eq!(items.len(), 3);
+                    assert_eq!(items[0].name, "Point");
+                    assert_eq!(items[0].alias, None);
+                    assert_eq!(items[1].name, "Line");
+                    assert_eq!(items[1].alias, None);
+                    assert_eq!(items[2].name, "Circle");
+                    assert_eq!(items[2].alias, None);
+                } else {
+                    panic!("Expected named import clause");
+                }
             }
             _ => panic!("Expected import statement"),
         }
@@ -241,7 +244,7 @@ fn parser_import_single() {
     if let rustleaf::AstNode::Program { items, .. } = ast {
         match &items[0] {
             rustleaf::AstNode::ImportStatement { path, clause, .. } => {
-                assert_eq!(path.root_type, ModulePathRoot::Absolute);
+                assert_eq!(path.root_type, ModulePathRoot::Relative);
                 assert_eq!(
                     path.segments,
                     vec!["graphics".to_string(), "renderer".to_string()]
@@ -260,7 +263,7 @@ fn parser_import_module_only() {
     if let rustleaf::AstNode::Program { items, .. } = ast {
         match &items[0] {
             rustleaf::AstNode::ImportStatement { path, clause, .. } => {
-                assert_eq!(path.root_type, ModulePathRoot::Absolute);
+                assert_eq!(path.root_type, ModulePathRoot::Relative);
                 assert_eq!(path.segments, vec!["math".to_string()]);
                 assert_eq!(*clause, Some(ImportClause::Single("geometry".to_string())));
             }

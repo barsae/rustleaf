@@ -11,4 +11,11 @@ Agents must:
 
 ## Just
 
-We use `just` as a command runner. `docs/just.md` is instructional material on writing justfiles. It is *not* documentation about *our* justfile.
+We use `just` as a command runner.
+
+## Docs
+
+There is documentation about development processes in `./docs`:
+ - `docs/just.md` is instructional material on writing justfiles. It is *not* documentation about *our* justfile.
+ - `docs/testing.md` documents integration test naming conventions and the `_panic`/`_ignore` suffixes.
+ - `docs/development.md` contains general development guidelines.

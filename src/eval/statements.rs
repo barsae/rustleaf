@@ -1,5 +1,5 @@
 use super::core::Evaluator;
-use crate::parser::{AssignmentOperator, AstNode, Parameter};
+use crate::parser::{AssignmentOperator, AstNode, ImportClause, ModulePath, Parameter, SourceLocation, Visibility};
 use crate::value::types::{ErrorType, Function, RuntimeError, Value};
 
 impl Evaluator {
@@ -22,6 +22,7 @@ impl Evaluator {
 
     pub(crate) fn evaluate_variable_declaration(
         &mut self,
+        visibility: &Visibility,
         name: &str,
         value: &Option<Box<AstNode>>,
     ) -> Result<Value, RuntimeError> {
@@ -31,7 +32,100 @@ impl Evaluator {
             Value::Null
         };
 
-        self.environment.define(name.to_string(), val);
+        // Store the variable with its visibility for module exports
+        self.environment.define_with_visibility(name.to_string(), val, visibility.clone());
+        Ok(Value::Unit)
+    }
+
+    pub(crate) fn evaluate_import_statement(
+        &mut self,
+        path: &ModulePath,
+        clause: &Option<ImportClause>,
+        location: SourceLocation,
+    ) -> Result<Value, RuntimeError> {
+        // Handle different import clauses
+        match clause {
+            None => {
+                // Import the module as a namespace: use module;
+                let module_path = self.load_module(path, location)?;
+                let module_name = module_path
+                    .file_stem()
+                    .and_then(|s| s.to_str())
+                    .unwrap_or("unknown");
+                
+                let module_env = self.get_module(&module_path).unwrap();
+                let public_bindings = module_env.get_public_bindings();
+                let module_obj = Value::Dict(public_bindings);
+                self.environment.define_global(module_name.to_string(), module_obj);
+            }
+            Some(ImportClause::All) => {
+                // Import all public items: use module::*;
+                let module_path = self.load_module(path, location)?;
+                let module_env = self.get_module(&module_path).unwrap();
+                let public_bindings = module_env.get_public_bindings();
+                
+                for (name, value) in public_bindings {
+                    self.environment.define_global(name, value);
+                }
+            }
+            Some(ImportClause::Single(item_name)) => {
+                // First try to import as a submodule by extending the path
+                let mut extended_path = path.clone();
+                extended_path.segments.push(item_name.clone());
+                
+                // Try to load the extended path as a module
+                if let Ok(submodule_path) = self.load_module(&extended_path, location.clone()) {
+                    // Success! Import the submodule as a namespace
+                    let submodule_env = self.get_module(&submodule_path).unwrap();
+                    let submodule_bindings = submodule_env.get_public_bindings();
+                    let module_obj = Value::Dict(submodule_bindings);
+                    self.environment.define_global(item_name.clone(), module_obj);
+                } else {
+                    // Fall back to importing as an item from the original module
+                    let module_path = self.load_module(path, location)?;
+                    let module_name = module_path
+                        .file_stem()
+                        .and_then(|s| s.to_str())
+                        .unwrap_or("unknown");
+                    
+                    let module_env = self.get_module(&module_path).unwrap();
+                    let public_bindings = module_env.get_public_bindings();
+                    
+                    if let Some(value) = public_bindings.get(item_name) {
+                        self.environment.define_global(item_name.clone(), value.clone());
+                    } else {
+                        return Err(RuntimeError::new(
+                            format!("Item '{}' not found in module '{}'", item_name, module_name),
+                            ErrorType::ImportError,
+                        ));
+                    }
+                }
+            }
+            Some(ImportClause::Named(items)) => {
+                // Import specific named items: use module::{item1, item2};
+                let module_path = self.load_module(path, location)?;
+                let module_name = module_path
+                    .file_stem()
+                    .and_then(|s| s.to_str())
+                    .unwrap_or("unknown");
+                
+                let module_env = self.get_module(&module_path).unwrap();
+                let public_bindings = module_env.get_public_bindings();
+                
+                for item in items {
+                    if let Some(value) = public_bindings.get(&item.name) {
+                        let import_name = item.alias.as_ref().unwrap_or(&item.name);
+                        self.environment.define_global(import_name.clone(), value.clone());
+                    } else {
+                        return Err(RuntimeError::new(
+                            format!("Item '{}' not found in module '{}'", item.name, module_name),
+                            ErrorType::ImportError,
+                        ));
+                    }
+                }
+            }
+        }
+
         Ok(Value::Unit)
     }
 
@@ -90,6 +184,7 @@ impl Evaluator {
 
     pub(crate) fn evaluate_function_declaration(
         &mut self,
+        visibility: &Visibility,
         name: &str,
         parameters: &[Parameter],
         body: &AstNode,
@@ -110,7 +205,7 @@ impl Evaluator {
         };
 
         let value = Value::Function(function);
-        self.environment.define(name.to_string(), value);
+        self.environment.define_with_visibility(name.to_string(), value, visibility.clone());
         Ok(Value::Unit)
     }
 
