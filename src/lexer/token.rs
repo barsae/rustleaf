@@ -95,6 +95,10 @@ pub enum TokenType {
     // Comments (preserved for tooling)
     Comment,
     DocComment,
+
+    // Macros
+    MacroStart, // #[
+    Hash,       // #
 }
 
 #[derive(Debug, Clone, PartialEq)]

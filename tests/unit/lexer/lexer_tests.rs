@@ -496,3 +496,136 @@ fn lexer_file_size_limit_exceeded() {
         "Error should mention 100 MB limit"
     );
 }
+
+#[test]
+fn lexer_macro_start() {
+    let tokens = Lexer::new("#[test]").unwrap();
+
+    assert_eq!(tokens.len(), 4); // #[, identifier, ], EOF
+    assert_eq!(tokens[0].token_type, TokenType::MacroStart);
+    assert_eq!(tokens[0].lexeme, "#[");
+    assert_eq!(tokens[1].token_type, TokenType::Identifier);
+    assert_eq!(tokens[1].lexeme, "test");
+    assert_eq!(tokens[2].token_type, TokenType::RightBracket);
+    assert_eq!(tokens[2].lexeme, "]");
+}
+
+#[test]
+fn lexer_hash_without_bracket() {
+    let tokens = Lexer::new("# comment").unwrap();
+
+    assert_eq!(tokens.len(), 3); // #, identifier, EOF
+    assert_eq!(tokens[0].token_type, TokenType::Hash);
+    assert_eq!(tokens[0].lexeme, "#");
+    assert_eq!(tokens[1].token_type, TokenType::Identifier);
+    assert_eq!(tokens[1].lexeme, "comment");
+}
+
+#[test]
+fn lexer_macro_with_parameters() {
+    let tokens = Lexer::new("#[macro_name(param1, param2)]").unwrap();
+
+    let expected_types = vec![
+        TokenType::MacroStart,   // #[
+        TokenType::Identifier,   // macro_name
+        TokenType::LeftParen,    // (
+        TokenType::Identifier,   // param1
+        TokenType::Comma,        // ,
+        TokenType::Identifier,   // param2
+        TokenType::RightParen,   // )
+        TokenType::RightBracket, // ]
+        TokenType::Eof,
+    ];
+
+    assert_eq!(tokens.len(), expected_types.len());
+
+    for (i, expected_type) in expected_types.iter().enumerate() {
+        assert_eq!(tokens[i].token_type, *expected_type, "Token {} mismatch", i);
+    }
+
+    assert_eq!(tokens[0].lexeme, "#[");
+    assert_eq!(tokens[1].lexeme, "macro_name");
+}
+
+#[test]
+fn lexer_macro_with_named_parameters() {
+    let tokens = Lexer::new("#[macro_name(key: \"value\", flag: true)]").unwrap();
+
+    let expected_types = vec![
+        TokenType::MacroStart,    // #[
+        TokenType::Identifier,    // macro_name
+        TokenType::LeftParen,     // (
+        TokenType::Identifier,    // key
+        TokenType::Colon,         // :
+        TokenType::StringLiteral, // "value"
+        TokenType::Comma,         // ,
+        TokenType::Identifier,    // flag
+        TokenType::Colon,         // :
+        TokenType::True,          // true
+        TokenType::RightParen,    // )
+        TokenType::RightBracket,  // ]
+        TokenType::Eof,
+    ];
+
+    assert_eq!(tokens.len(), expected_types.len());
+
+    for (i, expected_type) in expected_types.iter().enumerate() {
+        assert_eq!(tokens[i].token_type, *expected_type, "Token {} mismatch", i);
+    }
+}
+
+#[test]
+fn lexer_multiple_macros() {
+    let tokens =
+        Lexer::new("#[first_macro]\n#[second_macro(config: \"production\")]\n#[third_macro]")
+            .unwrap();
+
+    // Should tokenize each macro start correctly
+    let macro_starts: Vec<_> = tokens
+        .iter()
+        .filter(|t| t.token_type == TokenType::MacroStart)
+        .collect();
+
+    assert_eq!(macro_starts.len(), 3);
+
+    // Check positioning
+    assert_eq!(macro_starts[0].line, 1);
+    assert_eq!(macro_starts[0].column, 1);
+    assert_eq!(macro_starts[1].line, 2);
+    assert_eq!(macro_starts[1].column, 1);
+    assert_eq!(macro_starts[2].line, 3);
+    assert_eq!(macro_starts[2].column, 1);
+}
+
+#[test]
+fn lexer_macro_function_decoration() {
+    let tokens = Lexer::new("#[test]\nfn test_function() {\n    assert(2 + 2 == 4)\n}").unwrap();
+
+    // Should start with macro tokens followed by function tokens
+    assert_eq!(tokens[0].token_type, TokenType::MacroStart);
+    assert_eq!(tokens[1].token_type, TokenType::Identifier);
+    assert_eq!(tokens[1].lexeme, "test");
+    assert_eq!(tokens[2].token_type, TokenType::RightBracket);
+    assert_eq!(tokens[3].token_type, TokenType::Newline);
+    assert_eq!(tokens[4].token_type, TokenType::Fn);
+    assert_eq!(tokens[5].token_type, TokenType::Identifier);
+    assert_eq!(tokens[5].lexeme, "test_function");
+}
+
+#[test]
+fn lexer_macro_position_tracking() {
+    let tokens = Lexer::new("#[benchmark]\nfn calculate() {}").unwrap();
+
+    // Check macro positions
+    assert_eq!(tokens[0].token_type, TokenType::MacroStart);
+    assert_eq!(tokens[0].line, 1);
+    assert_eq!(tokens[0].column, 1);
+
+    assert_eq!(tokens[1].token_type, TokenType::Identifier);
+    assert_eq!(tokens[1].line, 1);
+    assert_eq!(tokens[1].column, 3); // After "#["
+
+    assert_eq!(tokens[2].token_type, TokenType::RightBracket);
+    assert_eq!(tokens[2].line, 1);
+    assert_eq!(tokens[2].column, 12); // After "benchmark"
+}

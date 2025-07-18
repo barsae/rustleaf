@@ -491,6 +491,27 @@ impl<'a> TokenScanner<'a> {
                 number_scanner.scan_float_starting_with_dot(start_line, start_column, start_offset)
             }
 
+            // Macro attributes
+            '#' => {
+                if self.match_char('[') {
+                    Some(self.make_token(
+                        TokenType::MacroStart,
+                        "#[",
+                        start_line,
+                        start_column,
+                        start_offset,
+                    ))
+                } else {
+                    Some(self.make_token(
+                        TokenType::Hash,
+                        "#",
+                        start_line,
+                        start_column,
+                        start_offset,
+                    ))
+                }
+            }
+
             // Identifiers and keywords
             c if c.is_ascii_alphabetic() || c == '_' => {
                 let mut identifier_scanner = IdentifierScanner::new(
