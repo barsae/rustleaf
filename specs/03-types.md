@@ -101,7 +101,7 @@ The unit type represents the absence of a meaningful return value.
 - Equality: unit values are equal to each other
 - Type check: `type(unit_value) == "unit"`
 - Unit test: `is_unit(value)` built-in function
-- Boolean context: Using unit in `if`, `while`, `and`, `or` is a type error
+- Boolean context: Using unit in `if`, `while`, `and`, `or` is a type error (use `is_unit()` to test unit values)
 
 **Examples:**
 ```
