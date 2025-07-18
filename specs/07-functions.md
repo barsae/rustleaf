@@ -95,8 +95,8 @@ Functions can accept positional parameters, parameters with defaults, rest param
 
    **Default Parameter Rules:**
    - Default values must be literals only (no expressions, variables, or function calls)
-   - Default values are evaluated fresh on each function call
-   - Collection literals (`[]`, `{}`) create new instances on each call
+   - Literals are evaluated at each function invocation (not at definition time)
+   - Each function call gets its own instance of collection literals (`[]`, `{}`)
    - For complex defaults, use `null` and compute the value in the function body
    
    **Valid Default Literals:**
@@ -116,7 +116,11 @@ Functions can accept positional parameters, parameters with defaults, rest param
        // Valid: each call gets fresh empty collections
        items.append("processed")
        options.set("processed", true)
+       // No shared state between function calls
    }
+   
+   var a = process()  // gets fresh []
+   var b = process()  // gets different fresh []
    
    // For complex defaults, use null pattern
    fn log_message(msg, timestamp = null) {
@@ -158,7 +162,7 @@ Functions can accept positional parameters, parameters with defaults, rest param
 
 **Parameter Rules:**
 - Parameters are evaluated left-to-right at call time
-- Default values are literals only and evaluated fresh on each call
+- Default values are literals only and evaluated at each function invocation
 - Parameter order: required, defaults, *args, **kwargs
 - Only one `*args` and one `**kwargs` allowed
 - Parameters after `*args` are keyword-only
