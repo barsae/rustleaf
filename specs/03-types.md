@@ -13,7 +13,7 @@ RustLeaf employs dynamic typing with strong type checking at runtime. Variables 
 - **Runtime Type Information**: Full type information is available at runtime via the `type()` function
 
 **Type Categories:**
-1. **Primitive Types**: null, bool, int, float, string
+1. **Primitive Types**: null, unit, bool, int, float, string
 2. **Composite Types**: list, dict, object (class instances)
 3. **Callable Types**: function (including closures and methods)
 4. **Extension Types**: RustValue (Rust-implemented types)
@@ -29,6 +29,10 @@ var x = 42          // x holds an int
 var t = type(x)     // t is "int"
 x = "hello"         // x now holds a string
 print(type(x))      // "string"
+
+fn void_fn() { print("side effect") }
+var result = void_fn()  // result holds unit
+print(type(result)) // "unit"
 
 // Type checking
 if type(value) == "int" {
@@ -64,7 +68,46 @@ if not x {          // null is falsy
 }
 ```
 
-#### 3.2.2. Boolean Type  
+#### 3.2.2. Unit Type
+
+The unit type represents the absence of a meaningful return value.
+
+**Properties:**
+- Type name: `"unit"`
+- Single value that cannot be written as a literal
+- Returned by functions without explicit return value
+- Returned by `return` statements without an expression
+- Used as sentinel value in iterator protocol
+- Truthiness: unit is falsy in boolean contexts
+
+**Operations:**
+- Equality: unit values are equal to each other
+- Type check: `type(unit_value) == "unit"`
+- Unit test: `is_unit(value)` built-in function
+
+**Examples:**
+```
+fn void_function() {
+    print("side effect")
+    // Implicitly returns unit
+}
+
+var result = void_function()
+print(type(result))    // "unit"
+print(is_unit(result)) // true
+
+// Iterator protocol
+fn op_next() {
+    if self.index >= self.items.len() {
+        return  // Returns unit (iteration complete)
+    }
+    var value = self.items[self.index]
+    self.index += 1
+    value
+}
+```
+
+#### 3.2.3. Boolean Type  
 
 The boolean type represents logical truth values.
 

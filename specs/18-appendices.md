@@ -564,7 +564,7 @@ Prints values to standard output, separated by spaces.
 **Parameters:**
 - `...values`: Variable number of values to print
 
-**Returns:** null
+**Returns:** unit
 
 **Examples:**
 ```
@@ -642,6 +642,32 @@ id(a) == id(c)     // true (same object)
 id(a) == id(b)     // false (different objects)
 ```
 
+#### `is_unit(value)`
+Tests whether a value is the unit type.
+
+**Parameters:**
+- `value`: Any value
+
+**Returns:** Boolean indicating if value is unit type
+
+**Examples:**
+```
+// Check function returns
+fn void_function() {
+    print("side effect")
+}
+is_unit(void_function())  // true
+
+// Check iterator completion
+var next_value = iterator.op_next()
+if is_unit(next_value) {
+    print("Iterator exhausted")
+}
+
+is_unit(null)     // false
+is_unit(42)       // false
+```
+
 ### Global Variables
 
 #### `args`
@@ -670,16 +696,17 @@ enumerate(iterable: any) -> Iterator
 
 // Error functions
 raise(message_or_object: any) -> never
-assert(condition: bool, message?: string) -> null
+assert(condition: bool, message?: string) -> unit
 
 // I/O functions
-print(...values: any) -> null
+print(...values: any) -> unit
 input(prompt?: string) -> string
 
 // Utility functions
 len(collection: list|dict|string) -> int
 hash(value: any) -> int
 id(value: any) -> int
+is_unit(value: any) -> bool
 
 // Global variables
 args: list<string>

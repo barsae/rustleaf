@@ -411,7 +411,7 @@ assert(condition, message?)
 
 **Assert Semantics:**
 - Evaluates condition
-- If truthy, returns null
+- If truthy, returns unit
 - If falsy, raises error with message
 - Message is optional (default describes assertion)
 

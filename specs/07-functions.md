@@ -225,7 +225,7 @@ The function body is a block that contains the function's implementation.
 - Creates a new scope for local variables
 - Has access to parameters and captured variables
 - The last expression is the implicit return value
-- Empty bodies return `null`
+- Empty bodies return `unit`
 
 **Local Variables:**
 - Must be declared with `var` before use
@@ -246,9 +246,9 @@ fn calculate(a, b) {
     {sum: sum, product: product}  // Return object
 }
 
-// Empty body returns null
+// Empty body returns unit
 fn do_nothing() { }
-var result = do_nothing()  // result is null
+var result = do_nothing()  // result is unit
 
 // Conditional return
 fn abs(x) {
@@ -267,7 +267,8 @@ Functions return values either implicitly (last expression) or explicitly (retur
 **Return Semantics:**
 - Last expression in function body is the return value
 - `return` statement exits function immediately with a value
-- `return` without expression returns `null`
+- `return` without expression returns `unit`
+- Functions without explicit return value return `unit`
 - All code paths must be reachable or have returns
 
 **Return Statement Syntax:**
@@ -295,7 +296,7 @@ fn find_first(list, predicate) {
 // Return without value
 fn process_or_exit(data) {
     if not data {
-        return  // Returns null
+        return  // Returns unit
     }
     process(data)
 }

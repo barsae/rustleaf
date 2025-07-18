@@ -190,7 +190,7 @@ variadic_function("hello", "world", 1, 2, 3, name: "test", flag: true)
 ```
 
 **Return Value Semantics:**
-Functions return the last expression value, or null if no explicit return.
+Functions return the last expression value, or unit if no explicit return.
 
 ```
 fn explicit_return() {
@@ -202,11 +202,11 @@ fn explicit_return() {
 
 fn no_return() {
     print("side effect")
-    // Implicitly returns null
+    // Implicitly returns unit
 }
 
 var result1 = explicit_return()  // "early" or "normal"
-var result2 = no_return()        // null
+var result2 = no_return()        // unit
 ```
 
 **Closure Capture:**

@@ -187,7 +187,7 @@ class CustomError {
 raise(CustomError.new("Operation failed"))
 ```
 
-**assert(condition, message="Assertion failed") → null**
+**assert(condition, message="Assertion failed") → unit**
 Raises an error if condition is false.
 
 ```
@@ -254,6 +254,32 @@ if callable(handler) {
     handler()
 } else {
     print("Handler is not callable")
+}
+```
+
+**is_unit(value) → bool**
+Tests whether a value is the unit type.
+
+```
+is_unit(unit_value)          // true (if value is unit)
+is_unit(null)                // false
+is_unit(42)                  // false
+is_unit("hello")             // false
+
+// Check function returns
+fn void_function() {
+    print("side effect")
+}
+
+if is_unit(void_function()) {
+    print("Function returned unit")
+}
+
+// Check iterator completion
+var iter = some_iterator.op_iter()
+var next_value = iter.op_next()
+if is_unit(next_value) {
+    print("Iterator is exhausted")
 }
 ```
 
@@ -332,4 +358,5 @@ type()
 - `min(...values)` - Minimum value
 - `max(...values)` - Maximum value  
 - `callable(value)` - Test if callable
+- `is_unit(value)` - Test if value is unit type
 
