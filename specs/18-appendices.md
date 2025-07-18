@@ -62,7 +62,7 @@ IfStatement ::= "if" Expression Block ("else" "if" Expression Block)* ("else" Bl
 
 WhileStatement ::= "while" Expression Block
 
-ForStatement ::= "for" Identifier ("," Identifier)? "in" Expression Block
+ForStatement ::= "for" Pattern "in" Expression Block
 
 MatchStatement ::= "match" Expression "{" MatchArm* "}"
 MatchArm ::= "case" Pattern ("if" Expression)? Block
@@ -84,10 +84,7 @@ LValue ::= Identifier
         | PostfixExpression "." Identifier
         | PostfixExpression "[" Expression "]"
 
-Expression ::= ConditionalExpression
-
-ConditionalExpression ::= LogicalOrExpression
-                       | LogicalOrExpression "?" Expression ":" ConditionalExpression
+Expression ::= LogicalOrExpression
 
 LogicalOrExpression ::= LogicalXorExpression
                      | LogicalOrExpression "or" LogicalXorExpression
@@ -179,7 +176,6 @@ Pattern ::= LiteralPattern
          | ListPattern
          | DictPattern
          | RangePattern
-         | OrPattern
 
 LiteralPattern ::= Literal
 
@@ -196,7 +192,6 @@ DictPatternEntry ::= StringLiteral ":" Pattern
 RangePattern ::= Expression ".." Expression
               | Expression "..=" Expression
 
-OrPattern ::= Pattern ("|" Pattern)+
 
 Literal ::= IntegerLiteral
          | FloatLiteral
@@ -252,8 +247,7 @@ This appendix lists all operators in RustLeaf in order of precedence, from highe
 | 11 | `==` `!=` | Equality operators | Left-to-right |
 | 12 | `and` | Logical AND | Left-to-right |
 | 13 | `xor` | Logical XOR | Left-to-right |
-| 14 | `or` | Logical OR | Left-to-right |
-| 15 (Lowest) | `?:` | Ternary conditional | Right-to-left |
+| 14 (Lowest) | `or` | Logical OR | Left-to-right |
 
 ### Precedence Examples
 
@@ -285,9 +279,8 @@ x > 0 ? y + z : w   // Equivalent to: x > 0 ? (y + z) : w
 - Example: `a - b + c` is equivalent to `(a - b) + c`
 
 **Right-to-left associativity:**
-- Unary operators, exponentiation, and ternary conditional
+- Unary operators and exponentiation
 - Example: `a ** b ** c` is equivalent to `a ** (b ** c)`
-- Example: `a ? b ? c : d : e` is equivalent to `a ? (b ? c : d) : e`
 
 ### Parentheses Override
 
@@ -296,7 +289,6 @@ Parentheses can be used to override the default precedence and associativity:
 ```
 (2 + 3) * 4    // = 20 (not 14)
 2 ** (3 ** 2)  // = 512 (explicit right-associativity)
-(a ? b : c) + d  // Force ternary evaluation first
 ```
 
 ## C. Reserved Words
@@ -310,6 +302,7 @@ This appendix lists all reserved words (keywords) in RustLeaf. These identifiers
 - `case` - Pattern case in match expression
 - `while` - While loop statement
 - `for` - For loop statement
+- `loop` - Infinite loop statement
 - `in` - Iterator keyword in for loops and membership testing
 - `break` - Break out of loop with optional value
 - `continue` - Continue to next loop iteration
@@ -350,8 +343,6 @@ This appendix lists all reserved words (keywords) in RustLeaf. These identifiers
 ### Type System Keywords
 - `self` - Reference to current object instance
 
-### Macro Keywords
-- `macro` - Macro definition (used in attributes)
 
 
 ### Contextual Keywords

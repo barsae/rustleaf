@@ -287,7 +287,7 @@ break       false       in          null        static      var
 case        fn          match       or          true        while
 catch       for         not         pub         try         with
 class       is          raise       return      xor
-continue    from        of          require     super
+continue    loop        super
 ```
 
 **Keyword Properties:**
