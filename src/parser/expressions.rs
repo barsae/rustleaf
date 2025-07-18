@@ -202,27 +202,11 @@ impl Parser {
 
         let mut elements = Vec::new();
 
-        while !self.check(&TokenType::RightBracket) && !self.is_at_end() {
-            let position_before = self.current;
-
-            if let Some(expr) = self.parse_expression() {
-                elements.push(expr);
-            }
-
-            // Infinite loop protection: ensure we always make progress
-            if self.current == position_before {
-                panic!(
-                    "Parser stuck in array literal: no progress made at position {}",
-                    self.current
-                );
-            }
-
-            if !self.match_token(&TokenType::Comma) {
-                break;
-            }
-
-            if self.check(&TokenType::RightBracket) {
-                break;
+        if !self.check(&TokenType::RightBracket) {
+            elements.push(self.parse_expression()?);
+            
+            while self.match_token(&TokenType::Comma) && !self.check(&TokenType::RightBracket) {
+                elements.push(self.parse_expression()?);
             }
         }
 
@@ -237,29 +221,17 @@ impl Parser {
 
         let mut entries = Vec::new();
 
-        while !self.check(&TokenType::RightBrace) && !self.is_at_end() {
-            let position_before = self.current;
-
+        if !self.check(&TokenType::RightBrace) {
             let key = self.parse_expression()?;
             self.consume(TokenType::Colon, "Expected ':' after dict key")?;
             let value = self.parse_expression()?;
-
             entries.push((key, value));
-
-            if !self.match_token(&TokenType::Comma) {
-                break;
-            }
-
-            if self.check(&TokenType::RightBrace) {
-                break;
-            }
-
-            // Infinite loop protection: ensure we always make progress
-            if self.current == position_before {
-                panic!(
-                    "Parser stuck in dict literal: no progress made at position {}",
-                    self.current
-                );
+            
+            while self.match_token(&TokenType::Comma) && !self.check(&TokenType::RightBrace) {
+                let key = self.parse_expression()?;
+                self.consume(TokenType::Colon, "Expected ':' after dict key")?;
+                let value = self.parse_expression()?;
+                entries.push((key, value));
             }
         }
 
@@ -320,24 +292,14 @@ impl Parser {
 
         self.consume(TokenType::LeftBrace, "Expected '{'")?;
 
-        let mut arms = Vec::new();
-        while !self.check(&TokenType::RightBrace) && !self.is_at_end() {
-            let position_before = self.current;
-
-            if let Some(arm) = self.parse_match_arm() {
-                arms.push(arm);
+        let arms = self.parse_many(|parser| {
+            if parser.check(&TokenType::RightBrace) {
+                None
+            } else {
+                parser.skip_newlines();
+                parser.parse_match_arm()
             }
-
-            // Infinite loop protection: ensure we always make progress
-            if self.current == position_before {
-                panic!(
-                    "Parser stuck in match expression arms: no progress made at position {}",
-                    self.current
-                );
-            }
-
-            self.skip_newlines();
-        }
+        });
 
         self.consume(TokenType::RightBrace, "Expected '}'")?;
 

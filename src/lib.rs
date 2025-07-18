@@ -10,7 +10,7 @@ pub use lexer::*;
 pub use modules::ModuleEnvironment;
 pub use parser::{
     Argument, AssignmentOperator, AstNode, BinaryOperator, ImportClause, ImportItem, ModulePath,
-    ModulePathRoot, Parser, SourceLocation, UnaryOperator, Visibility,
+    ModulePathRoot, Parser, UnaryOperator, Visibility,
 };
 pub use repl::Repl;
 pub use value::*;

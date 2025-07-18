@@ -240,12 +240,16 @@ fn lexer_comments() {
 fn lexer_newlines() {
     let tokens = Lexer::new("line1\nline2\r\nline3\rline4").unwrap();
 
-    // Should have identifiers and newlines
-    let newline_tokens: Vec<_> = tokens
+    // Should have identifiers but no newline tokens (newlines are treated as whitespace)
+    let identifier_tokens: Vec<_> = tokens
         .iter()
-        .filter(|t| t.token_type == TokenType::Newline)
+        .filter(|t| t.token_type == TokenType::Identifier)
         .collect();
-    assert_eq!(newline_tokens.len(), 3); // \n, \r\n, \r
+    assert_eq!(identifier_tokens.len(), 4); // line1, line2, line3, line4
+    
+    // Verify no newline tokens are present
+    let has_newlines = tokens.iter().any(|t| matches!(t.lexeme.as_str(), "\n" | "\r" | "\r\n"));
+    assert!(!has_newlines);
 }
 
 #[test]
@@ -257,7 +261,7 @@ fn lexer_mixed_tokens() {
         TokenType::Identifier,
         TokenType::Equal,
         TokenType::IntegerLiteral,
-        TokenType::Newline,
+        // No newline token - newlines are treated as whitespace
         TokenType::Fn,
         TokenType::Identifier,
         TokenType::LeftParen,
@@ -296,20 +300,18 @@ fn lexer_position_tracking() {
     let tokens = Lexer::new("var x\n= 42").unwrap();
 
     // Check line and column positions
-    assert_eq!(tokens[0].line, 1); // var
-    assert_eq!(tokens[0].column, 1);
+    assert_eq!(tokens[0].location.line, 1); // var
+    assert_eq!(tokens[0].location.column, 1);
 
-    assert_eq!(tokens[1].line, 1); // x
-    assert_eq!(tokens[1].column, 5);
+    assert_eq!(tokens[1].location.line, 1); // x
+    assert_eq!(tokens[1].location.column, 5);
 
-    assert_eq!(tokens[2].line, 1); // newline
-    assert_eq!(tokens[2].column, 6);
+    // No newline token - newlines are treated as whitespace
+    assert_eq!(tokens[2].location.line, 2); // =
+    assert_eq!(tokens[2].location.column, 1);
 
-    assert_eq!(tokens[3].line, 2); // =
-    assert_eq!(tokens[3].column, 1);
-
-    assert_eq!(tokens[4].line, 2); // 42
-    assert_eq!(tokens[4].column, 3);
+    assert_eq!(tokens[3].location.line, 2); // 42
+    assert_eq!(tokens[3].location.column, 3);
 }
 
 #[test]
@@ -423,7 +425,7 @@ fn lexer_bom_handling() {
     let input_with_bom = format!("{}{}", '\u{FEFF}', "var x = 42");
     let tokens = Lexer::new(&input_with_bom).unwrap();
     assert_eq!(tokens[0].token_type, TokenType::Var);
-    assert_eq!(tokens[0].column, 1); // BOM should not affect column numbering
+    assert_eq!(tokens[0].location.column, 1); // BOM should not affect column numbering
 }
 
 #[test]
@@ -589,12 +591,12 @@ fn lexer_multiple_macros() {
     assert_eq!(macro_starts.len(), 3);
 
     // Check positioning
-    assert_eq!(macro_starts[0].line, 1);
-    assert_eq!(macro_starts[0].column, 1);
-    assert_eq!(macro_starts[1].line, 2);
-    assert_eq!(macro_starts[1].column, 1);
-    assert_eq!(macro_starts[2].line, 3);
-    assert_eq!(macro_starts[2].column, 1);
+    assert_eq!(macro_starts[0].location.line, 1);
+    assert_eq!(macro_starts[0].location.column, 1);
+    assert_eq!(macro_starts[1].location.line, 2);
+    assert_eq!(macro_starts[1].location.column, 1);
+    assert_eq!(macro_starts[2].location.line, 3);
+    assert_eq!(macro_starts[2].location.column, 1);
 }
 
 #[test]
@@ -606,10 +608,10 @@ fn lexer_macro_function_decoration() {
     assert_eq!(tokens[1].token_type, TokenType::Identifier);
     assert_eq!(tokens[1].lexeme, "test");
     assert_eq!(tokens[2].token_type, TokenType::RightBracket);
-    assert_eq!(tokens[3].token_type, TokenType::Newline);
-    assert_eq!(tokens[4].token_type, TokenType::Fn);
-    assert_eq!(tokens[5].token_type, TokenType::Identifier);
-    assert_eq!(tokens[5].lexeme, "test_function");
+    // No newline token - newlines are treated as whitespace
+    assert_eq!(tokens[3].token_type, TokenType::Fn);
+    assert_eq!(tokens[4].token_type, TokenType::Identifier);
+    assert_eq!(tokens[4].lexeme, "test_function");
 }
 
 #[test]
@@ -618,14 +620,14 @@ fn lexer_macro_position_tracking() {
 
     // Check macro positions
     assert_eq!(tokens[0].token_type, TokenType::MacroStart);
-    assert_eq!(tokens[0].line, 1);
-    assert_eq!(tokens[0].column, 1);
+    assert_eq!(tokens[0].location.line, 1);
+    assert_eq!(tokens[0].location.column, 1);
 
     assert_eq!(tokens[1].token_type, TokenType::Identifier);
-    assert_eq!(tokens[1].line, 1);
-    assert_eq!(tokens[1].column, 3); // After "#["
+    assert_eq!(tokens[1].location.line, 1);
+    assert_eq!(tokens[1].location.column, 3); // After "#["
 
     assert_eq!(tokens[2].token_type, TokenType::RightBracket);
-    assert_eq!(tokens[2].line, 1);
-    assert_eq!(tokens[2].column, 12); // After "benchmark"
+    assert_eq!(tokens[2].location.line, 1);
+    assert_eq!(tokens[2].location.column, 12); // After "benchmark"
 }

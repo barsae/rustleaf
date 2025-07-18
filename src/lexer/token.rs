@@ -1,4 +1,5 @@
 use std::fmt;
+use super::SourceLocation;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum TokenType {
@@ -89,7 +90,6 @@ pub enum TokenType {
     Arrow,        // ->
 
     // Special
-    Newline,
     Eof,
 
     // Comments (preserved for tooling)
@@ -114,9 +114,7 @@ pub enum LiteralValue {
 pub struct Token {
     pub token_type: TokenType,
     pub lexeme: String,
-    pub line: usize,
-    pub column: usize,
-    pub byte_offset: usize,
+    pub location: SourceLocation,
     pub value: Option<LiteralValue>,
 }
 
@@ -124,17 +122,13 @@ impl Token {
     pub fn new(
         token_type: TokenType,
         lexeme: String,
-        line: usize,
-        column: usize,
-        byte_offset: usize,
+        location: SourceLocation,
         value: Option<LiteralValue>,
     ) -> Self {
         Token {
             token_type,
             lexeme,
-            line,
-            column,
-            byte_offset,
+            location,
             value,
         }
     }
@@ -145,7 +139,7 @@ impl fmt::Display for Token {
         write!(
             f,
             "{:?}({}) at {}:{}",
-            self.token_type, self.lexeme, self.line, self.column
+            self.token_type, self.lexeme, self.location.line, self.location.column
         )
     }
 }

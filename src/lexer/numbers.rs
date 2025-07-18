@@ -1,4 +1,5 @@
 use crate::lexer::error::LexError;
+use crate::lexer::location::SourceLocation;
 use crate::lexer::token::{LiteralValue, Token, TokenType};
 
 pub struct NumberScanner<'a> {
@@ -446,9 +447,7 @@ impl<'a> NumberScanner<'a> {
         Token::new(
             token_type,
             lexeme.to_string(),
-            line,
-            column,
-            offset,
+            SourceLocation::new(line, column, offset),
             Some(value),
         )
     }

@@ -1,7 +1,8 @@
 use super::environment::Environment;
 use crate::lexer::{Lexer, LiteralValue};
 use crate::modules::{ModuleEnvironment, ModuleLoader};
-use crate::parser::{AstNode, ModulePath, ModulePathRoot, Parser, SourceLocation};
+use crate::lexer::SourceLocation;
+use crate::parser::{AstNode, ModulePath, ModulePathRoot, Parser};
 use crate::value::types::{ErrorType, RuntimeError, Value};
 use std::collections::HashMap;
 use std::fs;

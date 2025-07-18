@@ -1,6 +1,7 @@
 use crate::lexer::comments::CommentScanner;
 use crate::lexer::error::LexError;
 use crate::lexer::identifiers::IdentifierScanner;
+use crate::lexer::location::SourceLocation;
 use crate::lexer::numbers::NumberScanner;
 use crate::lexer::strings::StringScanner;
 use crate::lexer::token::{Token, TokenType};
@@ -45,40 +46,24 @@ impl<'a> TokenScanner<'a> {
         let c = self.advance();
 
         match c {
-            // Whitespace (skip but track newlines)
+            // Whitespace (including line terminators)
             ' ' | '\t' => {
                 self.skip_whitespace();
                 None
             }
             '\n' => {
-                let token = Token::new(
-                    TokenType::Newline,
-                    "\n".to_string(),
-                    start_line,
-                    start_column,
-                    start_offset,
-                    None,
-                );
                 *self.line += 1;
                 *self.column = 1;
-                Some(token)
+                None
             }
             '\r' => {
                 // Handle CRLF
                 if self.peek() == '\n' {
                     self.advance();
                 }
-                let token = Token::new(
-                    TokenType::Newline,
-                    if self.peek() == '\n' { "\r\n" } else { "\r" }.to_string(),
-                    start_line,
-                    start_column,
-                    start_offset,
-                    None,
-                );
                 *self.line += 1;
                 *self.column = 1;
-                Some(token)
+                None
             }
 
             // Single-character tokens
@@ -578,7 +563,8 @@ impl<'a> TokenScanner<'a> {
         column: usize,
         offset: usize,
     ) -> Token {
-        Token::new(token_type, lexeme.to_string(), line, column, offset, None)
+        let location = SourceLocation::new(line, column, offset);
+        Token::new(token_type, lexeme.to_string(), location, None)
     }
 
     fn error(&mut self, message: String, line: usize, column: usize, offset: usize) {
@@ -591,8 +577,27 @@ impl<'a> TokenScanner<'a> {
     }
 
     fn skip_whitespace(&mut self) {
-        while !self.is_at_end() && (self.peek() == ' ' || self.peek() == '\t') {
-            self.advance();
+        while !self.is_at_end() {
+            match self.peek() {
+                ' ' | '\t' => {
+                    self.advance();
+                }
+                '\n' => {
+                    self.advance();
+                    *self.line += 1;
+                    *self.column = 1;
+                }
+                '\r' => {
+                    self.advance();
+                    // Handle CRLF
+                    if self.peek() == '\n' {
+                        self.advance();
+                    }
+                    *self.line += 1;
+                    *self.column = 1;
+                }
+                _ => break,
+            }
         }
     }
 }

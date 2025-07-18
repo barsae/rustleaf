@@ -1,6 +1,7 @@
 use super::core::Evaluator;
+use crate::lexer::SourceLocation;
 use crate::parser::{
-    AssignmentOperator, AstNode, ImportClause, ModulePath, Parameter, SourceLocation, Visibility,
+    AssignmentOperator, AstNode, ImportClause, ModulePath, Parameter, Visibility,
 };
 use crate::value::types::{ErrorType, Function, RuntimeError, Value};
 

@@ -1,4 +1,5 @@
 use crate::lexer::error::LexError;
+use crate::lexer::location::SourceLocation;
 use crate::lexer::token::{Token, TokenType};
 
 pub struct CommentScanner<'a> {
@@ -57,9 +58,7 @@ impl<'a> CommentScanner<'a> {
                 TokenType::Comment
             },
             lexeme,
-            start_line,
-            start_column,
-            start_offset,
+            SourceLocation::new(start_line, start_column, start_offset),
             None,
         ))
     }
@@ -114,9 +113,7 @@ impl<'a> CommentScanner<'a> {
                 TokenType::Comment
             },
             lexeme,
-            start_line,
-            start_column,
-            start_offset,
+            SourceLocation::new(start_line, start_column, start_offset),
             None,
         ))
     }

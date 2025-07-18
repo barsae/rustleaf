@@ -141,7 +141,7 @@ TokenType =
     | Comma | Dot | Colon | DoubleColon | Semicolon | Arrow
     
     // Special
-    | Newline | Eof
+    | Eof
 ```
 
 ### 2.5. Comments

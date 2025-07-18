@@ -1,4 +1,4 @@
-use crate::lexer::{LiteralValue, Token};
+use crate::lexer::{LiteralValue, SourceLocation};
 use std::fmt;
 
 #[derive(Clone, PartialEq)]
@@ -297,22 +297,6 @@ pub struct WithBinding {
     pub value: AstNode,
 }
 
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct SourceLocation {
-    pub line: usize,
-    pub column: usize,
-    pub byte_offset: usize,
-}
-
-impl SourceLocation {
-    pub fn from_token(token: &Token) -> Self {
-        SourceLocation {
-            line: token.line,
-            column: token.column,
-            byte_offset: token.byte_offset,
-        }
-    }
-}
 
 #[derive(Debug, Clone)]
 pub struct ParseError {

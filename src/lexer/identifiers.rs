@@ -1,3 +1,4 @@
+use crate::lexer::location::SourceLocation;
 use crate::lexer::token::{LiteralValue, Token, TokenType};
 use std::collections::HashMap;
 
@@ -61,9 +62,7 @@ impl<'a> IdentifierScanner<'a> {
             Some(Token::new(
                 *token_type,
                 lexeme,
-                start_line,
-                start_column,
-                start_offset,
+                SourceLocation::new(start_line, start_column, start_offset),
                 value,
             ))
         } else {
@@ -109,6 +108,7 @@ impl<'a> IdentifierScanner<'a> {
         column: usize,
         offset: usize,
     ) -> Token {
-        Token::new(token_type, lexeme.to_string(), line, column, offset, None)
+        let location = SourceLocation::new(line, column, offset);
+        Token::new(token_type, lexeme.to_string(), location, None)
     }
 }

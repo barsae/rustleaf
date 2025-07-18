@@ -145,27 +145,16 @@ impl Parser {
         let location = self.current_location();
         self.consume(TokenType::LeftBrace, "Expected '{'")?;
 
-        let mut statements = Vec::new();
-
         self.skip_newlines();
-        while !self.check(&TokenType::RightBrace) && !self.is_at_end() {
-            let position_before = self.current;
-
-            // Try to parse statement, but handle final expression specially
-            if let Some(stmt) = self.parse_statement_in_block() {
-                statements.push(stmt);
+        
+        let statements = self.parse_many(|parser| {
+            if parser.check(&TokenType::RightBrace) {
+                None
+            } else {
+                parser.skip_newlines();
+                parser.parse_statement_in_block()
             }
-
-            // Infinite loop protection: ensure we always make progress
-            if self.current == position_before {
-                panic!(
-                    "Parser stuck in block: no progress made at position {}",
-                    self.current
-                );
-            }
-
-            self.skip_newlines();
-        }
+        });
 
         self.consume(TokenType::RightBrace, "Expected '}'")?;
 
@@ -256,24 +245,14 @@ impl Parser {
 
         self.consume(TokenType::LeftBrace, "Expected '{' after match value")?;
 
-        let mut arms = Vec::new();
-        while !self.check(&TokenType::RightBrace) && !self.is_at_end() {
-            let position_before = self.current;
-
-            if let Some(arm) = self.parse_match_arm() {
-                arms.push(arm);
+        let arms = self.parse_many(|parser| {
+            if parser.check(&TokenType::RightBrace) {
+                None
+            } else {
+                parser.skip_newlines();
+                parser.parse_match_arm()
             }
-
-            // Infinite loop protection: ensure we always make progress
-            if self.current == position_before {
-                panic!(
-                    "Parser stuck in match arms: no progress made at position {}",
-                    self.current
-                );
-            }
-
-            self.skip_newlines();
-        }
+        });
 
         self.consume(TokenType::RightBrace, "Expected '}' after match arms")?;
 
@@ -329,23 +308,15 @@ impl Parser {
                 self.advance(); // consume '['
                 let mut patterns = Vec::new();
 
-                while !self.check(&TokenType::RightBracket) && !self.is_at_end() {
-                    let position_before = self.current;
-
+                if !self.check(&TokenType::RightBracket) {
                     if let Some(pattern) = self.parse_pattern() {
                         patterns.push(pattern);
-                    }
-
-                    // Infinite loop protection: ensure we always make progress
-                    if self.current == position_before {
-                        panic!(
-                            "Parser stuck in array pattern: no progress made at position {}",
-                            self.current
-                        );
-                    }
-
-                    if !self.match_token(&TokenType::Comma) {
-                        break;
+                        
+                        while self.match_token(&TokenType::Comma) && !self.check(&TokenType::RightBracket) {
+                            if let Some(pattern) = self.parse_pattern() {
+                                patterns.push(pattern);
+                            }
+                        }
                     }
                 }
 
@@ -356,26 +327,21 @@ impl Parser {
                 self.advance(); // consume '{'
                 let mut entries = Vec::new();
 
-                while !self.check(&TokenType::RightBrace) && !self.is_at_end() {
-                    let position_before = self.current;
-
+                if !self.check(&TokenType::RightBrace) {
                     if let Some(key_token) = self.match_string_literal() {
                         self.consume(TokenType::Colon, "Expected ':' after dict key")?;
                         if let Some(pattern) = self.parse_pattern() {
                             entries.push((key_token, pattern));
+                            
+                            while self.match_token(&TokenType::Comma) && !self.check(&TokenType::RightBrace) {
+                                if let Some(key_token) = self.match_string_literal() {
+                                    self.consume(TokenType::Colon, "Expected ':' after dict key")?;
+                                    if let Some(pattern) = self.parse_pattern() {
+                                        entries.push((key_token, pattern));
+                                    }
+                                }
+                            }
                         }
-                    }
-
-                    // Infinite loop protection: ensure we always make progress
-                    if self.current == position_before {
-                        panic!(
-                            "Parser stuck in dict pattern: no progress made at position {}",
-                            self.current
-                        );
-                    }
-
-                    if !self.match_token(&TokenType::Comma) {
-                        break;
                     }
                 }
 
@@ -448,7 +414,7 @@ impl Parser {
         let location = self.current_location();
         self.consume(TokenType::Break, "Expected 'break'")?;
 
-        let value = if !self.check(&TokenType::Semicolon) && !self.check(&TokenType::Newline) {
+        let value = if !self.check(&TokenType::Semicolon) {
             Some(Box::new(self.parse_expression()?))
         } else {
             None
@@ -474,7 +440,7 @@ impl Parser {
         let location = self.current_location();
         self.consume(TokenType::Return, "Expected 'return'")?;
 
-        let value = if !self.check(&TokenType::Semicolon) && !self.check(&TokenType::Newline) {
+        let value = if !self.check(&TokenType::Semicolon) {
             Some(Box::new(self.parse_expression()?))
         } else {
             None

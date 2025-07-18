@@ -1,5 +1,6 @@
 use crate::lexer::error::{LexError, LexErrors, LexWarning};
 use crate::lexer::keywords::create_keywords_map;
+use crate::lexer::location::SourceLocation;
 use crate::lexer::scanner::TokenScanner;
 use crate::lexer::token::{Token, TokenType};
 
@@ -102,9 +103,7 @@ impl Lexer {
         tokens.push(Token::new(
             TokenType::Eof,
             String::new(),
-            line,
-            column,
-            byte_offset,
+            SourceLocation::new(line, column, byte_offset),
             None,
         ));
 

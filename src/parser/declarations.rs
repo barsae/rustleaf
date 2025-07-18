@@ -190,24 +190,14 @@ impl Parser {
 
         self.consume(TokenType::LeftBrace, "Expected '{' after class name")?;
 
-        let mut members = Vec::new();
-        while !self.check(&TokenType::RightBrace) && !self.is_at_end() {
-            let position_before = self.current;
-
-            if let Some(member) = self.parse_class_member() {
-                members.push(member);
+        let members = self.parse_many(|parser| {
+            if parser.check(&TokenType::RightBrace) {
+                None
+            } else {
+                parser.skip_newlines();
+                parser.parse_class_member()
             }
-
-            // Infinite loop protection: ensure we always make progress
-            if self.current == position_before {
-                panic!(
-                    "Parser stuck in class members: no progress made at position {}",
-                    self.current
-                );
-            }
-
-            self.skip_newlines();
-        }
+        });
 
         self.consume(TokenType::RightBrace, "Expected '}' after class body")?;
 

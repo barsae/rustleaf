@@ -1,4 +1,4 @@
-use crate::lexer::{LiteralValue, Token, TokenType};
+use crate::lexer::{LiteralValue, SourceLocation, Token, TokenType};
 use crate::parser::ast::*;
 
 #[derive(Clone)]
@@ -18,31 +18,29 @@ impl Parser {
 
     pub fn parse(&mut self) -> AstNode {
         let start_location = self.current_location();
-        let mut items = Vec::new();
 
         // Skip leading newlines
         self.skip_newlines();
 
-        while !self.is_at_end() {
-            let position_before = self.current;
+        // Parse all module items
+        let all_items = self.parse_many(|parser| {
+            parser.skip_newlines();
+            parser.parse_module_item()
+        });
 
-            if let Some(item) = self.parse_module_item() {
-                // Only include non-empty nodes in the final program
-                if !matches!(item, AstNode::Empty { .. }) {
-                    items.push(item);
-                }
-            } else {
-                // If parse_module_item returns None and we haven't made progress,
-                // we need to skip the current token to avoid infinite loops
-                if self.current == position_before {
-                    panic!(
-                        "Parser stuck: no progress made at position {}",
-                        self.current
-                    );
-                }
-            }
+        // Filter out Empty nodes for the final program
+        let items = all_items
+            .into_iter()
+            .filter(|item| !matches!(item, AstNode::Empty { .. }))
+            .collect();
 
-            self.skip_newlines();
+        // Ensure we consumed all input
+        if !self.is_at_end() {
+            panic!(
+                "Parser did not consume all input. Stopped at position {} with token: {:?}",
+                self.current,
+                self.peek()
+            );
         }
 
         AstNode::Program {
@@ -72,7 +70,7 @@ impl Parser {
     }
 
     pub fn current_location(&self) -> SourceLocation {
-        SourceLocation::from_token(self.peek())
+        self.peek().location.clone()
     }
 
     pub fn check(&self, token_type: &TokenType) -> bool {
@@ -118,9 +116,7 @@ impl Parser {
     }
 
     pub fn skip_newlines(&mut self) {
-        while self.match_token(&TokenType::Newline) {
-            // Skip newlines
-        }
+        // Newlines are now handled as whitespace by the lexer, so this is a no-op
     }
 
     pub fn match_string_literal(&mut self) -> Option<String> {
@@ -212,5 +208,32 @@ impl Parser {
             .map(|_token| AstNode::Empty {
                 location: self.current_location(),
             })
+    }
+
+    /// Parse as many items as possible using the given parser function
+    pub fn parse_many<T, F>(&mut self, parser_fn: F) -> Vec<T>
+    where F: Fn(&mut Self) -> Option<T>
+    {
+        let mut results = Vec::new();
+        
+        while !self.is_at_end() {
+            let position_before = self.current;
+            
+            match parser_fn(self) {
+                Some(item) => {
+                    results.push(item);
+                    // Continue parsing more items
+                }
+                None => {
+                    // If no progress was made, we're done
+                    if self.current == position_before {
+                        break;
+                    }
+                    // If progress was made but parse failed, continue trying
+                }
+            }
+        }
+        
+        results
     }
 }
