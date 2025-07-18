@@ -172,20 +172,7 @@ impl Evaluator {
         })?;
 
         let mut parser = Parser::new(tokens);
-        let ast = parser.parse().map_err(|errors| {
-            RuntimeError::new(
-                format!(
-                    "Parse error in {}: {}",
-                    resolved_path.display(),
-                    errors
-                        .into_iter()
-                        .map(|e| e.to_string())
-                        .collect::<Vec<_>>()
-                        .join(", ")
-                ),
-                ErrorType::ImportError,
-            )
-        })?;
+        let ast = parser.parse();
 
         // Save current context
         let saved_current_file = self.current_file.clone();
@@ -363,6 +350,7 @@ impl Evaluator {
                 todo!("Continue statements not implemented yet")
             }
             AstNode::ReturnStatement { value, .. } => self.evaluate_return_statement(value),
+            AstNode::Empty { .. } => Ok(Value::Unit),
         }
     }
 

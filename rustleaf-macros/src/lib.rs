@@ -162,7 +162,7 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
 
                             let tokens = rustleaf::Lexer::new(source).unwrap();
                             let mut parser = rustleaf::Parser::new(tokens);
-                            let ast = parser.parse().unwrap();
+                            let ast = parser.parse();
 
                             // Get the directory of the test file for module resolution
                             let test_file_path = std::path::Path::new(#file_path);
@@ -181,7 +181,7 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
 
                             let tokens = rustleaf::Lexer::new(source).unwrap();
                             let mut parser = rustleaf::Parser::new(tokens);
-                            let ast = parser.parse().unwrap();
+                            let ast = parser.parse();
 
                             // Get the directory of the test file for module resolution
                             let test_file_path = std::path::Path::new(#file_path);
@@ -199,7 +199,7 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
 
                             let tokens = rustleaf::Lexer::new(source).unwrap();
                             let mut parser = rustleaf::Parser::new(tokens);
-                            let ast = parser.parse().unwrap();
+                            let ast = parser.parse();
 
                             // Get the directory of the test file for module resolution
                             let test_file_path = std::path::Path::new(#file_path);

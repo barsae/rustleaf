@@ -68,15 +68,7 @@ fn run_file(file_path: &str) -> Result<(), Box<dyn std::error::Error>> {
 
     // Parse
     let mut parser = RustLeafParser::new(tokens);
-    let ast = match parser.parse() {
-        Ok(ast) => ast,
-        Err(parse_errors) => {
-            for error in &parse_errors {
-                eprintln!("Parse error: {error}");
-            }
-            return Err("Parsing failed".into());
-        }
-    };
+    let ast = parser.parse();
 
     // Evaluate
     let mut evaluator = Evaluator::new();
@@ -100,15 +92,7 @@ fn parse_file(file_path: &str) -> Result<(), Box<dyn std::error::Error>> {
 
     // Parse
     let mut parser = RustLeafParser::new(tokens);
-    let ast = match parser.parse() {
-        Ok(ast) => ast,
-        Err(parse_errors) => {
-            for error in &parse_errors {
-                eprintln!("Parse error: {error}");
-            }
-            return Err("Parsing failed".into());
-        }
-    };
+    let ast = parser.parse();
 
     println!("AST: {ast:#?}");
     Ok(())

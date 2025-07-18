@@ -27,7 +27,7 @@ use test_module;
     // Parse and evaluate
     let tokens = Lexer::new(main_content).expect("Should tokenize");
     let mut parser = Parser::new(tokens);
-    let ast = parser.parse().expect("Should parse");
+    let ast = parser.parse();
 
     let mut evaluator = Evaluator::new_with_base_dir(temp_dir.path());
     let result = evaluator.evaluate(&ast);
@@ -46,7 +46,7 @@ use nonexistent_module;
 
     let tokens = Lexer::new(main_content).expect("Should tokenize");
     let mut parser = Parser::new(tokens);
-    let ast = parser.parse().expect("Should parse");
+    let ast = parser.parse();
 
     let mut evaluator = Evaluator::new_with_base_dir(temp_dir.path());
     let result = evaluator.evaluate(&ast);
@@ -77,7 +77,7 @@ use bad_module;
 
     let tokens = Lexer::new(main_content).expect("Should tokenize");
     let mut parser = Parser::new(tokens);
-    let ast = parser.parse().expect("Should parse");
+    let ast = parser.parse();
 
     let mut evaluator = Evaluator::new_with_base_dir(temp_dir.path());
     let result = evaluator.evaluate(&ast);
@@ -117,7 +117,7 @@ print(visibility_module.public_function());
 
     let tokens = Lexer::new(main_content).expect("Should tokenize");
     let mut parser = Parser::new(tokens);
-    let ast = parser.parse().expect("Should parse");
+    let ast = parser.parse();
 
     let mut evaluator = Evaluator::new_with_base_dir(temp_dir.path());
     let result = evaluator.evaluate(&ast);
@@ -157,7 +157,7 @@ print(result);
 
     let tokens = Lexer::new(main_content).expect("Should tokenize");
     let mut parser = Parser::new(tokens);
-    let ast = parser.parse().expect("Should parse");
+    let ast = parser.parse();
 
     let mut evaluator = Evaluator::new_with_base_dir(temp_dir.path());
     let result = evaluator.evaluate(&ast);
@@ -205,7 +205,7 @@ print(product);
 
     let tokens = Lexer::new(main_content).expect("Should tokenize");
     let mut parser = Parser::new(tokens);
-    let ast = parser.parse().expect("Should parse");
+    let ast = parser.parse();
 
     let mut evaluator = Evaluator::new_with_base_dir(temp_dir.path());
     let result = evaluator.evaluate(&ast);
@@ -255,7 +255,7 @@ print(module_a.a_function());
 
     let tokens = Lexer::new(main_content).expect("Should tokenize");
     let mut parser = Parser::new(tokens);
-    let ast = parser.parse().expect("Should parse");
+    let ast = parser.parse();
 
     let mut evaluator = Evaluator::new_with_base_dir(temp_dir.path());
     let result = evaluator.evaluate(&ast);
@@ -320,7 +320,7 @@ print(counter_module.get_counter());
 
     let tokens = Lexer::new(main_content).expect("Should tokenize");
     let mut parser = Parser::new(tokens);
-    let ast = parser.parse().expect("Should parse");
+    let ast = parser.parse();
 
     let mut evaluator = Evaluator::new_with_base_dir(temp_dir.path());
     let result = evaluator.evaluate(&ast);
