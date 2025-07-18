@@ -382,10 +382,7 @@ impl Parser {
                 self.consume(TokenType::RightBrace, "Expected '}'")?;
                 Some(Pattern::Dict(entries))
             }
-            _ => {
-                self.error("Invalid pattern");
-                None
-            }
+            _ => None,
         }
     }
 

@@ -10,10 +10,7 @@ pub fn parse_source(input: &str) -> Result<AstNode, String> {
     };
 
     let mut parser = Parser::new(tokens);
-    match parser.parse() {
-        Ok(ast) => Ok(ast),
-        Err(parse_errors) => Err(format!("Parse errors: {:?}", parse_errors)),
-    }
+    Ok(parser.parse())
 }
 
 /// Helper function for debug string testing

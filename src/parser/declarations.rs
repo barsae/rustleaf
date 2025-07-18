@@ -4,35 +4,16 @@ use crate::parser::Parser;
 
 impl Parser {
     pub fn parse_module_item(&mut self) -> Option<AstNode> {
-        // Skip comments
-        if self.peek().token_type == TokenType::Comment {
-            self.advance();
-            return None;
-        }
-
-        match self.peek().token_type {
-            TokenType::Use => self.parse_import_statement(),
-            TokenType::Fn => self.parse_function_declaration(Visibility::Private),
-            TokenType::Pub => {
-                self.advance(); // consume 'pub'
-                match self.peek().token_type {
-                    TokenType::Fn => self.parse_function_declaration(Visibility::Public),
-                    TokenType::Class => self.parse_class_declaration(Visibility::Public),
-                    TokenType::Var => {
-                        self.parse_variable_declaration_with_visibility(Visibility::Public)
-                    }
-                    _ => {
-                        self.error("Expected function, class, or variable declaration after 'pub'");
-                        None
-                    }
-                }
-            }
-            TokenType::Class => self.parse_class_declaration(Visibility::Private),
-            TokenType::Var => self.parse_variable_declaration(),
-            // Tokens that are clearly not valid at module level - skip them
-            TokenType::RightBrace | TokenType::RightBracket | TokenType::RightParen => None,
-            _ => self.parse_statement(),
-        }
+        // Try each type of module item using backtracking
+        self.parse_alternatives(&[
+            Self::parse_comment,
+            Self::parse_empty_statement,
+            Self::parse_import_statement,
+            Self::parse_function_declaration,
+            Self::parse_class_declaration,
+            Self::parse_variable_declaration,
+            Self::parse_statement,
+        ])
     }
 
     pub fn parse_import_statement(&mut self) -> Option<AstNode> {
@@ -141,13 +122,12 @@ impl Parser {
     }
 
     pub fn parse_variable_declaration(&mut self) -> Option<AstNode> {
-        self.parse_variable_declaration_with_visibility(Visibility::Private)
-    }
+        let visibility = self.try_parse_visibility().unwrap_or(Visibility::Private);
 
-    pub fn parse_variable_declaration_with_visibility(
-        &mut self,
-        visibility: Visibility,
-    ) -> Option<AstNode> {
+        if !self.check(&TokenType::Var) {
+            return None;
+        }
+
         let location = self.current_location();
         self.consume(TokenType::Var, "Expected 'var'")?;
         let name = self.consume_identifier("Expected variable name")?;
@@ -171,7 +151,13 @@ impl Parser {
         })
     }
 
-    pub fn parse_function_declaration(&mut self, visibility: Visibility) -> Option<AstNode> {
+    pub fn parse_function_declaration(&mut self) -> Option<AstNode> {
+        let visibility = self.try_parse_visibility().unwrap_or(Visibility::Private);
+
+        if !self.check(&TokenType::Fn) {
+            return None;
+        }
+
         let location = self.current_location();
         self.consume(TokenType::Fn, "Expected 'fn'")?;
         let name = self.consume_identifier("Expected function name")?;
@@ -191,7 +177,13 @@ impl Parser {
         })
     }
 
-    pub fn parse_class_declaration(&mut self, visibility: Visibility) -> Option<AstNode> {
+    pub fn parse_class_declaration(&mut self) -> Option<AstNode> {
+        let visibility = self.try_parse_visibility().unwrap_or(Visibility::Private);
+
+        if !self.check(&TokenType::Class) {
+            return None;
+        }
+
         let location = self.current_location();
         self.consume(TokenType::Class, "Expected 'class'")?;
         let name = self.consume_identifier("Expected class name")?;
@@ -237,7 +229,7 @@ impl Parser {
         if self.match_token(&TokenType::Static) {
             if self.check(&TokenType::Fn) {
                 if let Some(declaration) =
-                    self.parse_function_declaration(member_visibility.clone())
+                    self.parse_function_declaration_with_visibility(member_visibility.clone())
                 {
                     return Some(ClassMember::Method {
                         visibility: member_visibility,
@@ -247,7 +239,9 @@ impl Parser {
                 }
             }
         } else if self.check(&TokenType::Fn) {
-            if let Some(declaration) = self.parse_function_declaration(member_visibility.clone()) {
+            if let Some(declaration) =
+                self.parse_function_declaration_with_visibility(member_visibility.clone())
+            {
                 return Some(ClassMember::Method {
                     visibility: member_visibility,
                     is_static: false,
@@ -271,6 +265,34 @@ impl Parser {
         }
 
         None
+    }
+
+    // Helper method for parsing function declarations with explicit visibility (for class members)
+    fn parse_function_declaration_with_visibility(
+        &mut self,
+        visibility: Visibility,
+    ) -> Option<AstNode> {
+        if !self.check(&TokenType::Fn) {
+            return None;
+        }
+
+        let location = self.current_location();
+        self.consume(TokenType::Fn, "Expected 'fn'")?;
+        let name = self.consume_identifier("Expected function name")?;
+
+        self.consume(TokenType::LeftParen, "Expected '(' after function name")?;
+        let parameters = self.parse_parameter_list();
+        self.consume(TokenType::RightParen, "Expected ')' after parameters")?;
+
+        let body = self.parse_block()?;
+
+        Some(AstNode::FunctionDeclaration {
+            visibility,
+            name,
+            parameters,
+            body: Box::new(body),
+            location,
+        })
     }
 
     pub fn parse_parameter_list(&mut self) -> Vec<Parameter> {

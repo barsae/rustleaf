@@ -185,26 +185,14 @@ impl Parser {
                     self.parse_dict_literal()
                 } else {
                     // Try to parse as block expression first, fall back to dict literal
-                    let saved_position = self.current;
-
-                    // Try parsing as block expression
-                    if let Some(block) = self.parse_block() {
-                        Some(block)
-                    } else {
-                        // Restore position and try as dict literal
-                        self.current = saved_position;
-                        self.parse_dict_literal()
-                    }
+                    self.parse_alternatives(&[Self::parse_block, Self::parse_dict_literal])
                 }
             }
             TokenType::If => self.parse_if_expression(),
             TokenType::Match => self.parse_match_expression(),
             TokenType::Try => self.parse_try_expression(),
             TokenType::Fn => self.parse_anonymous_function(),
-            _ => {
-                self.error("Unexpected token in expression");
-                None
-            }
+            _ => None,
         }
     }
 

@@ -148,6 +148,7 @@ impl fmt::Debug for AstNode {
                 .debug_struct("ReturnStatement")
                 .field("value", value)
                 .finish(),
+            AstNode::Empty { .. } => f.debug_struct("Empty").finish(),
             // Add other variants as needed
             _ => {
                 // Fallback for any variants we haven't explicitly handled

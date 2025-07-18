@@ -147,6 +147,11 @@ pub enum AstNode {
         items: Vec<AstNode>,
         location: SourceLocation,
     },
+
+    // Empty/skipped content (comments, empty statements, etc.)
+    Empty {
+        location: SourceLocation,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq)]
