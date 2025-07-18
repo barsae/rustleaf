@@ -62,6 +62,6 @@ mod function_tests {}
 #[rustleaf_tests("tests/integration/unit")]
 mod unit_tests {}
 
-// Module system tests 
+// Module system tests
 #[rustleaf_tests("tests/integration/modules")]
 mod module_tests {}

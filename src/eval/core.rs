@@ -71,9 +71,10 @@ impl Evaluator {
         };
 
         let loader = ModuleLoader::new(&current_dir);
-        
+
         // Use ModuleLoader for path resolution
-        loader.resolve_path(module_path)
+        loader
+            .resolve_path(module_path)
             .map_err(|e| RuntimeError::new(e.to_string(), ErrorType::ImportError))
             .and_then(|resolved_path| {
                 // Check if file exists (ModuleLoader doesn't validate existence in resolve_path)
@@ -108,9 +109,13 @@ impl Evaluator {
                 .map(|p| p.file_stem().unwrap().to_str().unwrap())
                 .collect::<Vec<_>>();
             let current_module = resolved_path.file_stem().unwrap().to_str().unwrap();
-            
+
             return Err(RuntimeError::new(
-                format!("Circular dependency detected: {} → {}", cycle.join(" → "), current_module),
+                format!(
+                    "Circular dependency detected: {} → {}",
+                    cycle.join(" → "),
+                    current_module
+                ),
                 ErrorType::ImportError,
             ));
         }
@@ -125,9 +130,13 @@ impl Evaluator {
                     .map(|p| p.file_stem().unwrap().to_str().unwrap())
                     .collect::<Vec<_>>();
                 let current_module = resolved_path.file_stem().unwrap().to_str().unwrap();
-                
+
                 return Err(RuntimeError::new(
-                    format!("Circular dependency detected: {} → {}", cycle.join(" → "), current_module),
+                    format!(
+                        "Circular dependency detected: {} → {}",
+                        cycle.join(" → "),
+                        current_module
+                    ),
                     ErrorType::ImportError,
                 ));
             }
@@ -168,7 +177,11 @@ impl Evaluator {
                 format!(
                     "Parse error in {}: {}",
                     resolved_path.display(),
-                    errors.into_iter().map(|e| e.to_string()).collect::<Vec<_>>().join(", ")
+                    errors
+                        .into_iter()
+                        .map(|e| e.to_string())
+                        .collect::<Vec<_>>()
+                        .join(", ")
                 ),
                 ErrorType::ImportError,
             )
@@ -180,21 +193,21 @@ impl Evaluator {
 
         // Evaluate the module AST in an isolated environment
         self.environment.push_scope();
-        
+
         // Evaluate the module - this will populate the current scope with bindings and their visibility
         let _result = self.evaluate(&ast)?;
-        
+
         // Extract all bindings from the current scope with their visibility
         let all_bindings = self.environment.get_all_bindings_with_visibility();
-        
+
         // Create module environment and populate it with all bindings (public and private)
         let mut module_environment = ModuleEnvironment::new();
         for (name, (value, visibility)) in all_bindings {
             module_environment.define(name, value, visibility);
         }
-        
+
         self.environment.pop_scope();
-        
+
         // Restore context
         self.current_file = saved_current_file;
 
@@ -269,9 +282,12 @@ impl Evaluator {
             AstNode::Block { statements, .. } => self.evaluate_block(statements),
 
             // Variable declarations
-            AstNode::VariableDeclaration { visibility, name, value, .. } => {
-                self.evaluate_variable_declaration(visibility, name, value)
-            }
+            AstNode::VariableDeclaration {
+                visibility,
+                name,
+                value,
+                ..
+            } => self.evaluate_variable_declaration(visibility, name, value),
 
             // Assignment
             AstNode::Assignment {
@@ -309,9 +325,11 @@ impl Evaluator {
             AstNode::ClassDeclaration { .. } => {
                 todo!("Class declarations not implemented yet")
             }
-            AstNode::ImportStatement { path, clause, location } => {
-                self.evaluate_import_statement(path, clause, location.clone())
-            }
+            AstNode::ImportStatement {
+                path,
+                clause,
+                location,
+            } => self.evaluate_import_statement(path, clause, location.clone()),
             AstNode::WhileStatement { .. } => {
                 todo!("While statements not implemented yet")
             }
@@ -347,7 +365,6 @@ impl Evaluator {
             AstNode::ReturnStatement { value, .. } => self.evaluate_return_statement(value),
         }
     }
-
 
     fn evaluate_literal(&self, literal: &LiteralValue) -> Result<Value, RuntimeError> {
         match literal {

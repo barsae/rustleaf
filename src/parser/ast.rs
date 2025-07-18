@@ -275,15 +275,15 @@ pub enum ModulePathRoot {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum ImportClause {
-    All,                           // use module::*
-    Named(Vec<ImportItem>),        // use module::{item1, item2}
-    Single(String),                // use module::item
+    All,                    // use module::*
+    Named(Vec<ImportItem>), // use module::{item1, item2}
+    Single(String),         // use module::item
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct ImportItem {
     pub name: String,
-    pub alias: Option<String>,     // for "as" renaming
+    pub alias: Option<String>, // for "as" renaming
 }
 
 #[derive(Debug, Clone, PartialEq)]

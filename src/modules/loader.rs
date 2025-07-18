@@ -1,6 +1,6 @@
-use std::path::{Path, PathBuf};
-use std::fs;
 use crate::parser::ast::{ModulePath, ModulePathRoot};
+use std::fs;
+use std::path::{Path, PathBuf};
 
 /// Handles module file resolution and loading
 #[derive(Debug, Clone)]
@@ -21,13 +21,13 @@ impl ModuleLoader {
     pub fn resolve_path(&self, module_path: &ModulePath) -> Result<PathBuf, ModuleResolutionError> {
         let mut resolved_path = match module_path.root_type {
             ModulePathRoot::Relative => self.base_dir.clone(),
-            ModulePathRoot::Super => {
-                self.base_dir.parent()
-                    .ok_or_else(|| ModuleResolutionError::InvalidSuperPath {
-                        base_dir: self.base_dir.clone(),
-                    })?
-                    .to_path_buf()
-            }
+            ModulePathRoot::Super => self
+                .base_dir
+                .parent()
+                .ok_or_else(|| ModuleResolutionError::InvalidSuperPath {
+                    base_dir: self.base_dir.clone(),
+                })?
+                .to_path_buf(),
         };
 
         // Add each segment as a directory component
@@ -43,7 +43,8 @@ impl ModuleLoader {
 
     /// Load module source code from filesystem
     pub fn load_module(&self, module_path: &ModulePath) -> Result<String, ModuleLoadError> {
-        let file_path = self.resolve_path(module_path)
+        let file_path = self
+            .resolve_path(module_path)
             .map_err(ModuleLoadError::Resolution)?;
 
         if !file_path.exists() {
@@ -53,11 +54,10 @@ impl ModuleLoader {
             });
         }
 
-        fs::read_to_string(&file_path)
-            .map_err(|io_error| ModuleLoadError::IoError {
-                path: file_path,
-                error: io_error.to_string(),
-            })
+        fs::read_to_string(&file_path).map_err(|io_error| ModuleLoadError::IoError {
+            path: file_path,
+            error: io_error.to_string(),
+        })
     }
 
     /// Get the base directory
@@ -75,16 +75,18 @@ impl ModuleLoader {
 
 #[derive(Debug, Clone)]
 pub enum ModuleResolutionError {
-    InvalidSuperPath {
-        base_dir: PathBuf,
-    },
+    InvalidSuperPath { base_dir: PathBuf },
 }
 
 impl std::fmt::Display for ModuleResolutionError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             ModuleResolutionError::InvalidSuperPath { base_dir } => {
-                write!(f, "Cannot resolve super path from base directory: {}", base_dir.display())
+                write!(
+                    f,
+                    "Cannot resolve super path from base directory: {}",
+                    base_dir.display()
+                )
             }
         }
     }
@@ -109,11 +111,24 @@ impl std::fmt::Display for ModuleLoadError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             ModuleLoadError::Resolution(err) => write!(f, "Module resolution error: {}", err),
-            ModuleLoadError::FileNotFound { path, original_module_path } => {
-                write!(f, "Module not found: '{}' (resolved to {})", original_module_path, path.display())
+            ModuleLoadError::FileNotFound {
+                path,
+                original_module_path,
+            } => {
+                write!(
+                    f,
+                    "Module not found: '{}' (resolved to {})",
+                    original_module_path,
+                    path.display()
+                )
             }
             ModuleLoadError::IoError { path, error } => {
-                write!(f, "IO error loading module from {}: {}", path.display(), error)
+                write!(
+                    f,
+                    "IO error loading module from {}: {}",
+                    path.display(),
+                    error
+                )
             }
         }
     }
@@ -160,7 +175,7 @@ mod tests {
         let temp_dir = TempDir::new().unwrap();
         let subdir = temp_dir.path().join("subdir");
         fs::create_dir(&subdir).unwrap();
-        
+
         let loader = ModuleLoader::new(&subdir);
 
         let module_path = ModulePath {

@@ -1,6 +1,6 @@
-use std::collections::HashMap;
 use crate::parser::ast::{ImportClause, ImportItem, Visibility};
 use crate::value::Value;
+use std::collections::HashMap;
 
 /// Represents an exported item from a module
 #[derive(Debug, Clone)]
@@ -103,7 +103,8 @@ impl ModuleEnvironment {
             Some(ImportClause::Single(item_name)) => {
                 // Import a single item
                 if let Some(value) = source_env.get(item_name, true) {
-                    if self.imports.contains_key(item_name) || self.bindings.contains_key(item_name) {
+                    if self.imports.contains_key(item_name) || self.bindings.contains_key(item_name)
+                    {
                         return Err(ImportError::NameConflict {
                             name: item_name.clone(),
                             reason: "Item already exists in current scope".to_string(),
@@ -122,7 +123,9 @@ impl ModuleEnvironment {
                 for ImportItem { name, alias } in items {
                     if let Some(value) = source_env.get(name, true) {
                         let import_name = alias.as_ref().unwrap_or(name);
-                        if self.imports.contains_key(import_name) || self.bindings.contains_key(import_name) {
+                        if self.imports.contains_key(import_name)
+                            || self.bindings.contains_key(import_name)
+                        {
                             return Err(ImportError::NameConflict {
                                 name: import_name.clone(),
                                 reason: "Item already exists in current scope".to_string(),
@@ -181,14 +184,8 @@ impl ModuleEnvironment {
 
 #[derive(Debug, Clone)]
 pub enum ImportError {
-    ItemNotFound {
-        item: String,
-        module: String,
-    },
-    NameConflict {
-        name: String,
-        reason: String,
-    },
+    ItemNotFound { item: String, module: String },
+    NameConflict { name: String, reason: String },
 }
 
 impl std::fmt::Display for ImportError {
@@ -208,12 +205,8 @@ impl std::error::Error for ImportError {}
 
 #[derive(Debug, Clone)]
 pub enum UpdateError {
-    UndefinedVariable {
-        name: String,
-    },
-    ImportedVariable {
-        name: String,
-    },
+    UndefinedVariable { name: String },
+    ImportedVariable { name: String },
 }
 
 impl std::fmt::Display for UpdateError {

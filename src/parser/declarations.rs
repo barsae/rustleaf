@@ -18,7 +18,9 @@ impl Parser {
                 match self.peek().token_type {
                     TokenType::Fn => self.parse_function_declaration(Visibility::Public),
                     TokenType::Class => self.parse_class_declaration(Visibility::Public),
-                    TokenType::Var => self.parse_variable_declaration_with_visibility(Visibility::Public),
+                    TokenType::Var => {
+                        self.parse_variable_declaration_with_visibility(Visibility::Public)
+                    }
                     _ => {
                         self.error("Expected function, class, or variable declaration after 'pub'");
                         None
@@ -126,7 +128,7 @@ impl Parser {
 
     fn parse_import_item(&mut self) -> Option<ImportItem> {
         let name = self.consume_identifier("Expected identifier")?;
-        
+
         // Check for "as" alias
         let alias = if self.check(&TokenType::Identifier) && self.peek().lexeme == "as" {
             self.advance(); // consume "as"
@@ -134,7 +136,7 @@ impl Parser {
         } else {
             None
         };
-        
+
         Some(ImportItem { name, alias })
     }
 
@@ -142,7 +144,10 @@ impl Parser {
         self.parse_variable_declaration_with_visibility(Visibility::Private)
     }
 
-    pub fn parse_variable_declaration_with_visibility(&mut self, visibility: Visibility) -> Option<AstNode> {
+    pub fn parse_variable_declaration_with_visibility(
+        &mut self,
+        visibility: Visibility,
+    ) -> Option<AstNode> {
         let location = self.current_location();
         self.consume(TokenType::Var, "Expected 'var'")?;
         let name = self.consume_identifier("Expected variable name")?;
@@ -153,7 +158,10 @@ impl Parser {
             None
         };
 
-        self.consume(TokenType::Semicolon, "Expected ';' after variable declaration")?;
+        self.consume(
+            TokenType::Semicolon,
+            "Expected ';' after variable declaration",
+        )?;
 
         Some(AstNode::VariableDeclaration {
             visibility,
@@ -313,5 +321,4 @@ impl Parser {
 
         parameters
     }
-
 }
