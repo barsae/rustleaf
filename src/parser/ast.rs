@@ -297,7 +297,6 @@ pub struct WithBinding {
     pub value: AstNode,
 }
 
-
 #[derive(Debug, Clone)]
 pub struct ParseError {
     pub message: String,

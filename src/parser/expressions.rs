@@ -204,7 +204,7 @@ impl Parser {
 
         if !self.check(&TokenType::RightBracket) {
             elements.push(self.parse_expression()?);
-            
+
             while self.match_token(&TokenType::Comma) && !self.check(&TokenType::RightBracket) {
                 elements.push(self.parse_expression()?);
             }
@@ -226,7 +226,7 @@ impl Parser {
             self.consume(TokenType::Colon, "Expected ':' after dict key")?;
             let value = self.parse_expression()?;
             entries.push((key, value));
-            
+
             while self.match_token(&TokenType::Comma) && !self.check(&TokenType::RightBrace) {
                 let key = self.parse_expression()?;
                 self.consume(TokenType::Colon, "Expected ':' after dict key")?;

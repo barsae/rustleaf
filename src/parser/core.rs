@@ -212,13 +212,14 @@ impl Parser {
 
     /// Parse as many items as possible using the given parser function
     pub fn parse_many<T, F>(&mut self, parser_fn: F) -> Vec<T>
-    where F: Fn(&mut Self) -> Option<T>
+    where
+        F: Fn(&mut Self) -> Option<T>,
     {
         let mut results = Vec::new();
-        
+
         while !self.is_at_end() {
             let position_before = self.current;
-            
+
             match parser_fn(self) {
                 Some(item) => {
                     results.push(item);
@@ -233,7 +234,7 @@ impl Parser {
                 }
             }
         }
-        
+
         results
     }
 }

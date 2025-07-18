@@ -1,5 +1,5 @@
-use std::fmt;
 use super::SourceLocation;
+use std::fmt;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum TokenType {

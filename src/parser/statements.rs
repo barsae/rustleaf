@@ -146,7 +146,7 @@ impl Parser {
         self.consume(TokenType::LeftBrace, "Expected '{'")?;
 
         self.skip_newlines();
-        
+
         let statements = self.parse_many(|parser| {
             if parser.check(&TokenType::RightBrace) {
                 None
@@ -311,8 +311,10 @@ impl Parser {
                 if !self.check(&TokenType::RightBracket) {
                     if let Some(pattern) = self.parse_pattern() {
                         patterns.push(pattern);
-                        
-                        while self.match_token(&TokenType::Comma) && !self.check(&TokenType::RightBracket) {
+
+                        while self.match_token(&TokenType::Comma)
+                            && !self.check(&TokenType::RightBracket)
+                        {
                             if let Some(pattern) = self.parse_pattern() {
                                 patterns.push(pattern);
                             }
@@ -332,8 +334,10 @@ impl Parser {
                         self.consume(TokenType::Colon, "Expected ':' after dict key")?;
                         if let Some(pattern) = self.parse_pattern() {
                             entries.push((key_token, pattern));
-                            
-                            while self.match_token(&TokenType::Comma) && !self.check(&TokenType::RightBrace) {
+
+                            while self.match_token(&TokenType::Comma)
+                                && !self.check(&TokenType::RightBrace)
+                            {
                                 if let Some(key_token) = self.match_string_literal() {
                                     self.consume(TokenType::Colon, "Expected ':' after dict key")?;
                                     if let Some(pattern) = self.parse_pattern() {

@@ -246,9 +246,11 @@ fn lexer_newlines() {
         .filter(|t| t.token_type == TokenType::Identifier)
         .collect();
     assert_eq!(identifier_tokens.len(), 4); // line1, line2, line3, line4
-    
+
     // Verify no newline tokens are present
-    let has_newlines = tokens.iter().any(|t| matches!(t.lexeme.as_str(), "\n" | "\r" | "\r\n"));
+    let has_newlines = tokens
+        .iter()
+        .any(|t| matches!(t.lexeme.as_str(), "\n" | "\r" | "\r\n"));
     assert!(!has_newlines);
 }
 
