@@ -221,9 +221,12 @@ impl Evaluator {
         self.environment.push_scope();
 
         // Add closure variables to the scope if present
-        if let Some(closure) = &function.closure {
-            for (name, value_ref) in closure {
-                self.environment.define_ref(name.clone(), value_ref.clone());
+        if let Some(closure_scope) = &function.closure {
+            let closure_vars = closure_scope.get_local_variables();
+            for (name, _value) in closure_vars {
+                if let Some(value_ref) = closure_scope.get_mut(&name) {
+                    self.environment.define_ref(name, value_ref);
+                }
             }
         }
 

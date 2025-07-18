@@ -1,8 +1,6 @@
 use super::core::Evaluator;
 use crate::lexer::SourceLocation;
-use crate::parser::{
-    AssignmentOperator, AstNode, ImportClause, ModulePath, Parameter, Visibility,
-};
+use crate::parser::{AssignmentOperator, AstNode, ImportClause, ModulePath, Parameter, Visibility};
 use crate::value::types::{ErrorType, Function, RuntimeError, Value};
 
 impl Evaluator {
@@ -199,7 +197,8 @@ impl Evaluator {
     ) -> Result<Value, RuntimeError> {
         // Capture current environment for closures (if not at global scope)
         let closure = if self.environment.is_nested_scope() {
-            Some(self.environment.capture_closure())
+            let closure_vars = self.environment.capture_closure();
+            Some(crate::eval::scope::Scope::from_closure(closure_vars))
         } else {
             None
         };
@@ -225,7 +224,8 @@ impl Evaluator {
     ) -> Result<Value, RuntimeError> {
         // Capture current environment for closures
         let closure = if self.environment.is_nested_scope() {
-            Some(self.environment.capture_closure())
+            let closure_vars = self.environment.capture_closure();
+            Some(crate::eval::scope::Scope::from_closure(closure_vars))
         } else {
             None
         };

@@ -1,10 +1,9 @@
 #![allow(clippy::result_large_err)]
 
+use crate::eval::scope::Scope;
 use crate::parser::{AstNode, Parameter};
-use std::cell::RefCell;
 use std::collections::HashMap;
 use std::fmt;
-use std::rc::Rc;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Value {
@@ -26,7 +25,7 @@ pub struct Function {
     pub name: Option<String>,
     pub parameters: Vec<Parameter>,
     pub body: AstNode,
-    pub closure: Option<HashMap<String, Rc<RefCell<Value>>>>,
+    pub closure: Option<Scope>,
     pub is_builtin: bool,
 }
 

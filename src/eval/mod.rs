@@ -5,6 +5,7 @@ pub mod core;
 pub mod environment;
 pub mod expressions;
 pub mod operators;
+pub mod scope;
 pub mod statements;
 
 #[cfg(test)]
