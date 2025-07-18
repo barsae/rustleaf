@@ -21,7 +21,6 @@ Patterns are structural descriptions that match against values and optionally bi
 - List patterns - Match list structure
 - Dict patterns - Match dict structure
 - Range patterns - Match numeric ranges
-- Or patterns - Match any of several patterns
 
 **General Rules:**
 - Patterns match structurally against values
@@ -34,7 +33,9 @@ Patterns are structural descriptions that match against values and optionally bi
 // Match expression
 match value {
     case 0 { "zero" }
-    case 1 | 2 | 3 { "small" }
+    case 1 { "small" }
+    case 2 { "small" }
+    case 3 { "small" }
     case [x, y] { "pair" }
     case _ { "other" }
 }
@@ -82,8 +83,12 @@ match status {
 }
 
 match value {
-    case "yes" | "y" | "true" { true }
-    case "no" | "n" | "false" { false }
+    case "yes" { true }
+    case "y" { true }
+    case "true" { true }
+    case "no" { false }
+    case "n" { false }
+    case "false" { false }
     case null { "missing" }
 }
 
@@ -222,11 +227,11 @@ match matrix {
     }
 }
 
-// Or patterns with lists
+// Multiple patterns
 match coords {
-    case [0, 0] | [0, _] | [_, 0] {
-        "on axis"
-    }
+    case [0, 0] { "origin" }
+    case [0, _] { "on y axis" }
+    case [_, 0] { "on x axis" }
 }
 ```
 
@@ -286,50 +291,49 @@ match response {
     }
 }
 
-// Or patterns with dicts
+// Multiple dict patterns
 match config {
-    case {mode: "dev"} | {mode: "development"} {
-        enable_debug()
-    }
+    case {mode: "dev"} { enable_debug() }
+    case {mode: "development"} { enable_debug() }
 }
 ```
 
 ### 8.7. Range Patterns
 
-Range patterns match integers within inclusive ranges.
+Range patterns match integers within ranges.
 
 **Syntax:**
 ```
-RangePattern = IntegerLiteral ".." IntegerLiteral
+RangePattern = Expression ".." Expression
+             | Expression "..=" Expression
 ```
 
 **Properties:**
-- Both bounds are inclusive
-- Only integer literals allowed
+- `..` creates an exclusive range (end not included)
+- `..=` creates an inclusive range (end included) 
+- Expressions are evaluated at match time
 - Start must be less than or equal to end
-- No expressions in bounds
 
 **Examples:**
 ```
 match score {
     case 0 { "zero" }
-    case 1..10 { "low" }
-    case 11..50 { "medium" }
-    case 51..100 { "high" }
+    case 1..=10 { "low" }        // inclusive: 1 through 10
+    case 11..50 { "medium" }     // exclusive: 11 through 49
+    case 50..=100 { "high" }     // inclusive: 50 through 100
     case _ { "out of range" }
 }
 
 match char_code {
-    case 48..57 { "digit" }      // '0'..'9'
-    case 65..90 { "uppercase" }  // 'A'..'Z'
-    case 97..122 { "lowercase" } // 'a'..'z'
+    case 48..=57 { "digit" }      // '0' through '9' inclusive
+    case 65..=90 { "uppercase" }  // 'A' through 'Z' inclusive
+    case 97..=122 { "lowercase" } // 'a' through 'z' inclusive
 }
 
-// Or patterns with ranges
+// Multiple range patterns
 match age {
-    case 0..12 | 65..120 {
-        "discount eligible"
-    }
+    case 0..12 { "child discount" }
+    case 65..120 { "senior discount" }
 }
 
 // Not allowed
@@ -362,8 +366,7 @@ Pattern matching follows specific evaluation rules to determine matches and bind
 **Evaluation Order:**
 1. Patterns are tested top-to-bottom
 2. First matching pattern is selected
-3. Or patterns are tested left-to-right
-4. Nested patterns are matched outside-in
+3. Nested patterns are matched outside-in
 
 **Matching Process:**
 1. Compare pattern structure with value
@@ -391,7 +394,6 @@ Patterns that might not match:
 - Range patterns
 - List patterns with specific length
 - Dict patterns with required keys
-- Or patterns (unless one branch is irrefutable)
 
 Only allowed in:
 - Match expressions
@@ -416,10 +418,14 @@ match [1, 2] {
     case _ { "never reached" }
 }
 
-// Or pattern evaluation
+// Pattern evaluation
 match 5 {
-    case 1 | 2 | 3 { "small" }
-    case 4 | 5 | 6 { "medium" }  // Matches at 5
+    case 1 { "small" }
+    case 2 { "small" }
+    case 3 { "small" }
+    case 4 { "medium" }
+    case 5 { "medium" }  // Matches here
+    case 6 { "medium" }
     case _ { "large" }
 }
 
@@ -428,69 +434,9 @@ var result = match value {
     case 1 { "one" }
     case 2 { "two" }
 }
-// result is null if value is not 1 or 2
+// result is unit if value is not 1 or 2
 ```
 
-### Or Patterns
-
-Or patterns allow matching multiple alternatives with the `|` operator.
-
-**Syntax:**
-```
-OrPattern = Pattern ("|" Pattern)*
-```
-
-**Rules:**
-- All alternatives must bind the same variables
-- Variable types can differ between alternatives
-- Matches left-to-right, stops at first match
-- Can combine different pattern types
-
-**Examples:**
-```
-// Simple alternatives
-match command {
-    case "quit" | "exit" | "q" {
-        shutdown()
-    }
-    case "help" | "h" | "?" {
-        show_help()
-    }
-}
-
-// With different pattern types
-match value {
-    case 0 | null | [] {
-        "empty"
-    }
-    case 1 | [1] | {value: 1} {
-        "one"
-    }
-}
-
-// Variables must match
-match pair {
-    case [x, 0] | [0, x] {
-        print("Has zero and ${x}")
-    }
-    // Both branches bind 'x'
-}
-
-// Not allowed - inconsistent bindings
-match value {
-    // case [x] | [x, y] { }  // Error: y not bound in first alternative
-}
-
-// Nested or patterns
-match response {
-    case {status: 200 | 201 | 204} {
-        "success"
-    }
-    case {status: 400..499} {
-        "client error"
-    }
-}
-```
 
 ---
 
