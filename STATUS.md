@@ -1,28 +1,31 @@
 # RustLeaf Implementation Status
 
-This document tracks the implementation status of the RustLeaf language against the specifications in `./specs/*.md`.
+**Last updated**: 2025-01-18 (commit e899226c56cc0f411e53adfb693104991e21fc0a)
+
+This document tracks the implementation status of the RustLeaf programming language against its formal specification. The status matrix indicates the completeness of each feature across the lexer, parser, and evaluator components.
 
 ## Implementation Status Matrix
 
-| Specification Chapter | Lexer | Parser | Evaluator | Testing |
-|----------------------|:-----:|:------:|:---------:|:-------:|
-| [1. Introduction](specs/01-introduction.md) | 🟢 | 🟢 | 🟢 | 🟢 |
-| [2. Lexical Structure](specs/02-lexical-structure.md) | 🟢 | N/A | N/A | 🟢 |
-| [3. Types](specs/03-types.md) | 🟢 | 🟡 | [🟡](#evaluator-gaps) | [🟡](#testing-gaps) |
-| [4. Variables](specs/04-variables.md) | 🟢 | 🟢 | 🟢 | 🟢 |
-| [5. Expressions](specs/05-expressions.md) | 🟢 | [🟡](#parser-gaps) | [🟡](#evaluator-gaps) | 🟡 |
-| [6. Statements](specs/06-statements.md) | 🟢 | [🟡](#parser-gaps) | [🟡](#evaluator-gaps) | 🟡 |
-| [7. Functions](specs/07-functions.md) | 🟢 | 🟢 | 🟡 | 🟢 |
-| [8. Pattern Matching](specs/08-pattern-matching.md) | 🟢 | [🟠](#parser-gaps) | [🔴](#evaluator-gaps) | [🔴](#testing-gaps) |
-| [9. Error Handling](specs/09-error-handling.md) | 🟢 | [🟠](#parser-gaps) | [🔴](#evaluator-gaps) | [🔴](#testing-gaps) |
-| [10. Modules](specs/10-modules.md) | 🟢 | [🟡](#parser-gaps) | [🔴](#evaluator-gaps) | [🔴](#testing-gaps) |
-| [11. Built-in Functions](specs/11-built-in-functions.md) | N/A | N/A | [🔴](#evaluator-gaps) | [🔴](#testing-gaps) |
-| [12. Standard Library](specs/12-standard-library.md) | N/A | N/A | [🔴](#evaluator-gaps) | [🔴](#testing-gaps) |
-| [13. Documentation Comments](specs/13-documentation-comments.md) | 🟡 | [🔴](#parser-gaps) | [🔴](#evaluator-gaps) | [🔴](#testing-gaps) |
-| [14. Memory Model](specs/14-memory-model.md) | N/A | N/A | 🟡 | 🟢 |
-| [15. Execution Model](specs/15-execution-model.md) | N/A | N/A | 🟡 | 🟡 |
-| [16. RustValue Integration](specs/16-rustvalue-integration.md) | 🟢 | 🟢 | [🟠](#evaluator-gaps) | [🔴](#testing-gaps) |
-| [17. Macros](specs/17-macros.md) | [🔴](#parser-gaps) | [🔴](#parser-gaps) | [🔴](#evaluator-gaps) | [🔴](#testing-gaps) |
+| Specification Chapter | Lexer | Parser | Evaluator | Status | Notes |
+|:-----|:-----:|:------:|:---------:|:-------|:------|
+| [01. Introduction](specs/01-introduction.md) | 🟢 | 🟢 | 🟢 | **Complete** | Foundational concepts implemented |
+| [02. Lexical Structure](specs/02-lexical-structure.md) | 🟢 | 🟢 | 🟢 | **Complete** | All token types, literals, keywords |
+| [03. Types](specs/03-types.md) | 🟢 | 🟡 | [🟡](#types-gaps) | **Partial** | Core types working, missing type checking |
+| [04. Variables](specs/04-variables.md) | 🟢 | 🟢 | 🟢 | **Complete** | Variable declarations and assignments |
+| [05. Expressions](specs/05-expressions.md) | 🟢 | 🟡 | [🟡](#expressions-gaps) | **Partial** | Basic expressions, missing advanced features |
+| [06. Statements](specs/06-statements.md) | 🟢 | 🟡 | [🟡](#statements-gaps) | **Partial** | Core statements, missing some constructs |
+| [07. Functions](specs/07-functions.md) | 🟢 | 🟡 | [🟡](#functions-gaps) | **Partial** | Basic functions, missing advanced features |
+| [08. Pattern Matching](specs/08-pattern-matching.md) | 🟢 | [🔴](#pattern-matching-gaps) | [🔴](#pattern-matching-gaps) | **Missing** | AST structures exist, no implementation |
+| [09. Error Handling](specs/09-error-handling.md) | 🟢 | 🟡 | [🟡](#error-handling-gaps) | **Partial** | Basic try/catch, missing advanced features |
+| [10. Modules](specs/10-modules.md) | 🟢 | [🔴](#modules-gaps) | [🔴](#modules-gaps) | **Missing** | Import syntax parsed, no module system |
+| [11. Built-in Functions](specs/11-built-in-functions.md) | 🟢 | 🟢 | [🟠](#built-in-functions-gaps) | **Minimal** | Basic builtins, missing most functions |
+| [12. Standard Library](specs/12-standard-library.md) | 🟢 | 🟢 | [🔴](#standard-library-gaps) | **Missing** | Methods framework missing |
+| [13. Documentation Comments](specs/13-documentation-comments.md) | 🟡 | [🔴](#documentation-gaps) | [🔴](#documentation-gaps) | **Missing** | Lexing only, no preservation |
+| [14. Memory Model](specs/14-memory-model.md) | N/A | N/A | [🟡](#memory-model-gaps) | **Partial** | Basic semantics, needs formalization |
+| [15. Execution Model](specs/15-execution-model.md) | N/A | N/A | [🟡](#execution-model-gaps) | **Partial** | Basic execution, missing error model |
+| [16. RustValue Integration](specs/16-rustvalue-integration.md) | 🟢 | 🟢 | [🟠](#rustvalue-gaps) | **Minimal** | Structure defined, minimal implementation |
+| [17. Macros](specs/17-macros.md) | [🔴](#macros-gaps) | [🔴](#macros-gaps) | [🔴](#macros-gaps) | **Missing** | No macro system |
+| [18. Appendices](specs/18-appendices.md) | 🟢 | 🟢 | 🟢 | **Complete** | Reference materials |
 
 **Legend:**
 - 🟢 **Complete**: Feature fully implemented and tested
@@ -33,194 +36,217 @@ This document tracks the implementation status of the RustLeaf language against 
 ## Gap Analysis
 
 ### Types Gaps
+**Parser Gaps:**
+- No type annotations parsing (not in specification, but useful for future extensions)
+- Missing type constraint validation
 
-**Expressions (Chapter 5):**
-- Match expressions: Basic AST nodes exist but missing pattern parsing complexity (src/parser/expressions.rs)
-- Try expressions: Missing implementation in expressions.rs:100
-- Object literal expressions: Missing from primary expression parsing
-- Anonymous function expressions: Missing from primary expressions
+**Evaluator Gaps:**
+- Unit type boolean context checking incomplete (`if unit { }` should error)
+- Type conversion functions missing (`int()`, `float()`, `str()`, `bool()`)
+- String interpolation type coercion not implemented
+- Type-specific method dispatch not implemented
 
-**Statements (Chapter 6):**
-- For statements: Missing implementation in statements.rs
-- Try-catch-finally statements: Missing implementation 
-- With statements: Missing implementation
-- Pattern-based variable declarations: Only simple identifier patterns supported
+### Expressions Gaps
+**Parser Gaps:**
+- Match expressions parsed but incomplete pattern handling
+- Object literal property shorthand syntax missing
+- Range expressions in patterns incomplete
 
-**Pattern Matching (Chapter 8):**
-- Only basic pattern AST nodes exist in ast.rs:222-235
-- Range patterns: AST defined but no parsing logic
-- Or patterns: AST defined but no parsing logic
-- Guard expressions: AST defined but no parsing logic
+**Evaluator Gaps:**
+- Match expression evaluation not implemented
+- Anonymous function evaluation incomplete
+- Operator overloading not implemented
+- String interpolation not implemented
+- Property access on primitive types missing (e.g., `"hello".length`)
 
-**Error Handling (Chapter 9):**
-- Try-catch blocks: Missing parser implementation
-- Finally blocks: Missing parser implementation
-- Error propagation syntax: Not implemented
+### Statements Gaps
+**Parser Gaps:**
+- For statement destructuring patterns incomplete
+- With statement resource binding validation missing
+- Import statement clause parsing incomplete
 
-**Modules (Chapter 10):**
-- Import parsing exists but incomplete module resolution (src/parser/declarations.rs:35-111)
-- Export functions: Not implemented in parser
+**Evaluator Gaps:**
+- For statement iterator protocol not implemented
+- With statement resource cleanup not implemented
+- Import/module loading not implemented
+- Pattern destructuring in variable declarations not implemented
 
-**Documentation Comments (Chapter 13):**
-- Doc comment tokens exist but no AST preservation
-- Docstring parsing: Not implemented
+### Functions Gaps
+**Parser Gaps:**
+- Default parameter value validation (literals only) not enforced
+- Rest parameters (`*args`) and keyword parameters (`**kwargs`) parsing incomplete
+- Parameter destructuring not supported
 
-**Macros (Chapter 17):**
-- No macro parsing infrastructure
-- No AST transformation support
+**Evaluator Gaps:**
+- Default parameter evaluation not implemented
+- Rest/keyword parameter handling not implemented
+- Closure capture semantics incomplete
+- Function call argument spread not implemented
+- Recursion depth limiting not implemented
 
-### Evaluator Gaps
+### Pattern Matching Gaps
+**Parser Gaps:**
+- Pattern parsing exists in AST but incomplete implementation
+- Or pattern (`|`) parsing not implemented
+- Range pattern validation missing
+- Dict pattern key validation incomplete
 
-**Types (Chapter 3):**
-- Object type: Missing implementation in value system
-- Type conversions: Only basic conversions implemented
-- Type checking: Runtime-only, no static analysis
+**Evaluator Gaps:**
+- Pattern matching algorithm not implemented
+- Variable binding in patterns not implemented
+- Exhaustiveness checking not implemented
+- Pattern guard evaluation not implemented
 
-**Expressions (Chapter 5):**
-- Match expressions: Marked as todo in core.rs:97
-- Try expressions: Marked as todo in core.rs:100
-- Block expressions: Return value semantics incomplete
-- Method calls: Missing from evaluator
+### Error Handling Gaps
+**Parser Gaps:**
+- Finally clause in try statements parsed but marked as optional incorrectly
+- Catch pattern destructuring incomplete
 
-**Statements (Chapter 6):**
-- Control flow statements: Many marked as todo
-- For statements: Missing iterator protocol
-- Try-catch-finally: Not implemented
-- With statements: Not implemented
+**Evaluator Gaps:**
+- Finally clause execution not implemented (should error - not in spec)
+- Error propagation stack traces not captured
+- Pattern matching in catch clauses not implemented
+- Error object conventions not enforced
 
-**Functions (Chapter 7):**
-- Closures: Variable capture not implemented
-- Default parameters: Parser support exists but evaluator missing
-- Variadic parameters: Not implemented in evaluator
+### Modules Gaps
+**Parser Gaps:**
+- Module path resolution logic missing
+- Import clause validation incomplete
+- Public/private visibility not enforced
 
-**Pattern Matching (Chapter 8):**
-- All pattern matching evaluation missing
-- Destructuring assignments: Not implemented
-- Pattern guards: Not implemented
+**Evaluator Gaps:**
+- Module loading system not implemented
+- Symbol resolution across modules not implemented
+- Module caching not implemented
+- Circular dependency detection missing
 
-**Error Handling (Chapter 9):**
-- Try-catch blocks: Not implemented
-- Error propagation: Not implemented
-- Finally blocks: Not implemented
+### Built-in Functions Gaps
+**Evaluator Gaps:**
+- Missing most type functions: `type()`, `int()`, `float()`, `str()`, `bool()`
+- Missing collection functions: `len()`, `range()`, etc.
+- Missing string functions: string methods not implemented
+- Missing utility functions: `print()` basic implementation only
+- `assert()` function not implemented
+- Built-in function argument validation incomplete
 
-**Modules (Chapter 10):**
-- Module loading: Not implemented
-- Import resolution: Not implemented
-- Module scope: Not implemented
+### Standard Library Gaps
+**Evaluator Gaps:**
+- String method dispatch not implemented
+- List method dispatch not implemented
+- Dict method dispatch not implemented
+- Iterator protocol not implemented
+- Method resolution order not implemented
+- Primitive type method inheritance missing
 
-**Built-in Functions (Chapter 11):**
-- Type functions: Not implemented
-- Collection functions: Not implemented
-- String functions: Not implemented
-- Error functions: Not implemented
+### Documentation Gaps
+**Parser Gaps:**
+- Documentation comment preservation not implemented
+- Docstring AST node creation missing
 
-**Standard Library (Chapter 12):**
-- String methods: Not implemented
-- List methods: Not implemented
-- Dict methods: Not implemented
-- Method resolution: Not implemented
+**Evaluator Gaps:**
+- Runtime docstring access not implemented
+- Documentation metadata not preserved
 
-**Documentation Comments (Chapter 13):**
-- Runtime docstring access: Not implemented
-- Docstring preservation: Not implemented
+### Memory Model Gaps
+**Evaluator Gaps:**
+- Reference semantics not fully formalized
+- Garbage collection behavior undefined
+- Resource management patterns not enforced
+- Memory safety guarantees not validated
 
-**RustValue Integration (Chapter 16):**
-- Basic structure exists but method dispatch incomplete
-- Field access: Basic implementation only
-- Type coercion: Minimal implementation
+### Execution Model Gaps
+**Evaluator Gaps:**
+- Expression evaluation order not strictly enforced
+- Exception handling propagation incomplete
+- Resource cleanup semantics not implemented
+- Stack trace capture and formatting missing
 
-**Macros (Chapter 17):**
-- No macro evaluation infrastructure
-- No AST transformation support
+### RustValue Gaps
+**Evaluator Gaps:**
+- Field access through `RustValue` trait not implemented
+- Method dispatch through `RustValue` trait not implemented
+- Type coercion with `RustValue` types not implemented
+- Error handling for `RustValue` operations incomplete
 
-### Testing Gaps
+### Macros Gaps
+**Lexer Gaps:**
+- Macro syntax recognition not implemented
+- Macro invocation parsing missing
 
-**Types (Chapter 3):**
-- Object type tests: Missing
-- Type conversion edge cases: Limited coverage
+**Parser Gaps:**
+- Macro expansion not implemented
+- AST transformation not implemented
 
-**Expressions (Chapter 5):**
-- Match expression tests: Missing
-- Try expression tests: Missing
-- Complex operator precedence: Limited coverage
+**Evaluator Gaps:**
+- Macro processing not implemented
+- Built-in macro evaluation missing
 
-**Pattern Matching (Chapter 8):**
-- All pattern matching tests missing
-- Destructuring tests: Missing
-- Pattern guard tests: Missing
-
-**Error Handling (Chapter 9):**
-- Try-catch tests: Missing
-- Error propagation tests: Missing
-- Finally block tests: Missing
-
-**Modules (Chapter 10):**
-- Import/export tests: Missing
-- Module resolution tests: Missing
-
-**Built-in Functions (Chapter 11):**
-- Built-in function tests: Missing
-
-**Standard Library (Chapter 12):**
-- Method tests: Missing
-- Standard library coverage: Missing
-
-**Documentation Comments (Chapter 13):**
-- Docstring tests: Missing
-- Runtime access tests: Missing
-
-**RustValue Integration (Chapter 16):**
-- Integration tests: Missing
-- Method dispatch tests: Missing
-
-**Macros (Chapter 17):**
-- Macro tests: Missing
-
-## Progress Summary
+## Overall Progress Summary
 
 ### Complete Features
-- **Lexical Analysis**: Full specification compliance including all token types, literals, comments, and keywords (src/lexer/*)
-- **Basic Expressions**: Arithmetic, comparison, logical operators with proper precedence (src/parser/expressions.rs, src/eval/expressions.rs)
-- **Variables**: Declaration, assignment, and scope management (src/eval/environment.rs)
-- **Basic Functions**: Declaration, parameters, calls, and return values (src/parser/declarations.rs, src/eval/core.rs)
-- **Control Flow**: If expressions, basic block expressions
-- **Data Types**: Integers, floats, strings, booleans, null, lists, and dictionaries (src/value/types.rs)
+- **Lexical Analysis**: Full token recognition, all literal types, keywords, operators
+- **Variable System**: Declarations, assignments, scoping rules
+- **Basic Expressions**: Arithmetic, logical, comparison operators with correct precedence
+- **Basic Control Flow**: If expressions, block expressions
+- **Function Basics**: Declaration, calling, parameter passing
+- **Error Handling Basics**: Try/catch expressions with simple error values
+- **Core Data Types**: Null, Unit, Bool, Int, Float, String, List, Dict
 
 ### Incomplete Features
-- **Advanced Expressions**: Match expressions, try expressions, method calls
-- **Control Flow**: For loops, while loops, try-catch-finally, with statements
-- **Functions**: Closures, default/variadic parameters, anonymous functions
-- **Pattern Matching**: All pattern types and destructuring
-- **Error Handling**: Try-catch blocks, error propagation, finally blocks
-- **Modules**: Import/export system, module resolution
-- **Built-ins**: Standard library functions and methods
-- **Documentation**: Runtime docstring access
-- **RustValue Integration**: Advanced method dispatch and type coercion
-- **Macros**: Complete macro system
+- **Type System**: Core types work, but type checking and conversions incomplete
+- **Advanced Expressions**: Match expressions, string interpolation, operator overloading
+- **Advanced Functions**: Closures, default parameters, rest/keyword parameters
+- **Iterator Protocol**: For loops work with simple cases, full protocol missing
+- **Built-in Functions**: Only basic implementation, most functions missing
 
-### Current Capabilities
-The implementation supports:
-- Parsing and executing basic RustLeaf programs
-- Variable declaration and manipulation
-- Function definition and calling
-- Arithmetic and comparison operations
-- Basic control flow with if expressions
-- List and dictionary literals
-- String operations and interpolation
-- Comprehensive lexical analysis with proper error reporting
-- Basic AST construction for most language constructs
+### Missing Features
+- **Pattern Matching**: Complete system not implemented despite AST support
+- **Module System**: Import parsing exists but no loading/resolution
+- **Standard Library**: Method dispatch system not implemented
+- **Macros**: No macro system implemented
+- **Documentation**: Comment preservation not implemented
 
-### Current Limitations
-The implementation cannot handle:
-- Pattern matching and destructuring
-- Error handling with try-catch
-- Module imports and exports
-- Advanced function features (closures, defaults)
-- Standard library methods
-- Complex control flow (for/while loops)
-- Documentation comment processing
-- Macro expansion
+## Current Capabilities
 
----
+The RustLeaf implementation currently supports:
 
-**Last updated:** 2024-12-19 at commit `77767a5`
+- ✅ Variable declarations and assignments
+- ✅ Arithmetic and logical expressions with operator precedence
+- ✅ Function declarations and basic function calls
+- ✅ If expressions and block expressions
+- ✅ List and dictionary literals with basic operations
+- ✅ Try/catch expressions for basic error handling
+- ✅ While loops and basic for loops
+- ✅ Basic built-in functions (`assert`, `print`)
+- ✅ String and numeric literals with various formats
+- ✅ Boolean logic with short-circuit evaluation
+
+## Current Limitations
+
+The RustLeaf implementation has these key limitations:
+
+- ❌ No pattern matching or destructuring assignments
+- ❌ No module system or imports
+- ❌ No class declarations or object-oriented features
+- ❌ No iterator protocol or advanced for loop patterns
+- ❌ No string interpolation or template strings
+- ❌ No method calls on primitive types
+- ❌ No default function parameters or closure capture
+- ❌ No comprehensive built-in function library
+- ❌ No macro system
+- ❌ No comprehensive error reporting with stack traces
+
+## Testing Coverage
+
+Integration tests exist for implemented features:
+- Math operations and operator precedence
+- Function declarations and calls
+- If expressions and control flow
+- Try/catch error handling
+- Variable assignments and scoping
+- List and dictionary operations
+- String operations (basic)
+- Unit type handling
+- Logical operations with short-circuiting
+
+Tests are organized by feature area and use the `rustleaf_tests` macro for automated test discovery.
