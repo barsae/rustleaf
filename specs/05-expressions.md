@@ -439,11 +439,7 @@ true and false xor true  // true (and before xor)
 true xor false or false  // true (xor before or)
 ```
 
-### 5.6. Assignment Expressions
-
-Note: Assignment is a statement in RustLeaf, not an expression. See Section 6.4 for assignment syntax.
-
-### 5.7. Conditional Expressions (if)
+### 5.6. Conditional Expressions (if)
 
 If expressions choose between values based on conditions.
 
@@ -483,7 +479,7 @@ var category = if age < 18 {
 }
 ```
 
-### 5.8. Match Expressions
+### 5.7. Match Expressions
 
 Match expressions provide pattern matching with multiple cases.
 
@@ -555,7 +551,7 @@ match point {
 }
 ```
 
-### 5.9. Try Expressions
+### 5.8. Try Expressions
 
 Try expressions handle errors by catching them.
 
@@ -608,7 +604,7 @@ var value = try {
 }
 ```
 
-### 5.10. Block Expressions
+### 5.9. Block Expressions
 
 Blocks are expressions that contain statements and evaluate to a value.
 
@@ -655,7 +651,7 @@ var result = {
 print(outer)        // Still 10
 ```
 
-### 5.11. Anonymous Function Expressions
+### 5.10. Anonymous Function Expressions
 
 Anonymous functions (lambdas) create function values inline.
 
@@ -698,7 +694,7 @@ var process = fn(data) {
 }
 ```
 
-### 5.12. Object Literal Expressions
+### 5.11. Object Literal Expressions
 
 Object literals create dictionary objects with string keys.
 
@@ -742,7 +738,7 @@ var data = {
 }
 ```
 
-### 5.13. List Literal Expressions
+### 5.12. List Literal Expressions
 
 List literals create ordered collections.
 
@@ -775,7 +771,7 @@ var squares = [x * x for x in range(1, 10)]
 var evens = [x for x in numbers if x % 2 == 0]
 ```
 
-### 5.14. Dict Literal Expressions
+### 5.13. Dict Literal Expressions
 
 Dict literals create key-value mappings. This is the same as object literals (Section 5.12) but shown here for completeness.
 
@@ -795,7 +791,7 @@ var dynamic = {
 }
 ```
 
-### 5.15. Loop Expressions
+### 5.14. Loop Expressions
 
 Loop expressions provide iteration with the ability to return values through break statements.
 
@@ -804,7 +800,7 @@ Loop expressions provide iteration with the ability to return values through bre
 - **For expressions**: Iterate over a collection
 - **Loop expressions**: Infinite loops (must break to exit)
 
-#### 5.15.1. While Expressions
+#### 5.14.1. While Expressions
 
 While expressions repeatedly evaluate a block while a condition is true.
 
@@ -853,7 +849,7 @@ var attempt_result = while attempts < max_attempts {
 // attempt_result is "succeeded" or unit (if max attempts reached)
 ```
 
-#### 5.15.2. For Expressions
+#### 5.14.2. For Expressions
 
 For expressions iterate over collections using the iterator protocol.
 
@@ -898,7 +894,7 @@ var match_data = for [key, data] in key_value_pairs {
 };
 ```
 
-#### 5.15.3. Loop Expressions
+#### 5.14.3. Loop Expressions
 
 Loop expressions create infinite loops that must be exited with break.
 
@@ -953,7 +949,7 @@ var final_result = loop {
 };
 ```
 
-#### 5.15.4. Break and Continue in Expressions
+#### 5.14.4. Break and Continue in Expressions
 
 Break and continue statements work in loop expressions with specific semantics.
 
