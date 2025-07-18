@@ -342,26 +342,6 @@ This appendix lists all reserved words (keywords) in RustLeaf. These identifiers
 ### Macro Keywords
 - `macro` - Macro definition (used in attributes)
 
-### Reserved for Future Use
-
-The following keywords are reserved for potential future language features:
-
-- `async` - Asynchronous functions
-- `await` - Awaiting asynchronous operations
-- `const` - Constant declarations
-- `enum` - Enumeration types
-- `impl` - Implementation blocks
-- `interface` - Interface definitions
-- `let` - Alternative variable declaration
-- `mut` - Mutability modifier
-- `private` - Private visibility
-- `protected` - Protected visibility
-- `struct` - Structure types
-- `trait` - Trait definitions
-- `type` - Type aliases
-- `union` - Union types
-- `unsafe` - Unsafe operations
-- `where` - Where clauses
 
 ### Contextual Keywords
 
@@ -1135,14 +1115,9 @@ This appendix specifies the minimum requirements and limits that RustLeaf implem
 
 ### Execution Limits
 
-#### Runtime Limits
-- **Maximum execution time**: Implementation-defined (may be configurable)
-- **Script timeout**: May be imposed by hosting environment
-- **Resource cleanup**: Must occur within reasonable time bounds
-
 #### Concurrency
 - **Thread safety**: Single-threaded execution model
-- **Reentrancy**: Not required (implementation-defined)
+- **Reentrancy**: Not supported
 
 ### Error Handling Limits
 

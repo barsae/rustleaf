@@ -33,8 +33,6 @@ This specification does not define:
 - Debugging interfaces or development tools
 - Binary format or bytecode representation
 
-**Note:** This specification is subject to breaking changes in future versions as the language evolves.
-
 ### 1.2. Conformance
 
 A conforming implementation of RustLeaf must:

@@ -299,13 +299,6 @@ continue    from        of          require     super
   - Only the exact ASCII spellings `and`, `or`, `xor`, and `not` are recognized
   - Alternative symbols or Unicode equivalents are not permitted
 
-**Future Reserved Words:**
-The following words are reserved for potential future use:
-```
-async       await       const       enum        impl        
-interface   let         module      trait       type        
-where       yield
-```
 
 ### 2.10. Literals
 
