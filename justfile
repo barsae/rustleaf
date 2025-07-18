@@ -108,3 +108,16 @@ rebase-continue:
     git add -A
     git rebase --continue
     just pop-temp-stash-commit
+
+# Merge current branch into main
+merge:
+    #!/bin/bash
+    # Verify no changes in progress
+    if ! git diff --quiet || ! git diff --cached --quiet; then
+        echo "Cannot merge: uncommitted changes detected"
+        echo "Please commit or stash your changes first"
+        exit 1
+    fi
+    git checkout main
+    just merge-ff
+    just checkout-worker-branch
