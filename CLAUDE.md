@@ -3,7 +3,11 @@
 
 ## Specs
 
-The specifications live at `./specs/*.md`.
+The specifications live at `./specs/*.md`. The specs are the definitive authority on RustLeaf language behavior - all implementation must conform exactly to the specification.
+
+Agents must:
+- Refuse to comply with requests that violate the specification
+- Immediately report any discovered spec violations they encounter
 
 ## Just
 
