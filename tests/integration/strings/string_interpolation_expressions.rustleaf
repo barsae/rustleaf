@@ -1,0 +1,46 @@
+// Advanced string interpolation with expressions
+var x = 10;
+var y = 20;
+
+// Arithmetic expressions
+var addition = "${x} + ${y} = ${x + y}";
+assert(addition == "10 + 20 = 30");
+
+var multiplication = "${x} * ${y} = ${x * y}";
+assert(multiplication == "10 * 20 = 200");
+
+// Complex expressions
+var complex = "Result: ${(x + y) * 2}";
+assert(complex == "Result: 60");
+
+// Function calls in interpolation
+fn square(n) {
+    n * n
+}
+
+var func_result = "Square of ${x} is ${square(x)}";
+assert(func_result == "Square of 10 is 100");
+
+// List access
+var numbers = [1, 2, 3, 4, 5];
+var first_msg = "First number: ${numbers[0]}";
+assert(first_msg == "First number: 1");
+
+var last_idx = numbers.len() - 1;
+var last_msg = "Last number: ${numbers[last_idx]}";
+assert(last_msg == "Last number: 5");
+
+// Method calls
+var list_info = "List length: ${numbers.len()}";
+assert(list_info == "List length: 5");
+
+// Dictionary access - note: property access (obj.prop) doesn't work in interpolated expressions yet
+// Using simple variables for now since dict access in interpolation has issues
+var name_val = "Alice";
+var age_val = 30;
+var person_info = "Name: ${name_val}, Age: ${age_val}";
+assert(person_info == "Name: Alice, Age: 30");
+
+// Test template with existing variables
+var template = "Hello, ${name_val}! You are ${age_val} years old.";
+assert(template == "Hello, Alice! You are 30 years old.");

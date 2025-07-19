@@ -1,0 +1,27 @@
+// Multiple interpolations in a single string
+var first = "John";
+var last = "Doe";
+var age = 42;
+
+var full_info = "Full name: ${first} ${last}, Age: ${age}";
+assert(full_info == "Full name: John Doe, Age: 42");
+
+// Multiple expressions
+var a = 5;
+var b = 3;
+var arithmetic = "${a} + ${b} = ${a + b}, ${a} - ${b} = ${a - b}, ${a} * ${b} = ${a * b}";
+assert(arithmetic == "5 + 3 = 8, 5 - 3 = 2, 5 * 3 = 15");
+
+// Mixing text and multiple interpolations
+var item = "book";
+var price = 12.99;
+var quantity = 3;
+var total = price * quantity;
+
+var receipt = "Item: ${item}\nPrice: $${price} each\nQuantity: ${quantity}\nTotal: $${total}";
+var expected = "Item: book\nPrice: $12.99 each\nQuantity: 3\nTotal: $38.97";
+assert(receipt == expected);
+
+// Empty interpolation parts (should work)
+var start_text = "Start ${a} middle ${b} end";
+assert(start_text == "Start 5 middle 3 end");
