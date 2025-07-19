@@ -144,7 +144,7 @@ ForExpression ::= "for" Pattern "in" Expression Block
 
 LoopExpression ::= "loop" Block
 
-AnonymousFunction ::= "fn" "(" ParameterList? ")" Block
+AnonymousFunction ::= "|" ParameterList? "|" (Expression | Block)
 
 Pattern ::= LiteralPattern
          | VariablePattern

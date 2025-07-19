@@ -2,10 +2,12 @@
 #![allow(unused_imports)]
 
 use crate::eval::scope::Scope;
+use crate::lexer::{LiteralValue, SourceLocation};
 use crate::parser::{AstNode, Parameter};
 use std::any::Any;
 use std::collections::HashMap;
 use std::fmt;
+use std::rc::Rc;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Value {
@@ -20,6 +22,8 @@ pub enum Value {
     Function(Function),
     Object(Object),
     RustValue(Box<dyn RustValue>),
+    BoundMethod(Function, Box<Value>), // method + bound object
+    UnboundMethod(Function),           // method that needs binding
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -115,6 +119,8 @@ impl Value {
             Value::Function(_) => "function",
             Value::Object(obj) => &obj.class_name,
             Value::RustValue(rv) => rv.type_name(),
+            Value::BoundMethod(_, _) => "bound_method",
+            Value::UnboundMethod(_) => "unbound_method",
         }
     }
 
@@ -160,7 +166,84 @@ impl Value {
                 format!("<{} object>", obj.class_name)
             }
             Value::RustValue(rv) => rv.to_string(),
+            Value::BoundMethod(f, _) => match &f.name {
+                Some(name) => format!("<bound method {}>", name),
+                None => "<bound method>".to_string(),
+            },
+            Value::UnboundMethod(f) => match &f.name {
+                Some(name) => format!("<unbound method {}>", name),
+                None => "<unbound method>".to_string(),
+            },
         }
+    }
+
+    pub fn get_class(&self) -> Option<Rc<Scope>> {
+        match self {
+            Value::String(_) => Self::get_string_class(),
+            Value::List(_) => Self::get_list_class(),
+            Value::Dict(_) => Self::get_dict_class(),
+            // Other types don't have classes yet
+            _ => None,
+        }
+    }
+
+    fn get_string_class() -> Option<Rc<Scope>> {
+        // For now, create a new scope each time to avoid threading issues
+        // TODO: Optimize this with proper caching later
+        let mut scope = Scope::new();
+
+        // Add len method
+        let len_function = Function {
+            name: Some("len".to_string()),
+            parameters: vec![], // Will get self automatically when bound
+            body: AstNode::Literal(LiteralValue::Null, SourceLocation::new(0, 0, 0)), // Placeholder - this is a builtin
+            closure: None,
+            is_builtin: true,
+        };
+
+        scope.define("len".to_string(), Value::UnboundMethod(len_function));
+
+        Some(Rc::new(scope))
+    }
+
+    fn get_list_class() -> Option<Rc<Scope>> {
+        // TODO: Future implementation
+        None
+    }
+
+    fn get_dict_class() -> Option<Rc<Scope>> {
+        // TODO: Future implementation
+        None
+    }
+
+    pub fn op_get_attr(&self, attr_name: &str) -> Result<Value, RuntimeError> {
+        // 1. Check instance properties first (for objects)
+        if let Value::Object(obj) = self {
+            if let Some(value) = obj.fields.get(attr_name) {
+                return Ok(value.clone());
+            }
+        }
+
+        // 2. Check class scope
+        if let Some(class_scope) = self.get_class() {
+            if let Some(value) = class_scope.get(attr_name) {
+                return Ok(value);
+            }
+        }
+
+        // 3. Not found
+        Err(RuntimeError::new(
+            format!(
+                "'{}' object has no attribute '{}'",
+                self.type_name(),
+                attr_name
+            ),
+            ErrorType::AttributeError,
+        ))
+    }
+
+    pub fn bind_method(&self, method: Function) -> Value {
+        Value::BoundMethod(method, Box::new(self.clone()))
     }
 }
 

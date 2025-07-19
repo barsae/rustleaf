@@ -54,7 +54,12 @@ RustLeaf distinguishes between functions and methods based on how they are calle
 - `[1, 2].append(3)` - adds element to list
 - `point.distance()` - calls method on custom object
 
-Both functions and methods can be either builtin (provided by the language) or user-defined.
+**Bound Methods**: Methods accessed without parentheses, creating callable objects
+- `"hello".upper` - creates bound method (callable function object)
+- `[1, 2].append` - creates bound method that can be called later
+- `point.distance` - creates bound method preserving the `self` reference
+
+Both functions and methods can be either builtin (provided by the language) or user-defined. Bound methods provide a way to create first-class callable objects from methods.
 
 ### 3.2. Primitive Types
 
@@ -455,8 +460,9 @@ Functions are first-class values that encapsulate executable code.
 1. **Regular Functions**: Defined with `fn` at module level
 2. **Closures**: Anonymous functions created with `|params| expression` or `|params| { body }`
 3. **Methods**: Functions defined within a class (receive implicit `self`)
-4. **Builtin Functions**: Global functions provided by the runtime
-5. **Builtin Methods**: Methods provided by the runtime on builtin types
+4. **Bound Methods**: Methods bound to a specific instance (created by property access)
+5. **Builtin Functions**: Global functions provided by the runtime
+6. **Builtin Methods**: Methods provided by the runtime on builtin types
 
 **Function Operations:**
 - Call: `function(args...)`
@@ -489,6 +495,101 @@ fn make_counter() {
 var counter = make_counter()
 print(counter())      // 1
 print(counter())      // 2
+```
+
+#### 3.4.1. Bound Methods
+
+Bound methods are function objects that automatically bind the first parameter (`self`) to a specific instance when accessed via property access.
+
+**Properties:**
+- Type name: `"function"` (same as regular functions)
+- Created when accessing a method without calling it: `obj.method`
+- Captures the instance (`self`) at access time
+- Can be stored, passed around, and called later
+- Always callable with the remaining parameters (excluding `self`)
+
+**Creation:**
+Bound methods are created implicitly when accessing a method without parentheses:
+```
+var obj = SomeClass()
+var bound_method = obj.some_method  // Creates bound method
+```
+
+**Semantics:**
+- The bound method remembers the instance it was bound to
+- When called, the bound instance is automatically passed as `self`
+- The caller only provides the remaining parameters
+- If the original instance is garbage collected, the bound method maintains a reference
+
+**Examples:**
+```
+class Counter {
+    var value = 0;
+    
+    fn increment() {
+        self.value = self.value + 1;
+        self.value
+    }
+    
+    fn add(amount) {
+        self.value = self.value + amount;
+        self.value
+    }
+}
+
+var counter = Counter()
+
+// Create bound methods
+var inc = counter.increment  // Bound method (no parentheses)
+var add = counter.add        // Bound method
+
+// Call bound methods
+print(inc())                 // 1 (calls counter.increment())
+print(add(5))               // 6 (calls counter.add(5))
+print(inc())                // 7
+
+// Bound methods can be passed around
+fn apply_twice(func) {
+    func()
+    func()
+}
+
+apply_twice(inc)            // Calls counter.increment() twice
+print(counter.value)        // 9
+
+// Multiple bound methods from same instance
+var counter2 = Counter()
+var inc2 = counter2.increment
+
+inc()                       // Affects counter
+inc2()                      // Affects counter2
+```
+
+**Built-in Type Bound Methods:**
+Built-in types also support bound methods:
+```
+var text = "hello world"
+var upper_func = text.upper     // Bound method
+print(upper_func())            // "HELLO WORLD"
+
+var numbers = [3, 1, 4, 1, 5]
+var append_func = numbers.append
+append_func(9)                 // numbers is now [3, 1, 4, 1, 5, 9]
+```
+
+**Method vs Function Distinction:**
+```
+// Method call (immediate execution)
+obj.method()                   // Calls method immediately
+
+// Bound method access (creates callable object)  
+var bound = obj.method         // Creates bound method object
+bound()                       // Calls the bound method
+
+// Function reference (for regular functions)
+fn regular_function() { ... }
+var func_ref = regular_function // Function reference
+func_ref()                     // Calls the function
 ```
 
 ### 3.5. RustValue Type

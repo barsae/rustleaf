@@ -31,6 +31,41 @@ impl Parser {
         Some(expr)
     }
 
+    // Helper method to determine if we're looking at the start of a closure
+    pub fn is_closure_start(&mut self) -> bool {
+        if !self.check(&TokenType::Pipe) {
+            return false;
+        }
+
+        // Look ahead to see if this looks like a closure parameter list
+        // |identifier| or |identifier,| or || (empty params)
+        let mut lookahead = 1;
+
+        // Skip the opening |
+        if self.check_ahead(lookahead, &TokenType::Pipe) {
+            // || case (empty parameters)
+            return true;
+        }
+
+        // Check for identifier pattern
+        if self.check_ahead(lookahead, &TokenType::Identifier) {
+            lookahead += 1;
+
+            // Check what comes after the identifier
+            if self.check_ahead(lookahead, &TokenType::Pipe) {
+                // |identifier| case
+                return true;
+            }
+
+            if self.check_ahead(lookahead, &TokenType::Comma) {
+                // |identifier, case (more parameters follow)
+                return true;
+            }
+        }
+
+        false
+    }
+
     pub fn parse_exponentiation(&mut self) -> Option<AstNode> {
         let expr = self.parse_unary()?;
 
@@ -197,6 +232,7 @@ impl Parser {
             TokenType::Try => self.parse_try_expression(),
             TokenType::Fn => self.parse_anonymous_function(),
             TokenType::Class => self.parse_class_expression(),
+            TokenType::Pipe => self.parse_closure(),
             _ => None,
         }
     }
@@ -339,15 +375,64 @@ impl Parser {
         })
     }
 
+    pub fn parse_closure(&mut self) -> Option<AstNode> {
+        let location = self.current_location();
+        self.consume(TokenType::Pipe, "Expected '|'")?;
+
+        // Parse parameter list (simplified syntax - just identifiers, no defaults)
+        let mut parameters = Vec::new();
+
+        if !self.check(&TokenType::Pipe) {
+            // Parse first parameter
+            let name = self.consume_identifier("Expected parameter name")?;
+            parameters.push(Parameter {
+                name,
+                default_value: None,
+                variadic: false,
+                keyword_variadic: false,
+            });
+
+            // Parse remaining parameters
+            while self.match_token(&TokenType::Comma) {
+                let name = self.consume_identifier("Expected parameter name")?;
+                parameters.push(Parameter {
+                    name,
+                    default_value: None,
+                    variadic: false,
+                    keyword_variadic: false,
+                });
+            }
+        }
+
+        self.consume(TokenType::Pipe, "Expected closing '|'")?;
+
+        // Parse body - can be either an expression or a block
+        let body = Box::new(if self.check(&TokenType::LeftBrace) {
+            self.parse_block()?
+        } else {
+            self.parse_expression()?
+        });
+
+        Some(AstNode::AnonymousFunction {
+            parameters,
+            body,
+            location,
+        })
+    }
+
     pub fn parse_anonymous_function(&mut self) -> Option<AstNode> {
         let location = self.current_location();
         self.consume(TokenType::Fn, "Expected 'fn'")?;
 
         self.consume(TokenType::LeftParen, "Expected '(' after 'fn'")?;
         let parameters = self.parse_parameter_list();
-        self.consume(TokenType::RightParen, "Expected ')'")?;
+        self.consume(TokenType::RightParen, "Expected ')' after parameters")?;
 
-        let body = Box::new(self.parse_block()?);
+        let body = Box::new(if self.check(&TokenType::LeftBrace) {
+            self.parse_block()?
+        } else {
+            self.parse_expression()?
+        });
 
         Some(AstNode::AnonymousFunction {
             parameters,

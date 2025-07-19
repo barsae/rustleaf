@@ -385,23 +385,8 @@ impl<'a> TokenScanner<'a> {
                 }
             }
             '|' => {
-                if self.match_char('|') {
-                    self.error(
-                        "Unexpected '||' - use 'or' for logical OR".to_string(),
-                        start_line,
-                        start_column,
-                        start_offset,
-                    );
-                    None
-                } else {
-                    Some(self.make_token(
-                        TokenType::Pipe,
-                        "|",
-                        start_line,
-                        start_column,
-                        start_offset,
-                    ))
-                }
+                // Always emit single Pipe tokens - let the parser handle || vs closure syntax
+                Some(self.make_token(TokenType::Pipe, "|", start_line, start_column, start_offset))
             }
             ':' => {
                 if self.match_char(':') {

@@ -41,6 +41,7 @@ Version 1.0
    [3.3.2. Dict Type](03-types.md#332-dict-type)  
    [3.3.3. Object Type](03-types.md#333-object-type)  
 [3.4. Function Types](03-types.md#34-function-types)  
+   [3.4.1. Bound Methods](03-types.md#341-bound-methods)  
 [3.5. RustValue Type](03-types.md#35-rustvalue-type)  
 [3.6. Type Conversions](03-types.md#36-type-conversions)  
 [3.7. Type Checking](03-types.md#37-type-checking)  

@@ -209,3 +209,99 @@ fn parser_complex_nested_expression() {
 }"#,
     );
 }
+
+#[test]
+fn parser_closure_basic() {
+    let ast = parse_source("|x| x * 2;").expect("Should parse basic closure");
+    assert_debug_eq(
+        &ast,
+        r#"Program {
+    items: [
+        ExpressionStatement {
+            expression: AnonymousFunction {
+                parameters: [
+                    Parameter {
+                        name: "x",
+                        default_value: None,
+                        variadic: false,
+                        keyword_variadic: false,
+                    },
+                ],
+                body: BinaryOp {
+                    left: Identifier(
+                        "x",
+                    ),
+                    operator: Multiply,
+                    right: Literal(
+                        Integer(
+                            2,
+                        ),
+                    ),
+                },
+            },
+        },
+    ],
+}"#,
+    );
+}
+
+#[test]
+fn parser_closure_empty_params() {
+    let ast = parse_source("|| 42;").expect("Should parse empty closure");
+    assert_debug_eq(
+        &ast,
+        r#"Program {
+    items: [
+        ExpressionStatement {
+            expression: AnonymousFunction {
+                parameters: [],
+                body: Literal(
+                    Integer(
+                        42,
+                    ),
+                ),
+            },
+        },
+    ],
+}"#,
+    );
+}
+
+#[test]
+fn parser_closure_multiple_params() {
+    let ast = parse_source("|a, b| a + b;").expect("Should parse closure with multiple params");
+    assert_debug_eq(
+        &ast,
+        r#"Program {
+    items: [
+        ExpressionStatement {
+            expression: AnonymousFunction {
+                parameters: [
+                    Parameter {
+                        name: "a",
+                        default_value: None,
+                        variadic: false,
+                        keyword_variadic: false,
+                    },
+                    Parameter {
+                        name: "b",
+                        default_value: None,
+                        variadic: false,
+                        keyword_variadic: false,
+                    },
+                ],
+                body: BinaryOp {
+                    left: Identifier(
+                        "a",
+                    ),
+                    operator: Add,
+                    right: Identifier(
+                        "b",
+                    ),
+                },
+            },
+        },
+    ],
+}"#,
+    );
+}

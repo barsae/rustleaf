@@ -633,3 +633,60 @@ fn lexer_macro_position_tracking() {
     assert_eq!(tokens[2].location.line, 1);
     assert_eq!(tokens[2].location.column, 12); // After "benchmark"
 }
+
+#[test]
+fn lexer_closure_syntax() {
+    // Test that pipe tokens are properly lexed for closure syntax
+    let tokens = Lexer::new("|x| x * 2").unwrap();
+
+    let expected_types = vec![
+        TokenType::Pipe,           // |
+        TokenType::Identifier,     // x
+        TokenType::Pipe,           // |
+        TokenType::Identifier,     // x
+        TokenType::Star,           // *
+        TokenType::IntegerLiteral, // 2
+        TokenType::Eof,
+    ];
+
+    assert_eq!(tokens.len(), expected_types.len());
+    for (i, expected_type) in expected_types.iter().enumerate() {
+        assert_eq!(tokens[i].token_type, *expected_type, "Token {} mismatch", i);
+    }
+}
+
+#[test]
+fn lexer_empty_closure_syntax() {
+    // Test that || tokens are lexed as two separate pipes
+    let tokens = Lexer::new("|| 42").unwrap();
+
+    let expected_types = vec![
+        TokenType::Pipe,           // |
+        TokenType::Pipe,           // |
+        TokenType::IntegerLiteral, // 42
+        TokenType::Eof,
+    ];
+
+    assert_eq!(tokens.len(), expected_types.len());
+    for (i, expected_type) in expected_types.iter().enumerate() {
+        assert_eq!(tokens[i].token_type, *expected_type, "Token {} mismatch", i);
+    }
+}
+
+#[test]
+fn lexer_bitwise_or_vs_closure() {
+    // Test that bitwise OR and closure syntax can be distinguished
+    let tokens = Lexer::new("a | b").unwrap();
+
+    let expected_types = vec![
+        TokenType::Identifier, // a
+        TokenType::Pipe,       // |
+        TokenType::Identifier, // b
+        TokenType::Eof,
+    ];
+
+    assert_eq!(tokens.len(), expected_types.len());
+    for (i, expected_type) in expected_types.iter().enumerate() {
+        assert_eq!(tokens[i].token_type, *expected_type, "Token {} mismatch", i);
+    }
+}

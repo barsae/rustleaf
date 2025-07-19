@@ -136,8 +136,14 @@ PropertyAccess = Expression "." Identifier
 **Semantics:**
 - Evaluates the expression to get an object
 - Looks up the identifier as a field or method
-- Returns the field value or bound method
+- For fields: Returns the field value directly
+- For methods: Returns a bound method object (see [Bound Methods](../03-types.md#341-bound-methods))
 - Accessing properties on `null` raises an error
+
+**Field vs Method Access:**
+- **Field access**: `obj.field` returns the stored value
+- **Method access**: `obj.method` returns a bound method (callable function object)
+- **Method call**: `obj.method()` immediately calls the method
 
 **Dynamic Property Access:**
 Use indexing with string keys for dynamic access:
@@ -150,11 +156,20 @@ obj[key]         // Dynamic property access
 **Examples:**
 ```
 var point = {x: 10, y: 20};
-print(point.x);   // 10
+print(point.x);   // 10 (field access)
 
 var user = User();
-user.name = "Alice";
-user.greet();     // Method call
+user.name = "Alice";        // Field assignment
+user.greet();              // Method call (immediate execution)
+
+// Bound method access
+var greet_func = user.greet;   // Creates bound method
+greet_func();                  // Calls user.greet()
+
+// Built-in bound methods
+var text = "hello";
+var upper_func = text.upper;   // Bound method
+print(upper_func());          // "HELLO"
 
 // Error cases
 var n = null;
@@ -162,7 +177,7 @@ var n = null;
 
 // Dynamic access
 var prop = "x";
-print(point[prop]);  // 10
+print(point[prop]);  // 10 (same as point.x)
 ```
 
 #### 5.3.2. Index Access
@@ -233,19 +248,34 @@ sum(*args);  // Spread arguments
 
 #### 5.3.4. Method Call
 
-Call a method on an object.
+Call a method on an object or call a bound method.
 
 **Syntax:**
 ```
 MethodCall = Expression "." Identifier "(" ArgumentList? ")"
+           | Expression "(" ArgumentList? ")"
 ```
 
-**Semantics:**
+**Direct Method Call Semantics:**
+For `object.method(args...)`:
 - Evaluates the object expression
-- Looks up the method by name
+- Looks up the method by name on the object
 - Binds `self` to the object
 - Calls the method with arguments
 - Returns the method's return value
+
+**Bound Method Call Semantics:**
+For `bound_method(args...)` where `bound_method` was created by `object.method`:
+- The bound method already has `self` bound to the original object
+- Calls the method with the bound `self` and provided arguments
+- Returns the method's return value
+
+**Equivalence:**
+These are equivalent:
+```
+obj.method(args...)          // Direct method call
+var bound = obj.method; bound(args...)  // Bound method call
+```
 
 **Method Chaining:**
 Methods that return values can be chained:
@@ -259,8 +289,24 @@ var result = text.replace("old", "new")
 **Examples:**
 ```
 var list = [3, 1, 4, 1, 5];
-list.sort();       // Modifies list
-var doubled = list.map(|x| x * 2);
+list.sort();       // Direct method call - modifies list
+var doubled = list.map(|x| x * 2);  // Direct method call
+
+// Bound method examples
+var append_func = list.append;  // Create bound method
+append_func(6);                // Calls list.append(6)
+
+var text = "hello";
+var upper_func = text.upper;   // Bound method
+print(upper_func());          // "HELLO" (calls text.upper())
+
+// Passing bound methods as arguments
+fn apply_operation(func, arg) {
+    func(arg)
+}
+
+var numbers = [1, 2, 3];
+apply_operation(numbers.append, 4);  // numbers becomes [1, 2, 3, 4]
 
 // Chaining
 var words = "  hello world  "

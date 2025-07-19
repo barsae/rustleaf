@@ -83,6 +83,13 @@ impl fmt::Debug for AstNode {
                 .debug_struct("DictLiteral")
                 .field("entries", entries)
                 .finish(),
+            AstNode::AnonymousFunction {
+                parameters, body, ..
+            } => f
+                .debug_struct("AnonymousFunction")
+                .field("parameters", parameters)
+                .field("body", body)
+                .finish(),
             AstNode::ExpressionStatement { expression, .. } => f
                 .debug_struct("ExpressionStatement")
                 .field("expression", expression)

@@ -44,6 +44,17 @@ impl Evaluator {
                     self.call_user_function(&func, &args)
                 }
             }
+            Value::BoundMethod(method, bound_object) => {
+                // For bound methods, we need to handle builtin methods specially
+                if method.is_builtin {
+                    self.call_builtin_method(&method, &bound_object, &args)
+                } else {
+                    // For user-defined bound methods, prepend self to args
+                    let mut method_args = vec![(*bound_object).clone()];
+                    method_args.extend(args);
+                    self.call_user_function(&method, &method_args)
+                }
+            }
             Value::RustValue(ref rust_value) => {
                 // Check if this is a class being called (instantiation)
                 if let Some(class) = rust_value
@@ -82,28 +93,57 @@ impl Evaluator {
             args.push(value);
         }
 
-        // Handle builtin methods first
-        match method_name {
-            "len" => {
-                if !args.is_empty() {
-                    return Err(RuntimeError::new(
-                        format!("len() takes no arguments ({} given)", args.len()),
-                        ErrorType::TypeError,
-                    ));
+        // Use the new property access system to get the method, then call it
+        match self.evaluate_property_access(object, method_name) {
+            Ok(Value::BoundMethod(method, bound_object)) => {
+                // Call the bound method
+                if method.is_builtin {
+                    self.call_builtin_method(&method, &bound_object, &args)
+                } else {
+                    // For user-defined bound methods, prepend self to args
+                    let mut method_args = vec![(*bound_object).clone()];
+                    method_args.extend(args);
+                    self.call_user_function(&method, &method_args)
                 }
-
+            }
+            Ok(Value::Function(func)) => {
+                // This is a function accessed as a property - call it normally
+                if func.is_builtin {
+                    if let Some(builtin) =
+                        self.environment.get_builtin(&func.name.unwrap_or_default())
+                    {
+                        (builtin.function)(&args, &mut self.environment)
+                    } else {
+                        Err(RuntimeError::new(
+                            "Builtin function not found".to_string(),
+                            ErrorType::RuntimeError,
+                        ))
+                    }
+                } else {
+                    self.call_user_function(&func, &args)
+                }
+            }
+            Ok(_) => {
+                // Property exists but is not a function
+                Err(RuntimeError::new(
+                    format!("'{}' is not callable", method_name),
+                    ErrorType::TypeError,
+                ))
+            }
+            Err(_) => {
+                // Property doesn't exist, try as a method on object
                 match obj_value {
-                    Value::String(s) => Ok(Value::Int(s.len() as i64)),
-                    Value::List(list) => Ok(Value::Int(list.len() as i64)),
-                    Value::Dict(dict) => Ok(Value::Int(dict.len() as i64)),
-                    Value::RustValue(ref rust_value) => {
-                        if let Some(length) = rust_value.len() {
-                            Ok(Value::Int(length))
+                    Value::Object(obj) => {
+                        if let Some(method) = obj.methods.get(method_name) {
+                            // Add self as first argument
+                            let mut method_args = vec![Value::Object(obj.clone())];
+                            method_args.extend(args);
+                            self.call_user_function(method, &method_args)
                         } else {
                             Err(RuntimeError::new(
                                 format!(
-                                    "object of type '{}' has no len() method",
-                                    obj_value.type_name()
+                                    "'{}' object has no method '{}'",
+                                    obj.class_name, method_name
                                 ),
                                 ErrorType::AttributeError,
                             ))
@@ -111,122 +151,12 @@ impl Evaluator {
                     }
                     _ => Err(RuntimeError::new(
                         format!(
-                            "object of type '{}' has no len() method",
-                            obj_value.type_name()
+                            "'{}' object has no method '{}'",
+                            obj_value.type_name(),
+                            method_name
                         ),
                         ErrorType::AttributeError,
                     )),
-                }
-            }
-            _ => {
-                // Try property access first to get the function, then call it
-                match self.evaluate_property_access(object, method_name) {
-                    Ok(Value::Function(func)) => {
-                        // This is a function accessed as a property - call it normally
-                        if func.is_builtin {
-                            if let Some(builtin) =
-                                self.environment.get_builtin(&func.name.unwrap_or_default())
-                            {
-                                (builtin.function)(&args, &mut self.environment)
-                            } else {
-                                Err(RuntimeError::new(
-                                    "Builtin function not found".to_string(),
-                                    ErrorType::RuntimeError,
-                                ))
-                            }
-                        } else {
-                            self.call_user_function(&func, &args)
-                        }
-                    }
-                    Ok(_) => {
-                        // Property exists but is not a function
-                        Err(RuntimeError::new(
-                            format!("'{}' is not callable", method_name),
-                            ErrorType::TypeError,
-                        ))
-                    }
-                    Err(_) => {
-                        // Property doesn't exist, try as a method on object
-                        match obj_value {
-                            Value::Object(obj) => {
-                                if let Some(method) = obj.methods.get(method_name) {
-                                    // Add self as first argument
-                                    let mut method_args = vec![Value::Object(obj.clone())];
-                                    method_args.extend(args);
-                                    self.call_user_function(method, &method_args)
-                                } else {
-                                    Err(RuntimeError::new(
-                                        format!(
-                                            "'{}' object has no method '{}'",
-                                            obj.class_name, method_name
-                                        ),
-                                        ErrorType::AttributeError,
-                                    ))
-                                }
-                            }
-                            Value::RustValue(ref rust_value) => {
-                                // Handle ClassInstance method calls
-                                if let Some(instance) = rust_value
-                                    .as_any()
-                                    .downcast_ref::<crate::eval::statements::ClassInstance>(
-                                ) {
-                                    if let Some(method_decl) =
-                                        instance.get_instance_method(method_name)
-                                    {
-                                        if let AstNode::FunctionDeclaration {
-                                            parameters,
-                                            body,
-                                            ..
-                                        } = method_decl
-                                        {
-                                            let func = Function {
-                                                name: Some(method_name.to_string()),
-                                                parameters: parameters.clone(),
-                                                body: body.as_ref().clone(),
-                                                is_builtin: false,
-                                                closure: None,
-                                            };
-                                            // For instance methods, always add self as implicit first argument
-                                            // This will be bound to the 'self' parameter automatically
-                                            let mut method_args = vec![obj_value.clone()];
-                                            method_args.extend(args);
-                                            self.call_user_function_with_self(&func, &method_args)
-                                        } else {
-                                            Err(RuntimeError::new(
-                                                "Invalid instance method declaration".to_string(),
-                                                ErrorType::RuntimeError,
-                                            ))
-                                        }
-                                    } else {
-                                        Err(RuntimeError::new(
-                                            format!(
-                                                "'{}' object has no method '{}'",
-                                                instance.class_name, method_name
-                                            ),
-                                            ErrorType::AttributeError,
-                                        ))
-                                    }
-                                } else {
-                                    Err(RuntimeError::new(
-                                        format!(
-                                            "'{}' object has no method '{}'",
-                                            obj_value.type_name(),
-                                            method_name
-                                        ),
-                                        ErrorType::AttributeError,
-                                    ))
-                                }
-                            }
-                            _ => Err(RuntimeError::new(
-                                format!(
-                                    "'{}' object has no method '{}'",
-                                    obj_value.type_name(),
-                                    method_name
-                                ),
-                                ErrorType::AttributeError,
-                            )),
-                        }
-                    }
                 }
             }
         }
@@ -239,113 +169,112 @@ impl Evaluator {
     ) -> Result<Value, RuntimeError> {
         let obj_value = self.evaluate(object)?;
 
-        match obj_value {
-            Value::Object(obj) => {
-                if let Some(value) = obj.fields.get(property) {
-                    Ok(value.clone())
-                } else {
-                    Err(RuntimeError::new(
+        // Special handling for null
+        if matches!(obj_value, Value::Null) {
+            return Err(RuntimeError::new(
+                "Cannot access property of null".to_string(),
+                ErrorType::AttributeError,
+            ));
+        }
+
+        // Special handling for Dict - they use key access, not attribute access
+        if let Value::Dict(dict) = &obj_value {
+            return if let Some(value) = dict.get(property) {
+                Ok(value.clone())
+            } else {
+                Ok(Value::Null)
+            };
+        }
+
+        // Handle legacy Object type for backwards compatibility
+        if let Value::Object(obj) = &obj_value {
+            if let Some(value) = obj.fields.get(property) {
+                return Ok(value.clone());
+            } else {
+                return Err(RuntimeError::new(
+                    format!(
+                        "'{}' object has no attribute '{}'",
+                        obj.class_name, property
+                    ),
+                    ErrorType::AttributeError,
+                ));
+            }
+        }
+
+        // Handle RustValue types (Class and ClassInstance)
+        if let Value::RustValue(ref rust_value) = obj_value {
+            // Handle ClassInstance field access
+            if let Some(instance) = rust_value
+                .as_any()
+                .downcast_ref::<crate::eval::statements::ClassInstance>()
+            {
+                if let Some(field_value) = instance.get_field(property) {
+                    return Ok(field_value.clone());
+                } else if instance.get_instance_method(property).is_some() {
+                    // Don't return instance methods as functions in property access
+                    // They should be handled in method call evaluation
+                    return Err(RuntimeError::new(
                         format!(
                             "'{}' object has no attribute '{}'",
-                            obj.class_name, property
+                            instance.class_name, property
                         ),
                         ErrorType::AttributeError,
-                    ))
-                }
-            }
-            Value::Dict(dict) => {
-                if let Some(value) = dict.get(property) {
-                    Ok(value.clone())
+                    ));
                 } else {
-                    Ok(Value::Null)
-                }
-            }
-            Value::RustValue(ref rust_value) => {
-                // Handle ClassInstance field access
-                if let Some(instance) = rust_value
-                    .as_any()
-                    .downcast_ref::<crate::eval::statements::ClassInstance>()
-                {
-                    if let Some(field_value) = instance.get_field(property) {
-                        Ok(field_value.clone())
-                    } else if instance.get_instance_method(property).is_some() {
-                        // Don't return instance methods as functions in property access
-                        // They should be handled in method call evaluation
-                        Err(RuntimeError::new(
-                            format!(
-                                "'{}' object has no attribute '{}'",
-                                instance.class_name, property
-                            ),
-                            ErrorType::AttributeError,
-                        ))
-                    } else {
-                        Err(RuntimeError::new(
-                            format!(
-                                "'{}' object has no attribute '{}'",
-                                instance.class_name, property
-                            ),
-                            ErrorType::AttributeError,
-                        ))
-                    }
-                }
-                // Handle Class static method access
-                else if let Some(class) = rust_value
-                    .as_any()
-                    .downcast_ref::<crate::eval::statements::Class>()
-                {
-                    if let Some(static_method_decl) = class.get_static_method(property) {
-                        // Extract the function from the declaration and return it
-                        if let AstNode::FunctionDeclaration {
-                            parameters, body, ..
-                        } = static_method_decl
-                        {
-                            let func = Function {
-                                name: Some(property.to_string()),
-                                parameters: parameters.clone(),
-                                body: body.as_ref().clone(),
-                                is_builtin: false,
-                                closure: None,
-                            };
-                            Ok(Value::Function(func))
-                        } else {
-                            Err(RuntimeError::new(
-                                "Invalid static method declaration".to_string(),
-                                ErrorType::RuntimeError,
-                            ))
-                        }
-                    } else {
-                        Err(RuntimeError::new(
-                            format!(
-                                "'{}' object has no method '{}'",
-                                rust_value.type_name(),
-                                property
-                            ),
-                            ErrorType::AttributeError,
-                        ))
-                    }
-                } else {
-                    Err(RuntimeError::new(
+                    return Err(RuntimeError::new(
                         format!(
                             "'{}' object has no attribute '{}'",
-                            obj_value.type_name(),
+                            instance.class_name, property
+                        ),
+                        ErrorType::AttributeError,
+                    ));
+                }
+            }
+            // Handle Class static method access
+            else if let Some(class) = rust_value
+                .as_any()
+                .downcast_ref::<crate::eval::statements::Class>()
+            {
+                if let Some(static_method_decl) = class.get_static_method(property) {
+                    // Extract the function from the declaration and return it
+                    if let AstNode::FunctionDeclaration {
+                        parameters, body, ..
+                    } = static_method_decl
+                    {
+                        let func = Function {
+                            name: Some(property.to_string()),
+                            parameters: parameters.clone(),
+                            body: body.as_ref().clone(),
+                            is_builtin: false,
+                            closure: None,
+                        };
+                        return Ok(Value::Function(func));
+                    } else {
+                        return Err(RuntimeError::new(
+                            "Invalid static method declaration".to_string(),
+                            ErrorType::RuntimeError,
+                        ));
+                    }
+                } else {
+                    return Err(RuntimeError::new(
+                        format!(
+                            "'{}' object has no method '{}'",
+                            rust_value.type_name(),
                             property
                         ),
                         ErrorType::AttributeError,
-                    ))
+                    ));
                 }
             }
-            Value::Null => Err(RuntimeError::new(
-                "Cannot access property of null".to_string(),
-                ErrorType::AttributeError,
-            )),
-            _ => Err(RuntimeError::new(
-                format!(
-                    "'{}' object has no attribute '{}'",
-                    obj_value.type_name(),
-                    property
-                ),
-                ErrorType::AttributeError,
-            )),
+        }
+
+        // Use the new op_get_attr system for everything else
+        let attr_result = obj_value.op_get_attr(property)?;
+
+        // If we get an UnboundMethod, automatically bind it
+        match attr_result {
+            Value::UnboundMethod(method) => Ok(obj_value.bind_method(method)),
+            other => Ok(other),
         }
     }
 
@@ -677,6 +606,51 @@ impl Evaluator {
                     Err(error)
                 }
             }
+        }
+    }
+
+    fn call_builtin_method(
+        &mut self,
+        method: &Function,
+        bound_object: &Value,
+        args: &[Value],
+    ) -> Result<Value, RuntimeError> {
+        let unknown_name = "unknown".to_string();
+        let method_name = method.name.as_ref().unwrap_or(&unknown_name);
+
+        match method_name.as_str() {
+            "len" => {
+                if !args.is_empty() {
+                    return Err(RuntimeError::new(
+                        "len() takes no arguments".to_string(),
+                        ErrorType::TypeError,
+                    ));
+                }
+
+                match bound_object {
+                    Value::String(s) => Ok(Value::Int(s.len() as i64)),
+                    Value::List(l) => Ok(Value::Int(l.len() as i64)),
+                    Value::Dict(d) => Ok(Value::Int(d.len() as i64)),
+                    Value::RustValue(rv) => {
+                        if let Some(len) = rv.len() {
+                            Ok(Value::Int(len))
+                        } else {
+                            Err(RuntimeError::new(
+                                format!("'{}' object has no len()", bound_object.type_name()),
+                                ErrorType::AttributeError,
+                            ))
+                        }
+                    }
+                    _ => Err(RuntimeError::new(
+                        format!("'{}' object has no len()", bound_object.type_name()),
+                        ErrorType::AttributeError,
+                    )),
+                }
+            }
+            _ => Err(RuntimeError::new(
+                format!("Unknown builtin method: {}", method_name),
+                ErrorType::RuntimeError,
+            )),
         }
     }
 }
