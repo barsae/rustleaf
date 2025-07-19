@@ -1,4 +1,4 @@
-use crate::lexer::{LiteralValue, TokenType};
+use crate::lexer::{InterpolationPart as LexerInterpolationPart, LiteralValue, TokenType};
 use crate::parser::ast::*;
 use crate::parser::Parser;
 
@@ -191,6 +191,14 @@ impl Parser {
                 let token = self.advance();
                 token.value.map(|value| AstNode::Literal(value, location))
             }
+            TokenType::InterpolatedStringLiteral => {
+                let token = self.advance();
+                if let Some(LiteralValue::InterpolatedString(parts)) = token.value {
+                    self.parse_interpolated_string_parts(parts, location)
+                } else {
+                    None
+                }
+            }
             TokenType::True => {
                 self.advance();
                 Some(AstNode::Literal(LiteralValue::Boolean(true), location))
@@ -235,6 +243,48 @@ impl Parser {
             TokenType::Pipe => self.parse_closure(),
             _ => None,
         }
+    }
+
+    fn parse_interpolated_string_parts(
+        &mut self,
+        lexer_parts: Vec<LexerInterpolationPart>,
+        location: crate::lexer::SourceLocation,
+    ) -> Option<AstNode> {
+        let mut ast_parts = Vec::new();
+
+        for part in lexer_parts {
+            match part {
+                LexerInterpolationPart::Text(text) => {
+                    ast_parts.push(InterpolationPart::Text(text));
+                }
+                LexerInterpolationPart::Expression(expr_text) => {
+                    // Parse the expression text using a sub-lexer and parser
+                    use crate::lexer::Lexer;
+
+                    let tokens = match Lexer::new(&expr_text) {
+                        Ok(tokens) => tokens,
+                        Err(_) => {
+                            // Handle lexing error by reporting an error message
+                            // Since we don't have access to parser error methods, we'll use panic for now
+                            return None;
+                        }
+                    };
+
+                    let mut sub_parser = Parser::new(tokens);
+                    if let Some(expr) = sub_parser.parse_expression() {
+                        ast_parts.push(InterpolationPart::Expression(Box::new(expr)));
+                    } else {
+                        // Handle parsing error
+                        return None;
+                    }
+                }
+            }
+        }
+
+        Some(AstNode::InterpolatedString {
+            parts: ast_parts,
+            location,
+        })
     }
 
     pub fn parse_list_literal(&mut self) -> Option<AstNode> {

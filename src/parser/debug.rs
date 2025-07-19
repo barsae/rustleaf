@@ -90,6 +90,10 @@ impl fmt::Debug for AstNode {
                 .field("parameters", parameters)
                 .field("body", body)
                 .finish(),
+            AstNode::InterpolatedString { parts, .. } => f
+                .debug_struct("InterpolatedString")
+                .field("parts", parts)
+                .finish(),
             AstNode::ExpressionStatement { expression, .. } => f
                 .debug_struct("ExpressionStatement")
                 .field("expression", expression)

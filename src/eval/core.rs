@@ -220,6 +220,9 @@ impl Evaluator {
             // Literals
             AstNode::Literal(literal, _) => self.evaluate_literal(literal),
 
+            // Interpolated strings
+            AstNode::InterpolatedString { parts, .. } => self.evaluate_interpolated_string(parts),
+
             // Identifiers
             AstNode::Identifier(name, _) => self.environment.get(name),
 
@@ -359,6 +362,28 @@ impl Evaluator {
         }
     }
 
+    fn evaluate_interpolated_string(
+        &mut self,
+        parts: &[crate::parser::ast::InterpolationPart],
+    ) -> Result<Value, RuntimeError> {
+        let mut result = String::new();
+
+        for part in parts {
+            match part {
+                crate::parser::ast::InterpolationPart::Text(text) => {
+                    result.push_str(text);
+                }
+                crate::parser::ast::InterpolationPart::Expression(expr) => {
+                    let value = self.evaluate(expr)?;
+                    // Convert the value to string for interpolation
+                    result.push_str(&value.to_display_string());
+                }
+            }
+        }
+
+        Ok(Value::String(result))
+    }
+
     fn evaluate_literal(&self, literal: &LiteralValue) -> Result<Value, RuntimeError> {
         match literal {
             LiteralValue::Null => Ok(Value::Null),
@@ -366,6 +391,14 @@ impl Evaluator {
             LiteralValue::Integer(i) => Ok(Value::Int(*i)),
             LiteralValue::Float(f) => Ok(Value::Float(*f)),
             LiteralValue::String(s) => Ok(Value::String(s.clone())),
+            LiteralValue::InterpolatedString(_) => {
+                // This should never be reached since interpolated strings
+                // are handled by AstNode::InterpolatedString
+                Err(RuntimeError::new(
+                    "Unexpected interpolated string literal".to_string(),
+                    ErrorType::RuntimeError,
+                ))
+            }
         }
     }
 }

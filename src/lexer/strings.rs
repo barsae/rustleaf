@@ -1,6 +1,6 @@
 use crate::lexer::error::LexError;
 use crate::lexer::location::SourceLocation;
-use crate::lexer::token::{LiteralValue, Token, TokenType};
+use crate::lexer::token::{InterpolationPart, LiteralValue, Token, TokenType};
 
 pub struct StringScanner<'a> {
     input: &'a [char],
@@ -50,9 +50,11 @@ impl<'a> StringScanner<'a> {
             );
         }
 
-        let mut value = String::new();
+        let mut parts = Vec::new();
+        let mut current_text = String::new();
         let mut escaped = false;
         let mut found_closing_quote = false;
+        let mut has_interpolation = false;
 
         while !self.is_at_end() {
             let c = self.peek();
@@ -77,19 +79,19 @@ impl<'a> StringScanner<'a> {
 
             if escaped {
                 match c {
-                    'n' => value.push('\n'),
-                    'r' => value.push('\r'),
-                    't' => value.push('\t'),
-                    '\\' => value.push('\\'),
-                    '"' => value.push('"'),
-                    '\'' => value.push('\''),
-                    '$' => value.push('$'),
-                    '{' => value.push('{'),
-                    '}' => value.push('}'),
+                    'n' => current_text.push('\n'),
+                    'r' => current_text.push('\r'),
+                    't' => current_text.push('\t'),
+                    '\\' => current_text.push('\\'),
+                    '"' => current_text.push('"'),
+                    '\'' => current_text.push('\''),
+                    '$' => current_text.push('$'),
+                    '{' => current_text.push('{'),
+                    '}' => current_text.push('}'),
                     'u' if self.peek() == '{' => {
                         self.advance(); // consume '{'
                         if let Some(unicode_char) = self.scan_unicode_escape() {
-                            value.push(unicode_char);
+                            current_text.push(unicode_char);
                         } else {
                             self.error(
                                 "Invalid Unicode escape sequence".to_string(),
@@ -113,8 +115,26 @@ impl<'a> StringScanner<'a> {
                 escaped = false;
             } else if c == '\\' {
                 escaped = true;
+            } else if c == '$' && self.peek() == '{' && !escaped {
+                // Start of interpolation
+                has_interpolation = true;
+
+                // Save current text part
+                if !current_text.is_empty() {
+                    parts.push(InterpolationPart::Text(current_text.clone()));
+                    current_text.clear();
+                }
+
+                self.advance(); // consume '{'
+
+                // Scan the expression inside ${}
+                if let Some(expr) = self.scan_interpolation_expression() {
+                    parts.push(InterpolationPart::Expression(expr));
+                } else {
+                    return None; // Error already reported
+                }
             } else {
-                value.push(c);
+                current_text.push(c);
             }
         }
 
@@ -128,16 +148,51 @@ impl<'a> StringScanner<'a> {
             return None;
         }
 
+        // Add any remaining text
+        if !current_text.is_empty() {
+            parts.push(InterpolationPart::Text(current_text));
+        }
+
         let lexeme: String = self.input[start_pos..*self.position].iter().collect();
 
-        Some(self.make_literal_token(
-            TokenType::StringLiteral,
-            &lexeme,
-            LiteralValue::String(value),
-            start_line,
-            start_column,
-            start_offset,
-        ))
+        if has_interpolation {
+            Some(self.make_literal_token(
+                TokenType::InterpolatedStringLiteral,
+                &lexeme,
+                LiteralValue::InterpolatedString(parts),
+                start_line,
+                start_column,
+                start_offset,
+            ))
+        } else {
+            // Convert parts back to a simple string for regular strings
+            let simple_string = if parts.is_empty() {
+                String::new()
+            } else if parts.len() == 1 {
+                match &parts[0] {
+                    InterpolationPart::Text(text) => text.clone(),
+                    _ => String::new(),
+                }
+            } else {
+                parts
+                    .into_iter()
+                    .filter_map(|part| match part {
+                        InterpolationPart::Text(text) => Some(text),
+                        _ => None,
+                    })
+                    .collect::<Vec<_>>()
+                    .join("")
+            };
+
+            Some(self.make_literal_token(
+                TokenType::StringLiteral,
+                &lexeme,
+                LiteralValue::String(simple_string),
+                start_line,
+                start_column,
+                start_offset,
+            ))
+        }
     }
 
     pub fn scan_triple_quoted_string(
@@ -330,6 +385,47 @@ impl<'a> StringScanner<'a> {
             SourceLocation::new(line, column, offset),
             Some(value),
         )
+    }
+
+    fn scan_interpolation_expression(&mut self) -> Option<String> {
+        let mut expression = String::new();
+        let mut brace_depth = 1; // We've already consumed the opening '{'
+
+        while !self.is_at_end() && brace_depth > 0 {
+            let c = self.peek();
+
+            if c == '{' {
+                brace_depth += 1;
+            } else if c == '}' {
+                brace_depth -= 1;
+                if brace_depth == 0 {
+                    self.advance(); // consume the closing '}'
+                    return Some(expression);
+                }
+            } else if c == '\n' || c == '\r' {
+                self.error(
+                    "Unterminated interpolation expression".to_string(),
+                    *self.line,
+                    *self.column,
+                    *self.byte_offset,
+                );
+                return None;
+            }
+
+            expression.push(self.advance());
+        }
+
+        if brace_depth > 0 {
+            self.error(
+                "Unterminated interpolation expression".to_string(),
+                *self.line,
+                *self.column,
+                *self.byte_offset,
+            );
+            return None;
+        }
+
+        Some(expression)
     }
 
     fn error(&mut self, message: String, line: usize, column: usize, offset: usize) {

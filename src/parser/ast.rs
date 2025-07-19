@@ -1,6 +1,12 @@
 use crate::lexer::{LiteralValue, SourceLocation};
 use std::fmt;
 
+#[derive(Debug, Clone, PartialEq)]
+pub enum InterpolationPart {
+    Text(String),
+    Expression(Box<AstNode>),
+}
+
 #[derive(Clone, PartialEq)]
 pub enum AstNode {
     // Expressions
@@ -74,6 +80,10 @@ pub enum AstNode {
     },
     ClassExpression {
         members: Vec<ClassMember>,
+        location: SourceLocation,
+    },
+    InterpolatedString {
+        parts: Vec<InterpolationPart>,
         location: SourceLocation,
     },
 

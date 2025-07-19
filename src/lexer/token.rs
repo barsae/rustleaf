@@ -45,6 +45,7 @@ pub enum TokenType {
     IntegerLiteral,
     FloatLiteral,
     StringLiteral,
+    InterpolatedStringLiteral,
     RawStringLiteral,
     BooleanLiteral,
     NullLiteral,
@@ -106,8 +107,15 @@ pub enum LiteralValue {
     Integer(i64),
     Float(f64),
     String(String),
+    InterpolatedString(Vec<InterpolationPart>),
     Boolean(bool),
     Null,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum InterpolationPart {
+    Text(String),
+    Expression(String), // Store the raw expression text for parsing later
 }
 
 #[derive(Debug, Clone)]
