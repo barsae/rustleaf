@@ -919,4 +919,42 @@ impl Evaluator {
         // Class declarations evaluate to unit (like function declarations)
         Ok(Value::Unit)
     }
+
+    pub(crate) fn evaluate_while_statement(
+        &mut self,
+        condition: &AstNode,
+        body: &AstNode,
+    ) -> Result<Value, RuntimeError> {
+        // Create new scope for loop
+        self.environment.push_scope();
+
+        let mut result = Value::Unit;
+
+        loop {
+            // Evaluate condition
+            let condition_value = self.evaluate(condition)?;
+
+            // Check if condition is truthy
+            if !condition_value.is_truthy()? {
+                break;
+            }
+
+            // Execute body
+            match self.evaluate(body) {
+                Ok(value) => result = value,
+                Err(err) => {
+                    if err.is_return() {
+                        // Return from function, not just loop
+                        self.environment.pop_scope();
+                        return Err(err);
+                    }
+                    // For now, ignore other errors (break/continue would go here)
+                    // TODO: Handle break and continue statements
+                }
+            }
+        }
+
+        self.environment.pop_scope();
+        Ok(result)
+    }
 }

@@ -325,9 +325,9 @@ impl Evaluator {
                 clause,
                 location,
             } => self.evaluate_import_statement(path, clause, location.clone()),
-            AstNode::WhileStatement { .. } => {
-                todo!("While statements not implemented yet")
-            }
+            AstNode::WhileStatement {
+                condition, body, ..
+            } => self.evaluate_while_statement(condition, body),
             AstNode::ForStatement {
                 variable,
                 index_variable,
