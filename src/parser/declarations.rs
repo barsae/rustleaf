@@ -4,16 +4,32 @@ use crate::parser::Parser;
 
 impl Parser {
     pub fn parse_module_item(&mut self) -> Option<AstNode> {
-        // Try each type of module item using backtracking
-        self.parse_alternatives(&[
-            Self::parse_comment,
-            Self::parse_empty_statement,
-            Self::parse_import_statement,
-            Self::parse_function_declaration,
-            Self::parse_class_declaration,
-            Self::parse_variable_declaration,
-            Self::parse_statement,
-        ])
+        // Skip comments
+        if self.peek().token_type == TokenType::Comment {
+            self.advance();
+            return None;
+        }
+
+        match self.peek().token_type {
+            TokenType::Use => self.parse_import_statement(),
+            TokenType::Fn => self.parse_function_declaration(Visibility::Private),
+            TokenType::Pub => {
+                self.advance(); // consume 'pub'
+                match self.peek().token_type {
+                    TokenType::Fn => self.parse_function_declaration(Visibility::Public),
+                    TokenType::Class => self.parse_class_declaration(Visibility::Public),
+                    TokenType::Var => {
+                        self.parse_variable_declaration_with_visibility(Visibility::Public)
+                    }
+                    _ => None
+                }
+            }
+            TokenType::Class => self.parse_class_declaration(Visibility::Private),
+            TokenType::Var => self.parse_variable_declaration(),
+            // Tokens that are clearly not valid at module level - skip them
+            TokenType::RightBrace | TokenType::RightBracket | TokenType::RightParen => None,
+            _ => self.parse_statement(),
+        }
     }
 
     pub fn parse_import_statement(&mut self) -> Option<AstNode> {
@@ -151,9 +167,34 @@ impl Parser {
         })
     }
 
-    pub fn parse_function_declaration(&mut self) -> Option<AstNode> {
-        let visibility = self.try_parse_visibility().unwrap_or(Visibility::Private);
+    pub fn parse_variable_declaration_with_visibility(
+        &mut self,
+        visibility: Visibility,
+    ) -> Option<AstNode> {
+        let location = self.current_location();
+        self.consume(TokenType::Var, "Expected 'var'")?;
+        let name = self.consume_identifier("Expected variable name")?;
 
+        let value = if self.match_token(&TokenType::Equal) {
+            Some(Box::new(self.parse_expression()?))
+        } else {
+            None
+        };
+
+        self.consume(
+            TokenType::Semicolon,
+            "Expected ';' after variable declaration",
+        )?;
+
+        Some(AstNode::VariableDeclaration {
+            visibility,
+            name,
+            value,
+            location,
+        })
+    }
+
+    pub fn parse_function_declaration(&mut self, visibility: Visibility) -> Option<AstNode> {
         if !self.check(&TokenType::Fn) {
             return None;
         }
@@ -177,9 +218,7 @@ impl Parser {
         })
     }
 
-    pub fn parse_class_declaration(&mut self) -> Option<AstNode> {
-        let visibility = self.try_parse_visibility().unwrap_or(Visibility::Private);
-
+    pub fn parse_class_declaration(&mut self, visibility: Visibility) -> Option<AstNode> {
         if !self.check(&TokenType::Class) {
             return None;
         }
