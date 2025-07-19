@@ -647,6 +647,153 @@ impl Evaluator {
                     )),
                 }
             }
+            "filter" => {
+                if args.len() != 1 {
+                    return Err(RuntimeError::new(
+                        "filter() takes exactly one argument".to_string(),
+                        ErrorType::TypeError,
+                    ));
+                }
+
+                let filter_func = &args[0];
+
+                match bound_object {
+                    Value::RustValue(rv) => {
+                        // Check if this is a range object
+                        if rv.type_name() == "range" {
+                            // Clone the range to iterate through it
+                            let mut range_iter = rv.clone_box();
+                            let mut filtered_items = Vec::new();
+
+                            // Iterate through the range and apply the filter
+                            while let Some(item) = range_iter.iter_next() {
+                                // Call the filter function with the item
+                                let call_result = match filter_func {
+                                    Value::Function(func) => {
+                                        self.call_user_function(func, &[item.clone()])
+                                    }
+                                    _ => {
+                                        return Err(RuntimeError::new(
+                                            "filter() argument must be a function".to_string(),
+                                            ErrorType::TypeError,
+                                        ));
+                                    }
+                                };
+
+                                match call_result {
+                                    Ok(Value::Bool(true)) => filtered_items.push(item),
+                                    Ok(Value::Bool(false)) => {}
+                                    Ok(Value::Null) => {}
+                                    Ok(other) => {
+                                        return Err(RuntimeError::new(
+                                            format!(
+                                                "filter function must return bool, got {}",
+                                                other.type_name()
+                                            ),
+                                            ErrorType::TypeError,
+                                        ));
+                                    }
+                                    Err(e) => return Err(e),
+                                }
+                            }
+
+                            Ok(Value::List(filtered_items))
+                        } else {
+                            Err(RuntimeError::new(
+                                format!("'{}' object has no filter()", bound_object.type_name()),
+                                ErrorType::AttributeError,
+                            ))
+                        }
+                    }
+                    Value::List(list) => {
+                        // Also implement filter for lists
+                        let mut filtered_items = Vec::new();
+
+                        for item in list {
+                            let call_result = match filter_func {
+                                Value::Function(func) => {
+                                    self.call_user_function(func, &[item.clone()])
+                                }
+                                _ => {
+                                    return Err(RuntimeError::new(
+                                        "filter() argument must be a function".to_string(),
+                                        ErrorType::TypeError,
+                                    ));
+                                }
+                            };
+
+                            match call_result {
+                                Ok(Value::Bool(true)) => filtered_items.push(item.clone()),
+                                Ok(Value::Bool(false)) => {}
+                                Ok(Value::Null) => {}
+                                Ok(other) => {
+                                    return Err(RuntimeError::new(
+                                        format!(
+                                            "filter function must return bool, got {}",
+                                            other.type_name()
+                                        ),
+                                        ErrorType::TypeError,
+                                    ));
+                                }
+                                Err(e) => return Err(e),
+                            }
+                        }
+
+                        Ok(Value::List(filtered_items))
+                    }
+                    _ => Err(RuntimeError::new(
+                        format!("'{}' object has no filter()", bound_object.type_name()),
+                        ErrorType::AttributeError,
+                    )),
+                }
+            }
+            "sum" => {
+                if !args.is_empty() {
+                    return Err(RuntimeError::new(
+                        "sum() takes no arguments".to_string(),
+                        ErrorType::TypeError,
+                    ));
+                }
+
+                match bound_object {
+                    Value::List(list) => {
+                        let mut sum = Value::Int(0);
+
+                        for item in list {
+                            match (&sum, item) {
+                                (Value::Int(s), Value::Int(i)) => {
+                                    sum = Value::Int(s + i);
+                                }
+                                (Value::Float(s), Value::Int(i)) => {
+                                    sum = Value::Float(s + (*i as f64));
+                                }
+                                (Value::Int(s), Value::Float(f)) => {
+                                    sum = Value::Float((*s as f64) + f);
+                                }
+                                (Value::Float(s), Value::Float(f)) => {
+                                    sum = Value::Float(s + f);
+                                }
+                                _ => {
+                                    return Err(RuntimeError::new(
+                                        format!(
+                                            "Cannot sum '{}' and '{}'",
+                                            sum.type_name(),
+                                            item.type_name()
+                                        ),
+                                        ErrorType::TypeError,
+                                    ));
+                                }
+                            }
+                        }
+
+                        Ok(sum)
+                    }
+                    _ => Err(RuntimeError::new(
+                        format!("'{}' object has no sum()", bound_object.type_name()),
+                        ErrorType::AttributeError,
+                    )),
+                }
+            }
             _ => Err(RuntimeError::new(
                 format!("Unknown builtin method: {}", method_name),
                 ErrorType::RuntimeError,

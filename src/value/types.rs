@@ -180,6 +180,15 @@ impl Value {
             Value::String(_) => "String",
             Value::List(_) => "List",
             Value::Dict(_) => "Dict",
+            Value::RustValue(rv) => {
+                // Check if this is a range object
+                if rv.type_name() == "range" {
+                    "Range"
+                } else {
+                    // Other RustValue types don't have classes yet
+                    return None;
+                }
+            }
             // Other types don't have classes yet
             _ => return None,
         };

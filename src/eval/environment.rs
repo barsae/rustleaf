@@ -197,6 +197,24 @@ impl Environment {
             is_builtin: true,
         });
 
+        // Create filter method for collections
+        let filter_method = Value::UnboundMethod(Function {
+            name: Some("filter".to_string()),
+            parameters: vec![],
+            body: AstNode::Literal(LiteralValue::Null, SourceLocation::new(0, 0, 0)),
+            closure: None,
+            is_builtin: true,
+        });
+
+        // Create sum method for collections
+        let sum_method = Value::UnboundMethod(Function {
+            name: Some("sum".to_string()),
+            parameters: vec![],
+            body: AstNode::Literal(LiteralValue::Null, SourceLocation::new(0, 0, 0)),
+            closure: None,
+            is_builtin: true,
+        });
+
         // String class
         let mut string_fields = HashMap::new();
         string_fields.insert("len".to_string(), len_method.clone());
@@ -210,6 +228,8 @@ impl Environment {
         // List class
         let mut list_fields = HashMap::new();
         list_fields.insert("len".to_string(), len_method.clone());
+        list_fields.insert("filter".to_string(), filter_method.clone());
+        list_fields.insert("sum".to_string(), sum_method.clone());
         let list_class = Value::Object(Object {
             class_name: "Class".to_string(),
             fields: list_fields,
@@ -219,12 +239,23 @@ impl Environment {
 
         // Dict class
         let mut dict_fields = HashMap::new();
-        dict_fields.insert("len".to_string(), len_method);
+        dict_fields.insert("len".to_string(), len_method.clone());
         let dict_class = Value::Object(Object {
             class_name: "Class".to_string(),
             fields: dict_fields,
             methods: HashMap::new(),
         });
         self.define("Dict".to_string(), dict_class);
+
+        // Range class
+        let mut range_fields = HashMap::new();
+        range_fields.insert("len".to_string(), len_method);
+        range_fields.insert("filter".to_string(), filter_method);
+        let range_class = Value::Object(Object {
+            class_name: "Class".to_string(),
+            fields: range_fields,
+            methods: HashMap::new(),
+        });
+        self.define("Range".to_string(), range_class);
     }
 }
