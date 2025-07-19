@@ -31,6 +31,9 @@ impl Environment {
             env.builtins.insert(builtin.name.to_string(), builtin);
         }
 
+        // Add class objects to global scope
+        env.add_builtin_classes();
+
         env
     }
 
@@ -177,5 +180,51 @@ impl Environment {
         }
 
         all_bindings
+    }
+
+    /// Add builtin class objects to global scope
+    fn add_builtin_classes(&mut self) {
+        use crate::lexer::{LiteralValue, SourceLocation};
+        use crate::parser::AstNode;
+        use crate::value::types::{Function, Object, Value};
+
+        // Create len method for all classes
+        let len_method = Value::UnboundMethod(Function {
+            name: Some("len".to_string()),
+            parameters: vec![],
+            body: AstNode::Literal(LiteralValue::Null, SourceLocation::new(0, 0, 0)),
+            closure: None,
+            is_builtin: true,
+        });
+
+        // String class
+        let mut string_fields = HashMap::new();
+        string_fields.insert("len".to_string(), len_method.clone());
+        let string_class = Value::Object(Object {
+            class_name: "Class".to_string(),
+            fields: string_fields,
+            methods: HashMap::new(),
+        });
+        self.define("String".to_string(), string_class);
+
+        // List class
+        let mut list_fields = HashMap::new();
+        list_fields.insert("len".to_string(), len_method.clone());
+        let list_class = Value::Object(Object {
+            class_name: "Class".to_string(),
+            fields: list_fields,
+            methods: HashMap::new(),
+        });
+        self.define("List".to_string(), list_class);
+
+        // Dict class
+        let mut dict_fields = HashMap::new();
+        dict_fields.insert("len".to_string(), len_method);
+        let dict_class = Value::Object(Object {
+            class_name: "Class".to_string(),
+            fields: dict_fields,
+            methods: HashMap::new(),
+        });
+        self.define("Dict".to_string(), dict_class);
     }
 }

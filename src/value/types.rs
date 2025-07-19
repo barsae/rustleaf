@@ -2,12 +2,10 @@
 #![allow(unused_imports)]
 
 use crate::eval::scope::Scope;
-use crate::lexer::{LiteralValue, SourceLocation};
 use crate::parser::{AstNode, Parameter};
 use std::any::Any;
 use std::collections::HashMap;
 use std::fmt;
-use std::rc::Rc;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Value {
@@ -177,46 +175,24 @@ impl Value {
         }
     }
 
-    pub fn get_class(&self) -> Option<Rc<Scope>> {
-        match self {
-            Value::String(_) => Self::get_string_class(),
-            Value::List(_) => Self::get_list_class(),
-            Value::Dict(_) => Self::get_dict_class(),
+    pub fn get_class(&self, env: &crate::eval::environment::Environment) -> Option<Value> {
+        let class_name = match self {
+            Value::String(_) => "String",
+            Value::List(_) => "List",
+            Value::Dict(_) => "Dict",
             // Other types don't have classes yet
-            _ => None,
-        }
-    }
-
-    fn get_string_class() -> Option<Rc<Scope>> {
-        // For now, create a new scope each time to avoid threading issues
-        // TODO: Optimize this with proper caching later
-        let mut scope = Scope::new();
-
-        // Add len method
-        let len_function = Function {
-            name: Some("len".to_string()),
-            parameters: vec![], // Will get self automatically when bound
-            body: AstNode::Literal(LiteralValue::Null, SourceLocation::new(0, 0, 0)), // Placeholder - this is a builtin
-            closure: None,
-            is_builtin: true,
+            _ => return None,
         };
 
-        scope.define("len".to_string(), Value::UnboundMethod(len_function));
-
-        Some(Rc::new(scope))
+        // Look up class object in global scope
+        env.get(class_name).ok()
     }
 
-    fn get_list_class() -> Option<Rc<Scope>> {
-        // TODO: Future implementation
-        None
-    }
-
-    fn get_dict_class() -> Option<Rc<Scope>> {
-        // TODO: Future implementation
-        None
-    }
-
-    pub fn op_get_attr(&self, attr_name: &str) -> Result<Value, RuntimeError> {
+    pub fn op_get_attr(
+        &self,
+        attr_name: &str,
+        env: &crate::eval::environment::Environment,
+    ) -> Result<Value, RuntimeError> {
         // 1. Check instance properties first (for objects)
         if let Value::Object(obj) = self {
             if let Some(value) = obj.fields.get(attr_name) {
@@ -224,10 +200,10 @@ impl Value {
             }
         }
 
-        // 2. Check class scope
-        if let Some(class_scope) = self.get_class() {
-            if let Some(value) = class_scope.get(attr_name) {
-                return Ok(value);
+        // 2. Check class object
+        if let Some(Value::Object(class)) = self.get_class(env) {
+            if let Some(value) = class.fields.get(attr_name) {
+                return Ok(value.clone());
             }
         }
 

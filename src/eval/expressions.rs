@@ -269,7 +269,7 @@ impl Evaluator {
         }
 
         // Use the new op_get_attr system for everything else
-        let attr_result = obj_value.op_get_attr(property)?;
+        let attr_result = obj_value.op_get_attr(property, &self.environment)?;
 
         // If we get an UnboundMethod, automatically bind it
         match attr_result {
