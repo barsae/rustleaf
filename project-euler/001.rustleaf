@@ -14,3 +14,4 @@ assert(example_result == 23);
 // Solve the actual problem
 var result = solve_euler_001(1000);
 print("The sum of all multiples of 3 or 5 below 1000 is: ${result}");
+assert(result == 233168);
