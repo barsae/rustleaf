@@ -382,7 +382,7 @@ type(true)         // "bool"
 type(null)         // "null"
 type([1, 2, 3])    // "list"
 type({"a": 1})     // "dict"
-type(fn() {})      // "function"
+type(|| {})        // "function"
 ```
 
 ### String Functions

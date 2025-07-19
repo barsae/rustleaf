@@ -47,10 +47,10 @@ RustLeaf source text may contain any valid Unicode code point (U+0000 through U+
 **Examples:**
 ```
 // Valid: ASCII identifier
-var count = 42
+var count = 42;
 
 // Valid: Unicode in strings
-var greeting = "Hello, 世界! 🌍"
+var greeting = "Hello, 世界! 🌍";
 
 // Valid: Unicode in comments
 // This is a comment with émojis 🎉
@@ -169,7 +169,7 @@ Comments are lexical elements that are ignored during parsing but may be preserv
 **Examples:**
 ```
 // This is a single-line comment
-var x = 42  // This is an end-of-line comment
+var x = 42;  // This is an end-of-line comment
 
 /* This is a
    multi-line comment */
@@ -262,13 +262,13 @@ Digit = "0"..."9"
 **Examples:**
 ```
 // Valid identifiers:
-var name = "Alice"
-var _private = 42
-var camelCase = true
-var snake_case = false
-var CONSTANT = 3.14
-var x123 = "mixed"
-var __internal__ = "ok"
+var name = "Alice";
+var _private = 42;
+var camelCase = true;
+var snake_case = false;
+var CONSTANT = 3.14;
+var x123 = "mixed";
+var __internal__ = "ok";
 
 // Invalid identifiers:
 // var 123abc = "bad"     // Cannot start with digit

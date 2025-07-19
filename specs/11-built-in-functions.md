@@ -17,7 +17,7 @@ type(true)         // "bool"
 type(null)         // "null"
 type([1, 2, 3])    // "list"
 type({a: 1})       // "dict"
-type(fn() {})      // "function"
+type(|| {})        // "function"
 ```
 
 **str(value) → string**
@@ -128,7 +128,7 @@ list(range(3))     // [0, 1, 2]
 list({a: 1, b: 2}.keys())  // ["a", "b"]
 
 // Copy a list
-var original = [1, 2, 3]
+var original = [1, 2, 3];
 var copy = list(original)  // [1, 2, 3] (new list)
 ```
 
@@ -140,7 +140,7 @@ dict([["a", 1], ["b", 2]])           // {a: 1, b: 2}
 dict(enumerate(["x", "y"]))          // {0: "x", 1: "y"}
 
 // Copy a dict
-var original = {a: 1, b: 2}
+var original = {a: 1, b: 2};
 var copy = dict(original.items())    // {a: 1, b: 2} (new dict)
 ```
 
@@ -177,8 +177,8 @@ raise({type: "ValueError", message: "Invalid input"})
 class CustomError {
     var message;
     static fn new(msg) {
-        var e = CustomError()
-        e.message = msg
+        var e = CustomError();
+        e.message = msg;
         e
     }
     fn op_str() { "CustomError: ${self.message}" }
@@ -244,12 +244,12 @@ Tests whether a value can be called as a function.
 
 ```
 callable(print)              // true
-callable(fn() {})            // true
+callable(|| {})              // true
 callable("hello")            // false
 callable(42)                 // false
 
 // Test before calling
-var handler = get_handler()
+var handler = get_handler();
 if callable(handler) {
     handler()
 } else {
@@ -276,8 +276,8 @@ if is_unit(void_function()) {
 }
 
 // Check iterator completion
-var iter = some_iterator.op_iter()
-var next_value = iter.op_next()
+var iter = some_iterator.op_iter();
+var next_value = iter.op_next();
 if is_unit(next_value) {
     print("Iterator is exhausted")
 }
@@ -299,12 +299,12 @@ var print = "not a function"  // Error: Cannot redefine built-in 'print'
 
 // Local scope - can shadow
 fn test() {
-    var print = "local variable"  // OK - local scope
+    var print = "local variable";  // OK - local scope
     print  // Returns "local variable"
 }
 
 fn demo() {
-    var abs = fn(x) { x * x }     // OK - local scope  
+    var abs = |x| x * x     // OK - local scope  
     abs(-3)                       // 9 (uses local function)
     
     // Access original built-in explicitly if needed

@@ -70,7 +70,7 @@ Version 1.0
 [5.7. Match Expressions](05-expressions.md#57-match-expressions)  
 [5.8. Try Expressions](05-expressions.md#58-try-expressions)  
 [5.9. Block Expressions](05-expressions.md#59-block-expressions)  
-[5.10. Anonymous Function Expressions](05-expressions.md#510-anonymous-function-expressions)  
+[5.10. Closure Expressions](05-expressions.md#510-closure-expressions)  
 [5.11. Object Literal Expressions](05-expressions.md#511-object-literal-expressions)  
 [5.12. List Literal Expressions](05-expressions.md#512-list-literal-expressions)  
 [5.13. Dict Literal Expressions](05-expressions.md#513-dict-literal-expressions)  

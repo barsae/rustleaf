@@ -32,19 +32,19 @@ Parameter = Identifier ("=" Literal)?
 ```
 // Simple function
 fn greet(name) {
-    print("Hello, ${name}!")
+    print("Hello, ${name}!");
 }
 
 // Function with default parameter
 fn connect(host, port = 80) {
-    print("Connecting to ${host}:${port}")
+    print("Connecting to ${host}:${port}");
 }
 
 // Function with rest parameters
 fn sum(*numbers) {
-    var total = 0
+    var total = 0;
     for n in numbers {
-        total += n
+        total += n;
     }
     total
 }
@@ -52,15 +52,15 @@ fn sum(*numbers) {
 // Function with keyword parameters
 fn configure(**options) {
     for key, value in options.items() {
-        print("${key} = ${value}")
+        print("${key} = ${value}");
     }
 }
 
 // Nested function (closure)
 fn make_counter() {
-    var count = 0
+    var count = 0;
     fn increment() {
-        count += 1
+        count += 1;
         count
     }
     increment
@@ -87,7 +87,7 @@ Functions can accept positional parameters, parameters with defaults, rest param
 2. **Default Parameters**: Have default values if not provided
    ```
    fn greet(name, greeting = "Hello") {
-       print("${greeting}, ${name}!")
+       print("${greeting}, ${name}!");
    }
    greet("Alice")              // "Hello, Alice!"
    greet("Bob", "Hi")          // "Hi, Bob!"
@@ -114,20 +114,20 @@ Functions can accept positional parameters, parameters with defaults, rest param
    
    fn process(items = [], options = {}) {
        // Valid: each call gets fresh empty collections
-       items.append("processed")
-       options.set("processed", true)
+       items.append("processed");
+       options.set("processed", true);
        // No shared state between function calls
    }
    
-   var a = process()  // gets fresh []
-   var b = process()  // gets different fresh []
+   var a = process();  // gets fresh []
+   var b = process();  // gets different fresh []
    
    // For complex defaults, use null pattern
    fn log_message(msg, timestamp = null) {
        if timestamp == null {
-           timestamp = get_current_time()
+           timestamp = get_current_time();
        }
-       print("[${timestamp}] ${msg}")
+       print("[${timestamp}] ${msg}");
    }
    
    // Invalid examples
@@ -144,20 +144,20 @@ Functions can accept positional parameters, parameters with defaults, rest param
    ```
    fn printf(format, *args) {
        // args is a list of remaining arguments
-       print(format_string(format, args))
+       print(format_string(format, args));
    }
-   printf("Name: %s, Age: %d", "Alice", 30)
+   printf("Name: %s, Age: %d", "Alice", 30);
    ```
 
 4. **Keyword Parameters** (`**kwargs`): Collect keyword arguments
    ```
    fn create_user(name, **attributes) {
        // attributes is a dict of keyword arguments
-       var user = {name: name}
-       user.update(attributes)
+       var user = {name: name};
+       user.update(attributes);
        user
    }
-   var user = create_user("Alice", age=30, email="alice@example.com")
+   var user = create_user("Alice", age=30, email="alice@example.com");
    ```
 
 **Parameter Rules:**
@@ -172,52 +172,52 @@ Functions can accept positional parameters, parameters with defaults, rest param
 Parameters are simple identifiers only. For complex data processing, use destructuring in the function body:
 ```
 fn process_point(point) {
-    var {x, y} = point
-    print("Point at (${x}, ${y})")
+    var {x, y} = point;
+    print("Point at (${x}, ${y})");
 }
 
 fn head_tail(list) {
-    var [first, *rest] = list
-    print("First: ${first}, Rest: ${rest}")
+    var [first, *rest] = list;
+    print("First: ${first}, Rest: ${rest}");
 }
 
-process_point({x: 10, y: 20})
-head_tail([1, 2, 3, 4])
+process_point({x: 10, y: 20});
+head_tail([1, 2, 3, 4]);
 ```
 
 **Examples:**
 ```
 // Mixed parameter types
 fn complex_function(required, default = 10, *args, **kwargs) {
-    print("Required: ${required}")
-    print("Default: ${default}")
-    print("Args: ${args}")
-    print("Kwargs: ${kwargs}")
+    print("Required: ${required}");
+    print("Default: ${default}");
+    print("Args: ${args}");
+    print("Kwargs: ${kwargs}");
 }
 
-complex_function(1)                    // required=1, default=10, args=[], kwargs={}
-complex_function(1, 2)                 // required=1, default=2, args=[], kwargs={}
-complex_function(1, 2, 3, 4)          // required=1, default=2, args=[3,4], kwargs={}
-complex_function(1, 2, 3, x=10, y=20) // required=1, default=2, args=[3], kwargs={x:10,y:20}
+complex_function(1);                    // required=1, default=10, args=[], kwargs={}
+complex_function(1, 2);                 // required=1, default=2, args=[], kwargs={}
+complex_function(1, 2, 3, 4);          // required=1, default=2, args=[3,4], kwargs={}
+complex_function(1, 2, 3, x=10, y=20); // required=1, default=2, args=[3], kwargs={x:10,y:20}
 
 // Skipping defaults with keyword arguments
 fn config(name, debug = false, verbose = false, output = "stdout") {
-    print("${name}: debug=${debug}, verbose=${verbose}, output=${output}")
+    print("${name}: debug=${debug}, verbose=${verbose}, output=${output}");
 }
 
-config("app")                           // name="app", debug=false, verbose=false, output="stdout"
-config("app", true)                     // name="app", debug=true, verbose=false, output="stdout"
-config("app", output="file.log")        // name="app", debug=false, verbose=false, output="file.log"
-config("app", verbose=true, debug=true) // name="app", debug=true, verbose=true, output="stdout"
+config("app");                           // name="app", debug=false, verbose=false, output="stdout"
+config("app", true);                     // name="app", debug=true, verbose=false, output="stdout"
+config("app", output="file.log");        // name="app", debug=false, verbose=false, output="file.log"
+config("app", verbose=true, debug=true); // name="app", debug=true, verbose=true, output="stdout"
 
 // Keyword-only parameters (after *args)
 fn format_message(*parts, sep=" ", end="\n") {
-    var message = parts.join(sep) + end
+    var message = parts.join(sep) + end;
     message
 }
 
-format_message("Hello", "World")           // "Hello World\n"
-format_message("A", "B", "C", sep="-")    // "A-B-C\n"
+format_message("Hello", "World");           // "Hello World\n"
+format_message("A", "B", "C", sep="-");    // "A-B-C\n"
 ```
 
 ### 7.3. Function Body
@@ -245,14 +245,14 @@ fn double(x) {
 
 // Multiple statements
 fn calculate(a, b) {
-    var sum = a + b
-    var product = a * b
+    var sum = a + b;
+    var product = a * b;
     {sum: sum, product: product}  // Return object
 }
 
 // Empty body returns unit
 fn do_nothing() { }
-var result = do_nothing()  // result is unit
+var result = do_nothing();  // result is unit
 
 // Conditional return
 fn abs(x) {
@@ -291,7 +291,7 @@ fn add(a, b) {
 fn find_first(list, predicate) {
     for item in list {
         if predicate(item) {
-            return item  // Early return
+            return item;  // Early return
         }
     }
     null  // Not found
@@ -300,17 +300,17 @@ fn find_first(list, predicate) {
 // Return without value
 fn process_or_exit(data) {
     if not data {
-        return  // Returns unit
+        return;  // Returns unit
     }
-    process(data)
+    process(data);
 }
 
 // Multiple return paths
 fn sign(x) {
     if x > 0 {
-        return 1
+        return 1;
     } else if x < 0 {
-        return -1
+        return -1;
     }
     0  // Implicit return for x == 0
 }
@@ -318,9 +318,9 @@ fn sign(x) {
 // Return from nested function
 fn outer() {
     fn inner() {
-        return 42  // Returns from inner, not outer
+        return 42;  // Returns from inner, not outer
     }
-    var x = inner()  // x is 42
+    var x = inner();  // x is 42
     x + 8  // Returns 50 from outer
 }
 ```
@@ -350,124 +350,123 @@ fn make_adder(x) {
     add
 }
 
-var add5 = make_adder(5)
-print(add5(3))  // 8
+var add5 = make_adder(5);
+print(add5(3));  // 8
 
 // Mutable capture
 fn make_counter() {
-    var count = 0
+    var count = 0;
     fn increment() {
-        count += 1  // Modifies captured variable
+        count += 1;  // Modifies captured variable
         count
     }
     increment
 }
 
-var c1 = make_counter()
-var c2 = make_counter()
-print(c1())  // 1
-print(c1())  // 2
-print(c2())  // 1 (independent counter)
+var c1 = make_counter();
+var c2 = make_counter();
+print(c1());  // 1
+print(c1());  // 2
+print(c2());  // 1 (independent counter)
 
 // Multiple closures sharing state
 fn make_account(initial) {
-    var balance = initial
+    var balance = initial;
     
     fn deposit(amount) {
-        balance += amount
+        balance += amount;
         balance
     }
     
     fn withdraw(amount) {
         if amount <= balance {
-            balance -= amount
+            balance -= amount;
             balance
         } else {
-            raise("Insufficient funds")
+            raise("Insufficient funds");
         }
     }
     
     {deposit: deposit, withdraw: withdraw}
 }
 
-var account = make_account(100)
-account.deposit(50)   // 150
-account.withdraw(30)  // 120
+var account = make_account(100);
+account.deposit(50);   // 150
+account.withdraw(30);  // 120
 
 // Capturing in loops
 fn make_functions() {
-    var funcs = []
+    var funcs = [];
     for i in range(3) {
-        var j = i  // Create new variable for each iteration
-        funcs.append(fn() { j })
+        var j = i;  // Create new variable for each iteration
+        funcs.append(|| j);
     }
     funcs
 }
 
-var functions = make_functions()
+var functions = make_functions();
 for f in functions {
-    print(f())  // 0, 1, 2
+    print(f());  // 0, 1, 2
 }
 ```
 
 ### 7.6. Anonymous Functions
 
-Anonymous functions are function expressions that create function values without declaring a named function.
+Anonymous functions are function expressions that create function values using concise syntax.
 
 **Syntax:**
 ```
-AnonymousFunction = "fn" "(" ParameterList? ")" Block
+Closure = "|" ParameterList? "|" (Expression | Block)
 ```
 
 **Properties:**
-- Same parameter rules as named functions
-- Can capture variables (create closures)
-- Always require braces for body
+- Simple parameter lists (identifiers only, no defaults or *args/**kwargs)
+- Can capture variables from enclosing scope
+- Single expressions don't require braces
+- Blocks require braces for multiple statements
 - Can be immediately invoked
+
+**Parameter Limitations:**
+Closures use simplified parameter syntax compared to named functions:
+- Only simple identifiers: `|x, y, z|`
+- No default values, *args, or **kwargs
+- For complex parameter handling, use named functions
 
 **Examples:**
 ```
-// Basic anonymous function
-var double = fn(x) { x * 2 }
-print(double(21))  // 42
+// Basic closures
+var double = |x| x * 2;
+print(double(21));  // 42
 
-// With default parameters
-var greet = fn(name, greeting = "Hello") {
-    "${greeting}, ${name}!"
-}
+// Multiple parameters
+var add = |a, b| a + b;
+var greet = |name| "Hello, ${name}!";
 
-// Defaults in anonymous functions follow same rules - literals only
-var make_id = fn(prefix = "id", start = 0) {
-    // All calls start with same literal default
-    start += 1
-    "${prefix}_${start}"
-}
-
-// With *args and **kwargs
-var logger = fn(level, *messages, **metadata) {
-    print("[${level}] ${messages.join(' ')}")
-    for key, value in metadata.items() {
-        print("  ${key}: ${value}")
-    }
-}
-
-logger("INFO", "User", "logged", "in", user_id=123, ip="10.0.0.1")
+// No parameters
+var get_random = || 42;
 
 // Higher-order functions
-var numbers = [1, 2, 3, 4, 5]
-var squares = numbers.map(fn(x) { x * x })
-var evens = numbers.filter(fn(x) { x % 2 == 0 })
+var numbers = [1, 2, 3, 4, 5];
+var squares = numbers.map(|x| x * x);
+var evens = numbers.filter(|x| x % 2 == 0);
 
-// Immediately invoked function expression (IIFE)
-var result = fn(a, b) { a + b }(10, 20)  // 30
-
-// Returning functions
-fn make_multiplier(factor) {
-    fn(x) { x * factor }
+// Multi-statement closures (require braces)
+var process = |data| {
+    var cleaned = data.trim();
+    var upper = cleaned.upper();
+    upper.split(" ")
 }
 
-var triple = make_multiplier(3)
-print(triple(10))  // 30
+// Immediately invoked closure expression
+var result = |a, b| a + b(10, 20);  // 30
+
+// Returning closures
+fn make_multiplier(factor) {
+    |x| x * factor
+}
+
+var triple = make_multiplier(3);
+print(triple(10));  // 30
 ```
 
 ### 7.7. Function Scope
@@ -490,56 +489,56 @@ Functions create their own scope and follow specific rules for variable resoluti
 
 **Examples:**
 ```
-var module_var = "module"
+var module_var = "module";
 
 fn outer(param) {
-    var outer_var = "outer"
+    var outer_var = "outer";
     
     fn middle() {
-        var middle_var = "middle"
+        var middle_var = "middle";
         
         fn inner() {
-            var inner_var = "inner"
+            var inner_var = "inner";
             
             // Can access all scopes
-            print(inner_var)   // "inner"
-            print(middle_var)  // "middle"
-            print(outer_var)   // "outer"
-            print(param)       // parameter value
-            print(module_var)  // "module"
+            print(inner_var);   // "inner"
+            print(middle_var);  // "middle"
+            print(outer_var);   // "outer"
+            print(param);       // parameter value
+            print(module_var);  // "module"
         }
         
-        inner()
+        inner();
     }
     
-    middle()
+    middle();
 }
 
 // Shadowing
-var x = 1
+var x = 1;
 
 fn shadow_example(x) {  // Parameter shadows module x
-    var x = 3          // Local shadows parameter
-    print(x)           // 3
+    var x = 3;          // Local shadows parameter
+    print(x);           // 3
     
     fn nested() {
-        var x = 4      // Shadows outer x
-        print(x)       // 4
+        var x = 4;      // Shadows outer x
+        print(x);       // 4
     }
     
-    nested()
-    print(x)           // 3 (back to local)
+    nested();
+    print(x);           // 3 (back to local)
 }
 
-shadow_example(2)
-print(x)               // 1 (module x unchanged)
+shadow_example(2);
+print(x);               // 1 (module x unchanged)
 
 // No hoisting
 // bad()               // Error: bad not defined
-fn good() { print("OK") }
-good()                 // OK
+fn good() { print("OK"); }
+good();                 // OK
 
-fn bad() { print("Too late") }
+fn bad() { print("Too late"); }
 ```
 
 ### 7.8. Recursion
@@ -569,7 +568,7 @@ fn factorial(n) {
     }
 }
 
-print(factorial(5))  // 120
+print(factorial(5));  // 120
 
 // Indirect recursion
 fn is_even(n) {
@@ -588,8 +587,8 @@ fn is_odd(n) {
     }
 }
 
-print(is_even(4))  // true
-print(is_odd(4))   // false
+print(is_even(4));  // true
+print(is_odd(4));   // false
 
 // Tree traversal
 fn sum_tree(node) {
@@ -606,13 +605,13 @@ fn infinite(n) {
 }
 
 try {
-    infinite(0)
+    infinite(0);
 } catch e {
-    print(e.message)  // "Maximum recursion depth (1000) exceeded"
+    print(e.message);  // "Maximum recursion depth (1000) exceeded"
 }
 
 // Fibonacci with memoization (to avoid deep recursion)
-var fib_cache = {}
+var fib_cache = {};
 
 fn fib(n) {
     if n in fib_cache {
@@ -620,8 +619,8 @@ fn fib(n) {
     } else if n <= 1 {
         n
     } else {
-        var result = fib(n - 1) + fib(n - 2)
-        fib_cache[n] = result
+        var result = fib(n - 1) + fib(n - 2);
+        fib_cache[n] = result;
         result
     }
 }
@@ -654,43 +653,43 @@ When a function is called, the following steps occur:
 ```
 // Positional and keyword arguments
 fn example(a, b, c = 3, *args, **kwargs) {
-    print("a=${a}, b=${b}, c=${c}")
-    print("args=${args}")
-    print("kwargs=${kwargs}")
+    print("a=${a}, b=${b}, c=${c}");
+    print("args=${args}");
+    print("kwargs=${kwargs}");
 }
 
-example(1, 2)                          // a=1, b=2, c=3, args=[], kwargs={}
-example(1, 2, 4)                       // a=1, b=2, c=4, args=[], kwargs={}
-example(1, 2, 4, 5, 6)                // a=1, b=2, c=4, args=[5,6], kwargs={}
-example(1, 2, x=10, y=20)             // a=1, b=2, c=3, args=[], kwargs={x:10,y:20}
-example(1, 2, 4, 5, x=10)            // a=1, b=2, c=4, args=[5], kwargs={x:10}
+example(1, 2);                          // a=1, b=2, c=3, args=[], kwargs={}
+example(1, 2, 4);                       // a=1, b=2, c=4, args=[], kwargs={}
+example(1, 2, 4, 5, 6);                // a=1, b=2, c=4, args=[5,6], kwargs={}
+example(1, 2, x=10, y=20);             // a=1, b=2, c=3, args=[], kwargs={x:10,y:20}
+example(1, 2, 4, 5, x=10);            // a=1, b=2, c=4, args=[5], kwargs={x:10}
 
 // Spread arguments
-var args = [1, 2, 3]
-var kwargs = {x: 10, y: 20}
+var args = [1, 2, 3];
+var kwargs = {x: 10, y: 20};
 
-example(*args)                        // a=1, b=2, c=3, args=[], kwargs={}
-example(*args, **kwargs)             // a=1, b=2, c=3, args=[], kwargs={x:10,y:20}
-example(0, *args, z=30, **kwargs)   // a=0, b=1, c=2, args=[3], kwargs={z:30,x:10,y:20}
+example(*args);                        // a=1, b=2, c=3, args=[], kwargs={}
+example(*args, **kwargs);             // a=1, b=2, c=3, args=[], kwargs={x:10,y:20}
+example(0, *args, z=30, **kwargs);   // a=0, b=1, c=2, args=[3], kwargs={z:30,x:10,y:20}
 
 // Method calls
 class Calculator {
     var value = 0;
     
     fn add(x) {
-        self.value += x
+        self.value += x;
         self
     }
     
     fn multiply(x) {
-        self.value *= x
+        self.value *= x;
         self
     }
 }
 
-var calc = Calculator()
-calc.add(5).multiply(3).add(7)  // Chaining
-print(calc.value)  // 22
+var calc = Calculator();
+calc.add(5).multiply(3).add(7);  // Chaining
+print(calc.value);  // 22
 ```
 
 ---

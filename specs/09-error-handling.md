@@ -24,9 +24,9 @@ class NetworkError {
     var message;
     
     static fn new(code, message) {
-        var e = NetworkError()
-        e.code = code
-        e.message = message
+        var e = NetworkError();
+        e.code = code;
+        e.message = message;
         e
     }
     
@@ -106,10 +106,10 @@ class ValidationError {
     var message;
     
     static fn new(field, value, message) {
-        var e = ValidationError()
-        e.field = field
-        e.value = value
-        e.message = message
+        var e = ValidationError();
+        e.field = field;
+        e.value = value;
+        e.message = message;
         e
     }
     
@@ -153,7 +153,7 @@ TryExpression = "try" Block "catch" Pattern Block
 var result = try {
     risky_operation()
 } catch e {
-    print("Error occurred: ${e}")
+    print("Error occurred: ${e}");
     null  // Default value on error
 }
 
@@ -161,10 +161,10 @@ var result = try {
 var data = try {
     parse_json(input)
 } catch {type: "SyntaxError", line: l} {
-    print("JSON syntax error on line ${l}")
+    print("JSON syntax error on line ${l}");
     {}  // Empty dict as fallback
 } catch e {
-    print("Unexpected error: ${e}")
+    print("Unexpected error: ${e}");
     raise(e)  // Re-raise
 }
 
@@ -183,11 +183,11 @@ fn safe_divide(a, b) {
 
 // Nested try-catch
 try {
-    var conn = connect_database()
+    var conn = connect_database();
     try {
         conn.execute(query)
     } catch e {
-        print("Query failed: ${e}")
+        print("Query failed: ${e}");
         rollback(conn)
     }
 } catch e {
@@ -219,8 +219,8 @@ fn level3() {
 }
 
 fn level2() {
-    print("Before level3")
-    level3()  // Error propagates here
+    print("Before level3");
+    level3();  // Error propagates here
     print("Never reached")
 }
 
@@ -228,7 +228,7 @@ fn level1() {
     try {
         level2()
     } catch e {
-        print("Caught at level1: ${e}")
+        print("Caught at level1: ${e}");
         // Stack trace available here
     }
 }
@@ -284,10 +284,10 @@ class FileError {
     var reason;
     
     static fn new(path, operation, reason) {
-        var e = FileError()
-        e.path = path
-        e.operation = operation
-        e.reason = reason
+        var e = FileError();
+        e.path = path;
+        e.operation = operation;
+        e.reason = reason;
         e
     }
     
@@ -318,10 +318,10 @@ class HttpError {
     var url;
     
     static fn new(status, message, url) {
-        var e = HttpError()
-        e.status = status
-        e.message = message
-        e.url = url
+        var e = HttpError();
+        e.status = status;
+        e.message = message;
+        e.url = url;
         e
     }
     
@@ -350,9 +350,9 @@ class ChainedError {
     var cause;
     
     static fn new(message, cause) {
-        var e = ChainedError()
-        e.message = message
-        e.cause = cause
+        var e = ChainedError();
+        e.message = message;
+        e.cause = cause;
         e
     }
     
@@ -407,14 +407,14 @@ class BankAccount {
     var balance = 0;
     
     fn deposit(amount) {
-        assert(amount > 0, "Deposit amount must be positive")
-        self.balance += amount
+        assert(amount > 0, "Deposit amount must be positive");
+        self.balance += amount;
         assert(self.balance >= 0, "Balance invariant violated")
     }
     
     fn withdraw(amount) {
-        assert(amount > 0, "Withdrawal amount must be positive")
-        assert(amount <= self.balance, "Insufficient funds")
+        assert(amount > 0, "Withdrawal amount must be positive");
+        assert(amount <= self.balance, "Insufficient funds");
         self.balance -= amount
     }
 }
@@ -424,14 +424,14 @@ fn process_data(data) {
     assert(data, "Data cannot be null")
     assert(type(data) == "list", "Data must be a list")
     assert(data.length > 0, "Data cannot be empty")
-    assert(data.all(fn(x) { type(x) == "int" }), "All elements must be integers")
+    assert(data.all(|x| type(x) == "int"), "All elements must be integers")
     
     // Process validated data...
 }
 
 // Development assertions
 fn optimize_path(points) {
-    var original_count = points.length
+    var original_count = points.length;
     
     // ... optimization logic ...
     
@@ -462,8 +462,8 @@ var [x, y] = [1]              // Error: List pattern expected 2 elements, got 1
 var {name, age} = {name: "Alice"}  // Error: Dict pattern missing required key 'age'
 
 // Assignment failures
-var a, b
-[a, b] = [1, 2, 3]           // Error: List pattern expected 2 elements, got 3
+var a, b;
+[a, b] = [1, 2, 3];           // Error: List pattern expected 2 elements, got 3
 
 // Parameter failures
 fn process_pair([x, y]) {
@@ -479,10 +479,10 @@ for [x, y] in [[1, 2], [3]] {  // Error on second iteration
 // Safe pattern matching
 fn safe_destructure(data) {
     try {
-        var [x, y, z] = data
+        var [x, y, z] = data;
         process_triple(x, y, z)
     } catch e {
-        print("Invalid data format: ${e}")
+        print("Invalid data format: ${e}");
         null
     }
 }
@@ -490,7 +490,7 @@ fn safe_destructure(data) {
 // Validating before destructuring
 fn extract_point(data) {
     if type(data) == "list" and data.length == 2 {
-        var [x, y] = data  // Safe - we checked
+        var [x, y] = data;  // Safe - we checked
         Point.new(x, y)
     } else {
         raise("Expected [x, y] coordinate pair")

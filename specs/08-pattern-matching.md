@@ -41,8 +41,8 @@ match value {
 }
 
 // Destructuring declaration
-var {name, age} = person
-var [first, *rest] = items
+var {name, age} = person;
+var [first, *rest] = items;
 
 // Function parameter
 fn process_pair([x, y]) {
@@ -51,7 +51,7 @@ fn process_pair([x, y]) {
 
 // For loop destructuring
 for key, value in dict.items() {
-    print("${key}: ${value}")
+    print("${key}: ${value}");
 }
 ```
 
@@ -117,27 +117,27 @@ Variable patterns bind matched values to new variables.
 ```
 // Simple binding
 match value {
-    case x { print("Got ${x}") }
+    case x { print("Got ${x}"); }
 }
 
 // Binding in destructuring
-var [a, b, c] = [1, 2, 3]
+var [a, b, c] = [1, 2, 3];
 
 // Nested binding
 match data {
     case {user: u, score: s} {
-        print("User ${u} scored ${s}")
+        print("User ${u} scored ${s}");
     }
 }
 
 // Scope example
-var x = 10
+var x = 10;
 match 20 {
     case x {  // New binding, shadows outer x
-        print(x)  // 20
+        print(x);  // 20
     }
-}
-print(x)  // 10 (unchanged)
+};
+print(x);  // 10 (unchanged)
 
 // Not allowed - duplicate binding
 // var [x, x] = [1, 2]  // Error: x bound twice
@@ -156,9 +156,9 @@ The wildcard pattern `_` matches any value without binding it.
 **Examples:**
 ```
 // Ignore values
-var [first, _, third] = [1, 2, 3]
-print(first)   // 1
-print(third)   // 3
+var [first, _, third] = [1, 2, 3];
+print(first);   // 1
+print(third);   // 3
 // _ is not a variable
 
 // Match anything
@@ -168,13 +168,13 @@ match value {
 }
 
 // Ignore multiple values
-var [x, _, _, y] = [1, 2, 3, 4]
+var [x, _, _, y] = [1, 2, 3, 4];
 
 // In function parameters
-list.map(fn(_) { 42 })  // Ignore argument
+list.map(|_| 42);  // Ignore argument
 
 // Partial dict matching
-var {name, _} = {name: "Alice", age: 30, id: 123}
+var {name, _} = {name: "Alice", age: 30, id: 123};
 // Only extracts name
 ```
 
@@ -210,13 +210,13 @@ match list {
 }
 
 // Rest patterns
-var [head, *tail] = [1, 2, 3, 4]
+var [head, *tail] = [1, 2, 3, 4];
 // head = 1, tail = [2, 3, 4]
 
-var [first, *middle, last] = [1, 2, 3, 4, 5]
+var [first, *middle, last] = [1, 2, 3, 4, 5];
 // first = 1, middle = [2, 3, 4], last = 5
 
-var [*all] = [1, 2, 3]
+var [*all] = [1, 2, 3];
 // all = [1, 2, 3]
 
 // Nested patterns
@@ -261,40 +261,40 @@ FieldPattern = Identifier (":" Pattern)?
 **Examples:**
 ```
 // Basic extraction
-var {name, age} = {name: "Alice", age: 30, id: 123}
+var {name, age} = {name: "Alice", age: 30, id: 123};
 // name = "Alice", age = 30
 
 // Renaming
-var {name: userName, age: userAge} = user
+var {name: userName, age: userAge} = user;
 // userName gets user.name value
 
 // Nested patterns
 match request {
     case {method: "GET", path: "/users"} {
-        list_users()
+        list_users();
     }
     case {method: "POST", data: {name: n}} {
-        create_user(n)
+        create_user(n);
     }
 }
 
 // String literal keys
-var {"content-type": contentType} = headers
+var {"content-type": contentType} = headers;
 
 // Mixed patterns
 match response {
     case {status: 200, body: [first, *rest]} {
-        process_success(first, rest)
+        process_success(first, rest);
     }
     case {status: 404} {
-        handle_not_found()
+        handle_not_found();
     }
 }
 
 // Multiple dict patterns
 match config {
-    case {mode: "dev"} { enable_debug() }
-    case {mode: "development"} { enable_debug() }
+    case {mode: "dev"} { enable_debug(); }
+    case {mode: "development"} { enable_debug(); }
 }
 ```
 
@@ -402,9 +402,9 @@ Only allowed in:
 **Examples:**
 ```
 // Irrefutable - always succeeds
-var x = value
-var [a, *rest] = list
-var {name, _} = obj
+var x = value;
+var [a, *rest] = list;
+var {name, _} = obj;
 fn f(x, [a, b]) { }
 
 // Refutable - might fail
@@ -433,7 +433,7 @@ match 5 {
 var result = match value {
     case 1 { "one" }
     case 2 { "two" }
-}
+};
 // result is unit if value is not 1 or 2
 ```
 

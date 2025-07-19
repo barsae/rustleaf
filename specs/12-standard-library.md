@@ -165,25 +165,25 @@ list.clear()               // []
 Returns new list with function applied to each element.
 
 ```
-[1, 2, 3].map(fn(x) { x * 2 })        // [2, 4, 6]
-["a", "b"].map(fn(s) { s.upper() })   // ["A", "B"]
+[1, 2, 3].map(|x| x * 2)        // [2, 4, 6]
+["a", "b"].map(|s| s.upper())   // ["A", "B"]
 ```
 
 **filter(function) → list**
 Returns new list with elements where function returns true.
 
 ```
-[1, 2, 3, 4].filter(fn(x) { x % 2 == 0 })  // [2, 4]
-["", "a", ""].filter(fn(s) { s.len() > 0 }) // ["a"]
+[1, 2, 3, 4].filter(|x| x % 2 == 0)  // [2, 4]
+["", "a", ""].filter(|s| s.len() > 0) // ["a"]
 ```
 
 **reduce(function, initial=null) → value**
 Reduces list to single value using function.
 
 ```
-[1, 2, 3, 4].reduce(fn(acc, x) { acc + x }, 0)     // 10
-[1, 2, 3].reduce(fn(acc, x) { acc * x }, 1)        // 6
-["a", "b", "c"].reduce(fn(acc, x) { acc + x }, "") // "abc"
+[1, 2, 3, 4].reduce(|acc, x| acc + x, 0)     // 10
+[1, 2, 3].reduce(|acc, x| acc * x, 1)        // 6
+["a", "b", "c"].reduce(|acc, x| acc + x, "") // "abc"
 ```
 
 **slice(start, end=null) → list**
@@ -230,7 +230,7 @@ var words = ["banana", "apple", "cherry"]
 words.sort()                          // ["apple", "banana", "cherry"]
 
 var items = [{a: 3}, {a: 1}, {a: 2}]
-items.sort(fn(x) { x.a })            // [{a: 1}, {a: 2}, {a: 3}]
+items.sort(|x| x.a)            // [{a: 1}, {a: 2}, {a: 3}]
 ```
 
 **is_empty() → bool**

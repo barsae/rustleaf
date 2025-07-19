@@ -48,23 +48,23 @@ var x = 1;
 
 // Function argument evaluation
 fn side_effect(n) {
-    print("evaluating ${n}")
+    print("evaluating ${n}");
     n
 }
-var sum = add(side_effect(1), side_effect(2))
+var sum = add(side_effect(1), side_effect(2));
 // Output: "evaluating 1", "evaluating 2"
 
 // Short-circuit evaluation
-var obj = null
+var obj = null;
 if obj != null and obj.name == "test" {  // Safe: obj.name not evaluated
     print("found")
 }
 
 fn expensive() {
-    print("expensive called")
+    print("expensive called");
     true
 }
-var result = true or expensive()  // expensive() not called
+var result = true or expensive();  // expensive() not called
 ```
 
 ### 5.2. Primary Expressions
@@ -143,26 +143,26 @@ PropertyAccess = Expression "." Identifier
 Use indexing with string keys for dynamic access:
 ```
 obj["property"]  // Same as obj.property
-var key = "name"
+var key = "name";
 obj[key]         // Dynamic property access
 ```
 
 **Examples:**
 ```
-var point = {x: 10, y: 20}
-print(point.x)   // 10
+var point = {x: 10, y: 20};
+print(point.x);   // 10
 
-var user = User()
-user.name = "Alice"
-user.greet()     // Method call
+var user = User();
+user.name = "Alice";
+user.greet();     // Method call
 
 // Error cases
-var n = null
+var n = null;
 // n.anything    // Error: Cannot access property of null
 
 // Dynamic access
-var prop = "x"
-print(point[prop])  // 10
+var prop = "x";
+print(point[prop]);  // 10
 ```
 
 #### 5.3.2. Index Access
@@ -183,16 +183,16 @@ IndexAccess = Expression "[" Expression "]"
 
 **Examples:**
 ```
-var list = [10, 20, 30]
-print(list[0])    // 10
-print(list[-1])   // 30 (negative indexing)
+var list = [10, 20, 30];
+print(list[0]);    // 10
+print(list[-1]);   // 30 (negative indexing)
 
-var dict = {a: 1, b: 2}
-print(dict["a"])  // 1
+var dict = {a: 1, b: 2};
+print(dict["a"]);  // 1
 
 // Chained indexing
-var matrix = [[1, 2], [3, 4]]
-print(matrix[0][1])  // 2
+var matrix = [[1, 2], [3, 4]];
+print(matrix[0][1]);  // 2
 
 // Custom indexing
 class Matrix {
@@ -222,13 +222,13 @@ ArgumentList = Expression ("," Expression)*
 
 **Examples:**
 ```
-print("Hello")
-add(2, 3)
-get_function()()  // Call returned function
+print("Hello");
+add(2, 3);
+get_function()();  // Call returned function
 
 // With spread (if supported)
-var args = [1, 2, 3]
-sum(*args)  // Spread arguments
+var args = [1, 2, 3];
+sum(*args);  // Spread arguments
 ```
 
 #### 5.3.4. Method Call
@@ -258,15 +258,15 @@ var result = text.replace("old", "new")
 
 **Examples:**
 ```
-var list = [3, 1, 4, 1, 5]
-list.sort()       // Modifies list
-var doubled = list.map(fn(x) { x * 2 })
+var list = [3, 1, 4, 1, 5];
+list.sort();       // Modifies list
+var doubled = list.map(|x| x * 2);
 
 // Chaining
 var words = "  hello world  "
     .trim()
     .upper()
-    .split(" ")  // ["HELLO", "WORLD"]
+    .split(" ");  // ["HELLO", "WORLD"]
 ```
 
 ### 5.4. Unary Expressions
@@ -293,10 +293,10 @@ UnaryOperator = "-" | "not" | "~"
 
 **Examples:**
 ```
-var x = 42
-print(-x)         // -42
-print(not true)   // false
-print(~0b1010)    // -11 (bitwise NOT)
+var x = 42;
+print(-x);         // -42
+print(not true);   // false
+print(~0b1010);    // -11 (bitwise NOT)
 
 // Type checking
 // -"hello"       // Error: Cannot negate string
@@ -333,8 +333,8 @@ Operate on numeric values.
 print(10 + 3)     // 13
 print(10 - 3)     // 7
 print(10 * 3)     // 30
-print(10 / 3)     // 3 (integer division)
-print(10.0 / 3)   // 3.333... (float division)
+print(10 / 3);     // 3 (integer division)
+print(10.0 / 3);   // 3.333... (float division)
 print(10 % 3)     // 1
 print(2 ** 8)     // 256
 
@@ -342,7 +342,7 @@ print(2 ** 8)     // 256
 print("Hello" + " " + "World")  // "Hello World"
 
 // Type promotion
-print(10 + 3.14)  // 13.14 (float)
+print(10 + 3.14);  // 13.14 (float)
 ```
 
 #### 5.5.2. Comparison Operators
@@ -373,7 +373,7 @@ print(10 < 20)    // true
 print("abc" < "def")  // true
 
 // Type checking
-print(10 == "10") // false (different types)
+print(10 == "10"); // false (different types)
 
 // No chaining
 // if 0 < x < 10 { }  // Error
@@ -406,8 +406,8 @@ print(true xor true)    // false
 print(null or true)     // true
 
 // Short-circuit behavior
-var x = true
-var y = (x or print("not evaluated"))
+var x = true;
+var y = (x or print("not evaluated"));
 
 // XOR does not short-circuit - both operands are always evaluated
 print(true xor print("always evaluated"))  // "always evaluated" is printed
@@ -438,9 +438,9 @@ Operate on integer bit representations.
 
 **Examples:**
 ```
-print(0b1010 & 0b1100)  // 0b1000 (8)
-print(0b1010 | 0b1100)  // 0b1110 (14)
-print(0b1010 ^ 0b1100)  // 0b0110 (6)
+print(0b1010 & 0b1100);  // 0b1000 (8)
+print(0b1010 | 0b1100);  // 0b1110 (14)
+print(0b1010 ^ 0b1100);  // 0b0110 (6)
 print(1 << 3)           // 8
 print(16 >> 2)          // 4
 ```
@@ -596,10 +596,10 @@ catch {type: "ValueError", message: m}  // Destructure error
 **Examples:**
 ```
 var result = try {
-    risky_operation()
+    risky_operation();
     42  // Success value
 } catch e {
-    print("Error: ${e.message}")
+    print("Error: ${e.message}");
     0   // Error value
 }
 
@@ -609,7 +609,7 @@ var data = try {
         parse_json(file.read())
     }
 } catch e {
-    print("Failed to load data")
+    print("Failed to load data");
     {}  // Empty dict as fallback
 }
 
@@ -641,14 +641,14 @@ BlockExpression = "{" Statement* Expression? "}"
 **Examples:**
 ```
 var result = {
-    var temp = calculate_something()
-    print("Calculated: ${temp}")
+    var temp = calculate_something();
+    print("Calculated: ${temp}");
     temp * 2  // Block value
 }
 
 // Assignment using block
 var category = {
-    var score = get_score()
+    var score = get_score();
     if score > 90 {
         "excellent"
     } else if score > 70 {
@@ -659,58 +659,83 @@ var category = {
 }
 
 // Empty block evaluates to unit
-var nothing = {}  // unit
+var nothing = {};  // unit
 
 // Scope isolation
-var outer = 10
+var outer = 10;
 var result = {
-    var outer = 20  // Shadows
+    var outer = 20;  // Shadows
     outer + 5       // 25
-}
-print(outer)        // Still 10
+};
+print(outer);        // Still 10
 ```
 
-### 5.10. Anonymous Function Expressions
+### 5.10. Closure Expressions
 
-Anonymous functions (lambdas) create function values inline.
+Closures create function values inline using concise Rust-style syntax.
 
 **Syntax:**
 ```
-LambdaExpression = "fn" "(" ParameterList? ")" Block
+ClosureExpression = "|" ParameterList? "|" (Expression | Block)
+ParameterList = Identifier ("," Identifier)*
 ```
 
 **Semantics:**
 - Creates a function value
 - Captures variables from enclosing scope by reference
 - Can be assigned, passed, or called immediately
-- Always requires braces for the body
+- Single expressions don't require braces, blocks do
+
+**Parameter Syntax:**
+```
+|x| expression          // Single parameter
+|a, b| expression       // Multiple parameters
+|| expression           // No parameters
+```
+
+**Body Forms:**
+```
+|x| x * 2              // Single expression (no braces)
+|x| {                  // Block for multiple statements
+    var doubled = x * 2
+    doubled + 1
+}
+```
 
 **Examples:**
 ```
-var double = fn(x) { x * 2 }
-print(double(21))  // 42
+var double = |x| x * 2;
+print(double(21));  // 42
 
 // Higher-order functions
-var numbers = [1, 2, 3, 4, 5]
-var evens = numbers.filter(fn(n) { n % 2 == 0 })
-var squares = numbers.map(fn(n) { n * n })
+var numbers = [1, 2, 3, 4, 5];
+var evens = numbers.filter(|n| n % 2 == 0);
+var squares = numbers.map(|n| n * n);
 
 // Closures
 fn make_adder(x) {
-    fn(y) { x + y }  // Captures x
+    |y| x + y  // Captures x
 }
-var add5 = make_adder(5)
-print(add5(3))  // 8
+var add5 = make_adder(5);
+print(add5(3));  // 8
 
 // Immediately invoked
-var result = fn(a, b) { a + b }(10, 20)  // 30
+var result = |a, b| a + b(10, 20);  // 30
 
-// Multi-statement lambda
-var process = fn(data) {
-    var cleaned = data.trim()
-    var upper = cleaned.upper()
+// Multi-statement closure
+var process = |data| {
+    var cleaned = data.trim();
+    var upper = cleaned.upper();
     upper.split(" ")
-}
+};
+
+// No parameters
+var get_random = || 42;
+print(get_random());  // 42
+
+// Complex expressions without braces
+var formatted = items.map(|item| "Item: ${item.name}");
+var valid = data.filter(|x| x > 0 and x < 100);
 ```
 
 ### 5.11. Object Literal Expressions
@@ -731,20 +756,20 @@ Property = (Identifier | StringLiteral) ":" Expression
 
 **Examples:**
 ```
-var point = {x: 10, y: 20}
+var point = {x: 10, y: 20};
 var person = {
     name: "Alice",
     age: 30,
     "full name": "Alice Smith",  // String key for spaces
     hobbies: ["reading", "coding"]
-}
+};
 
 // Computed values
 var config = {
     host: get_host(),
     port: DEFAULT_PORT,
     debug: env == "development"
-}
+};
 
 // Nested objects
 var data = {
@@ -774,20 +799,20 @@ ListLiteral = "[" (Expression ("," Expression)*)? "]"
 
 **Examples:**
 ```
-var empty = []
-var numbers = [1, 2, 3, 4, 5]
-var mixed = [42, "hello", true, [1, 2]]
+var empty = [];
+var numbers = [1, 2, 3, 4, 5];
+var mixed = [42, "hello", true, [1, 2]];
 
 // Computed elements
 var data = [
     get_value(),
     x + y,
     if condition { 100 } else { 200 }
-]
+];
 
 // List comprehension (if supported)
-var squares = [x * x for x in range(1, 10)]
-var evens = [x for x in numbers if x % 2 == 0]
+var squares = [x * x for x in range(1, 10)];
+var evens = [x for x in numbers if x % 2 == 0];
 ```
 
 ### 5.13. Dict Literal Expressions
@@ -802,12 +827,12 @@ DictEntry = Expression ":" Expression
 
 **Examples:**
 ```
-var empty = {}
-var scores = {"Alice": 95, "Bob": 87}
+var empty = {};
+var scores = {"Alice": 95, "Bob": 87};
 var dynamic = {
     get_key(): get_value(),
     [computed_key]: computed_value
-}
+};
 ```
 
 ### 5.14. Loop Expressions
@@ -1069,10 +1094,10 @@ class Vector {
     var y;
     
     static fn new(x, y) {
-        var v = Vector()
-        v.x = x
-        v.y = y
-        v
+        var v = Vector();
+        v.x = x;
+        v.y = y;
+        v;
     }
     
     fn op_add(other) {
@@ -1088,11 +1113,11 @@ class Vector {
     }
 }
 
-var a = Vector.new(1, 2)
-var b = Vector.new(3, 4)
-var c = a + b      // Vector(4, 6)
-var d = a * 2      // Vector(2, 4)
-print(a == b)      // false
+var a = Vector.new(1, 2);
+var b = Vector.new(3, 4);
+var c = a + b;      // Vector(4, 6)
+var d = a * 2;      // Vector(2, 4)
+print(a == b);      // false
 ```
 
 ---

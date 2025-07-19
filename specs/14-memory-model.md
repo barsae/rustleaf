@@ -59,10 +59,10 @@ print(dict2)         // {a: 1, b: 2, c: 3} - sees the change
 class Point {
     var x, y;
     static fn new(x, y) {
-        var p = Point()
-        p.x = x
-        p.y = y
-        p
+        var p = Point();
+        p.x = x;
+        p.y = y;
+        p;
     }
 }
 
@@ -109,7 +109,7 @@ Memory is automatically reclaimed when values are no longer reachable.
 ```
 fn create_data() {
     var large_list = range(0, 10000)  // Allocates memory
-    large_list.map(fn(x) { x * x })   // More allocation
+    large_list.map(|x| x * x)   // More allocation
     // large_list becomes unreachable when function returns
     // Memory is automatically reclaimed by GC
 }
@@ -245,9 +245,9 @@ class TempDirectory {
     var path;
     
     static fn new(prefix) {
-        var temp = TempDirectory()
-        temp.path = create_temp_dir(prefix)
-        temp
+        var temp = TempDirectory();
+        temp.path = create_temp_dir(prefix);
+        temp;
     }
     
     fn close() {

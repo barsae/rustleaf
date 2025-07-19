@@ -85,7 +85,7 @@ var y = null        // Explicit null (same as above)
 var z = 2 + 3       // z is 5
 
 // Complex initializers
-var list = [1, 2, 3].map(fn(x) { x * 2 })
+var list = [1, 2, 3].map(|x| x * 2)
 var config = {
     host: "localhost",
     port: 8080,
@@ -209,7 +209,7 @@ print(counter2())   // 1 (independent count)
 var funcs = []
 for i in range(0, 3) {
     var j = i       // Create new variable each iteration
-    funcs.append(fn() { j })
+    funcs.append(|| j)
 }
 
 for f in funcs {

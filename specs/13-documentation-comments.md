@@ -106,9 +106,9 @@ class Point {
     /// @param y The y-coordinate
     /// @returns A new Point instance
     static fn new(x, y) {
-        var p = Point()
-        p.x = x
-        p.y = y
+        var p = Point();
+        p.x = x;
+        p.y = y;
         p
     }
     
@@ -152,14 +152,14 @@ fn add(a, b) {
 /// @example
 /// ```
 /// var numbers = [1, 2, 3]
-/// var doubled = process_items(numbers, fn(x) { x * 2 })
+/// var doubled = process_items(numbers, |x| x * 2)
 /// print(doubled)  // [2, 4, 6]
 /// ```
 /// 
 /// @example
 /// ```
 /// var words = ["hello", "world"]
-/// var upper = process_items(words, fn(s) { s.upper() })
+/// var upper = process_items(words, |s| s.upper())
 /// print(upper)  // ["HELLO", "WORLD"]
 /// ```
 fn process_items(items, transform_fn) {
@@ -294,9 +294,9 @@ class ConfigManager {
     /// @param path The path to the configuration file
     /// @returns A new ConfigManager instance
     static fn new(path) {
-        var manager = ConfigManager()
-        manager.config_path = path
-        manager.load()
+        var manager = ConfigManager();
+        manager.config_path = path;
+        manager.load();
         manager
     }
     

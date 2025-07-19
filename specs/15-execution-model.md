@@ -136,14 +136,14 @@ Method chains evaluate left to right.
 
 ```
 result = data
-    .filter(fn(x) { x > 0 })     // First
-    .map(fn(x) { x * 2 })        // Second  
-    .reduce(fn(a, b) { a + b })  // Third
+    .filter(|x| x > 0)     // First
+    .map(|x| x * 2)        // Second  
+    .reduce(|a, b| a + b)  // Third
 
 // Equivalent to:
-var temp1 = data.filter(fn(x) { x > 0 })
-var temp2 = temp1.map(fn(x) { x * 2 })
-var result = temp2.reduce(fn(a, b) { a + b })
+var temp1 = data.filter(|x| x > 0)
+var temp2 = temp1.map(|x| x * 2)
+var result = temp2.reduce(|a, b| a + b)
 ```
 
 ### 15.3. Function Call Semantics

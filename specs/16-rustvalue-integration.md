@@ -70,7 +70,7 @@ RustValues work seamlessly with all RustLeaf operations.
 ```
 // RustValues in collections
 var objects = [Point.new(1, 2), Point.new(3, 4), Point.new(5, 6)]
-var distances = objects.map(fn(p) { p.distance() })
+var distances = objects.map(|p| p.distance())
 
 // RustValues in dictionaries
 var registry = {
@@ -352,7 +352,7 @@ for item in data.items {
     print("${item.name}: ${item.value}")
 }
 
-var filtered = data.items.filter(fn(item) { item.active })
+var filtered = data.items.filter(|item| item.active)
 ```
 
 **Performance Integration:**
@@ -366,6 +366,6 @@ var inverse = matrix.invert()             // Fast native computation
 
 // Seamless integration with RustLeaf
 var matrices = [matrix, inverse]
-var results = matrices.map(fn(m) { m.trace() })
+var results = matrices.map(|m| m.trace())
 ```
 

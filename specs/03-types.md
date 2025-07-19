@@ -143,8 +143,8 @@ fn op_next() {
     if self.index >= self.items.len() {
         return  // Returns unit (iteration complete)
     }
-    var value = self.items[self.index]
-    self.index += 1
+    var value = self.items[self.index];
+    self.index += 1;
     value
 }
 ```
@@ -345,9 +345,9 @@ print(mixed.len())         // 4
 print(mixed[3][1])         // 3
 
 // Functional methods
-var doubled = nums.map(fn(x) { x * 2 })
-var evens = nums.filter(fn(x) { x % 2 == 0 })
-var sum = nums.reduce(fn(a, b) { a + b }, 0)
+var doubled = nums.map(|x| x * 2)
+var evens = nums.filter(|x| x % 2 == 0)
+var sum = nums.reduce(|a, b| a + b, 0)
 ```
 
 #### 3.3.2. Dict Type
@@ -453,7 +453,7 @@ Functions are first-class values that encapsulate executable code.
 
 **Function Categories:**
 1. **Regular Functions**: Defined with `fn` at module level
-2. **Lambda Functions**: Anonymous functions created with `fn(params) { body }`
+2. **Closures**: Anonymous functions created with `|params| expression` or `|params| { body }`
 3. **Methods**: Functions defined within a class (receive implicit `self`)
 4. **Builtin Functions**: Global functions provided by the runtime
 5. **Builtin Methods**: Methods provided by the runtime on builtin types
@@ -473,15 +473,15 @@ var f = add
 print(type(f))         // "function"
 print(f(2, 3))        // 5
 
-// Lambda
-var square = fn(x) { x * x }
+// Closure
+var square = |x| x * x
 print(square(4))      // 16
 
 // Closure
 fn make_counter() {
-    var count = 0
-    fn() {
-        count = count + 1
+    var count = 0;
+    || {
+        count = count + 1;
         count
     }
 }
