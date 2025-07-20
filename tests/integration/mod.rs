@@ -73,3 +73,7 @@ mod class_tests {}
 // Anonymous class expression tests
 #[rustleaf_tests("tests/integration/anon_classes")]
 mod anon_class_tests {}
+
+// Temporary tests for testing automatic discovery
+#[rustleaf_tests("tests/integration/temp")]
+mod temp_tests {}
