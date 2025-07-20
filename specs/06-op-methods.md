@@ -13,7 +13,6 @@ Most RustLeaf syntax desugars to method calls at parse time, creating a uniform 
 - **Simplified parser/evaluator**: Fewer special cases, more uniform handling
 - **Extensible behavior**: Types can customize operations by implementing methods
 - **Consistent semantics**: All operations follow the same dispatch rules
-- **Performance opportunities**: Uniform structure enables optimization
 
 **Example:**
 ```
