@@ -1,0 +1,14 @@
+// Fibonacci infinite generator module
+
+class Fib {
+    var a = 1;
+    var b = 2;
+    
+    fn op_next() {
+        var current = b;
+        var temp = a + b;
+        a = temp;
+        b = current + temp;
+        current
+    }
+}
