@@ -13,6 +13,10 @@ Agents must:
 
 We use `just` as a command runner.
 
+## Developmpent
+
+`just test` is your primary command for building, testing, linting, etc. Try not to create one-off test files and scripts, just use the existing testing infrastructure. However there is a `temp` directory in the integration tests directory for you to use as needed.
+
 ## Docs
 
 There is documentation about development processes in `./docs`:
