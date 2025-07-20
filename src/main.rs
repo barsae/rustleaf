@@ -72,6 +72,7 @@ fn run_file(file_path: &str) -> Result<(), Box<dyn std::error::Error>> {
 
     // Evaluate
     let mut evaluator = Evaluator::new();
+    evaluator.set_current_file(file_path);
     let result = evaluator.evaluate(&ast)?;
 
     println!("Result: {result}");
