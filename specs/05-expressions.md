@@ -1046,45 +1046,24 @@ var result = while condition {
 
 ### Operator Overloading
 
-Classes can define special methods to overload operators.
+**Note:** This section provides a brief overview of operator overloading. For complete details on the unified operator method system, see [Chapter 6: Operator Methods](06-op-methods.md).
 
-**Operator Methods:**
+Classes can define special methods to overload operators through the unified operator method system:
+
+**Common Operator Methods:**
 ```
-// Arithmetic
-op_add(other)      // +
-op_sub(other)      // -
-op_mul(other)      // *
-op_div(other)      // /
-op_mod(other)      // %
-op_pow(other)      // **
+// Arithmetic operators desugar to method calls:
+a + b              // a.op_get_attr("op_add").op_call(b)
+a - b              // a.op_get_attr("op_sub").op_call(b)
+a * b              // a.op_get_attr("op_mul").op_call(b)
 
-// Comparison
-op_eq(other)       // ==
-op_ne(other)       // !=
-op_lt(other)       // <
-op_gt(other)       // >
-op_le(other)       // <=
-op_ge(other)       // >=
+// Comparison operators:
+a == b             // a.op_get_attr("op_eq").op_call(b)
+a < b              // a.op_get_attr("op_lt").op_call(b)
 
-// Bitwise
-op_and(other)      // &
-op_or(other)       // |
-op_xor(other)      // ^
-op_lshift(other)   // <<
-op_rshift(other)   // >>
-
-// Logical
-op_logical_xor(other)  // xor
-
-// Unary
-op_neg()           // - (unary)
-op_not()           // not
-op_bitnot()        // ~
-
-// Other
-op_index(key)      // [] (get)
-op_setindex(key, value)  // [] (set)
-op_contains(item)  // in
+// Access operators:
+a.property         // a.op_get_attr("property")
+a[key]             // a.op_get_attr("op_get_item").op_call(key)
 ```
 
 **Example:**
@@ -1115,10 +1094,12 @@ class Vector {
 
 var a = Vector.new(1, 2);
 var b = Vector.new(3, 4);
-var c = a + b;      // Vector(4, 6)
-var d = a * 2;      // Vector(2, 4)
-print(a == b);      // false
+var c = a + b;      // Vector(4, 6) - calls a.op_get_attr("op_add").op_call(b)
+var d = a * 2;      // Vector(2, 4) - calls a.op_get_attr("op_mul").op_call(2)
+print(a == b);      // false - calls a.op_get_attr("op_eq").op_call(b)
 ```
+
+For the complete specification of operator methods, desugaring rules, implementation requirements, and the bootstrap model, see [Chapter 6: Operator Methods](06-op-methods.md).
 
 ---
 
