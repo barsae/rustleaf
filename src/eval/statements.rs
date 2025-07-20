@@ -348,8 +348,292 @@ impl Evaluator {
                 self.environment.set(name, final_value.clone())?;
                 Ok(final_value)
             }
+            AstNode::PropertyAccess {
+                object, property, ..
+            } => {
+                // For property assignment, we need to handle mutation correctly
+                // We need to evaluate and potentially update the object in place
+
+                match operator {
+                    AssignmentOperator::Assign => {
+                        // For simple assignment, handle different object types
+                        match object.as_ref() {
+                            AstNode::Identifier(var_name, _) => {
+                                // Get the object from the environment
+                                let mut target_object = self.environment.get(var_name)?;
+
+                                match target_object {
+                                    Value::Dict(ref mut dict) => {
+                                        dict.insert(property.clone(), new_value.clone());
+                                        self.environment.set(var_name, target_object)?;
+                                        Ok(new_value)
+                                    }
+                                    Value::RustValue(ref mut rust_value) => {
+                                        rust_value.op_set(property, new_value.clone())?;
+                                        self.environment.set(var_name, target_object)?;
+                                        Ok(new_value)
+                                    }
+                                    _ => Err(RuntimeError::new(
+                                        format!(
+                                            "'{}' object does not support property assignment",
+                                            target_object.type_name()
+                                        ),
+                                        ErrorType::TypeError,
+                                    )),
+                                }
+                            }
+                            _ => {
+                                // For complex expressions like nested access, we need a different approach
+                                Err(RuntimeError::new(
+                                    "Complex nested property assignment not yet supported"
+                                        .to_string(),
+                                    ErrorType::RuntimeError,
+                                ))
+                            }
+                        }
+                    }
+                    _ => {
+                        // For compound assignment
+                        match object.as_ref() {
+                            AstNode::Identifier(var_name, _) => {
+                                let mut target_object = self.environment.get(var_name)?;
+
+                                let current_value = match &target_object {
+                                    Value::Dict(dict) => {
+                                        dict.get(property).cloned().unwrap_or(Value::Null)
+                                    }
+                                    Value::RustValue(_) => {
+                                        return Err(RuntimeError::new(
+                                            "Compound assignment on RustValue properties not yet supported".to_string(),
+                                            ErrorType::RuntimeError,
+                                        ));
+                                    }
+                                    _ => {
+                                        return Err(RuntimeError::new(
+                                            format!(
+                                                "'{}' object does not support property assignment",
+                                                target_object.type_name()
+                                            ),
+                                            ErrorType::TypeError,
+                                        ))
+                                    }
+                                };
+
+                                let final_value = match operator {
+                                    AssignmentOperator::AddAssign => {
+                                        self.add_values(&current_value, &new_value)?
+                                    }
+                                    AssignmentOperator::SubtractAssign => {
+                                        self.subtract_values(&current_value, &new_value)?
+                                    }
+                                    AssignmentOperator::MultiplyAssign => {
+                                        self.multiply_values(&current_value, &new_value)?
+                                    }
+                                    AssignmentOperator::DivideAssign => {
+                                        self.divide_values(&current_value, &new_value)?
+                                    }
+                                    AssignmentOperator::ModuloAssign => {
+                                        self.modulo_values(&current_value, &new_value)?
+                                    }
+                                    _ => unreachable!(),
+                                };
+
+                                match target_object {
+                                    Value::Dict(ref mut dict) => {
+                                        dict.insert(property.clone(), final_value.clone());
+                                        self.environment.set(var_name, target_object)?;
+                                        Ok(final_value)
+                                    }
+                                    _ => unreachable!(),
+                                }
+                            }
+                            _ => Err(RuntimeError::new(
+                                "Complex nested compound property assignment not yet supported"
+                                    .to_string(),
+                                ErrorType::RuntimeError,
+                            )),
+                        }
+                    }
+                }
+            }
+            AstNode::IndexAccess { object, index, .. } => {
+                // For index assignment, handle mutation correctly
+                let index_value = self.evaluate(index)?;
+
+                match operator {
+                    AssignmentOperator::Assign => match object.as_ref() {
+                        AstNode::Identifier(var_name, _) => {
+                            let mut target_object = self.environment.get(var_name)?;
+
+                            match target_object {
+                                Value::List(ref mut list) => {
+                                    if let Value::Int(idx) = index_value {
+                                        let list_len = list.len() as i64;
+                                        let normalized_idx =
+                                            if idx < 0 { list_len + idx } else { idx };
+
+                                        if normalized_idx >= 0
+                                            && (normalized_idx as usize) < list.len()
+                                        {
+                                            list[normalized_idx as usize] = new_value.clone();
+                                            self.environment.set(var_name, target_object)?;
+                                            Ok(new_value)
+                                        } else {
+                                            Err(RuntimeError::new(
+                                                "list index out of range".to_string(),
+                                                ErrorType::IndexError,
+                                            ))
+                                        }
+                                    } else {
+                                        Err(RuntimeError::new(
+                                            "list indices must be integers".to_string(),
+                                            ErrorType::TypeError,
+                                        ))
+                                    }
+                                }
+                                Value::Dict(ref mut dict) => {
+                                    if let Value::String(key) = index_value {
+                                        dict.insert(key, new_value.clone());
+                                        self.environment.set(var_name, target_object)?;
+                                        Ok(new_value)
+                                    } else {
+                                        Err(RuntimeError::new(
+                                            "dict keys must be strings".to_string(),
+                                            ErrorType::TypeError,
+                                        ))
+                                    }
+                                }
+                                Value::RustValue(ref mut rust_value) => {
+                                    rust_value.op_index_set(index_value, new_value.clone())?;
+                                    self.environment.set(var_name, target_object)?;
+                                    Ok(new_value)
+                                }
+                                _ => Err(RuntimeError::new(
+                                    format!(
+                                        "'{}' object does not support index assignment",
+                                        target_object.type_name()
+                                    ),
+                                    ErrorType::TypeError,
+                                )),
+                            }
+                        }
+                        _ => Err(RuntimeError::new(
+                            "Complex nested index assignment not yet supported".to_string(),
+                            ErrorType::RuntimeError,
+                        )),
+                    },
+                    _ => {
+                        // For compound assignment
+                        match object.as_ref() {
+                            AstNode::Identifier(var_name, _) => {
+                                let mut target_object = self.environment.get(var_name)?;
+
+                                let current_value = match &target_object {
+                                    Value::List(list) => {
+                                        if let Value::Int(idx) = index_value {
+                                            let list_len = list.len() as i64;
+                                            let normalized_idx =
+                                                if idx < 0 { list_len + idx } else { idx };
+
+                                            if normalized_idx >= 0
+                                                && (normalized_idx as usize) < list.len()
+                                            {
+                                                list[normalized_idx as usize].clone()
+                                            } else {
+                                                return Err(RuntimeError::new(
+                                                    "list index out of range".to_string(),
+                                                    ErrorType::IndexError,
+                                                ));
+                                            }
+                                        } else {
+                                            return Err(RuntimeError::new(
+                                                "list indices must be integers".to_string(),
+                                                ErrorType::TypeError,
+                                            ));
+                                        }
+                                    }
+                                    Value::Dict(dict) => {
+                                        if let Value::String(key) = &index_value {
+                                            dict.get(key).cloned().unwrap_or(Value::Null)
+                                        } else {
+                                            return Err(RuntimeError::new(
+                                                "dict keys must be strings".to_string(),
+                                                ErrorType::TypeError,
+                                            ));
+                                        }
+                                    }
+                                    Value::RustValue(_) => {
+                                        return Err(RuntimeError::new(
+                                            "Compound assignment on RustValue indices not yet supported".to_string(),
+                                            ErrorType::RuntimeError,
+                                        ));
+                                    }
+                                    _ => {
+                                        return Err(RuntimeError::new(
+                                            format!(
+                                                "'{}' object does not support index assignment",
+                                                target_object.type_name()
+                                            ),
+                                            ErrorType::TypeError,
+                                        ))
+                                    }
+                                };
+
+                                let final_value = match operator {
+                                    AssignmentOperator::AddAssign => {
+                                        self.add_values(&current_value, &new_value)?
+                                    }
+                                    AssignmentOperator::SubtractAssign => {
+                                        self.subtract_values(&current_value, &new_value)?
+                                    }
+                                    AssignmentOperator::MultiplyAssign => {
+                                        self.multiply_values(&current_value, &new_value)?
+                                    }
+                                    AssignmentOperator::DivideAssign => {
+                                        self.divide_values(&current_value, &new_value)?
+                                    }
+                                    AssignmentOperator::ModuloAssign => {
+                                        self.modulo_values(&current_value, &new_value)?
+                                    }
+                                    _ => unreachable!(),
+                                };
+
+                                match target_object {
+                                    Value::List(ref mut list) => {
+                                        if let Value::Int(idx) = index_value {
+                                            let list_len = list.len() as i64;
+                                            let normalized_idx =
+                                                if idx < 0 { list_len + idx } else { idx };
+                                            list[normalized_idx as usize] = final_value.clone();
+                                            self.environment.set(var_name, target_object)?;
+                                            Ok(final_value)
+                                        } else {
+                                            unreachable!() // Already handled above
+                                        }
+                                    }
+                                    Value::Dict(ref mut dict) => {
+                                        if let Value::String(key) = index_value {
+                                            dict.insert(key, final_value.clone());
+                                            self.environment.set(var_name, target_object)?;
+                                            Ok(final_value)
+                                        } else {
+                                            unreachable!() // Already handled above
+                                        }
+                                    }
+                                    _ => unreachable!(), // Already handled above
+                                }
+                            }
+                            _ => Err(RuntimeError::new(
+                                "Complex nested compound index assignment not yet supported"
+                                    .to_string(),
+                                ErrorType::RuntimeError,
+                            )),
+                        }
+                    }
+                }
+            }
             _ => Err(RuntimeError::new(
-                "Complex assignment targets not implemented yet".to_string(),
+                format!("Invalid assignment target: {:?}", target),
                 ErrorType::RuntimeError,
             )),
         }

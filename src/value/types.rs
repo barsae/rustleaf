@@ -64,6 +64,28 @@ pub trait RustValue: fmt::Debug {
     fn is_empty(&self) -> bool {
         self.len() == Some(0)
     }
+
+    // Property/field assignment method
+    fn op_set(&mut self, _property: &str, _value: Value) -> Result<(), RuntimeError> {
+        Err(RuntimeError::new(
+            format!(
+                "'{}' object does not support property assignment",
+                self.type_name()
+            ),
+            ErrorType::TypeError,
+        ))
+    }
+
+    // Index assignment method
+    fn op_index_set(&mut self, _index: Value, _value: Value) -> Result<(), RuntimeError> {
+        Err(RuntimeError::new(
+            format!(
+                "'{}' object does not support index assignment",
+                self.type_name()
+            ),
+            ErrorType::TypeError,
+        ))
+    }
 }
 
 impl Clone for Box<dyn RustValue> {
