@@ -1,5 +1,5 @@
 ---
-description: "Commit work in progress to the current worker branch with intelligent commit structuring"
+description: "Commit work in progress with logical commit structuring"
 ---
 
 # Commit Work in Progress
@@ -11,15 +11,7 @@ description: "Commit work in progress to the current worker branch with intellig
 
 ## Your task
 
-1. **Run pre-commit verification steps**:
-   - !just test  
-   
-   **STOP AND REPORT IF ANY ISSUES ARE FOUND. DO NOT ATTEMPT TO FIX ISSUES.**
-
-2. **Run pre-commit formatting**:
-   - !cargo fmt
-
-3. **Commit all changes systematically**:
+**Commit all changes systematically**:
    - Review all staged and unstaged changes
    - Add untracked files that should be committed
    - Create logical, well-described commits using multiple commits if needed
