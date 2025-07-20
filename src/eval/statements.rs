@@ -1,3 +1,4 @@
+#![allow(unused_variables, unused_must_use, dead_code)]
 use super::core::Evaluator;
 use crate::lexer::SourceLocation;
 use crate::parser::{AssignmentOperator, AstNode, ImportClause, ModulePath, Parameter, Visibility};
@@ -12,7 +13,7 @@ pub struct Class {
 }
 
 // Class instance implementation
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct ClassInstance {
     pub class_name: String,
     pub fields: HashMap<String, Value>,
@@ -57,6 +58,10 @@ impl RustValue for ClassInstance {
 
     fn as_any(&self) -> &dyn std::any::Any {
         self
+    }
+
+    fn op_set(&mut self, property: &str, value: Value) -> Result<(), RuntimeError> {
+        self.set_field(property, value)
     }
 }
 
@@ -232,7 +237,7 @@ impl Evaluator {
 
                 let module_env = self.get_module(&module_path).unwrap();
                 let public_bindings = module_env.get_public_bindings();
-                let module_obj = Value::Dict(public_bindings);
+                let module_obj = Value::new_dict(public_bindings);
                 self.environment
                     .define_global(module_name.to_string(), module_obj);
             }
@@ -256,7 +261,7 @@ impl Evaluator {
                     // Success! Import the submodule as a namespace
                     let submodule_env = self.get_module(&submodule_path).unwrap();
                     let submodule_bindings = submodule_env.get_public_bindings();
-                    let module_obj = Value::Dict(submodule_bindings);
+                    let module_obj = Value::new_dict(submodule_bindings);
                     self.environment
                         .define_global(item_name.clone(), module_obj);
                 } else {
@@ -363,8 +368,17 @@ impl Evaluator {
                                 let mut target_object = self.environment.get(var_name)?;
 
                                 match target_object {
-                                    Value::Dict(ref mut dict) => {
-                                        dict.insert(property.clone(), new_value.clone());
+                                    Value::Dict(ref dict_ref) => {
+                                        target_object.with_dict_mut(|dict| {
+                                            dict.insert(property.clone(), new_value.clone());
+                                        })?;
+                                        self.environment.set(var_name, target_object)?;
+                                        Ok(new_value)
+                                    }
+                                    Value::ClassInstance(ref instance_ref) => {
+                                        target_object.with_class_instance_mut(|instance| {
+                                            instance.set_field(property, new_value.clone())
+                                        })?;
                                         self.environment.set(var_name, target_object)?;
                                         Ok(new_value)
                                     }
@@ -396,12 +410,19 @@ impl Evaluator {
                         // For compound assignment
                         match object.as_ref() {
                             AstNode::Identifier(var_name, _) => {
-                                let mut target_object = self.environment.get(var_name)?;
+                                let target_object = self.environment.get(var_name)?;
 
                                 let current_value = match &target_object {
-                                    Value::Dict(dict) => {
+                                    Value::Dict(dict_ref) => target_object.with_dict(|dict| {
                                         dict.get(property).cloned().unwrap_or(Value::Null)
-                                    }
+                                    })?,
+                                    Value::ClassInstance(instance_ref) => target_object
+                                        .with_class_instance(|instance| {
+                                            instance
+                                                .get_field(property)
+                                                .cloned()
+                                                .unwrap_or(Value::Null)
+                                        })?,
                                     Value::RustValue(_) => {
                                         return Err(RuntimeError::new(
                                             "Compound assignment on RustValue properties not yet supported".to_string(),
@@ -439,8 +460,17 @@ impl Evaluator {
                                 };
 
                                 match target_object {
-                                    Value::Dict(ref mut dict) => {
-                                        dict.insert(property.clone(), final_value.clone());
+                                    Value::Dict(ref dict_ref) => {
+                                        target_object.with_dict_mut(|dict| {
+                                            dict.insert(property.clone(), final_value.clone());
+                                        })?;
+                                        self.environment.set(var_name, target_object)?;
+                                        Ok(final_value)
+                                    }
+                                    Value::ClassInstance(ref instance_ref) => {
+                                        target_object.with_class_instance_mut(|instance| {
+                                            instance.set_field(property, final_value.clone())
+                                        })?;
                                         self.environment.set(var_name, target_object)?;
                                         Ok(final_value)
                                     }
@@ -466,24 +496,27 @@ impl Evaluator {
                             let mut target_object = self.environment.get(var_name)?;
 
                             match target_object {
-                                Value::List(ref mut list) => {
+                                Value::List(ref list_ref) => {
                                     if let Value::Int(idx) = index_value {
-                                        let list_len = list.len() as i64;
-                                        let normalized_idx =
-                                            if idx < 0 { list_len + idx } else { idx };
+                                        target_object.with_list_mut(|list| {
+                                            let list_len = list.len() as i64;
+                                            let normalized_idx =
+                                                if idx < 0 { list_len + idx } else { idx };
 
-                                        if normalized_idx >= 0
-                                            && (normalized_idx as usize) < list.len()
-                                        {
-                                            list[normalized_idx as usize] = new_value.clone();
-                                            self.environment.set(var_name, target_object)?;
-                                            Ok(new_value)
-                                        } else {
-                                            Err(RuntimeError::new(
-                                                "list index out of range".to_string(),
-                                                ErrorType::IndexError,
-                                            ))
-                                        }
+                                            if normalized_idx >= 0
+                                                && (normalized_idx as usize) < list.len()
+                                            {
+                                                list[normalized_idx as usize] = new_value.clone();
+                                                Ok(())
+                                            } else {
+                                                Err(RuntimeError::new(
+                                                    "list index out of range".to_string(),
+                                                    ErrorType::IndexError,
+                                                ))
+                                            }
+                                        })?;
+                                        self.environment.set(var_name, target_object)?;
+                                        Ok(new_value)
                                     } else {
                                         Err(RuntimeError::new(
                                             "list indices must be integers".to_string(),
@@ -491,9 +524,11 @@ impl Evaluator {
                                         ))
                                     }
                                 }
-                                Value::Dict(ref mut dict) => {
+                                Value::Dict(ref dict_ref) => {
                                     if let Value::String(key) = index_value {
-                                        dict.insert(key, new_value.clone());
+                                        target_object.with_dict_mut(|dict| {
+                                            dict.insert(key, new_value.clone());
+                                        })?;
                                         self.environment.set(var_name, target_object)?;
                                         Ok(new_value)
                                     } else {
@@ -526,25 +561,27 @@ impl Evaluator {
                         // For compound assignment
                         match object.as_ref() {
                             AstNode::Identifier(var_name, _) => {
-                                let mut target_object = self.environment.get(var_name)?;
+                                let target_object = self.environment.get(var_name)?;
 
                                 let current_value = match &target_object {
-                                    Value::List(list) => {
+                                    Value::List(list_ref) => {
                                         if let Value::Int(idx) = index_value {
-                                            let list_len = list.len() as i64;
-                                            let normalized_idx =
-                                                if idx < 0 { list_len + idx } else { idx };
+                                            target_object.with_list(|list| {
+                                                let list_len = list.len() as i64;
+                                                let normalized_idx =
+                                                    if idx < 0 { list_len + idx } else { idx };
 
-                                            if normalized_idx >= 0
-                                                && (normalized_idx as usize) < list.len()
-                                            {
-                                                list[normalized_idx as usize].clone()
-                                            } else {
-                                                return Err(RuntimeError::new(
-                                                    "list index out of range".to_string(),
-                                                    ErrorType::IndexError,
-                                                ));
-                                            }
+                                                if normalized_idx >= 0
+                                                    && (normalized_idx as usize) < list.len()
+                                                {
+                                                    Ok(list[normalized_idx as usize].clone())
+                                                } else {
+                                                    Err(RuntimeError::new(
+                                                        "list index out of range".to_string(),
+                                                        ErrorType::IndexError,
+                                                    ))
+                                                }
+                                            })??
                                         } else {
                                             return Err(RuntimeError::new(
                                                 "list indices must be integers".to_string(),
@@ -552,9 +589,11 @@ impl Evaluator {
                                             ));
                                         }
                                     }
-                                    Value::Dict(dict) => {
+                                    Value::Dict(dict_ref) => {
                                         if let Value::String(key) = &index_value {
-                                            dict.get(key).cloned().unwrap_or(Value::Null)
+                                            target_object.with_dict(|dict| {
+                                                dict.get(key).cloned().unwrap_or(Value::Null)
+                                            })?
                                         } else {
                                             return Err(RuntimeError::new(
                                                 "dict keys must be strings".to_string(),
@@ -599,21 +638,25 @@ impl Evaluator {
                                 };
 
                                 match target_object {
-                                    Value::List(ref mut list) => {
+                                    Value::List(ref list_ref) => {
                                         if let Value::Int(idx) = index_value {
-                                            let list_len = list.len() as i64;
-                                            let normalized_idx =
-                                                if idx < 0 { list_len + idx } else { idx };
-                                            list[normalized_idx as usize] = final_value.clone();
+                                            target_object.with_list_mut(|list| {
+                                                let list_len = list.len() as i64;
+                                                let normalized_idx =
+                                                    if idx < 0 { list_len + idx } else { idx };
+                                                list[normalized_idx as usize] = final_value.clone();
+                                            })?;
                                             self.environment.set(var_name, target_object)?;
                                             Ok(final_value)
                                         } else {
                                             unreachable!() // Already handled above
                                         }
                                     }
-                                    Value::Dict(ref mut dict) => {
+                                    Value::Dict(ref dict_ref) => {
                                         if let Value::String(key) = index_value {
-                                            dict.insert(key, final_value.clone());
+                                            target_object.with_dict_mut(|dict| {
+                                                dict.insert(key, final_value.clone());
+                                            })?;
                                             self.environment.set(var_name, target_object)?;
                                             Ok(final_value)
                                         } else {
@@ -734,7 +777,9 @@ impl Evaluator {
         let mut result = Value::Unit;
 
         match iterable_value {
-            Value::List(list) => {
+            Value::List(ref list_ref) => {
+                // We need to handle returns properly, so we can't use the closure
+                let list = list_ref.borrow();
                 for (index, item) in list.iter().enumerate() {
                     // Bind loop variable
                     self.environment.define(variable.to_string(), item.clone());

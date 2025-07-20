@@ -218,7 +218,7 @@ impl Environment {
         // String class
         let mut string_fields = HashMap::new();
         string_fields.insert("len".to_string(), len_method.clone());
-        let string_class = Value::Object(Object {
+        let string_class = Value::new_object(Object {
             class_name: "Class".to_string(),
             fields: string_fields,
             methods: HashMap::new(),
@@ -230,7 +230,7 @@ impl Environment {
         list_fields.insert("len".to_string(), len_method.clone());
         list_fields.insert("filter".to_string(), filter_method.clone());
         list_fields.insert("sum".to_string(), sum_method.clone());
-        let list_class = Value::Object(Object {
+        let list_class = Value::new_object(Object {
             class_name: "Class".to_string(),
             fields: list_fields,
             methods: HashMap::new(),
@@ -240,7 +240,7 @@ impl Environment {
         // Dict class
         let mut dict_fields = HashMap::new();
         dict_fields.insert("len".to_string(), len_method.clone());
-        let dict_class = Value::Object(Object {
+        let dict_class = Value::new_object(Object {
             class_name: "Class".to_string(),
             fields: dict_fields,
             methods: HashMap::new(),
@@ -251,7 +251,7 @@ impl Environment {
         let mut range_fields = HashMap::new();
         range_fields.insert("len".to_string(), len_method);
         range_fields.insert("filter".to_string(), filter_method);
-        let range_class = Value::Object(Object {
+        let range_class = Value::new_object(Object {
             class_name: "Class".to_string(),
             fields: range_fields,
             methods: HashMap::new(),

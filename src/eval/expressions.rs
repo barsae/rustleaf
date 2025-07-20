@@ -1,3 +1,4 @@
+#![allow(unused_variables, unused_must_use, dead_code)]
 use super::core::Evaluator;
 use crate::parser::AstNode;
 use crate::value::types::{ErrorType, Function, RuntimeError, Value};
@@ -63,7 +64,7 @@ impl Evaluator {
                 {
                     // Instantiate the class
                     let instance = class.instantiate(self)?;
-                    Ok(Value::RustValue(Box::new(instance)))
+                    Ok(Value::new_class_instance(instance))
                 } else {
                     Err(RuntimeError::new(
                         format!("{} is not callable", func_value.type_name()),
@@ -133,22 +134,82 @@ impl Evaluator {
             Err(_) => {
                 // Property doesn't exist, try as a method on object
                 match obj_value {
-                    Value::Object(obj) => {
-                        if let Some(method) = obj.methods.get(method_name) {
-                            // Add self as first argument
-                            let mut method_args = vec![Value::Object(obj.clone())];
-                            method_args.extend(args);
-                            self.call_user_function(method, &method_args)
-                        } else {
-                            Err(RuntimeError::new(
-                                format!(
-                                    "'{}' object has no method '{}'",
-                                    obj.class_name, method_name
-                                ),
-                                ErrorType::AttributeError,
-                            ))
+                    Value::Object(obj_ref) => {
+                        let obj_value = Value::Object(obj_ref.clone());
+                        obj_value.with_object(|obj| {
+                            if let Some(method) = obj.methods.get(method_name) {
+                                // Add self as first argument
+                                let mut method_args = vec![Value::Object(obj_ref.clone())];
+                                method_args.extend(args);
+                                self.call_user_function(method, &method_args)
+                            } else {
+                                Err(RuntimeError::new(
+                                    format!(
+                                        "'{}' object has no method '{}'",
+                                        obj.class_name, method_name
+                                    ),
+                                    ErrorType::AttributeError,
+                                ))
+                            }
+                        })?
+                    }
+                    Value::ClassInstance(ref instance_ref) => {
+                        // Handle ClassInstance method calls
+                        // First, extract method info without holding a borrow
+                        let method_info = obj_value.with_class_instance(|instance| {
+                            if let Some(method_decl) = instance.get_instance_method(method_name) {
+                                // Extract the function from the declaration
+                                if let AstNode::FunctionDeclaration {
+                                    parameters, body, ..
+                                } = method_decl
+                                {
+                                    Ok(Some((parameters.clone(), body.as_ref().clone())))
+                                } else {
+                                    Err(RuntimeError::new(
+                                        "Invalid instance method declaration".to_string(),
+                                        ErrorType::RuntimeError,
+                                    ))
+                                }
+                            } else {
+                                Ok(None)
+                            }
+                        })?;
+
+                        match method_info? {
+                            Some((parameters, body)) => {
+                                let func = Function {
+                                    name: Some(method_name.to_string()),
+                                    parameters,
+                                    body,
+                                    is_builtin: false,
+                                    closure: None,
+                                };
+                                // Add self as first argument
+                                let mut method_args = vec![obj_value.clone()];
+                                method_args.extend(args);
+                                self.call_user_function_with_self(&func, &method_args)
+                            }
+                            None => {
+                                let class_name = obj_value
+                                    .with_class_instance(|instance| instance.class_name.clone())?;
+                                Err(RuntimeError::new(
+                                    format!(
+                                        "'{}' object has no method '{}'",
+                                        class_name, method_name
+                                    ),
+                                    ErrorType::AttributeError,
+                                ))
+                            }
                         }
                     }
+                    Value::RustValue(ref rust_value) => Err(RuntimeError::new(
+                        format!(
+                            "'{}' object has no method '{}'",
+                            obj_value.type_name(),
+                            method_name
+                        ),
+                        ErrorType::AttributeError,
+                    )),
                     _ => Err(RuntimeError::new(
                         format!(
                             "'{}' object has no method '{}'",
@@ -178,60 +239,64 @@ impl Evaluator {
         }
 
         // Special handling for Dict - they use key access, not attribute access
-        if let Value::Dict(dict) = &obj_value {
-            return if let Some(value) = dict.get(property) {
-                Ok(value.clone())
-            } else {
-                Ok(Value::Null)
-            };
+        if let Value::Dict(dict_ref) = &obj_value {
+            return obj_value.with_dict(|dict| {
+                if let Some(value) = dict.get(property) {
+                    Ok(value.clone())
+                } else {
+                    Ok(Value::Null)
+                }
+            })?;
         }
 
         // Handle legacy Object type for backwards compatibility
-        if let Value::Object(obj) = &obj_value {
-            if let Some(value) = obj.fields.get(property) {
-                return Ok(value.clone());
-            } else {
-                return Err(RuntimeError::new(
-                    format!(
-                        "'{}' object has no attribute '{}'",
-                        obj.class_name, property
-                    ),
-                    ErrorType::AttributeError,
-                ));
-            }
+        if let Value::Object(obj_ref) = &obj_value {
+            return obj_value.with_object(|obj| {
+                if let Some(value) = obj.fields.get(property) {
+                    Ok(value.clone())
+                } else {
+                    Err(RuntimeError::new(
+                        format!(
+                            "'{}' object has no attribute '{}'",
+                            obj.class_name, property
+                        ),
+                        ErrorType::AttributeError,
+                    ))
+                }
+            })?;
         }
 
-        // Handle RustValue types (Class and ClassInstance)
-        if let Value::RustValue(ref rust_value) = obj_value {
-            // Handle ClassInstance field access
-            if let Some(instance) = rust_value
-                .as_any()
-                .downcast_ref::<crate::eval::statements::ClassInstance>()
-            {
+        // Handle ClassInstance field access
+        if let Value::ClassInstance(ref instance_ref) = obj_value {
+            return obj_value.with_class_instance(|instance| {
                 if let Some(field_value) = instance.get_field(property) {
-                    return Ok(field_value.clone());
+                    Ok(field_value.clone())
                 } else if instance.get_instance_method(property).is_some() {
                     // Don't return instance methods as functions in property access
                     // They should be handled in method call evaluation
-                    return Err(RuntimeError::new(
+                    Err(RuntimeError::new(
                         format!(
                             "'{}' object has no attribute '{}'",
                             instance.class_name, property
                         ),
                         ErrorType::AttributeError,
-                    ));
+                    ))
                 } else {
-                    return Err(RuntimeError::new(
+                    Err(RuntimeError::new(
                         format!(
                             "'{}' object has no attribute '{}'",
                             instance.class_name, property
                         ),
                         ErrorType::AttributeError,
-                    ));
+                    ))
                 }
-            }
+            })?;
+        }
+
+        // Handle RustValue types (Class and other types)
+        if let Value::RustValue(ref rust_value) = obj_value {
             // Handle Class static method access
-            else if let Some(class) = rust_value
+            if let Some(class) = rust_value
                 .as_any()
                 .downcast_ref::<crate::eval::statements::Class>()
             {
@@ -287,19 +352,21 @@ impl Evaluator {
         let index_value = self.evaluate(index)?;
 
         match obj_value {
-            Value::List(list) => {
+            Value::List(ref list_ref) => {
                 if let Value::Int(i) = index_value {
-                    let len = list.len() as i64;
-                    let idx = if i < 0 { len + i } else { i };
+                    obj_value.with_list(|list| {
+                        let len = list.len() as i64;
+                        let idx = if i < 0 { len + i } else { i };
 
-                    if idx >= 0 && (idx as usize) < list.len() {
-                        Ok(list[idx as usize].clone())
-                    } else {
-                        Err(RuntimeError::new(
-                            "List index out of range".to_string(),
-                            ErrorType::IndexError,
-                        ))
-                    }
+                        if idx >= 0 && (idx as usize) < list.len() {
+                            Ok(list[idx as usize].clone())
+                        } else {
+                            Err(RuntimeError::new(
+                                "List index out of range".to_string(),
+                                ErrorType::IndexError,
+                            ))
+                        }
+                    })?
                 } else {
                     Err(RuntimeError::new(
                         "List indices must be integers".to_string(),
@@ -307,9 +374,10 @@ impl Evaluator {
                     ))
                 }
             }
-            Value::Dict(dict) => {
+            Value::Dict(ref dict_ref) => {
                 if let Value::String(key) = index_value {
-                    Ok(dict.get(&key).cloned().unwrap_or(Value::Null))
+                    obj_value
+                        .with_dict(|dict| Ok(dict.get(&key).cloned().unwrap_or(Value::Null)))?
                 } else {
                     Err(RuntimeError::new(
                         "Dict keys must be strings".to_string(),
@@ -354,7 +422,7 @@ impl Evaluator {
         for element in elements {
             list.push(self.evaluate(element)?);
         }
-        Ok(Value::List(list))
+        Ok(Value::new_list(list))
     }
 
     pub(crate) fn evaluate_dict_literal(
@@ -375,7 +443,7 @@ impl Evaluator {
                 ));
             }
         }
-        Ok(Value::Dict(dict))
+        Ok(Value::new_dict(dict))
     }
 
     pub(crate) fn evaluate_if_expression(
@@ -404,6 +472,88 @@ impl Evaluator {
         }
     }
 
+    pub(crate) fn call_user_function_with_self(
+        &mut self,
+        function: &Function,
+        args: &[Value],
+    ) -> Result<Value, RuntimeError> {
+        // Create new scope for function execution
+        self.environment.push_scope();
+
+        // Add closure variables to the scope if present
+        if let Some(closure_scope) = &function.closure {
+            let closure_vars = closure_scope.get_local_variables();
+            for (name, _value) in closure_vars {
+                if let Some(value_ref) = closure_scope.get_mut(&name) {
+                    self.environment.define_ref(name, value_ref);
+                }
+            }
+        }
+
+        // Bind self parameter first (if we have arguments)
+        if !args.is_empty() {
+            self.environment.define("self".to_string(), args[0].clone());
+        }
+
+        // Bind declared parameters to remaining arguments
+        let mut arg_index = 1; // Start from 1 since args[0] is self
+        let mut varargs = Vec::new();
+        let kwargs = HashMap::new();
+
+        for param in &function.parameters {
+            if param.variadic {
+                // Collect remaining positional arguments
+                while arg_index < args.len() {
+                    varargs.push(args[arg_index].clone());
+                    arg_index += 1;
+                }
+                self.environment
+                    .define(param.name.clone(), Value::new_list(varargs.clone()));
+            } else if param.keyword_variadic {
+                // For now, just create empty dict - keyword arguments not fully implemented
+                self.environment
+                    .define(param.name.clone(), Value::new_dict(kwargs.clone()));
+            } else {
+                // Regular parameter
+                let value = if arg_index < args.len() {
+                    args[arg_index].clone()
+                } else if let Some(default_expr) = &param.default_value {
+                    // Evaluate default value
+                    self.evaluate(default_expr)?
+                } else {
+                    return Err(RuntimeError::new(
+                        format!("Missing required argument: {}", param.name),
+                        ErrorType::TypeError,
+                    ));
+                };
+
+                self.environment.define(param.name.clone(), value);
+                arg_index += 1;
+            }
+        }
+
+        // Check for too many arguments (unless we have varargs)
+        // Subtract 1 from expected args count since self is implicit
+        let expected_args = function.parameters.len();
+        let provided_args = args.len() - 1; // Subtract 1 for self
+
+        if provided_args > expected_args && !function.parameters.iter().any(|p| p.variadic) {
+            self.environment.pop_scope();
+            return Err(RuntimeError::new(
+                format!(
+                    "Too many arguments: expected {}, got {}",
+                    expected_args, provided_args
+                ),
+                ErrorType::TypeError,
+            ));
+        }
+
+        // Execute function body
+        let result = self.evaluate(&function.body);
+
+        self.environment.pop_scope();
+        result
+    }
     pub(crate) fn call_user_function(
         &mut self,
         function: &Function,
@@ -435,11 +585,11 @@ impl Evaluator {
                     arg_index += 1;
                 }
                 self.environment
-                    .define(param.name.clone(), Value::List(varargs.clone()));
+                    .define(param.name.clone(), Value::new_list(varargs.clone()));
             } else if param.keyword_variadic {
                 // For now, just create empty dict - keyword arguments not fully implemented
                 self.environment
-                    .define(param.name.clone(), Value::Dict(kwargs.clone()));
+                    .define(param.name.clone(), Value::new_dict(kwargs.clone()));
             } else {
                 // Regular parameter
                 let value = if arg_index < args.len() {
@@ -546,8 +696,12 @@ impl Evaluator {
 
                 match bound_object {
                     Value::String(s) => Ok(Value::Int(s.len() as i64)),
-                    Value::List(l) => Ok(Value::Int(l.len() as i64)),
-                    Value::Dict(d) => Ok(Value::Int(d.len() as i64)),
+                    Value::List(ref l) => {
+                        bound_object.with_list(|list| Ok(Value::Int(list.len() as i64)))?
+                    }
+                    Value::Dict(ref d) => {
+                        bound_object.with_dict(|dict| Ok(Value::Int(dict.len() as i64)))?
+                    }
                     Value::RustValue(rv) => {
                         if let Some(len) = rv.len() {
                             Ok(Value::Int(len))
@@ -614,7 +768,7 @@ impl Evaluator {
                                 }
                             }
 
-                            Ok(Value::List(filtered_items))
+                            Ok(Value::new_list(filtered_items))
                         } else {
                             Err(RuntimeError::new(
                                 format!("'{}' object has no filter()", bound_object.type_name()),
@@ -622,41 +776,44 @@ impl Evaluator {
                             ))
                         }
                     }
-                    Value::List(list) => {
+                    Value::List(list_ref) => {
                         // Also implement filter for lists
                         let mut filtered_items = Vec::new();
 
-                        for item in list {
-                            let call_result = match filter_func {
-                                Value::Function(func) => {
-                                    self.call_user_function(func, &[item.clone()])
-                                }
-                                _ => {
-                                    return Err(RuntimeError::new(
-                                        "filter() argument must be a function".to_string(),
-                                        ErrorType::TypeError,
-                                    ));
-                                }
-                            };
+                        bound_object.with_list(|list| {
+                            for item in list {
+                                let call_result = match filter_func {
+                                    Value::Function(func) => {
+                                        self.call_user_function(func, &[item.clone()])
+                                    }
+                                    _ => {
+                                        return Err(RuntimeError::new(
+                                            "filter() argument must be a function".to_string(),
+                                            ErrorType::TypeError,
+                                        ));
+                                    }
+                                };
 
-                            match call_result {
-                                Ok(Value::Bool(true)) => filtered_items.push(item.clone()),
-                                Ok(Value::Bool(false)) => {}
-                                Ok(Value::Null) => {}
-                                Ok(other) => {
-                                    return Err(RuntimeError::new(
-                                        format!(
-                                            "filter function must return bool, got {}",
-                                            other.type_name()
-                                        ),
-                                        ErrorType::TypeError,
-                                    ));
+                                match call_result {
+                                    Ok(Value::Bool(true)) => filtered_items.push(item.clone()),
+                                    Ok(Value::Bool(false)) => {}
+                                    Ok(Value::Null) => {}
+                                    Ok(other) => {
+                                        return Err(RuntimeError::new(
+                                            format!(
+                                                "filter function must return bool, got {}",
+                                                other.type_name()
+                                            ),
+                                            ErrorType::TypeError,
+                                        ));
+                                    }
+                                    Err(e) => return Err(e),
                                 }
-                                Err(e) => return Err(e),
                             }
-                        }
+                            Ok(())
+                        })?;
 
-                        Ok(Value::List(filtered_items))
+                        Ok(Value::new_list(filtered_items))
                     }
                     _ => Err(RuntimeError::new(
                         format!("'{}' object has no filter()", bound_object.type_name()),
@@ -673,37 +830,38 @@ impl Evaluator {
                 }
 
                 match bound_object {
-                    Value::List(list) => {
+                    Value::List(list_ref) => {
                         let mut sum = Value::Int(0);
 
-                        for item in list {
-                            match (&sum, item) {
-                                (Value::Int(s), Value::Int(i)) => {
-                                    sum = Value::Int(s + i);
-                                }
-                                (Value::Float(s), Value::Int(i)) => {
-                                    sum = Value::Float(s + (*i as f64));
-                                }
-                                (Value::Int(s), Value::Float(f)) => {
-                                    sum = Value::Float((*s as f64) + f);
-                                }
-                                (Value::Float(s), Value::Float(f)) => {
-                                    sum = Value::Float(s + f);
-                                }
-                                _ => {
-                                    return Err(RuntimeError::new(
-                                        format!(
-                                            "Cannot sum '{}' and '{}'",
-                                            sum.type_name(),
-                                            item.type_name()
-                                        ),
-                                        ErrorType::TypeError,
-                                    ));
+                        bound_object.with_list(|list| {
+                            for item in list {
+                                match (&sum, item) {
+                                    (Value::Int(s), Value::Int(i)) => {
+                                        sum = Value::Int(s + i);
+                                    }
+                                    (Value::Float(s), Value::Int(i)) => {
+                                        sum = Value::Float(s + (*i as f64));
+                                    }
+                                    (Value::Int(s), Value::Float(f)) => {
+                                        sum = Value::Float((*s as f64) + f);
+                                    }
+                                    (Value::Float(s), Value::Float(f)) => {
+                                        sum = Value::Float(s + f);
+                                    }
+                                    _ => {
+                                        return Err(RuntimeError::new(
+                                            format!(
+                                                "Cannot sum '{}' and '{}'",
+                                                sum.type_name(),
+                                                item.type_name()
+                                            ),
+                                            ErrorType::TypeError,
+                                        ));
+                                    }
                                 }
                             }
-                        }
-
-                        Ok(sum)
+                            Ok(sum)
+                        })?
                     }
                     _ => Err(RuntimeError::new(
                         format!("'{}' object has no sum()", bound_object.type_name()),

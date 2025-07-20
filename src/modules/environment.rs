@@ -147,7 +147,7 @@ impl ModuleEnvironment {
     /// Create a module object that provides access to all public items
     fn create_module_object(&self, source_env: &ModuleEnvironment) -> Value {
         let public_bindings = source_env.get_public_bindings();
-        Value::Dict(public_bindings)
+        Value::new_dict(public_bindings)
     }
 
     /// Check if a name exists in this module (including imports)
