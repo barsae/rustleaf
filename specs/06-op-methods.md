@@ -83,10 +83,6 @@ func()                  → func.op_call()
 func(x, y)              → func.op_call(x, y)
 ```
 
-**Call with Spread (future):**
-```
-func(*args, **kwargs)   → func.op_call_spread(args, kwargs)
-```
 
 #### 6.3.3. Indexing Operations
 
@@ -96,11 +92,6 @@ container[key]          → container.op_get_item(key)
 container[key] = value  → container.op_set_item(key, value)
 ```
 
-**Slicing (future):**
-```
-sequence[start:end]     → sequence.op_slice(start, end)
-sequence[start:end:step] → sequence.op_slice(start, end, step)
-```
 
 #### 6.3.4. Arithmetic Operations
 
@@ -243,7 +234,7 @@ This section defines what each type category must provide to participate in the 
 Every type must provide `op_get_attr(name: string) -> value` through its intrinsic method resolution mechanism.
 
 **Error Handling:**
-When `op_get_attr` is called with an unknown method name, it should raise a descriptive error:
+When `op_get_attr` is called with an unknown method name, it raises a descriptive error:
 ```
 object.unknown_method()
 # Error: No method 'unknown_method' on type 'ClassName'
