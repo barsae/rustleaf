@@ -134,7 +134,7 @@ rebase-continue:
 commit:
     #!/bin/bash
     # Check if there are changes to commit
-    if git diff --cached --quiet; then
+    if git diff --quiet && git diff --cached --quiet; then
         echo "No changes to commit."
         exit 0
     fi
