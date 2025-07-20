@@ -208,10 +208,8 @@ fn discover_rustleaf_files(
     let test_path = Path::new(test_dir);
 
     if !test_path.exists() {
-        return Err(std::io::Error::new(
-            std::io::ErrorKind::NotFound,
-            format!("Test directory does not exist: {test_dir}"),
-        ));
+        // Create the directory if it doesn't exist
+        fs::create_dir_all(test_path)?;
     }
 
     for entry in fs::read_dir(test_path)? {
