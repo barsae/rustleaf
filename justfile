@@ -3,8 +3,29 @@
 rust_flags := "RUSTFLAGS=\"-D warnings\""
 current_branch := `basename $(pwd)`
 
-# Run chec, test, and clippy with warnings as errors
-test:
+# Check if test directories changed and trigger rebuild if needed
+check-test-dirs:
+    #!/bin/bash
+    hash_file="target/.test-dirs-hash"
+    current_hash=$(tree tests/integration tests/unit 2>/dev/null | shasum -a 256 | cut -d' ' -f1)
+
+    # Ensure target directory exists
+    mkdir -p target
+
+    stored_hash=""
+    if [ -f "$hash_file" ]; then
+        stored_hash=$(cat "$hash_file")
+    fi
+
+    if [ "$current_hash" != "$stored_hash" ]; then
+        echo "Test directory structure changed, triggering rebuild..."
+        touch tests/integration/mod.rs
+    fi
+
+    echo "$current_hash" > "$hash_file"
+
+# Run check, test, and clippy with warnings as errors
+test: check-test-dirs
     {{rust_flags}} cargo check
     {{rust_flags}} cargo test
     cargo clippy -- -D warnings
@@ -24,26 +45,26 @@ worktree-status:
     #!/bin/bash
     echo "Worktree branch status relative to main:"
     echo "========================================"
-    
+
     # Get all worktree paths and branches
     git worktree list --porcelain | grep -E '^worktree|^branch' | while read -r line; do
         if [[ $line == worktree* ]]; then
             worktree_path=${line#worktree }
             read -r branch_line
             branch_name=${branch_line#branch refs/heads/}
-            
+
             # Skip main branch
             if [ "$branch_name" = "main" ]; then
                 continue
             fi
-            
+
             # Get ahead/behind counts
             ahead=$(git rev-list --count main..$branch_name 2>/dev/null || echo "0")
             behind=$(git rev-list --count $branch_name..main 2>/dev/null || echo "0")
-            
+
             # Format branch name with path
             branch_display="$branch_name ($(basename "$worktree_path"))"
-            
+
             # Show status
             if [ "$ahead" -eq 0 ] && [ "$behind" -eq 0 ]; then
                 echo "✅ $branch_display: up to date"
@@ -90,10 +111,10 @@ rebase:
         echo "Already up to date with main"
         exit 0
     fi
-    
+
     # Stash any changes
     just make-temp-stash-commit
-    
+
     # Attempt rebase
     if git rebase main; then
         echo "Rebase successful"
@@ -108,6 +129,24 @@ rebase-continue:
     git add -A
     git rebase --continue
     just pop-temp-stash-commit
+
+# Commit work in progress to current worker branch
+commit:
+    #!/bin/bash
+    # Check if there are changes to commit
+    if git diff --cached --quiet; then
+        echo "No changes to commit."
+        exit 0
+    fi
+
+    #!/bin/bash
+    if ! just test; then
+        echo "❌ Tests failed. Please fix issues before committing."
+        exit 1
+    fi
+
+    cargo fmt
+    claude -p "/commit"
 
 # Merge current branch into main
 merge:
