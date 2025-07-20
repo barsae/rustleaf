@@ -44,6 +44,22 @@ impl Evaluator {
                     self.call_user_function(&func, &args)
                 }
             }
+            Value::RustValue(ref rust_value) => {
+                // Check if this is a class being called (instantiation)
+                if let Some(class) = rust_value
+                    .as_any()
+                    .downcast_ref::<crate::eval::statements::Class>()
+                {
+                    // Instantiate the class
+                    let instance = class.instantiate(self)?;
+                    Ok(Value::RustValue(Box::new(instance)))
+                } else {
+                    Err(RuntimeError::new(
+                        format!("{} is not callable", func_value.type_name()),
+                        ErrorType::TypeError,
+                    ))
+                }
+            }
             _ => Err(RuntimeError::new(
                 format!("{} is not callable", func_value.type_name()),
                 ErrorType::TypeError,
@@ -148,6 +164,59 @@ impl Evaluator {
                                     ))
                                 }
                             }
+                            Value::RustValue(ref rust_value) => {
+                                // Handle ClassInstance method calls
+                                if let Some(instance) = rust_value
+                                    .as_any()
+                                    .downcast_ref::<crate::eval::statements::ClassInstance>(
+                                ) {
+                                    if let Some(method_decl) =
+                                        instance.get_instance_method(method_name)
+                                    {
+                                        if let AstNode::FunctionDeclaration {
+                                            parameters,
+                                            body,
+                                            ..
+                                        } = method_decl
+                                        {
+                                            let func = Function {
+                                                name: Some(method_name.to_string()),
+                                                parameters: parameters.clone(),
+                                                body: body.as_ref().clone(),
+                                                is_builtin: false,
+                                                closure: None,
+                                            };
+                                            // For instance methods, always add self as implicit first argument
+                                            // This will be bound to the 'self' parameter automatically
+                                            let mut method_args = vec![obj_value.clone()];
+                                            method_args.extend(args);
+                                            self.call_user_function_with_self(&func, &method_args)
+                                        } else {
+                                            Err(RuntimeError::new(
+                                                "Invalid instance method declaration".to_string(),
+                                                ErrorType::RuntimeError,
+                                            ))
+                                        }
+                                    } else {
+                                        Err(RuntimeError::new(
+                                            format!(
+                                                "'{}' object has no method '{}'",
+                                                instance.class_name, method_name
+                                            ),
+                                            ErrorType::AttributeError,
+                                        ))
+                                    }
+                                } else {
+                                    Err(RuntimeError::new(
+                                        format!(
+                                            "'{}' object has no method '{}'",
+                                            obj_value.type_name(),
+                                            method_name
+                                        ),
+                                        ErrorType::AttributeError,
+                                    ))
+                                }
+                            }
                             _ => Err(RuntimeError::new(
                                 format!(
                                     "'{}' object has no method '{}'",
@@ -189,6 +258,80 @@ impl Evaluator {
                     Ok(value.clone())
                 } else {
                     Ok(Value::Null)
+                }
+            }
+            Value::RustValue(ref rust_value) => {
+                // Handle ClassInstance field access
+                if let Some(instance) = rust_value
+                    .as_any()
+                    .downcast_ref::<crate::eval::statements::ClassInstance>()
+                {
+                    if let Some(field_value) = instance.get_field(property) {
+                        Ok(field_value.clone())
+                    } else if instance.get_instance_method(property).is_some() {
+                        // Don't return instance methods as functions in property access
+                        // They should be handled in method call evaluation
+                        Err(RuntimeError::new(
+                            format!(
+                                "'{}' object has no attribute '{}'",
+                                instance.class_name, property
+                            ),
+                            ErrorType::AttributeError,
+                        ))
+                    } else {
+                        Err(RuntimeError::new(
+                            format!(
+                                "'{}' object has no attribute '{}'",
+                                instance.class_name, property
+                            ),
+                            ErrorType::AttributeError,
+                        ))
+                    }
+                }
+                // Handle Class static method access
+                else if let Some(class) = rust_value
+                    .as_any()
+                    .downcast_ref::<crate::eval::statements::Class>()
+                {
+                    if let Some(static_method_decl) = class.get_static_method(property) {
+                        // Extract the function from the declaration and return it
+                        if let AstNode::FunctionDeclaration {
+                            parameters, body, ..
+                        } = static_method_decl
+                        {
+                            let func = Function {
+                                name: Some(property.to_string()),
+                                parameters: parameters.clone(),
+                                body: body.as_ref().clone(),
+                                is_builtin: false,
+                                closure: None,
+                            };
+                            Ok(Value::Function(func))
+                        } else {
+                            Err(RuntimeError::new(
+                                "Invalid static method declaration".to_string(),
+                                ErrorType::RuntimeError,
+                            ))
+                        }
+                    } else {
+                        Err(RuntimeError::new(
+                            format!(
+                                "'{}' object has no method '{}'",
+                                rust_value.type_name(),
+                                property
+                            ),
+                            ErrorType::AttributeError,
+                        ))
+                    }
+                } else {
+                    Err(RuntimeError::new(
+                        format!(
+                            "'{}' object has no attribute '{}'",
+                            obj_value.type_name(),
+                            property
+                        ),
+                        ErrorType::AttributeError,
+                    ))
                 }
             }
             Value::Null => Err(RuntimeError::new(
@@ -330,6 +473,89 @@ impl Evaluator {
         } else {
             Ok(Value::Null)
         }
+    }
+
+    pub(crate) fn call_user_function_with_self(
+        &mut self,
+        function: &Function,
+        args: &[Value],
+    ) -> Result<Value, RuntimeError> {
+        // Create new scope for function execution
+        self.environment.push_scope();
+
+        // Add closure variables to the scope if present
+        if let Some(closure_scope) = &function.closure {
+            let closure_vars = closure_scope.get_local_variables();
+            for (name, _value) in closure_vars {
+                if let Some(value_ref) = closure_scope.get_mut(&name) {
+                    self.environment.define_ref(name, value_ref);
+                }
+            }
+        }
+
+        // Bind self parameter first (if we have arguments)
+        if !args.is_empty() {
+            self.environment.define("self".to_string(), args[0].clone());
+        }
+
+        // Bind declared parameters to remaining arguments
+        let mut arg_index = 1; // Start from 1 since args[0] is self
+        let mut varargs = Vec::new();
+        let kwargs = HashMap::new();
+
+        for param in &function.parameters {
+            if param.variadic {
+                // Collect remaining positional arguments
+                while arg_index < args.len() {
+                    varargs.push(args[arg_index].clone());
+                    arg_index += 1;
+                }
+                self.environment
+                    .define(param.name.clone(), Value::List(varargs.clone()));
+            } else if param.keyword_variadic {
+                // For now, just create empty dict - keyword arguments not fully implemented
+                self.environment
+                    .define(param.name.clone(), Value::Dict(kwargs.clone()));
+            } else {
+                // Regular parameter
+                let value = if arg_index < args.len() {
+                    args[arg_index].clone()
+                } else if let Some(default_expr) = &param.default_value {
+                    // Evaluate default value
+                    self.evaluate(default_expr)?
+                } else {
+                    return Err(RuntimeError::new(
+                        format!("Missing required argument: {}", param.name),
+                        ErrorType::TypeError,
+                    ));
+                };
+
+                self.environment.define(param.name.clone(), value);
+                arg_index += 1;
+            }
+        }
+
+        // Check for too many arguments (unless we have varargs)
+        // Subtract 1 from expected args count since self is implicit
+        let expected_args = function.parameters.len();
+        let provided_args = args.len() - 1; // Subtract 1 for self
+
+        if provided_args > expected_args && !function.parameters.iter().any(|p| p.variadic) {
+            self.environment.pop_scope();
+            return Err(RuntimeError::new(
+                format!(
+                    "Too many arguments: expected {}, got {}",
+                    expected_args, provided_args
+                ),
+                ErrorType::TypeError,
+            ));
+        }
+
+        // Execute function body
+        let result = self.evaluate(&function.body);
+
+        self.environment.pop_scope();
+        result
     }
 
     pub(crate) fn call_user_function(

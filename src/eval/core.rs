@@ -301,6 +301,7 @@ impl Evaluator {
             AstNode::AnonymousFunction {
                 parameters, body, ..
             } => self.evaluate_anonymous_function(parameters, body),
+            AstNode::ClassExpression { members, .. } => self.evaluate_class_expression(members),
 
             // Statement forms
             AstNode::FunctionDeclaration {
@@ -310,9 +311,12 @@ impl Evaluator {
                 body,
                 ..
             } => self.evaluate_function_declaration(visibility, name, parameters, body),
-            AstNode::ClassDeclaration { .. } => {
-                todo!("Class declarations not implemented yet")
-            }
+            AstNode::ClassDeclaration {
+                visibility,
+                name,
+                members,
+                ..
+            } => self.evaluate_class_declaration(visibility, name, members),
             AstNode::ImportStatement {
                 path,
                 clause,

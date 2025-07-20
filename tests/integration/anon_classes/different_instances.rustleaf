@@ -1,0 +1,4 @@
+// Test: Different class instances are not equal
+var Class1 = class {};
+var Class2 = class {};
+assert(Class1 != Class2);

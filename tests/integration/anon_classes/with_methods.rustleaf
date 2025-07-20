@@ -1,0 +1,7 @@
+// Test: Class with method declarations parses correctly
+var MyClass = class {
+    fn method() {
+        42
+    }
+};
+assert(MyClass != null);

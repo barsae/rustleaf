@@ -72,6 +72,10 @@ pub enum AstNode {
         body: Box<AstNode>,
         location: SourceLocation,
     },
+    ClassExpression {
+        members: Vec<ClassMember>,
+        location: SourceLocation,
+    },
 
     // Statements
     ExpressionStatement {

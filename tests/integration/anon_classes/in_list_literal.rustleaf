@@ -1,0 +1,3 @@
+// Test: Class expressions work inside list literals
+var classes = [class {}, class {}];
+assert(classes[0] != null);

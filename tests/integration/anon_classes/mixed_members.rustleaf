@@ -1,0 +1,8 @@
+// Test: Class with both field and method parses correctly
+var MyClass = class {
+    var field = 10;
+    fn method() {
+        20
+    }
+};
+assert(MyClass != null);

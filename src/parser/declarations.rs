@@ -21,7 +21,7 @@ impl Parser {
                     TokenType::Var => {
                         self.parse_variable_declaration_with_visibility(Visibility::Public)
                     }
-                    _ => None
+                    _ => None,
                 }
             }
             TokenType::Class => self.parse_class_declaration(Visibility::Private),

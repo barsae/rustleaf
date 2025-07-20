@@ -1,0 +1,7 @@
+// Test: Static method can be called on class
+class MyClass {
+    static fn staticMethod() {
+        100
+    }
+}
+assert(MyClass.staticMethod() == 100);

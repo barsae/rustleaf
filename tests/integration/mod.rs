@@ -65,3 +65,11 @@ mod unit_tests {}
 // Module system tests
 #[rustleaf_tests("tests/integration/modules")]
 mod module_tests {}
+
+// Class declaration tests
+#[rustleaf_tests("tests/integration/classes")]
+mod class_tests {}
+
+// Anonymous class expression tests
+#[rustleaf_tests("tests/integration/anon_classes")]
+mod anon_class_tests {}

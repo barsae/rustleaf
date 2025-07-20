@@ -110,6 +110,9 @@ impl Parser {
     pub fn consume_identifier(&mut self, _message: &str) -> Option<String> {
         if self.check(&TokenType::Identifier) {
             Some(self.advance().lexeme)
+        } else if self.check(&TokenType::Self_) {
+            self.advance();
+            Some("self".to_string())
         } else {
             None
         }

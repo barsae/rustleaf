@@ -18,6 +18,10 @@ impl RustValue for ExampleRustValue {
     fn clone_box(&self) -> Box<dyn RustValue> {
         Box::new(self.clone())
     }
+
+    fn as_any(&self) -> &dyn std::any::Any {
+        self
+    }
 }
 
 // This would be the main trait that Rust types implement to be usable in RustLeaf
@@ -132,6 +136,10 @@ impl RustValue for RangeIterator {
 
     fn clone_box(&self) -> Box<dyn RustValue> {
         Box::new(self.clone())
+    }
+
+    fn as_any(&self) -> &dyn std::any::Any {
+        self
     }
 
     fn iter_next(&mut self) -> Option<Value> {

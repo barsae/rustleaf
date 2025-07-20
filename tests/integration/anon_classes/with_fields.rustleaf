@@ -1,0 +1,5 @@
+// Test: Class with field declarations parses correctly
+var MyClass = class {
+    var field = 42;
+};
+assert(MyClass != null);

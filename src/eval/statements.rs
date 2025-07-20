@@ -1,7 +1,155 @@
 use super::core::Evaluator;
 use crate::lexer::SourceLocation;
 use crate::parser::{AssignmentOperator, AstNode, ImportClause, ModulePath, Parameter, Visibility};
-use crate::value::types::{ErrorType, Function, RuntimeError, Value};
+use crate::value::types::{ErrorType, Function, RuntimeError, RustValue, Value};
+use std::collections::HashMap;
+
+// Class implementation
+#[derive(Debug, Clone)]
+pub struct Class {
+    pub name: Option<String>,
+    pub members: Vec<crate::parser::ClassMember>,
+}
+
+// Class instance implementation
+#[derive(Debug, Clone)]
+pub struct ClassInstance {
+    pub class_name: String,
+    pub fields: HashMap<String, Value>,
+    pub class_members: Vec<crate::parser::ClassMember>,
+}
+
+impl RustValue for Class {
+    fn type_name(&self) -> &'static str {
+        "class"
+    }
+
+    fn to_string(&self) -> String {
+        if let Some(name) = &self.name {
+            format!("<class '{}'>", name)
+        } else {
+            format!("<class with {} members>", self.members.len())
+        }
+    }
+
+    fn clone_box(&self) -> Box<dyn RustValue> {
+        Box::new(self.clone())
+    }
+
+    fn as_any(&self) -> &dyn std::any::Any {
+        self
+    }
+}
+
+impl RustValue for ClassInstance {
+    fn type_name(&self) -> &'static str {
+        // Return the class name as the type name, but for now use a generic type
+        "object"
+    }
+
+    fn to_string(&self) -> String {
+        format!("<{} object>", self.class_name)
+    }
+
+    fn clone_box(&self) -> Box<dyn RustValue> {
+        Box::new(self.clone())
+    }
+
+    fn as_any(&self) -> &dyn std::any::Any {
+        self
+    }
+}
+
+impl Class {
+    /// Create a new instance of this class
+    pub fn instantiate(&self, evaluator: &mut Evaluator) -> Result<ClassInstance, RuntimeError> {
+        let mut fields = HashMap::new();
+
+        // Initialize fields with their default values
+        for member in &self.members {
+            if let crate::parser::ClassMember::Field { name, value, .. } = member {
+                let field_value = if let Some(default_expr) = value {
+                    evaluator.evaluate(default_expr)?
+                } else {
+                    Value::Null
+                };
+                fields.insert(name.clone(), field_value);
+            }
+        }
+
+        Ok(ClassInstance {
+            class_name: self
+                .name
+                .clone()
+                .unwrap_or_else(|| "AnonymousClass".to_string()),
+            fields,
+            class_members: self.members.clone(),
+        })
+    }
+
+    /// Get a static method by name
+    pub fn get_static_method(&self, method_name: &str) -> Option<&AstNode> {
+        for member in &self.members {
+            if let crate::parser::ClassMember::Method {
+                is_static: true,
+                declaration,
+                ..
+            } = member
+            {
+                if let AstNode::FunctionDeclaration { name, .. } = declaration {
+                    if name == method_name {
+                        return Some(declaration);
+                    }
+                }
+            }
+        }
+        None
+    }
+}
+
+impl ClassInstance {
+    /// Get a field value by name
+    pub fn get_field(&self, field_name: &str) -> Option<&Value> {
+        self.fields.get(field_name)
+    }
+
+    /// Set a field value by name
+    pub fn set_field(&mut self, field_name: &str, value: Value) -> Result<(), RuntimeError> {
+        // Check if field exists in class definition
+        let field_exists = self.class_members.iter().any(|member| {
+            matches!(member, crate::parser::ClassMember::Field { name, .. } if name == field_name)
+        });
+
+        if field_exists {
+            self.fields.insert(field_name.to_string(), value);
+            Ok(())
+        } else {
+            Err(RuntimeError::new(
+                format!("'{}' object has no field '{}'", self.class_name, field_name),
+                ErrorType::AttributeError,
+            ))
+        }
+    }
+
+    /// Get an instance method by name
+    pub fn get_instance_method(&self, method_name: &str) -> Option<&AstNode> {
+        for member in &self.class_members {
+            if let crate::parser::ClassMember::Method {
+                is_static: false,
+                declaration,
+                ..
+            } = member
+            {
+                if let AstNode::FunctionDeclaration { name, .. } = declaration {
+                    if name == method_name {
+                        return Some(declaration);
+                    }
+                }
+            }
+        }
+        None
+    }
+}
 
 impl Evaluator {
     pub(crate) fn evaluate_block(&mut self, statements: &[AstNode]) -> Result<Value, RuntimeError> {
@@ -454,5 +602,37 @@ impl Evaluator {
         }
 
         result
+    }
+
+    pub(crate) fn evaluate_class_expression(
+        &mut self,
+        members: &[crate::parser::ClassMember],
+    ) -> Result<Value, RuntimeError> {
+        let class = Class {
+            name: None, // Anonymous class
+            members: members.to_vec(),
+        };
+        Ok(Value::RustValue(Box::new(class)))
+    }
+
+    pub(crate) fn evaluate_class_declaration(
+        &mut self,
+        visibility: &Visibility,
+        name: &str,
+        members: &[crate::parser::ClassMember],
+    ) -> Result<Value, RuntimeError> {
+        // Create the class object
+        let class = Class {
+            name: Some(name.to_string()),
+            members: members.to_vec(),
+        };
+        let class_value = Value::RustValue(Box::new(class));
+
+        // Define the class in the current environment with visibility
+        self.environment
+            .define_with_visibility(name.to_string(), class_value, visibility.clone());
+
+        // Class declarations evaluate to unit (like function declarations)
+        Ok(Value::Unit)
     }
 }

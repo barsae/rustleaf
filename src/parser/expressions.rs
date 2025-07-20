@@ -168,6 +168,10 @@ impl Parser {
                 let name = self.advance().lexeme;
                 Some(AstNode::Identifier(name, location))
             }
+            TokenType::Self_ => {
+                self.advance();
+                Some(AstNode::Identifier("self".to_string(), location))
+            }
             TokenType::LeftParen => {
                 self.advance();
                 let expr = self.parse_expression()?;
@@ -192,6 +196,7 @@ impl Parser {
             TokenType::Match => self.parse_match_expression(),
             TokenType::Try => self.parse_try_expression(),
             TokenType::Fn => self.parse_anonymous_function(),
+            TokenType::Class => self.parse_class_expression(),
             _ => None,
         }
     }
@@ -349,6 +354,26 @@ impl Parser {
             body,
             location,
         })
+    }
+
+    pub fn parse_class_expression(&mut self) -> Option<AstNode> {
+        let location = self.current_location();
+        self.consume(TokenType::Class, "Expected 'class'")?;
+
+        self.consume(TokenType::LeftBrace, "Expected '{' after 'class'")?;
+
+        let members = self.parse_many(|parser| {
+            if parser.check(&TokenType::RightBrace) {
+                None
+            } else {
+                parser.skip_newlines();
+                parser.parse_class_member()
+            }
+        });
+
+        self.consume(TokenType::RightBrace, "Expected '}' after class body")?;
+
+        Some(AstNode::ClassExpression { members, location })
     }
 
     // Helper methods for matching operators

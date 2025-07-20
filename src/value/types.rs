@@ -1,7 +1,9 @@
 #![allow(clippy::result_large_err)]
+#![allow(unused_imports)]
 
 use crate::eval::scope::Scope;
 use crate::parser::{AstNode, Parameter};
+use std::any::Any;
 use std::collections::HashMap;
 use std::fmt;
 
@@ -40,6 +42,7 @@ pub trait RustValue: fmt::Debug {
     fn type_name(&self) -> &'static str;
     fn to_string(&self) -> String;
     fn clone_box(&self) -> Box<dyn RustValue>;
+    fn as_any(&self) -> &dyn std::any::Any;
 
     // Optional iteration methods - default to None for non-iterable types
     fn iter_next(&mut self) -> Option<Value> {
