@@ -146,6 +146,7 @@ commit:
     fi
 
     cargo fmt
+    echo "Claude is committing..."
     claude -p "/commit"
 
 # Merge current branch into main
