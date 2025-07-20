@@ -98,8 +98,11 @@ MultiplicativeExpression ::= ExponentiationExpression
 ExponentiationExpression ::= UnaryExpression
                           | UnaryExpression "**" ExponentiationExpression
 
-UnaryExpression ::= PostfixExpression
+UnaryExpression ::= PipeExpression
                  | ("+" | "-" | "not" | "~") UnaryExpression
+
+PipeExpression ::= PostfixExpression
+                | PipeExpression ":" PostfixExpression
 
 PostfixExpression ::= PrimaryExpression
                    | PostfixExpression "." Identifier
@@ -211,19 +214,20 @@ This appendix lists all operators in RustLeaf in order of precedence, from highe
 | Precedence | Operator(s) | Description | Associativity |
 |------------|-------------|-------------|---------------|
 | 1 (Highest) | `()` `[]` `.` | Function call, indexing, property access | Left-to-right |
-| 2 | `+` `-` `not` `~` | Unary plus, minus, logical not, bitwise not | Right-to-left |
-| 3 | `**` | Exponentiation | Right-to-left |
-| 4 | `*` `/` `%` | Multiplication, division, modulo | Left-to-right |
-| 5 | `+` `-` | Addition, subtraction | Left-to-right |
-| 6 | `<<` `>>` | Bitwise left shift, right shift | Left-to-right |
-| 7 | `&` | Bitwise AND | Left-to-right |
-| 8 | `^` | Bitwise XOR | Left-to-right |
-| 9 | `\|` | Bitwise OR | Left-to-right |
-| 10 | `<` `<=` `>` `>=` `in` `is` | Comparison operators | Left-to-right |
-| 11 | `==` `!=` | Equality operators | Left-to-right |
-| 12 | `and` | Logical AND | Left-to-right |
-| 13 | `xor` | Logical XOR | Left-to-right |
-| 14 (Lowest) | `or` | Logical OR | Left-to-right |
+| 2 | `:` | Pipe operator (partial application) | Left-to-right |
+| 3 | `+` `-` `not` `~` | Unary plus, minus, logical not, bitwise not | Right-to-left |
+| 4 | `**` | Exponentiation | Right-to-left |
+| 5 | `*` `/` `%` | Multiplication, division, modulo | Left-to-right |
+| 6 | `+` `-` | Addition, subtraction | Left-to-right |
+| 7 | `<<` `>>` | Bitwise left shift, right shift | Left-to-right |
+| 8 | `&` | Bitwise AND | Left-to-right |
+| 9 | `^` | Bitwise XOR | Left-to-right |
+| 10 | `\|` | Bitwise OR | Left-to-right |
+| 11 | `<` `<=` `>` `>=` `in` `is` | Comparison operators | Left-to-right |
+| 12 | `==` `!=` | Equality operators | Left-to-right |
+| 13 | `and` | Logical AND | Left-to-right |
+| 14 | `xor` | Logical XOR | Left-to-right |
+| 15 (Lowest) | `or` | Logical OR | Left-to-right |
 
 ### Precedence Examples
 
@@ -241,11 +245,12 @@ not a and b // Equivalent to: (not a) and b
 // Comparison before logical
 x > 0 and y < 10  // Equivalent to: (x > 0) and (y < 10)
 
+// Pipe operator binds tighter than most operators but looser than function calls
+data : transform() + other  // Equivalent to: (data : transform()) + other
+func() : process() : save() // Equivalent to: ((func() : process()) : save())
+
 // Logical precedence: and, then xor, then or
 a and b xor c or d  // Equivalent to: ((a and b) xor c) or d
-
-// Ternary conditional is lowest precedence
-x > 0 ? y + z : w   // Equivalent to: x > 0 ? (y + z) : w
 ```
 
 ### Associativity Rules

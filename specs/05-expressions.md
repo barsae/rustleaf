@@ -504,7 +504,90 @@ true and false xor true  // true (and before xor)
 true xor false or false  // true (xor before or)
 ```
 
-### 5.6. Conditional Expressions (if)
+### 5.6. Pipe Expressions
+
+Pipe expressions provide a way to chain function calls in a left-to-right data flow pattern, eliminating deeply nested function calls.
+
+**Syntax:**
+```
+PipeExpression = Expression ":" Expression
+```
+
+**Semantics:**
+- The pipe operator `:` creates a partial application of the right-hand expression
+- `expr1 : expr2` is equivalent to `|*args, **kwargs| expr2(expr1, *args, **kwargs)`
+- The resulting partial application must be called with `()` to execute
+- Left-associative: `a : b : c` parses as `(a : b) : c`
+- Higher precedence than most operators, lower than property access and function calls
+
+**Precedence:**
+The pipe operator has precedence between property access/function calls and other binary operators:
+1. `.` (property access) - highest
+2. `()` (function call)  
+3. `:` (pipe)
+4. Other binary operators (`*`, `+`, `==`, etc.) - lower
+
+**Use Cases:**
+Pipe expressions solve the "pyramid of doom" problem by allowing nested function calls to be written as left-to-right pipelines:
+
+```rust
+// Instead of deeply nested calls:
+var result = obj1.this(obj2.type(obj3.of(obj4.crap())));
+
+// Write as a readable pipeline:
+var result = obj4.crap() : obj3.of() : obj2.type() : obj1.this();
+```
+
+**Examples:**
+```rust
+// Basic pipe chain
+var numbers = [1, 2, 3, 4, 5];
+var result = numbers
+    : filter(|x| x % 2 == 0)   // Keep even numbers
+    : map(|x| x * 2)           // Double them
+    : reduce(|a, b| a + b, 0); // Sum them up
+// result is 12
+
+// Data processing pipeline
+var result = database.read()
+    : etl.transform()
+    : query.filter(user_input.filter)
+    : query.aggregate(user_input.agg);
+
+// With additional arguments
+var processed = raw_data
+    : clean()
+    : validate(schema)
+    : transform(mapping_rules)
+    : save(output_path);
+
+// Mixed with other expressions
+var final_result = input_data
+    : process()
+    : format(style_options) 
+    + header_text;  // + has lower precedence than :
+
+// The pipe creates partial applications that must be called
+var processor = data : transform;  // This creates a function
+var result = processor();          // This calls it
+
+// Parentheses for clarity or precedence override
+var result = (data : transform() : validate()) + other_data;
+```
+
+**Error Handling:**
+- If the right-hand side doesn't resolve to a callable value, a runtime error occurs
+- Type errors are reported when the partial application is called, not when created
+- The pipe operator preserves the original function's error behavior
+
+**Implementation Note:**
+The pipe operator creates actual partial application function objects, not just syntactic sugar. This means:
+- The partial application can be stored in variables
+- It captures the left-hand value at creation time
+- It can be passed around and called later
+- All function calling semantics apply (variadic arguments, keyword arguments, etc.)
+
+### 5.7. Conditional Expressions (if)
 
 If expressions choose between values based on conditions.
 
@@ -544,7 +627,7 @@ var category = if age < 18 {
 }
 ```
 
-### 5.7. Match Expressions
+### 5.8. Match Expressions
 
 Match expressions provide pattern matching with multiple cases.
 
@@ -616,7 +699,7 @@ match point {
 }
 ```
 
-### 5.8. Try Expressions
+### 5.9. Try Expressions
 
 Try expressions handle errors by catching them.
 
@@ -669,7 +752,7 @@ var value = try {
 }
 ```
 
-### 5.9. Block Expressions
+### 5.10. Block Expressions
 
 Blocks are expressions that contain statements and evaluate to a value.
 
@@ -716,7 +799,7 @@ var result = {
 print(outer);        // Still 10
 ```
 
-### 5.10. Closure Expressions
+### 5.11. Closure Expressions
 
 Closures create function values inline using concise Rust-style syntax.
 
@@ -784,7 +867,7 @@ var formatted = items.map(|item| "Item: ${item.name}");
 var valid = data.filter(|x| x > 0 and x < 100);
 ```
 
-### 5.11. Object Literal Expressions
+### 5.12. Object Literal Expressions
 
 Object literals create dictionary objects with string keys.
 
@@ -828,7 +911,7 @@ var data = {
 }
 ```
 
-### 5.12. List Literal Expressions
+### 5.13. List Literal Expressions
 
 List literals create ordered collections.
 
@@ -861,7 +944,7 @@ var squares = [x * x for x in range(1, 10)];
 var evens = [x for x in numbers if x % 2 == 0];
 ```
 
-### 5.13. Dict Literal Expressions
+### 5.14. Dict Literal Expressions
 
 Dict literals create key-value mappings. This is the same as object literals (Section 5.12) but shown here for completeness.
 
@@ -881,7 +964,7 @@ var dynamic = {
 };
 ```
 
-### 5.14. Loop Expressions
+### 5.15. Loop Expressions
 
 Loop expressions provide iteration with the ability to return values through break statements.
 
@@ -890,7 +973,7 @@ Loop expressions provide iteration with the ability to return values through bre
 - **For expressions**: Iterate over a collection
 - **Loop expressions**: Infinite loops (must break to exit)
 
-#### 5.14.1. While Expressions
+#### 5.15.1. While Expressions
 
 While expressions repeatedly evaluate a block while a condition is true.
 
@@ -939,7 +1022,7 @@ var attempt_result = while attempts < max_attempts {
 // attempt_result is "succeeded" or unit (if max attempts reached)
 ```
 
-#### 5.14.2. For Expressions
+#### 5.15.2. For Expressions
 
 For expressions iterate over collections using the iterator protocol.
 
@@ -984,7 +1067,7 @@ var match_data = for [key, data] in key_value_pairs {
 };
 ```
 
-#### 5.14.3. Loop Expressions
+#### 5.15.3. Loop Expressions
 
 Loop expressions create infinite loops that must be exited with break.
 
@@ -1039,7 +1122,7 @@ var final_result = loop {
 };
 ```
 
-#### 5.14.4. Break and Continue in Expressions
+#### 5.15.4. Break and Continue in Expressions
 
 Break and continue statements work in loop expressions with specific semantics.
 
