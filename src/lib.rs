@@ -1,0 +1,32 @@
+// TODO: remove these after sufficient implementation is done
+#![allow(dead_code)]
+#![allow(unused_variables)]
+
+/// RustLeaf interpreter library
+pub mod core;
+pub mod eval;
+pub mod lexer;
+pub mod parser;
+
+use anyhow::Result;
+
+/// Run a RustLeaf program from source code
+pub fn run(source: String) -> Result<core::Value> {
+    // Parsing (includes lexical analysis)
+    let ast = parser::Parser::parse_str(&source)?;
+
+    // Evaluation
+    eval::evaluate(ast)
+}
+
+/// Run a RustLeaf program and print the result
+pub fn run_and_print(source: String) -> Result<()> {
+    let result = run(source)?;
+
+    // Only print non-unit values
+    if !matches!(result, core::Value::Unit) {
+        println!("{}", core::to_string(&result));
+    }
+
+    Ok(())
+}

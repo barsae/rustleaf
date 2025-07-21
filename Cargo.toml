@@ -15,11 +15,10 @@ name = "rustleaf"
 path = "src/lib.rs"
 
 [dependencies]
+anyhow = "1"
 clap = { version = "4.0", features = ["derive"] }
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
+indexmap = "2"
 rustleaf-macros = { path = "rustleaf-macros" }
-rustyline = "14.0"
 
 [dev-dependencies]
 tempfile = "3.0"
