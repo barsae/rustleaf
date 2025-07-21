@@ -25,7 +25,7 @@ impl Scope {
             parent: None,
         }
     }
-    
+
     /// Create a new scope with a parent
     pub fn with_parent(parent: Rc<RefCell<Scope>>) -> Self {
         Scope {
@@ -33,12 +33,12 @@ impl Scope {
             parent: Some(parent),
         }
     }
-    
+
     /// Define a new variable in this scope
     pub fn define(&mut self, name: String, value: Value) {
         self.vars.insert(name, value);
     }
-    
+
     /// Get a variable value, checking parent scopes if needed
     pub fn get(&self, name: &str) -> Option<Value> {
         if let Some(value) = self.vars.get(name) {
@@ -49,7 +49,7 @@ impl Scope {
             None
         }
     }
-    
+
     /// Set a variable value, checking parent scopes if needed
     pub fn set(&mut self, name: &str, value: Value) -> Result<(), String> {
         if self.vars.contains_key(name) {
@@ -61,10 +61,13 @@ impl Scope {
             Err(format!("Undefined variable: {}", name))
         }
     }
-    
+
     /// Check if a variable exists in this scope or any parent
     pub fn exists(&self, name: &str) -> bool {
-        self.vars.contains_key(name) || 
-            self.parent.as_ref().is_some_and(|p| p.borrow().exists(name))
+        self.vars.contains_key(name)
+            || self
+                .parent
+                .as_ref()
+                .is_some_and(|p| p.borrow().exists(name))
     }
 }

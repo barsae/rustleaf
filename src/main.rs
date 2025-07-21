@@ -97,7 +97,7 @@ fn run_repl() -> Result<(), Box<dyn std::error::Error>> {
         }
 
         match rustleaf::run_and_print(input.to_string()) {
-            Ok(()) => {},
+            Ok(()) => {}
             Err(e) => eprintln!("Error: {}", e),
         }
     }

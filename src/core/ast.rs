@@ -53,12 +53,12 @@ pub enum Expression {
     // Literals
     Literal(LiteralValue),
     Identifier(String),
-    
+
     // Core operations (post-desugaring)
     GetAttr(Box<Expression>, String),
     SetAttr(Box<Expression>, String, Box<Expression>),
     MethodCall(Box<Expression>, Vec<Expression>),
-    
+
     // Control flow
     Block(Vec<Statement>),
     If {
@@ -66,20 +66,20 @@ pub enum Expression {
         then_expr: Box<Expression>,
         else_expr: Option<Box<Expression>>,
     },
-    
+
     // Closures
     Lambda {
         params: Vec<String>,
         body: Box<Expression>,
     },
-    
+
     // Collections
     List(Vec<Expression>),
     Dict(Vec<(Expression, Expression)>),
-    
+
     // String interpolation (desugared to concat)
     Concat(Vec<Expression>),
-    
+
     // Logical operations (not desugared due to short-circuit)
     And(Box<Expression>, Box<Expression>),
     Or(Box<Expression>, Box<Expression>),
@@ -122,8 +122,8 @@ pub struct ImportSpec {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum ImportItems {
-    All,                          // import module
-    Specific(Vec<String>),        // import {a, b} from module
+    All,                   // import module
+    Specific(Vec<String>), // import {a, b} from module
 }
 
 #[derive(Debug, Clone, PartialEq)]

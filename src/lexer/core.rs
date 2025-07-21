@@ -1,6 +1,6 @@
+use crate::lexer::Token;
 use anyhow::Result;
 use regex::Regex;
-use crate::lexer::Token;
 
 struct LexerRule {
     pattern: Regex,
@@ -65,12 +65,12 @@ impl Lexer {
             },
             LexerRule {
                 pattern: Regex::new(r"^/\*\*([^*]|\*[^/])*\*/").unwrap(),
-                token_type: |s| Token::DocCommentBlock(s[3..s.len()-2].to_string()),
+                token_type: |s| Token::DocCommentBlock(s[3..s.len() - 2].to_string()),
                 ignore: false,
             },
             LexerRule {
                 pattern: Regex::new(r"^/\*!([^*]|\*[^/])*\*/").unwrap(),
-                token_type: |s| Token::InnerDocCommentBlock(s[3..s.len()-2].to_string()),
+                token_type: |s| Token::InnerDocCommentBlock(s[3..s.len() - 2].to_string()),
                 ignore: false,
             },
             // Regular comments (ignored)
@@ -84,24 +84,22 @@ impl Lexer {
                 token_type: |_| Token::Eof,
                 ignore: true,
             },
-
             // === STRING LITERALS ===
             LexerRule {
                 pattern: Regex::new(r#"^"([^"\\]|\\.)*""#).unwrap(),
-                token_type: |s| Token::String(s[1..s.len()-1].to_string()),
+                token_type: |s| Token::String(s[1..s.len() - 1].to_string()),
                 ignore: false,
             },
             LexerRule {
                 pattern: Regex::new(r#"^"""([^"]*|"[^"]*|""[^"])*""""#).unwrap(),
-                token_type: |s| Token::MultilineString(s[3..s.len()-3].to_string()),
+                token_type: |s| Token::MultilineString(s[3..s.len() - 3].to_string()),
                 ignore: false,
             },
             LexerRule {
                 pattern: Regex::new(r#"^r"([^"\r\n])*""#).unwrap(),
-                token_type: |s| Token::RawString(s[2..s.len()-1].to_string()),
+                token_type: |s| Token::RawString(s[2..s.len() - 1].to_string()),
                 ignore: false,
             },
-
             // === NUMERIC LITERALS ===
             // Floating-point literals
             LexerRule {
@@ -117,17 +115,23 @@ impl Lexer {
             // Integer literals
             LexerRule {
                 pattern: Regex::new(r"^0x[0-9a-fA-F]([0-9a-fA-F_]*[0-9a-fA-F])?").unwrap(),
-                token_type: |s| Token::Int(i64::from_str_radix(&s[2..].replace('_', ""), 16).unwrap_or(0)),
+                token_type: |s| {
+                    Token::Int(i64::from_str_radix(&s[2..].replace('_', ""), 16).unwrap_or(0))
+                },
                 ignore: false,
             },
             LexerRule {
                 pattern: Regex::new(r"^0o[0-7]([0-7_]*[0-7])?").unwrap(),
-                token_type: |s| Token::Int(i64::from_str_radix(&s[2..].replace('_', ""), 8).unwrap_or(0)),
+                token_type: |s| {
+                    Token::Int(i64::from_str_radix(&s[2..].replace('_', ""), 8).unwrap_or(0))
+                },
                 ignore: false,
             },
             LexerRule {
                 pattern: Regex::new(r"^0b[01]([01_]*[01])?").unwrap(),
-                token_type: |s| Token::Int(i64::from_str_radix(&s[2..].replace('_', ""), 2).unwrap_or(0)),
+                token_type: |s| {
+                    Token::Int(i64::from_str_radix(&s[2..].replace('_', ""), 2).unwrap_or(0))
+                },
                 ignore: false,
             },
             LexerRule {
@@ -135,7 +139,6 @@ impl Lexer {
                 token_type: |s| Token::Int(s.replace('_', "").parse().unwrap_or(0)),
                 ignore: false,
             },
-
             // === OPERATORS ===
             // Multi-character operators
             LexerRule {
@@ -274,7 +277,6 @@ impl Lexer {
                 token_type: |_| Token::Tilde,
                 ignore: false,
             },
-
             // === PUNCTUATION ===
             LexerRule {
                 pattern: Regex::new(r"^\(").unwrap(),
@@ -331,7 +333,6 @@ impl Lexer {
                 token_type: |_| Token::Hash,
                 ignore: false,
             },
-
             // === KEYWORDS ===
             // Control flow
             LexerRule {
@@ -525,7 +526,6 @@ impl Lexer {
                 token_type: |_| Token::Null,
                 ignore: false,
             },
-
             // === IDENTIFIERS ===
             // Must come last to avoid matching keywords
             LexerRule {
@@ -600,7 +600,9 @@ impl Lexer {
             let ch = self.source[self.current];
             Err(anyhow::anyhow!(
                 "Unexpected character '{}' at line {}, column {}",
-                ch, self.line, self.column
+                ch,
+                self.line,
+                self.column
             ))
         }
     }

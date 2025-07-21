@@ -1,8 +1,8 @@
 /// Lexer module - tokenization of RustLeaf source code
 mod core;
-mod token;
 #[cfg(test)]
 mod test;
+mod token;
 
 // Re-export public API
 pub use core::Lexer;

@@ -22,7 +22,7 @@ pub enum Value {
     Function(Function),
     Object(Rc<RefCell<Object>>),
     RustValue(Rc<RefCell<Box<dyn RustValue>>>),
-    
+
     // Internal values for method dispatch
     BuiltinMethod(BuiltinMethod),
     BoundMethod(Box<Value>, BuiltinMethod), // self, method
@@ -49,28 +49,52 @@ pub enum BuiltinMethod {
     StringUpper,
     StringLower,
     StringSplit,
-    
+
     // List methods
     ListLen,
     ListAppend,
     ListPop,
-    
+
     // Dict methods
     DictLen,
     DictGet,
     DictSet,
-    
+
     // Arithmetic operators
-    IntAdd, IntSub, IntMul, IntDiv, IntMod, IntPow, IntNeg,
-    FloatAdd, FloatSub, FloatMul, FloatDiv, FloatMod, FloatPow, FloatNeg,
-    
+    IntAdd,
+    IntSub,
+    IntMul,
+    IntDiv,
+    IntMod,
+    IntPow,
+    IntNeg,
+    FloatAdd,
+    FloatSub,
+    FloatMul,
+    FloatDiv,
+    FloatMod,
+    FloatPow,
+    FloatNeg,
+
     // Comparison operators
-    IntEq, IntNe, IntLt, IntGt, IntLe, IntGe,
-    FloatEq, FloatNe, FloatLt, FloatGt, FloatLe, FloatGe,
-    
+    IntEq,
+    IntNe,
+    IntLt,
+    IntGt,
+    IntLe,
+    IntGe,
+    FloatEq,
+    FloatNe,
+    FloatLt,
+    FloatGt,
+    FloatLe,
+    FloatGe,
+
     // Type conversion
-    IntStr, FloatStr, BoolStr,
-    
+    IntStr,
+    FloatStr,
+    BoolStr,
+
     // Special methods
     OpGetAttr,
 }
