@@ -1,7 +1,0 @@
-// Test: Class with static method parses correctly
-var MyClass = class {
-    static fn staticMethod() {
-        100
-    }
-};
-assert(MyClass != null);

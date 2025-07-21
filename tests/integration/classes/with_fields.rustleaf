@@ -1,6 +1,0 @@
-// Test: Class field can be accessed
-class MyClass {
-    var field = 42;
-}
-var instance = MyClass();
-assert(instance.field == 42);

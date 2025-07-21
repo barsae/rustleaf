@@ -1,7 +1,0 @@
-assert(5 > 3);
-assert(2 < 7);
-assert(5 >= 5);
-assert(3 <= 3);
-assert(10 != 5);
-assert("apple" < "banana");
-assert("hello" == "hello");

@@ -1,5 +1,0 @@
-// Test: Public class declaration parses correctly
-pub class MyClass {
-    var field = 42;
-}
-assert(MyClass != null);

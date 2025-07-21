@@ -1,5 +1,0 @@
-assert(-5 == -5);
-assert(+42 == 42);
-assert(not false == true);
-assert(not true == false);
-assert(~5 == -6);

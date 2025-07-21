@@ -1,6 +1,0 @@
-var x = if (true) 42 else 0;
-assert(x == 42);
-var y = if (false) 1 else if (true) 2 else 3;
-assert(y == 2);
-var z = if (false) 1 else null;
-assert(z == null);

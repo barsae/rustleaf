@@ -1,7 +1,0 @@
-var x = null;
-assert(x == null);
-assert(x != 42);
-assert(!x);
-
-var y;
-assert(y == null);

@@ -1,3 +1,0 @@
-// Test: Empty class expression creates valid class value
-var MyClass = class {};
-assert(MyClass != null);

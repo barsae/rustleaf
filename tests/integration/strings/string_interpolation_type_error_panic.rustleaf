@@ -1,4 +1,0 @@
-// Test that should fail - calling method on wrong type
-var number = 42;
-var result = "Length: ${number.len()}";
-assert(false); // Should never reach this

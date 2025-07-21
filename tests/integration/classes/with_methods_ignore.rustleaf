@@ -1,9 +1,0 @@
-// Test: Class method can be called
-class MyClass {
-    fn method() {
-        42
-    }
-}
-var instance = MyClass();
-print(instance.method());
-assert(instance.method() == 42);

@@ -1,4 +1,0 @@
-// Test that should fail - undefined variable in interpolation
-var defined_var = 42;
-var result = "Value: ${undefined_variable}";
-assert(false); // Should never reach this

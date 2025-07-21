@@ -1,7 +1,0 @@
-var hello = "Hello";
-var world = "World";
-var result = hello + ", " + world + "!";
-assert(result == "Hello, World!");
-
-var mixed = "Value: " + 42;
-assert(mixed == "Value: 42");

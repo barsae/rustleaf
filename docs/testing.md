@@ -13,7 +13,7 @@ Integration test files use the `.rustleaf` extension and support special suffixe
   - Use for testing assertion failures or expected runtime errors
 
 - **`_ignore.rustleaf`**: Tests that should be ignored by default
-  - Generates `#[ignore]` attribute  
+  - Generates `#[ignore]` attribute
   - Run with `cargo test -- --ignored`
   - Use for slow tests, known failing tests, or platform-specific tests
 

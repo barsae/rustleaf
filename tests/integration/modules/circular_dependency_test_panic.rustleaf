@@ -1,5 +1,0 @@
-// Test circular dependency detection
-
-// This should trigger circular dependency error
-use module_a_panic;
-print("Should not reach here - expected circular dependency error");

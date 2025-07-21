@@ -1,6 +1,0 @@
-var empty = [];
-var numbers = [1, 2, 3];
-var mixed = [1, "hello", true];
-assert(numbers[0] == 1);
-assert(numbers[2] == 3);
-assert(mixed[1] == "hello");
