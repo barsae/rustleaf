@@ -1,70 +1,146 @@
-/// Abstract Syntax Tree definitions for RustLeaf
-
 #[derive(Debug, Clone, PartialEq)]
 pub struct Program(pub Vec<Statement>);
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Statement {
+    // Expression statement (expression followed by semicolon)
     Expression(Expression),
-    VarDecl(String, Option<Expression>),
+
+    // Variable declaration with optional destructuring pattern
+    VarDecl {
+        pattern: Pattern,
+        value: Option<Expression>,
+        macros: Vec<MacroAnnotation>, // #[macro] annotations
+    },
+
+    // Assignment (statement-only, not expression)
+    Assignment {
+        target: LValue,
+        op: AssignOp,
+        value: Expression,
+    },
+
+    // Function declaration
     FnDecl {
         name: String,
-        params: Vec<String>,
-        body: Vec<Statement>,
+        params: Vec<Parameter>,
+        body: Box<Expression>, // Function body is a block expression
+        is_pub: bool, // pub keyword
+        macros: Vec<MacroAnnotation>, // #[macro] annotations
     },
+
+    // Class declaration
     ClassDecl {
         name: String,
         members: Vec<ClassMember>,
+        is_pub: bool, // pub keyword
+        macros: Vec<MacroAnnotation>, // #[macro] annotations
     },
+
+    // Module imports
     Import(ImportSpec),
-    Export(ExportSpec),
+
+    // Control flow (statement-only)
     Return(Option<Expression>),
-    Break,
+    Break(Option<Expression>), // Can break with value from loop expressions
     Continue,
-    While(Expression, Vec<Statement>),
-    For {
-        var: String,
-        iter: Expression,
-        body: Vec<Statement>,
-    },
-    If {
-        condition: Expression,
-        then_body: Vec<Statement>,
-        else_body: Option<Vec<Statement>>,
-    },
-    Match {
-        expr: Expression,
-        cases: Vec<MatchCase>,
-    },
-    Try {
-        body: Vec<Statement>,
-        catch: Option<CatchClause>,
-        finally: Option<Vec<Statement>>,
-    },
-    With {
-        var: String,
-        expr: Expression,
-        body: Vec<Statement>,
-    },
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum AssignOp {
+    Assign,      // =
+    AddAssign,   // +=
+    SubAssign,   // -=
+    MulAssign,   // *=
+    DivAssign,   // /=
+    ModAssign,   // %=
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum LValue {
+    Identifier(String),
+    GetAttr(Box<Expression>, String),    // obj.field
+    GetItem(Box<Expression>, Box<Expression>), // obj[key]
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Expression {
-    // Literals
+    // Literals and identifiers
     Literal(LiteralValue),
     Identifier(String),
 
-    // Core operations (post-desugaring)
-    GetAttr(Box<Expression>, String),
-    SetAttr(Box<Expression>, String, Box<Expression>),
-    MethodCall(Box<Expression>, Vec<Expression>),
+    // Property access and method calls
+    GetAttr(Box<Expression>, String),           // obj.field
+    GetItem(Box<Expression>, Box<Expression>),  // obj[key]
+    FunctionCall(Box<Expression>, Vec<Expression>), // func(args)
+    MethodCall(Box<Expression>, String, Vec<Expression>), // obj.method(args)
 
-    // Control flow
+    // Binary operators
+    Add(Box<Expression>, Box<Expression>),      // +
+    Sub(Box<Expression>, Box<Expression>),      // -
+    Mul(Box<Expression>, Box<Expression>),      // *
+    Div(Box<Expression>, Box<Expression>),      // /
+    Mod(Box<Expression>, Box<Expression>),      // %
+    Pow(Box<Expression>, Box<Expression>),      // **
+
+    // Comparison operators
+    Eq(Box<Expression>, Box<Expression>),       // ==
+    Ne(Box<Expression>, Box<Expression>),       // !=
+    Lt(Box<Expression>, Box<Expression>),       // <
+    Le(Box<Expression>, Box<Expression>),       // <=
+    Gt(Box<Expression>, Box<Expression>),       // >
+    Ge(Box<Expression>, Box<Expression>),       // >=
+
+    // Bitwise operators
+    BitAnd(Box<Expression>, Box<Expression>),   // &
+    BitOr(Box<Expression>, Box<Expression>),    // |
+    BitXor(Box<Expression>, Box<Expression>),   // ^
+    LeftShift(Box<Expression>, Box<Expression>), // <<
+    RightShift(Box<Expression>, Box<Expression>), // >>
+
+    // Logical operators (with short-circuit semantics)
+    And(Box<Expression>, Box<Expression>),      // and
+    Or(Box<Expression>, Box<Expression>),       // or
+    Xor(Box<Expression>, Box<Expression>),      // xor
+
+    // Unary operators
+    Neg(Box<Expression>),                       // -expr
+    Not(Box<Expression>),                       // not expr
+    BitNot(Box<Expression>),                    // ~expr
+
+    // Pipe operator
+    Pipe(Box<Expression>, Box<Expression>),     // expr1 : expr2
+
+    // Control flow expressions
     Block(Vec<Statement>),
     If {
         condition: Box<Expression>,
         then_expr: Box<Expression>,
         else_expr: Option<Box<Expression>>,
+    },
+    Match {
+        expr: Box<Expression>,
+        cases: Vec<MatchCase>,
+    },
+    While {
+        condition: Box<Expression>,
+        body: Box<Expression>,
+    },
+    For {
+        pattern: Pattern,
+        iter: Box<Expression>,
+        body: Box<Expression>,
+    },
+    Loop {
+        body: Box<Expression>,
+    },
+    Try {
+        body: Box<Expression>,
+        catch: CatchClause,
+    },
+    With {
+        resources: Vec<WithResource>,
+        body: Box<Expression>,
     },
 
     // Closures
@@ -76,14 +152,6 @@ pub enum Expression {
     // Collections
     List(Vec<Expression>),
     Dict(Vec<(Expression, Expression)>),
-
-    // String interpolation (desugared to concat)
-    Concat(Vec<Expression>),
-
-    // Logical operations (not desugared due to short-circuit)
-    And(Box<Expression>, Box<Expression>),
-    Or(Box<Expression>, Box<Expression>),
-    Not(Box<Expression>),
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -93,24 +161,40 @@ pub enum LiteralValue {
     Int(i64),
     Float(f64),
     String(String),
+    RawString(String), // r"..." strings
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct Parameter {
+    pub name: String,
+    pub default: Option<LiteralValue>, // Default values must be literals
+    pub kind: ParameterKind,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum ParameterKind {
+    Regular,    // name
+    Rest,       // *name
+    Keyword,    // **name
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct ClassMember {
     pub name: String,
     pub kind: ClassMemberKind,
+    pub macros: Vec<MacroAnnotation>, // #[macro] annotations on methods/fields
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum ClassMemberKind {
     Field(Option<Expression>), // Optional initializer
     Method {
-        params: Vec<String>,
-        body: Vec<Statement>,
+        params: Vec<Parameter>,
+        body: Box<Expression>, // Methods have expression bodies too
     },
     StaticMethod {
-        params: Vec<String>,
-        body: Vec<Statement>,
+        params: Vec<Parameter>,
+        body: Box<Expression>,
     },
 }
 
@@ -122,33 +206,61 @@ pub struct ImportSpec {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum ImportItems {
-    All,                   // import module
-    Specific(Vec<String>), // import {a, b} from module
+    All,                   // use module::*
+    Specific(Vec<ImportItem>), // use module::{a, b as c}
 }
 
 #[derive(Debug, Clone, PartialEq)]
-pub struct ExportSpec {
-    pub items: Vec<String>,
+pub struct ImportItem {
+    pub name: String,
+    pub alias: Option<String>, // for "as" renaming
 }
+
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct MatchCase {
     pub pattern: Pattern,
     pub guard: Option<Expression>,
-    pub body: Vec<Statement>,
+    pub body: Box<Expression>, // Match case bodies are expressions
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Pattern {
     Literal(LiteralValue),
     Variable(String),
-    Wildcard,
-    List(Vec<Pattern>),
-    // More patterns can be added later
+    Wildcard, // _
+    List(Vec<Pattern>), // [a, b, *rest]
+    ListRest(Vec<Pattern>, Option<String>), // [a, b, *rest] with optional rest capture
+    Dict(Vec<DictPattern>), // {x, y: alias, z}
+    Range(Box<Pattern>, Box<Pattern>), // 1..10
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct DictPattern {
+    pub key: String,
+    pub alias: Option<String>, // {key: alias} vs {key}
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct CatchClause {
-    pub var: Option<String>,
-    pub body: Vec<Statement>,
+    pub pattern: Pattern, // Can pattern match on error object
+    pub body: Box<Expression>, // Catch body is expression
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct WithResource {
+    pub name: String,
+    pub value: Expression,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct MacroAnnotation {
+    pub name: String,
+    pub args: Vec<MacroArg>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum MacroArg {
+    Positional(LiteralValue),
+    Named(String, LiteralValue), // key: value
 }
