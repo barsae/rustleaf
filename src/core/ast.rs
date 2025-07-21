@@ -24,8 +24,8 @@ pub enum Statement {
     FnDecl {
         name: String,
         params: Vec<Parameter>,
-        body: Box<Expression>, // Function body is a block expression
-        is_pub: bool, // pub keyword
+        body: Box<Expression>,        // Function body is a block expression
+        is_pub: bool,                 // pub keyword
         macros: Vec<MacroAnnotation>, // #[macro] annotations
     },
 
@@ -33,7 +33,7 @@ pub enum Statement {
     ClassDecl {
         name: String,
         members: Vec<ClassMember>,
-        is_pub: bool, // pub keyword
+        is_pub: bool,                 // pub keyword
         macros: Vec<MacroAnnotation>, // #[macro] annotations
     },
 
@@ -48,18 +48,18 @@ pub enum Statement {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum AssignOp {
-    Assign,      // =
-    AddAssign,   // +=
-    SubAssign,   // -=
-    MulAssign,   // *=
-    DivAssign,   // /=
-    ModAssign,   // %=
+    Assign,    // =
+    AddAssign, // +=
+    SubAssign, // -=
+    MulAssign, // *=
+    DivAssign, // /=
+    ModAssign, // %=
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum LValue {
     Identifier(String),
-    GetAttr(Box<Expression>, String),    // obj.field
+    GetAttr(Box<Expression>, String),          // obj.field
     GetItem(Box<Expression>, Box<Expression>), // obj[key]
 }
 
@@ -70,46 +70,46 @@ pub enum Expression {
     Identifier(String),
 
     // Property access and method calls
-    GetAttr(Box<Expression>, String),           // obj.field
-    GetItem(Box<Expression>, Box<Expression>),  // obj[key]
+    GetAttr(Box<Expression>, String),               // obj.field
+    GetItem(Box<Expression>, Box<Expression>),      // obj[key]
     FunctionCall(Box<Expression>, Vec<Expression>), // func(args)
     MethodCall(Box<Expression>, String, Vec<Expression>), // obj.method(args)
 
     // Binary operators
-    Add(Box<Expression>, Box<Expression>),      // +
-    Sub(Box<Expression>, Box<Expression>),      // -
-    Mul(Box<Expression>, Box<Expression>),      // *
-    Div(Box<Expression>, Box<Expression>),      // /
-    Mod(Box<Expression>, Box<Expression>),      // %
-    Pow(Box<Expression>, Box<Expression>),      // **
+    Add(Box<Expression>, Box<Expression>), // +
+    Sub(Box<Expression>, Box<Expression>), // -
+    Mul(Box<Expression>, Box<Expression>), // *
+    Div(Box<Expression>, Box<Expression>), // /
+    Mod(Box<Expression>, Box<Expression>), // %
+    Pow(Box<Expression>, Box<Expression>), // **
 
     // Comparison operators
-    Eq(Box<Expression>, Box<Expression>),       // ==
-    Ne(Box<Expression>, Box<Expression>),       // !=
-    Lt(Box<Expression>, Box<Expression>),       // <
-    Le(Box<Expression>, Box<Expression>),       // <=
-    Gt(Box<Expression>, Box<Expression>),       // >
-    Ge(Box<Expression>, Box<Expression>),       // >=
+    Eq(Box<Expression>, Box<Expression>), // ==
+    Ne(Box<Expression>, Box<Expression>), // !=
+    Lt(Box<Expression>, Box<Expression>), // <
+    Le(Box<Expression>, Box<Expression>), // <=
+    Gt(Box<Expression>, Box<Expression>), // >
+    Ge(Box<Expression>, Box<Expression>), // >=
 
     // Bitwise operators
-    BitAnd(Box<Expression>, Box<Expression>),   // &
-    BitOr(Box<Expression>, Box<Expression>),    // |
-    BitXor(Box<Expression>, Box<Expression>),   // ^
-    LeftShift(Box<Expression>, Box<Expression>), // <<
+    BitAnd(Box<Expression>, Box<Expression>),     // &
+    BitOr(Box<Expression>, Box<Expression>),      // |
+    BitXor(Box<Expression>, Box<Expression>),     // ^
+    LeftShift(Box<Expression>, Box<Expression>),  // <<
     RightShift(Box<Expression>, Box<Expression>), // >>
 
     // Logical operators (with short-circuit semantics)
-    And(Box<Expression>, Box<Expression>),      // and
-    Or(Box<Expression>, Box<Expression>),       // or
-    Xor(Box<Expression>, Box<Expression>),      // xor
+    And(Box<Expression>, Box<Expression>), // and
+    Or(Box<Expression>, Box<Expression>),  // or
+    Xor(Box<Expression>, Box<Expression>), // xor
 
     // Unary operators
-    Neg(Box<Expression>),                       // -expr
-    Not(Box<Expression>),                       // not expr
-    BitNot(Box<Expression>),                    // ~expr
+    Neg(Box<Expression>),    // -expr
+    Not(Box<Expression>),    // not expr
+    BitNot(Box<Expression>), // ~expr
 
     // Pipe operator
-    Pipe(Box<Expression>, Box<Expression>),     // expr1 : expr2
+    Pipe(Box<Expression>, Box<Expression>), // expr1 : expr2
 
     // Control flow expressions
     Block(Vec<Statement>),
@@ -173,9 +173,9 @@ pub struct Parameter {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum ParameterKind {
-    Regular,    // name
-    Rest,       // *name
-    Keyword,    // **name
+    Regular, // name
+    Rest,    // *name
+    Keyword, // **name
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -206,7 +206,7 @@ pub struct ImportSpec {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum ImportItems {
-    All,                   // use module::*
+    All,                       // use module::*
     Specific(Vec<ImportItem>), // use module::{a, b as c}
 }
 
@@ -215,7 +215,6 @@ pub struct ImportItem {
     pub name: String,
     pub alias: Option<String>, // for "as" renaming
 }
-
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct MatchCase {
@@ -228,11 +227,11 @@ pub struct MatchCase {
 pub enum Pattern {
     Literal(LiteralValue),
     Variable(String),
-    Wildcard, // _
-    List(Vec<Pattern>), // [a, b, *rest]
+    Wildcard,                               // _
+    List(Vec<Pattern>),                     // [a, b, *rest]
     ListRest(Vec<Pattern>, Option<String>), // [a, b, *rest] with optional rest capture
-    Dict(Vec<DictPattern>), // {x, y: alias, z}
-    Range(Box<Pattern>, Box<Pattern>), // 1..10
+    Dict(Vec<DictPattern>),                 // {x, y: alias, z}
+    Range(Box<Pattern>, Box<Pattern>),      // 1..10
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -243,7 +242,7 @@ pub struct DictPattern {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct CatchClause {
-    pub pattern: Pattern, // Can pattern match on error object
+    pub pattern: Pattern,      // Can pattern match on error object
     pub body: Box<Expression>, // Catch body is expression
 }
 
