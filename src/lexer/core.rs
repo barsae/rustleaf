@@ -19,6 +19,9 @@ pub struct Lexer {
 
 impl Lexer {
     pub fn tokenize(source: &str) -> Result<Vec<Token>> {
+        // UTF-8 validation - str guarantees valid UTF-8, but check for BOM
+        let source = source.strip_prefix('\u{FEFF}').unwrap_or(source);
+
         let mut lexer = Self::new(source);
         lexer.tokenize_internal()
     }
@@ -36,505 +39,495 @@ impl Lexer {
 
     fn create_rules() -> Vec<LexerRule> {
         vec![
+            // === WHITESPACE AND COMMENTS ===
             // Whitespace (ignored)
             LexerRule {
                 pattern: Regex::new(r"^[ \t]+").unwrap(),
                 token_type: |_| Token::Eof,
                 ignore: true,
             },
-
             // Line terminators (ignored)
             LexerRule {
                 pattern: Regex::new(r"^(\r\n|\r|\n)").unwrap(),
                 token_type: |_| Token::Eof,
                 ignore: true,
             },
-
-            // Single-line comments (ignored)
+            // Documentation comments
+            LexerRule {
+                pattern: Regex::new(r"^///(.*)").unwrap(),
+                token_type: |s| Token::DocComment(s[3..].to_string()),
+                ignore: false,
+            },
+            LexerRule {
+                pattern: Regex::new(r"^//!(.*)").unwrap(),
+                token_type: |s| Token::InnerDocComment(s[3..].to_string()),
+                ignore: false,
+            },
+            LexerRule {
+                pattern: Regex::new(r"^/\*\*([^*]|\*[^/])*\*/").unwrap(),
+                token_type: |s| Token::DocCommentBlock(s[3..s.len()-2].to_string()),
+                ignore: false,
+            },
+            LexerRule {
+                pattern: Regex::new(r"^/\*!([^*]|\*[^/])*\*/").unwrap(),
+                token_type: |s| Token::InnerDocCommentBlock(s[3..s.len()-2].to_string()),
+                ignore: false,
+            },
+            // Regular comments (ignored)
             LexerRule {
                 pattern: Regex::new(r"^//.*").unwrap(),
                 token_type: |_| Token::Eof,
                 ignore: true,
             },
-
-            // Multi-line comments (ignored)
             LexerRule {
                 pattern: Regex::new(r"^/\*([^*]|\*[^/])*\*/").unwrap(),
                 token_type: |_| Token::Eof,
                 ignore: true,
             },
 
-            // String literals with interpolation support
+            // === STRING LITERALS ===
             LexerRule {
                 pattern: Regex::new(r#"^"([^"\\]|\\.)*""#).unwrap(),
                 token_type: |s| Token::String(s[1..s.len()-1].to_string()),
                 ignore: false,
             },
-
-            // Triple-quoted strings
             LexerRule {
                 pattern: Regex::new(r#"^"""([^"]*|"[^"]*|""[^"])*""""#).unwrap(),
-                token_type: |s| Token::String(s[3..s.len()-3].to_string()),
+                token_type: |s| Token::MultilineString(s[3..s.len()-3].to_string()),
                 ignore: false,
             },
-
-            // Raw strings
             LexerRule {
                 pattern: Regex::new(r#"^r"([^"\r\n])*""#).unwrap(),
-                token_type: |s| Token::String(s[2..s.len()-1].to_string()),
+                token_type: |s| Token::RawString(s[2..s.len()-1].to_string()),
                 ignore: false,
             },
 
-            // Floating-point literals (must come before integer literals)
+            // === NUMERIC LITERALS ===
+            // Floating-point literals
             LexerRule {
-                pattern: Regex::new(r"^(\d+\.\d*|\d*\.\d+)([eE][+-]?\d+)?").unwrap(),
+                pattern: Regex::new(r"^(\d+\.\d+)([eE][+-]?\d+)?").unwrap(),
                 token_type: |s| Token::Float(s.replace('_', "").parse().unwrap_or(0.0)),
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^(\d+)([eE][+-]?\d+)").unwrap(),
                 token_type: |s| Token::Float(s.replace('_', "").parse().unwrap_or(0.0)),
                 ignore: false,
             },
-
             // Integer literals
             LexerRule {
                 pattern: Regex::new(r"^0x[0-9a-fA-F]([0-9a-fA-F_]*[0-9a-fA-F])?").unwrap(),
                 token_type: |s| Token::Int(i64::from_str_radix(&s[2..].replace('_', ""), 16).unwrap_or(0)),
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^0o[0-7]([0-7_]*[0-7])?").unwrap(),
                 token_type: |s| Token::Int(i64::from_str_radix(&s[2..].replace('_', ""), 8).unwrap_or(0)),
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^0b[01]([01_]*[01])?").unwrap(),
                 token_type: |s| Token::Int(i64::from_str_radix(&s[2..].replace('_', ""), 2).unwrap_or(0)),
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^[0-9]([0-9_]*[0-9])?").unwrap(),
                 token_type: |s| Token::Int(s.replace('_', "").parse().unwrap_or(0)),
                 ignore: false,
             },
 
-            // Two-character operators (must come before single-character)
+            // === OPERATORS ===
+            // Multi-character operators
             LexerRule {
                 pattern: Regex::new(r"^\*\*").unwrap(),
                 token_type: |_| Token::StarStar,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^==").unwrap(),
                 token_type: |_| Token::EqualEqual,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^!=").unwrap(),
                 token_type: |_| Token::BangEqual,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^<=").unwrap(),
                 token_type: |_| Token::LessEqual,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^>=").unwrap(),
                 token_type: |_| Token::GreaterEqual,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^\+=").unwrap(),
                 token_type: |_| Token::PlusEqual,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^-=").unwrap(),
                 token_type: |_| Token::MinusEqual,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^\*=").unwrap(),
                 token_type: |_| Token::StarEqual,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^/=").unwrap(),
                 token_type: |_| Token::SlashEqual,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^%=").unwrap(),
                 token_type: |_| Token::PercentEqual,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^<<").unwrap(),
                 token_type: |_| Token::LessLess,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^>>").unwrap(),
                 token_type: |_| Token::GreaterGreater,
                 ignore: false,
             },
-
+            LexerRule {
+                pattern: Regex::new(r"^\.\.=").unwrap(),
+                token_type: |_| Token::DotDotEqual,
+                ignore: false,
+            },
+            LexerRule {
+                pattern: Regex::new(r"^\.\.").unwrap(),
+                token_type: |_| Token::DotDot,
+                ignore: false,
+            },
             LexerRule {
                 pattern: Regex::new(r"^::").unwrap(),
                 token_type: |_| Token::DoubleColon,
                 ignore: false,
             },
-
-            LexerRule {
-                pattern: Regex::new(r"^->").unwrap(),
-                token_type: |_| Token::Arrow,
-                ignore: false,
-            },
-
-            LexerRule {
-                pattern: Regex::new(r"^\$\{").unwrap(),
-                token_type: |_| Token::DollarBrace,
-                ignore: false,
-            },
-
-            // Single-character operators and punctuation
+            // Single-character operators
             LexerRule {
                 pattern: Regex::new(r"^\+").unwrap(),
                 token_type: |_| Token::Plus,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^-").unwrap(),
                 token_type: |_| Token::Minus,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^\*").unwrap(),
                 token_type: |_| Token::Star,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^/").unwrap(),
                 token_type: |_| Token::Slash,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^%").unwrap(),
                 token_type: |_| Token::Percent,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^=").unwrap(),
                 token_type: |_| Token::Equal,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^<").unwrap(),
                 token_type: |_| Token::Less,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^>").unwrap(),
                 token_type: |_| Token::Greater,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^&").unwrap(),
                 token_type: |_| Token::Ampersand,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^\|").unwrap(),
                 token_type: |_| Token::Pipe,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^\^").unwrap(),
                 token_type: |_| Token::Caret,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^~").unwrap(),
                 token_type: |_| Token::Tilde,
                 ignore: false,
             },
 
+            // === PUNCTUATION ===
             LexerRule {
                 pattern: Regex::new(r"^\(").unwrap(),
                 token_type: |_| Token::LeftParen,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^\)").unwrap(),
                 token_type: |_| Token::RightParen,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^\{").unwrap(),
                 token_type: |_| Token::LeftBrace,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^\}").unwrap(),
                 token_type: |_| Token::RightBrace,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^\[").unwrap(),
                 token_type: |_| Token::LeftBracket,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^\]").unwrap(),
                 token_type: |_| Token::RightBracket,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^,").unwrap(),
                 token_type: |_| Token::Comma,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^;").unwrap(),
                 token_type: |_| Token::Semicolon,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^\.").unwrap(),
                 token_type: |_| Token::Dot,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^:").unwrap(),
                 token_type: |_| Token::Colon,
                 ignore: false,
             },
-
-            // Keywords and identifiers (identifiers must come last)
             LexerRule {
-                pattern: Regex::new(r"^var\b").unwrap(),
-                token_type: |_| Token::Var,
+                pattern: Regex::new(r"^#").unwrap(),
+                token_type: |_| Token::Hash,
                 ignore: false,
             },
 
-            LexerRule {
-                pattern: Regex::new(r"^fn\b").unwrap(),
-                token_type: |_| Token::Fn,
-                ignore: false,
-            },
-
+            // === KEYWORDS ===
+            // Control flow
             LexerRule {
                 pattern: Regex::new(r"^if\b").unwrap(),
                 token_type: |_| Token::If,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^else\b").unwrap(),
                 token_type: |_| Token::Else,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^while\b").unwrap(),
                 token_type: |_| Token::While,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^for\b").unwrap(),
                 token_type: |_| Token::For,
                 ignore: false,
             },
-
+            LexerRule {
+                pattern: Regex::new(r"^loop\b").unwrap(),
+                token_type: |_| Token::Loop,
+                ignore: false,
+            },
             LexerRule {
                 pattern: Regex::new(r"^return\b").unwrap(),
                 token_type: |_| Token::Return,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^break\b").unwrap(),
                 token_type: |_| Token::Break,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^continue\b").unwrap(),
                 token_type: |_| Token::Continue,
                 ignore: false,
             },
-
-            LexerRule {
-                pattern: Regex::new(r"^class\b").unwrap(),
-                token_type: |_| Token::Class,
-                ignore: false,
-            },
-
-            LexerRule {
-                pattern: Regex::new(r"^static\b").unwrap(),
-                token_type: |_| Token::Static,
-                ignore: false,
-            },
-
-            LexerRule {
-                pattern: Regex::new(r"^self\b").unwrap(),
-                token_type: |_| Token::Self_,
-                ignore: false,
-            },
-
-            LexerRule {
-                pattern: Regex::new(r"^import\b").unwrap(),
-                token_type: |_| Token::Import,
-                ignore: false,
-            },
-
-            LexerRule {
-                pattern: Regex::new(r"^export\b").unwrap(),
-                token_type: |_| Token::Export,
-                ignore: false,
-            },
-
-            LexerRule {
-                pattern: Regex::new(r"^as\b").unwrap(),
-                token_type: |_| Token::As,
-                ignore: false,
-            },
-
-            LexerRule {
-                pattern: Regex::new(r"^from\b").unwrap(),
-                token_type: |_| Token::From,
-                ignore: false,
-            },
-
             LexerRule {
                 pattern: Regex::new(r"^match\b").unwrap(),
                 token_type: |_| Token::Match,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^case\b").unwrap(),
                 token_type: |_| Token::Case,
                 ignore: false,
             },
-
+            // Declarations
+            LexerRule {
+                pattern: Regex::new(r"^var\b").unwrap(),
+                token_type: |_| Token::Var,
+                ignore: false,
+            },
+            LexerRule {
+                pattern: Regex::new(r"^fn\b").unwrap(),
+                token_type: |_| Token::Fn,
+                ignore: false,
+            },
+            LexerRule {
+                pattern: Regex::new(r"^class\b").unwrap(),
+                token_type: |_| Token::Class,
+                ignore: false,
+            },
+            LexerRule {
+                pattern: Regex::new(r"^static\b").unwrap(),
+                token_type: |_| Token::Static,
+                ignore: false,
+            },
+            LexerRule {
+                pattern: Regex::new(r"^pub\b").unwrap(),
+                token_type: |_| Token::Pub,
+                ignore: false,
+            },
+            LexerRule {
+                pattern: Regex::new(r"^macro\b").unwrap(),
+                token_type: |_| Token::Macro,
+                ignore: false,
+            },
+            // Module system
+            LexerRule {
+                pattern: Regex::new(r"^import\b").unwrap(),
+                token_type: |_| Token::Import,
+                ignore: false,
+            },
+            LexerRule {
+                pattern: Regex::new(r"^export\b").unwrap(),
+                token_type: |_| Token::Export,
+                ignore: false,
+            },
+            LexerRule {
+                pattern: Regex::new(r"^use\b").unwrap(),
+                token_type: |_| Token::Use,
+                ignore: false,
+            },
+            LexerRule {
+                pattern: Regex::new(r"^as\b").unwrap(),
+                token_type: |_| Token::As,
+                ignore: false,
+            },
+            LexerRule {
+                pattern: Regex::new(r"^from\b").unwrap(),
+                token_type: |_| Token::From,
+                ignore: false,
+            },
+            // Exception handling
             LexerRule {
                 pattern: Regex::new(r"^try\b").unwrap(),
                 token_type: |_| Token::Try,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^catch\b").unwrap(),
                 token_type: |_| Token::Catch,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^finally\b").unwrap(),
                 token_type: |_| Token::Finally,
                 ignore: false,
             },
-
+            LexerRule {
+                pattern: Regex::new(r"^raise\b").unwrap(),
+                token_type: |_| Token::Raise,
+                ignore: false,
+            },
             LexerRule {
                 pattern: Regex::new(r"^with\b").unwrap(),
                 token_type: |_| Token::With,
                 ignore: false,
             },
-
+            // OOP
+            LexerRule {
+                pattern: Regex::new(r"^self\b").unwrap(),
+                token_type: |_| Token::Self_,
+                ignore: false,
+            },
+            LexerRule {
+                pattern: Regex::new(r"^super\b").unwrap(),
+                token_type: |_| Token::Super,
+                ignore: false,
+            },
+            // Logical operators
             LexerRule {
                 pattern: Regex::new(r"^and\b").unwrap(),
                 token_type: |_| Token::And,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^or\b").unwrap(),
                 token_type: |_| Token::Or,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^xor\b").unwrap(),
                 token_type: |_| Token::Xor,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^not\b").unwrap(),
                 token_type: |_| Token::Not,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^in\b").unwrap(),
                 token_type: |_| Token::In,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^is\b").unwrap(),
                 token_type: |_| Token::Is,
                 ignore: false,
             },
-
+            // Literals
             LexerRule {
                 pattern: Regex::new(r"^true\b").unwrap(),
                 token_type: |_| Token::True,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^false\b").unwrap(),
                 token_type: |_| Token::False,
                 ignore: false,
             },
-
             LexerRule {
                 pattern: Regex::new(r"^null\b").unwrap(),
                 token_type: |_| Token::Null,
                 ignore: false,
             },
 
-            // Identifiers (must come last to avoid matching keywords)
+            // === IDENTIFIERS ===
+            // Must come last to avoid matching keywords
             LexerRule {
                 pattern: Regex::new(r"^[a-zA-Z_][a-zA-Z0-9_]*").unwrap(),
                 token_type: |s| Token::Ident(s.to_string()),

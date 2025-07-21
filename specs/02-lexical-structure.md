@@ -118,28 +118,28 @@ Token {
 ```
 TokenType =
     // Keywords (see Section 2.9)
-    | Var | Fn | If | Else | While | For | Match | Case | Try | Catch 
+    | Var | Fn | If | Else | While | For | Match | Case | Try | Catch
     | Finally | With | Break | Continue | Return | Class | Static | Self
     | Use | Pub | Raise | And | Or | Xor | Not | In | Is | True | False | Null
-    
+
     // Identifiers
     | Identifier
-    
+
     // Literals
-    | IntegerLiteral | FloatLiteral | StringLiteral 
+    | IntegerLiteral | FloatLiteral | StringLiteral
     | BooleanLiteral | NullLiteral
-    
+
     // Operators
     | Plus | Minus | Star | Slash | Percent | StarStar
     | Equal | PlusEqual | MinusEqual | StarEqual | SlashEqual | PercentEqual
     | EqualEqual | BangEqual | Less | Greater | LessEqual | GreaterEqual
     | Ampersand | Pipe | Caret | Tilde | LessLess | GreaterGreater
-    
+
     // Punctuation
-    | LeftParen | RightParen | LeftBrace | RightBrace 
+    | LeftParen | RightParen | LeftBrace | RightBrace
     | LeftBracket | RightBracket
-    | Comma | Dot | Colon | DoubleColon | Semicolon | Arrow
-    
+    | Comma | Dot | DotDot | DotDotEqual | Colon | DoubleColon | Semicolon
+
     // Special
     | Eof
 ```
@@ -179,7 +179,7 @@ var x = 42;  // This is an end-of-line comment
 /// Documentation for the function
 /// Can span multiple lines
 fn calculate(x) {
-    /** 
+    /**
      * Block documentation comment
      * with multiple lines
      */
@@ -221,7 +221,7 @@ Line terminators end a line of source text and affect line numbering for error r
 
 **Line Terminator Sequences:**
 - Line Feed: U+000A (LF, `\n`)
-- Carriage Return: U+000D (CR, `\r`)  
+- Carriage Return: U+000D (CR, `\r`)
 - Carriage Return + Line Feed: U+000D U+000A (CRLF, `\r\n`)
 
 **Line Terminator Normalization:**

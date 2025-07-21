@@ -4,7 +4,7 @@ mod tests {
 
     #[test]
     fn test_keywords() {
-        let source = "var fn if else while for return break continue class static self";
+        let source = "var fn if else while for loop return break continue class static self super";
         let tokens = Lexer::tokenize(source).unwrap();
         
         assert_eq!(tokens, vec![
@@ -14,12 +14,33 @@ mod tests {
             Token::Else,
             Token::While,
             Token::For,
+            Token::Loop,
             Token::Return,
             Token::Break,
             Token::Continue,
             Token::Class,
             Token::Static,
             Token::Self_,
+            Token::Super,
+            Token::Eof,
+        ]);
+    }
+
+    #[test]
+    fn test_additional_keywords() {
+        let source = "pub use raise import export match try catch macro";
+        let tokens = Lexer::tokenize(source).unwrap();
+        
+        assert_eq!(tokens, vec![
+            Token::Pub,
+            Token::Use,
+            Token::Raise,
+            Token::Import,
+            Token::Export,
+            Token::Match,
+            Token::Try,
+            Token::Catch,
+            Token::Macro,
             Token::Eof,
         ]);
     }
@@ -62,15 +83,13 @@ mod tests {
 
     #[test]
     fn test_floats() {
-        let source = "3.14159 1.0 0.1 .5 42. 1e10 2.5e-4 1E+6";
+        let source = "3.14159 1.0 0.1 1e10 2.5e-4 1E+6";
         let tokens = Lexer::tokenize(source).unwrap();
         
         assert_eq!(tokens, vec![
             Token::Float(3.14159),
             Token::Float(1.0),
             Token::Float(0.1),
-            Token::Float(0.5),
-            Token::Float(42.0),
             Token::Float(1e10),
             Token::Float(2.5e-4),
             Token::Float(1e6),
@@ -86,19 +105,33 @@ mod tests {
         assert_eq!(tokens, vec![
             Token::String("hello".to_string()),
             Token::String("world\\n".to_string()),
-            Token::String("raw\\string".to_string()),
+            Token::RawString("raw\\string".to_string()),
             Token::Eof,
         ]);
     }
 
     #[test]
-    fn test_triple_quoted_strings() {
+    fn test_multiline_strings() {
         let source = r#""""multi
 line""""#;
         let tokens = Lexer::tokenize(source).unwrap();
         
         assert_eq!(tokens, vec![
-            Token::String("multi\nline".to_string()),
+            Token::MultilineString("multi\nline".to_string()),
+            Token::Eof,
+        ]);
+    }
+
+    #[test]
+    fn test_all_string_types() {
+        let source = r#""regular" r"raw" """multiline
+string""""#;
+        let tokens = Lexer::tokenize(source).unwrap();
+        
+        assert_eq!(tokens, vec![
+            Token::String("regular".to_string()),
+            Token::RawString("raw".to_string()),
+            Token::MultilineString("multiline\nstring".to_string()),
             Token::Eof,
         ]);
     }
@@ -118,7 +151,7 @@ line""""#;
 
     #[test]
     fn test_operators() {
-        let source = "+ - * / % ** = += -= *= /= %= == != < > <= >= & | ^ ~ << >>";
+        let source = "+ - * / % ** = += -= *= /= %= == != < > <= >= & | ^ ~ << >> .. ..=";
         let tokens = Lexer::tokenize(source).unwrap();
         
         assert_eq!(tokens, vec![
@@ -146,13 +179,15 @@ line""""#;
             Token::Tilde,
             Token::LessLess,
             Token::GreaterGreater,
+            Token::DotDot,
+            Token::DotDotEqual,
             Token::Eof,
         ]);
     }
 
     #[test]
     fn test_punctuation() {
-        let source = "( ) { } [ ] , ; . : :: -> ${";
+        let source = "( ) { } [ ] , ; . : :: #";
         let tokens = Lexer::tokenize(source).unwrap();
         
         assert_eq!(tokens, vec![
@@ -167,8 +202,7 @@ line""""#;
             Token::Dot,
             Token::Colon,
             Token::DoubleColon,
-            Token::Arrow,
-            Token::DollarBrace,
+            Token::Hash,
             Token::Eof,
         ]);
     }
@@ -185,6 +219,32 @@ line""""#;
             Token::Not,
             Token::In,
             Token::Is,
+            Token::Eof,
+        ]);
+    }
+
+    #[test]
+    fn test_macro_tokens() {
+        let source = "# macro";
+        let tokens = Lexer::tokenize(source).unwrap();
+        
+        assert_eq!(tokens, vec![
+            Token::Hash,
+            Token::Macro,
+            Token::Eof,
+        ]);
+    }
+
+    #[test]
+    fn test_macro_annotation_syntax() {
+        let source = "#[test]";
+        let tokens = Lexer::tokenize(source).unwrap();
+        
+        assert_eq!(tokens, vec![
+            Token::Hash,
+            Token::LeftBracket,
+            Token::Ident("test".to_string()),
+            Token::RightBracket,
             Token::Eof,
         ]);
     }
@@ -269,13 +329,13 @@ line""""#;
 
     #[test]
     fn test_error_unexpected_character() {
-        let source = "var x = @;";
+        let source = "var x = $;";  // $ is not a valid token
         let result = Lexer::tokenize(source);
         
         assert!(result.is_err());
         let error_msg = result.unwrap_err().to_string();
         assert!(error_msg.contains("Unexpected character"));
-        assert!(error_msg.contains("@"));
+        assert!(error_msg.contains("$"));
     }
 
     #[test]
@@ -319,5 +379,76 @@ line""""#;
         let tokens = Lexer::tokenize(source).unwrap();
         
         assert_eq!(tokens, vec![Token::Eof]);
+    }
+
+    #[test]
+    fn test_utf8_bom_handling() {
+        // Test that BOM is ignored
+        let source_with_bom = "\u{FEFF}var x = 42;";
+        let tokens = Lexer::tokenize(source_with_bom).unwrap();
+        
+        assert_eq!(tokens, vec![
+            Token::Var,
+            Token::Ident("x".to_string()),
+            Token::Equal,
+            Token::Int(42),
+            Token::Semicolon,
+            Token::Eof,
+        ]);
+    }
+
+    #[test]
+    fn test_range_operators() {
+        let source = "0..10 0..=10 1..n";
+        let tokens = Lexer::tokenize(source).unwrap();
+        
+        assert_eq!(tokens, vec![
+            Token::Int(0),
+            Token::DotDot,
+            Token::Int(10),
+            Token::Int(0),
+            Token::DotDotEqual,
+            Token::Int(10),
+            Token::Int(1),
+            Token::DotDot,
+            Token::Ident("n".to_string()),
+            Token::Eof,
+        ]);
+    }
+
+    #[test]
+    fn test_doc_comments() {
+        let source = "/// This is a doc comment\n//! This is an inner doc comment";
+        let tokens = Lexer::tokenize(source).unwrap();
+        
+        assert_eq!(tokens, vec![
+            Token::DocComment(" This is a doc comment".to_string()),
+            Token::InnerDocComment(" This is an inner doc comment".to_string()),
+            Token::Eof,
+        ]);
+    }
+
+    #[test]
+    fn test_doc_comment_blocks() {
+        let source = "/** Block doc comment */\n/*! Inner block doc comment */";
+        let tokens = Lexer::tokenize(source).unwrap();
+        
+        assert_eq!(tokens, vec![
+            Token::DocCommentBlock(" Block doc comment ".to_string()),
+            Token::InnerDocCommentBlock(" Inner block doc comment ".to_string()),
+            Token::Eof,
+        ]);
+    }
+
+    #[test]
+    fn test_doc_comments_vs_regular_comments() {
+        let source = "/// Doc comment\n// Regular comment\n/** Block doc */\n/* Regular block */";
+        let tokens = Lexer::tokenize(source).unwrap();
+        
+        assert_eq!(tokens, vec![
+            Token::DocComment(" Doc comment".to_string()),
+            Token::DocCommentBlock(" Block doc ".to_string()),
+            Token::Eof,
+        ]);
     }
 }
