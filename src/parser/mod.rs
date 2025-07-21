@@ -1,4 +1,4 @@
-/// Parser module - converts tokens to AST with operator desugaring
+/// Parser module - converts tokens to AST
 mod core;
 
 // Re-export public API
