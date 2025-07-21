@@ -1,5 +1,4 @@
 /// Evaluator module - executes the AST
-
 mod evaluator;
 mod scope;
 

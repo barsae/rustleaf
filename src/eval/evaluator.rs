@@ -1,5 +1,4 @@
 /// Evaluator implementation for RustLeaf
-
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -16,6 +15,12 @@ pub fn evaluate(program: Program) -> Result<Value> {
 pub struct Evaluator {
     globals: Rc<RefCell<Scope>>,
     current_env: Rc<RefCell<Scope>>,
+}
+
+impl Default for Evaluator {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl Evaluator {

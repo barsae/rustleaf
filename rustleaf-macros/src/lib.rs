@@ -4,6 +4,15 @@ use std::fs;
 use std::path::Path;
 use syn::{parse_macro_input, LitStr};
 
+#[derive(Debug, Clone)]
+enum TestType {
+    Normal,
+    Panic,
+    Ignore,
+    Lex,
+    Parse,
+}
+
 // Test discovery implementation
 #[proc_macro_attribute]
 pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
@@ -20,38 +29,58 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
     let test_functions =
         test_files
             .iter()
-            .map(|(test_name, file_path, should_panic, should_ignore)| {
+            .map(|(test_name, file_path, test_type)| {
                 let test_fn_name = syn::Ident::new(test_name, proc_macro2::Span::call_site());
 
-                let test_body = quote! {
-                    let source = include_str!(#file_path);
-                    let ast = rustleaf::parser::Parser::parse_str(source).unwrap();
-                    let _result = rustleaf::eval::evaluate(ast).unwrap();
+                let test_body = match test_type {
+                    TestType::Lex => quote! {
+                        let source = include_str!(#file_path);
+                        let tokens = rustleaf::lexer::Lexer::tokenize(source).unwrap();
+                        println!("Tokens: {:#?}", tokens);
+                    },
+                    TestType::Parse => quote! {
+                        let source = include_str!(#file_path);
+                        let ast = rustleaf::parser::Parser::parse_str(source).unwrap();
+                        println!("AST: {:#?}", ast);
+                    },
+                    TestType::Normal => quote! {
+                        let source = include_str!(#file_path);
+                        let ast = rustleaf::parser::Parser::parse_str(source).unwrap();
+                        let _result = rustleaf::eval::evaluate(ast).unwrap();
+                    },
+                    TestType::Panic => quote! {
+                        let source = include_str!(#file_path);
+                        let ast = rustleaf::parser::Parser::parse_str(source).unwrap();
+                        let _result = rustleaf::eval::evaluate(ast).unwrap();
+                    },
+                    TestType::Ignore => quote! {
+                        let source = include_str!(#file_path);
+                        let ast = rustleaf::parser::Parser::parse_str(source).unwrap();
+                        let _result = rustleaf::eval::evaluate(ast).unwrap();
+                    },
                 };
 
-                if *should_ignore {
-                    quote! {
+                match test_type {
+                    TestType::Ignore => quote! {
                         #[test]
                         #[ignore]
                         fn #test_fn_name() {
                             #test_body
                         }
-                    }
-                } else if *should_panic {
-                    quote! {
+                    },
+                    TestType::Panic => quote! {
                         #[test]
                         #[should_panic]
                         fn #test_fn_name() {
                             #test_body
                         }
-                    }
-                } else {
-                    quote! {
+                    },
+                    _ => quote! {
                         #[test]
                         fn #test_fn_name() {
                             #test_body
                         }
-                    }
+                    },
                 }
             });
 
@@ -64,7 +93,7 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
 
 fn discover_rustleaf_files(
     test_dir: &str,
-) -> Result<Vec<(String, String, bool, bool)>, std::io::Error> {
+) -> Result<Vec<(String, String, TestType)>, std::io::Error> {
     let mut test_files = Vec::new();
     let test_path = Path::new(test_dir);
 
@@ -85,10 +114,19 @@ fn discover_rustleaf_files(
                     // Generate test function name: strip "./tests/" and convert to function name
                     let test_name = generate_test_name(&file_path);
 
-                    // Check if this is a panic test (ends with _panic.rustleaf) or ignore test (ends with _ignore.rustleaf)
+                    // Determine test type based on filename suffix
                     let filename = path.file_name().unwrap().to_string_lossy();
-                    let should_panic = filename.ends_with("_panic.rustleaf");
-                    let should_ignore = filename.ends_with("_ignore.rustleaf");
+                    let test_type = if filename.ends_with("_panic.rustleaf") {
+                        TestType::Panic
+                    } else if filename.ends_with("_ignore.rustleaf") {
+                        TestType::Ignore
+                    } else if filename.ends_with("_lex.rustleaf") {
+                        TestType::Lex
+                    } else if filename.ends_with("_parse.rustleaf") {
+                        TestType::Parse
+                    } else {
+                        TestType::Normal
+                    };
 
                     // For include_str!, construct path relative to where the macro is called
                     // Extract just the subdirectory name from test_dir and filename
@@ -98,7 +136,7 @@ fn discover_rustleaf_files(
                         .to_string_lossy();
                     let include_path = format!("{test_dir_name}/{filename}");
 
-                    test_files.push((test_name, include_path, should_panic, should_ignore));
+                    test_files.push((test_name, include_path, test_type));
                 }
             }
         }

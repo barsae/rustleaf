@@ -1,5 +1,5 @@
 /// Parser module - converts tokens to AST with operator desugaring
-mod parser;
+mod core;
 
 // Re-export public API
-pub use parser::Parser;
+pub use core::Parser;

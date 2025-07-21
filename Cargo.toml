@@ -18,6 +18,7 @@ path = "src/lib.rs"
 anyhow = "1"
 clap = { version = "4.0", features = ["derive"] }
 indexmap = "2"
+regex = "1"
 rustleaf-macros = { path = "rustleaf-macros" }
 
 [dev-dependencies]

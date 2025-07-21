@@ -5,7 +5,7 @@ use super::Value;
 /// Print values to stdout
 pub fn print(args: Vec<Value>) -> Result<Value> {
     let strings: Vec<String> = args.iter()
-        .map(|v| super::to_string(v))
+        .map(super::to_string)
         .collect();
     
     println!("{}", strings.join(" "));

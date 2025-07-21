@@ -11,6 +11,12 @@ pub struct Scope {
     parent: Option<Rc<RefCell<Scope>>>,
 }
 
+impl Default for Scope {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Scope {
     /// Create a new global scope
     pub fn new() -> Self {
@@ -59,6 +65,6 @@ impl Scope {
     /// Check if a variable exists in this scope or any parent
     pub fn exists(&self, name: &str) -> bool {
         self.vars.contains_key(name) || 
-            self.parent.as_ref().map_or(false, |p| p.borrow().exists(name))
+            self.parent.as_ref().is_some_and(|p| p.borrow().exists(name))
     }
 }
