@@ -32,7 +32,10 @@ impl Parser {
             TokenType::DotDot | TokenType::DotDotEqual => 10,
 
             // Relational
-            TokenType::Less | TokenType::Greater | TokenType::LessEqual | TokenType::GreaterEqual => 9,
+            TokenType::Less
+            | TokenType::Greater
+            | TokenType::LessEqual
+            | TokenType::GreaterEqual => 9,
             TokenType::In | TokenType::Is => 8,
 
             // Equality
@@ -60,7 +63,10 @@ impl Parser {
         }
     }
 
-    pub fn get_binary_expression_constructor(&self, token_type: TokenType) -> Option<BinaryExprConstructor> {
+    pub fn get_binary_expression_constructor(
+        &self,
+        token_type: TokenType,
+    ) -> Option<BinaryExprConstructor> {
         match token_type {
             TokenType::Plus => Some(Expression::Add),
             TokenType::Minus => Some(Expression::Sub),

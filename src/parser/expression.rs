@@ -21,8 +21,11 @@ impl Parser {
 
             // Handle postfix operators (method calls, array access, property access)
             if self.accept(TokenType::Dot) {
-                let property_token = self.expect(TokenType::Ident, "Expected property name after '.'")?;
-                let property = property_token.text.ok_or_else(|| anyhow!("Identifier token missing text"))?;
+                let property_token =
+                    self.expect(TokenType::Ident, "Expected property name after '.'")?;
+                let property = property_token
+                    .text
+                    .ok_or_else(|| anyhow!("Identifier token missing text"))?;
                 left = Expression::GetAttr(Box::new(left), property);
             } else if self.accept(TokenType::LeftBracket) {
                 let index = self.parse_expression()?;
@@ -35,11 +38,11 @@ impl Parser {
                     if self.is_at_end() {
                         return Err(anyhow!("Unexpected EOF in function call arguments"));
                     }
-                    
+
                     if self.accept(TokenType::RightParen) {
                         break;
                     }
-                    
+
                     args.push(self.parse_expression()?);
                     if !self.accept(TokenType::Comma) {
                         self.expect(TokenType::RightParen, "Expected ')' after arguments")?;
@@ -60,13 +63,16 @@ impl Parser {
                 };
             } else {
                 // Binary operators
-                if let Some(expr_constructor) = self.get_binary_expression_constructor(self.peek().token_type) {
+                if let Some(expr_constructor) =
+                    self.get_binary_expression_constructor(self.peek().token_type)
+                {
                     self.advance();
-                    let right_precedence = if self.is_right_associative_token(self.previous().token_type) {
-                        op_precedence
-                    } else {
-                        op_precedence + 1
-                    };
+                    let right_precedence =
+                        if self.is_right_associative_token(self.previous().token_type) {
+                            op_precedence
+                        } else {
+                            op_precedence + 1
+                        };
                     let right = self.parse_precedence(right_precedence)?;
                     left = expr_constructor(Box::new(left), Box::new(right));
                 } else {
@@ -101,29 +107,41 @@ impl Parser {
         } else if self.accept(TokenType::Null) {
             Ok(Expression::Literal(LiteralValue::Null))
         } else if let Some(token) = self.accept_token(TokenType::Int) {
-            let text = token.text.as_ref()
+            let text = token
+                .text
+                .as_ref()
                 .ok_or_else(|| anyhow!("Int token missing text"))?;
-            let n = text.parse::<i64>()
+            let n = text
+                .parse::<i64>()
                 .map_err(|e| anyhow!("Failed to parse integer '{}': {}", text, e))?;
             Ok(Expression::Literal(LiteralValue::Int(n)))
         } else if let Some(token) = self.accept_token(TokenType::Float) {
-            let text = token.text.as_ref()
+            let text = token
+                .text
+                .as_ref()
                 .ok_or_else(|| anyhow!("Float token missing text"))?;
-            let f = text.parse::<f64>()
+            let f = text
+                .parse::<f64>()
                 .map_err(|e| anyhow!("Failed to parse float '{}': {}", text, e))?;
             Ok(Expression::Literal(LiteralValue::Float(f)))
         } else if let Some(token) = self.accept_token(TokenType::String) {
-            let text = token.text.as_ref()
+            let text = token
+                .text
+                .as_ref()
                 .ok_or_else(|| anyhow!("String token missing text"))?
                 .clone();
             Ok(Expression::Literal(LiteralValue::String(text)))
         } else if let Some(token) = self.accept_token(TokenType::MultilineString) {
-            let text = token.text.as_ref()
+            let text = token
+                .text
+                .as_ref()
                 .ok_or_else(|| anyhow!("Multiline string token missing text"))?
                 .clone();
             Ok(Expression::Literal(LiteralValue::String(text)))
         } else if let Some(token) = self.accept_token(TokenType::Ident) {
-            let text = token.text.as_ref()
+            let text = token
+                .text
+                .as_ref()
                 .ok_or_else(|| anyhow!("Identifier token missing text"))?
                 .clone();
             Ok(Expression::Identifier(text))
@@ -150,10 +168,7 @@ impl Parser {
         } else if self.accept(TokenType::LeftBracket) {
             self.parse_list_literal()
         } else {
-            Err(anyhow!(
-                "Unexpected token: {:?}",
-                self.peek().token_type
-            ))
+            Err(anyhow!("Unexpected token: {:?}", self.peek().token_type))
         }
     }
 
@@ -173,43 +188,58 @@ impl Parser {
                 Ok(LiteralValue::Null)
             }
             TokenType::Int => {
-                let text = token.text.as_ref()
+                let text = token
+                    .text
+                    .as_ref()
                     .ok_or_else(|| anyhow!("Int token missing text"))?;
-                let n = text.parse::<i64>()
+                let n = text
+                    .parse::<i64>()
                     .map_err(|e| anyhow!("Failed to parse integer '{}': {}", text, e))?;
                 self.advance();
                 Ok(LiteralValue::Int(n))
             }
             TokenType::Float => {
-                let text = token.text.as_ref()
+                let text = token
+                    .text
+                    .as_ref()
                     .ok_or_else(|| anyhow!("Float token missing text"))?;
-                let f = text.parse::<f64>()
+                let f = text
+                    .parse::<f64>()
                     .map_err(|e| anyhow!("Failed to parse float '{}': {}", text, e))?;
                 self.advance();
                 Ok(LiteralValue::Float(f))
             }
             TokenType::String => {
-                let text = token.text.as_ref()
+                let text = token
+                    .text
+                    .as_ref()
                     .ok_or_else(|| anyhow!("String token missing text"))?
                     .clone();
                 self.advance();
                 Ok(LiteralValue::String(text))
             }
             TokenType::RawString => {
-                let text = token.text.as_ref()
+                let text = token
+                    .text
+                    .as_ref()
                     .ok_or_else(|| anyhow!("RawString token missing text"))?
                     .clone();
                 self.advance();
                 Ok(LiteralValue::RawString(text))
             }
             TokenType::MultilineString => {
-                let text = token.text.as_ref()
+                let text = token
+                    .text
+                    .as_ref()
                     .ok_or_else(|| anyhow!("MultilineString token missing text"))?
                     .clone();
                 self.advance();
                 Ok(LiteralValue::String(text))
             }
-            _ => Err(anyhow!("Expected literal value, found {:?}", token.token_type)),
+            _ => Err(anyhow!(
+                "Expected literal value, found {:?}",
+                token.token_type
+            )),
         }
     }
 
@@ -221,14 +251,14 @@ impl Parser {
 
     pub fn try_parse_if_expression(&mut self) -> Result<Expression> {
         self.expect(TokenType::If, "Expected 'if'")?;
-        
+
         let condition = Box::new(self.parse_expression()?);
-        
+
         self.expect(TokenType::LeftBrace, "Expected '{' after if condition")?;
         let then_expr = self.parse_block()?;
-        
+
         let mut else_expr = None;
-        
+
         // Handle else clause
         if self.accept(TokenType::Else) {
             if self.accept(TokenType::If) {
@@ -244,7 +274,7 @@ impl Parser {
                 else_expr = Some(self.parse_block()?);
             }
         }
-        
+
         Ok(Expression::If {
             condition,
             then_expr,
@@ -264,7 +294,7 @@ impl Parser {
         // Parse comma-separated expressions
         loop {
             elements.push(self.parse_expression()?);
-            
+
             if self.accept(TokenType::RightBracket) {
                 break;
             } else if self.accept(TokenType::Comma) {
@@ -304,32 +334,40 @@ impl Parser {
         let iter = Box::new(self.parse_expression()?);
         self.expect(TokenType::LeftBrace, "Expected '{' after for iterator")?;
         let body = self.parse_block()?;
-        Ok(Expression::For { pattern, iter, body })
+        Ok(Expression::For {
+            pattern,
+            iter,
+            body,
+        })
     }
 
     pub fn try_parse_match_expression(&mut self) -> Result<Expression> {
         self.expect(TokenType::Match, "Expected 'match'")?;
         let expr = Box::new(self.parse_expression()?);
         self.expect(TokenType::LeftBrace, "Expected '{' after match expression")?;
-        
+
         let mut cases = Vec::new();
         while !self.check(TokenType::RightBrace) && !self.is_at_end() {
             self.expect(TokenType::Case, "Expected 'case' in match arm")?;
             let pattern = self.parse_pattern()?;
-            
+
             // Optional guard
             let guard = if self.accept(TokenType::If) {
                 Some(self.parse_expression()?)
             } else {
                 None
             };
-            
+
             self.expect(TokenType::LeftBrace, "Expected '{' after match pattern")?;
             let body = self.parse_block()?;
-            
-            cases.push(MatchCase { pattern, guard, body });
+
+            cases.push(MatchCase {
+                pattern,
+                guard,
+                body,
+            });
         }
-        
+
         self.expect(TokenType::RightBrace, "Expected '}' after match cases")?;
         Ok(Expression::Match { expr, cases })
     }
@@ -338,62 +376,66 @@ impl Parser {
         self.expect(TokenType::Try, "Expected 'try'")?;
         self.expect(TokenType::LeftBrace, "Expected '{' after 'try'")?;
         let body = self.parse_block()?;
-        
+
         self.expect(TokenType::Catch, "Expected 'catch' after try block")?;
         let pattern = self.parse_pattern()?;
         self.expect(TokenType::LeftBrace, "Expected '{' after catch pattern")?;
         let catch_body = self.parse_block()?;
-        
+
         let catch = CatchClause {
             pattern,
             body: catch_body,
         };
-        
+
         Ok(Expression::Try { body, catch })
     }
 
     pub fn try_parse_with_expression(&mut self) -> Result<Expression> {
         self.expect(TokenType::With, "Expected 'with'")?;
-        
+
         let mut resources = Vec::new();
         loop {
             let name_token = self.expect(TokenType::Ident, "Expected resource identifier")?;
-            let name = name_token.text.ok_or_else(|| anyhow!("Identifier token missing text"))?;
-            
+            let name = name_token
+                .text
+                .ok_or_else(|| anyhow!("Identifier token missing text"))?;
+
             self.expect(TokenType::Equal, "Expected '=' after resource name")?;
             let value = self.parse_expression()?;
-            
+
             resources.push(WithResource { name, value });
-            
+
             if !self.accept(TokenType::Comma) {
                 break;
             }
         }
-        
+
         self.expect(TokenType::LeftBrace, "Expected '{' after with resources")?;
         let body = self.parse_block()?;
-        
+
         Ok(Expression::With { resources, body })
     }
 
     pub fn try_parse_lambda_expression(&mut self) -> Result<Expression> {
         self.expect(TokenType::Pipe, "Expected '|' to start lambda")?;
-        
+
         let mut params = Vec::new();
-        
+
         // Parse parameters until closing |
         while !self.check(TokenType::Pipe) && !self.is_at_end() {
             let param_token = self.expect(TokenType::Ident, "Expected parameter name")?;
-            let param_name = param_token.text.ok_or_else(|| anyhow!("Identifier token missing text"))?;
+            let param_name = param_token
+                .text
+                .ok_or_else(|| anyhow!("Identifier token missing text"))?;
             params.push(param_name);
-            
+
             if !self.accept(TokenType::Comma) {
                 break;
             }
         }
-        
+
         self.expect(TokenType::Pipe, "Expected '|' to end lambda parameters")?;
-        
+
         // Parse body - either expression or block
         let body = if self.check(TokenType::LeftBrace) {
             // Block body: |x| { ... }
@@ -405,25 +447,23 @@ impl Parser {
             let expr = self.parse_expression()?;
             LambdaBody::Expression(Box::new(expr))
         };
-        
+
         Ok(Expression::Lambda { params, body })
     }
 
     pub fn parse_brace_expression(&mut self) -> Result<Expression> {
         self.expect(TokenType::LeftBrace, "Expected '{'")?;
-        
+
         // Handle empty dict: {}
         if self.accept(TokenType::RightBrace) {
             return Ok(Expression::Dict(Vec::new()));
         }
-        
+
         // Try to parse as dictionary first, fall back to block
-        if let Some(dict_expr) = self.with_checkpoint(|parser| {
-            parser.try_parse_dict_content()
-        })? {
+        if let Some(dict_expr) = self.with_checkpoint(|parser| parser.try_parse_dict_content())? {
             return Ok(dict_expr);
         }
-        
+
         // Parse as block expression (opening { already consumed)
         let block = self.parse_block()?;
         Ok(Expression::Block(block))
@@ -431,22 +471,23 @@ impl Parser {
 
     pub fn try_parse_dict_content(&mut self) -> Result<Option<Expression>> {
         let mut pairs = Vec::new();
-        
+
         loop {
             // Parse key expression - use precedence lower than pipe to avoid consuming colons
-            let key = match self.parse_precedence(14) { // Higher than pipe precedence (13)
+            let key = match self.parse_precedence(14) {
+                // Higher than pipe precedence (13)
                 Ok(expr) => expr,
                 Err(_) => return Ok(None), // Not a valid expression, not a dictionary
             };
-            
+
             // Must be followed by ':'
             self.expect(TokenType::Colon, "Expected ':' after dictionary key")?;
-            
+
             // Parse value expression
             let value = self.parse_expression()?;
-            
+
             pairs.push((key, value));
-            
+
             // Check for continuation
             if self.accept(TokenType::Comma) {
                 // Allow trailing comma before }
@@ -458,10 +499,8 @@ impl Parser {
                 break;
             }
         }
-        
+
         self.expect(TokenType::RightBrace, "Expected '}' to close dictionary")?;
         Ok(Some(Expression::Dict(pairs)))
     }
-
-
 }

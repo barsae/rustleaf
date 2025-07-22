@@ -6,7 +6,8 @@ use super::Parser;
 
 impl Parser {
     pub fn parse_statement(&mut self) -> Result<Statement> {
-        self.try_parse_statement()?.ok_or_else(|| anyhow!("Expected statement"))
+        self.try_parse_statement()?
+            .ok_or_else(|| anyhow!("Expected statement"))
     }
 
     pub fn try_parse_statement(&mut self) -> Result<Option<Statement>> {
@@ -37,7 +38,7 @@ impl Parser {
         if let Some(stmt) = self.try_parse_assignment()? {
             return Ok(Some(stmt));
         }
-        
+
         // Try block-like expressions that don't require semicolons
         if let Some(stmt) = self.try_parse_block_like_expression_statement()? {
             return Ok(Some(stmt));
@@ -70,11 +71,14 @@ impl Parser {
         }
 
         self.expect(TokenType::LeftBracket, "Expected '[' after '#'")?;
-        
+
         // Accept either identifier or macro keyword
         let name = if self.check(TokenType::Ident) {
             let token = self.advance();
-            token.text.clone().ok_or_else(|| anyhow!("Identifier token missing text"))?
+            token
+                .text
+                .clone()
+                .ok_or_else(|| anyhow!("Identifier token missing text"))?
         } else if self.accept(TokenType::Macro) {
             "macro".to_string()
         } else {
@@ -106,14 +110,20 @@ impl Parser {
         self.expect(TokenType::RightBracket, "Expected ']' after macro")?;
         // Recurse
         let statement = Box::new(self.parse_statement()?);
-        Ok(Some(Statement::Macro { name, args, statement }))
+        Ok(Some(Statement::Macro {
+            name,
+            args,
+            statement,
+        }))
     }
 
     fn parse_macro_arg(&mut self) -> Result<Option<MacroArg>> {
         match self.peek().token_type {
             TokenType::Ident => {
                 let name_token = self.expect(TokenType::Ident, "Expected identifier")?;
-                let name = name_token.text.ok_or_else(|| anyhow!("Identifier token missing text"))?;
+                let name = name_token
+                    .text
+                    .ok_or_else(|| anyhow!("Identifier token missing text"))?;
 
                 if self.accept(TokenType::Colon) {
                     let value = self.parse_literal_value()?;
@@ -155,25 +165,32 @@ impl Parser {
         match self.peek().token_type {
             TokenType::Ident => {
                 let name_token = self.expect(TokenType::Ident, "Expected identifier")?;
-                let name = name_token.text.ok_or_else(|| anyhow!("Identifier token missing text"))?;
+                let name = name_token
+                    .text
+                    .ok_or_else(|| anyhow!("Identifier token missing text"))?;
                 if name == "_" {
                     Ok(Pattern::Wildcard)
                 } else {
                     Ok(Pattern::Variable(name))
                 }
             }
-            TokenType::Int | TokenType::Float | TokenType::String | TokenType::True | TokenType::False | TokenType::Null => {
+            TokenType::Int
+            | TokenType::Float
+            | TokenType::String
+            | TokenType::True
+            | TokenType::False
+            | TokenType::Null => {
                 // Use with_checkpoint for safe lookahead
                 match self.with_checkpoint(|parser| {
                     let first_literal = parser.parse_literal_value()?;
-                    
+
                     // Check for range operators
                     if parser.accept(TokenType::DotDot) || parser.accept(TokenType::DotDotEqual) {
                         // This is a range pattern
                         let second_literal = parser.parse_literal_value()?;
                         Ok(Some(Pattern::Range(
                             Box::new(Pattern::Literal(first_literal)),
-                            Box::new(Pattern::Literal(second_literal))
+                            Box::new(Pattern::Literal(second_literal)),
                         )))
                     } else {
                         // Not a range pattern
@@ -188,34 +205,35 @@ impl Parser {
                     }
                 }
             }
-            TokenType::LeftBracket => {
-                self.parse_list_pattern()
-            }
-            TokenType::LeftBrace => {
-                self.parse_dict_pattern()
-            }
-            _ => Err(anyhow!("Unsupported pattern type: {:?}", self.peek().token_type)),
+            TokenType::LeftBracket => self.parse_list_pattern(),
+            TokenType::LeftBrace => self.parse_dict_pattern(),
+            _ => Err(anyhow!(
+                "Unsupported pattern type: {:?}",
+                self.peek().token_type
+            )),
         }
     }
-    
+
     fn parse_list_pattern(&mut self) -> Result<Pattern> {
         self.expect(TokenType::LeftBracket, "Expected '['")?;
-        
+
         let mut patterns = Vec::new();
         let mut rest_var = None;
-        
+
         // Handle empty list pattern: []
         if self.accept(TokenType::RightBracket) {
             return Ok(Pattern::List(patterns));
         }
-        
+
         loop {
             // Check for rest pattern: *name
             if self.accept(TokenType::Star) {
                 let rest_token = self.expect(TokenType::Ident, "Expected identifier after '*'")?;
-                let rest_name = rest_token.text.ok_or_else(|| anyhow!("Identifier token missing text"))?;
+                let rest_name = rest_token
+                    .text
+                    .ok_or_else(|| anyhow!("Identifier token missing text"))?;
                 rest_var = Some(rest_name);
-                
+
                 // After rest pattern, we can only have the closing bracket or comma + closing bracket
                 if self.accept(TokenType::Comma) {
                     // Allow trailing comma
@@ -225,10 +243,10 @@ impl Parser {
                 }
                 break;
             }
-            
+
             // Parse regular pattern
             patterns.push(self.parse_pattern()?);
-            
+
             if self.accept(TokenType::Comma) {
                 // Check for trailing comma
                 if self.check(TokenType::RightBracket) {
@@ -239,42 +257,52 @@ impl Parser {
                 break;
             }
         }
-        
-        self.expect(TokenType::RightBracket, "Expected ']' to close list pattern")?;
-        
+
+        self.expect(
+            TokenType::RightBracket,
+            "Expected ']' to close list pattern",
+        )?;
+
         if rest_var.is_some() {
             Ok(Pattern::ListRest(patterns, rest_var))
         } else {
             Ok(Pattern::List(patterns))
         }
     }
-    
+
     fn parse_dict_pattern(&mut self) -> Result<Pattern> {
         self.expect(TokenType::LeftBrace, "Expected '{'")?;
-        
+
         let mut dict_patterns = Vec::new();
-        
+
         // Handle empty dict pattern: {}
         if self.accept(TokenType::RightBrace) {
             return Ok(Pattern::Dict(dict_patterns));
         }
-        
+
         loop {
             // Parse key identifier
-            let key_token = self.expect(TokenType::Ident, "Expected identifier for dict pattern key")?;
-            let key = key_token.text.ok_or_else(|| anyhow!("Identifier token missing text"))?;
-            
+            let key_token =
+                self.expect(TokenType::Ident, "Expected identifier for dict pattern key")?;
+            let key = key_token
+                .text
+                .ok_or_else(|| anyhow!("Identifier token missing text"))?;
+
             let alias = if self.accept(TokenType::Colon) {
                 // {key: alias} form
                 let alias_token = self.expect(TokenType::Ident, "Expected alias after ':'")?;
-                Some(alias_token.text.ok_or_else(|| anyhow!("Alias token missing text"))?)
+                Some(
+                    alias_token
+                        .text
+                        .ok_or_else(|| anyhow!("Alias token missing text"))?,
+                )
             } else {
                 // {key} form - use key as the variable name
                 None
             };
-            
+
             dict_patterns.push(DictPattern { key, alias });
-            
+
             if self.accept(TokenType::Comma) {
                 // Check for trailing comma
                 if self.check(TokenType::RightBrace) {
@@ -285,7 +313,7 @@ impl Parser {
                 break;
             }
         }
-        
+
         self.expect(TokenType::RightBrace, "Expected '}' to close dict pattern")?;
         Ok(Pattern::Dict(dict_patterns))
     }
@@ -309,7 +337,9 @@ impl Parser {
 
     fn try_parse_lvalue(&mut self) -> Result<LValue> {
         let mut expr = if let Some(name_token) = self.accept_token(TokenType::Ident) {
-            let name = name_token.text.ok_or_else(|| anyhow!("Identifier token missing text"))?;
+            let name = name_token
+                .text
+                .ok_or_else(|| anyhow!("Identifier token missing text"))?;
             LValue::Identifier(name)
         } else {
             return Err(anyhow!("Expected lvalue"));
@@ -318,8 +348,11 @@ impl Parser {
         // Handle chained property/index access
         loop {
             if self.accept(TokenType::Dot) {
-                let property_token = self.expect(TokenType::Ident, "Expected property name after '.'")?;
-                let property = property_token.text.ok_or_else(|| anyhow!("Identifier token missing text"))?;
+                let property_token =
+                    self.expect(TokenType::Ident, "Expected property name after '.'")?;
+                let property = property_token
+                    .text
+                    .ok_or_else(|| anyhow!("Identifier token missing text"))?;
 
                 // Convert LValue to Expression for GetAttr
                 let base_expr = match expr {
@@ -368,18 +401,20 @@ impl Parser {
     pub fn try_parse_function_declaration(&mut self) -> Result<Option<Statement>> {
         self.with_checkpoint(|parser| {
             let is_pub = parser.accept(TokenType::Pub);
-            
+
             if !parser.accept(TokenType::Fn) {
                 return Ok(None);
             }
-            
+
             Ok(Some(parser.parse_function_body(is_pub)?))
         })
     }
-    
+
     fn parse_function_body(&mut self, is_pub: bool) -> Result<Statement> {
         let name_token = self.expect(TokenType::Ident, "Expected function name")?;
-        let name = name_token.text.ok_or_else(|| anyhow!("Function name token missing text"))?;
+        let name = name_token
+            .text
+            .ok_or_else(|| anyhow!("Function name token missing text"))?;
 
         self.expect(TokenType::LeftParen, "Expected '(' after function name")?;
 
@@ -436,7 +471,9 @@ impl Parser {
         };
 
         let name_token = self.expect(TokenType::Ident, "Expected parameter name")?;
-        let name = name_token.text.ok_or_else(|| anyhow!("Parameter name token missing text"))?;
+        let name = name_token
+            .text
+            .ok_or_else(|| anyhow!("Parameter name token missing text"))?;
 
         // Check for default value
         let default = if self.accept(TokenType::Equal) {
@@ -445,55 +482,62 @@ impl Parser {
             None
         };
 
-        Ok(Parameter { name, default, kind })
+        Ok(Parameter {
+            name,
+            default,
+            kind,
+        })
     }
-
 
     pub fn try_parse_class_declaration(&mut self) -> Result<Option<Statement>> {
         self.with_checkpoint(|parser| {
             let is_pub = parser.accept(TokenType::Pub);
-            
+
             if !parser.accept(TokenType::Class) {
                 return Ok(None);
             }
-            
+
             Ok(Some(parser.parse_class_body(is_pub)?))
         })
     }
-    
+
     fn parse_class_body(&mut self, is_pub: bool) -> Result<Statement> {
         let name_token = self.expect(TokenType::Ident, "Expected class name")?;
-        let name = name_token.text.ok_or_else(|| anyhow!("Class name token missing text"))?;
-        
+        let name = name_token
+            .text
+            .ok_or_else(|| anyhow!("Class name token missing text"))?;
+
         self.expect(TokenType::LeftBrace, "Expected '{' after class name")?;
-        
+
         let mut members = Vec::new();
-        
+
         while !self.check(TokenType::RightBrace) && !self.is_at_end() {
             if let Some(member) = self.parse_class_member()? {
                 members.push(member);
             }
         }
-        
+
         self.expect(TokenType::RightBrace, "Expected '}' after class body")?;
-        
+
         Ok(Statement::ClassDecl {
             name,
             members,
             is_pub,
         })
     }
-    
+
     fn parse_class_member(&mut self) -> Result<Option<ClassMember>> {
         // Check for static methods
         if self.accept(TokenType::Static) {
             self.expect(TokenType::Fn, "Expected 'fn' after 'static'")?;
             let name_token = self.expect(TokenType::Ident, "Expected method name")?;
-            let name = name_token.text.ok_or_else(|| anyhow!("Method name token missing text"))?;
-            
+            let name = name_token
+                .text
+                .ok_or_else(|| anyhow!("Method name token missing text"))?;
+
             self.expect(TokenType::LeftParen, "Expected '(' after method name")?;
             let mut params = Vec::new();
-            
+
             // Parse parameters
             while !self.check(TokenType::RightParen) && !self.is_at_end() {
                 params.push(self.parse_parameter()?);
@@ -502,24 +546,26 @@ impl Parser {
                 }
             }
             self.expect(TokenType::RightParen, "Expected ')' after parameters")?;
-            
+
             self.expect(TokenType::LeftBrace, "Expected '{' after method signature")?;
             let body = self.parse_block()?;
-            
+
             return Ok(Some(ClassMember {
                 name,
                 kind: ClassMemberKind::StaticMethod { params, body },
             }));
         }
-        
+
         // Check for regular methods
         if self.accept(TokenType::Fn) {
             let name_token = self.expect(TokenType::Ident, "Expected method name")?;
-            let name = name_token.text.ok_or_else(|| anyhow!("Method name token missing text"))?;
-            
+            let name = name_token
+                .text
+                .ok_or_else(|| anyhow!("Method name token missing text"))?;
+
             self.expect(TokenType::LeftParen, "Expected '(' after method name")?;
             let mut params = Vec::new();
-            
+
             // Parse parameters
             while !self.check(TokenType::RightParen) && !self.is_at_end() {
                 params.push(self.parse_parameter()?);
@@ -528,35 +574,37 @@ impl Parser {
                 }
             }
             self.expect(TokenType::RightParen, "Expected ')' after parameters")?;
-            
+
             self.expect(TokenType::LeftBrace, "Expected '{' after method signature")?;
             let body = self.parse_block()?;
-            
+
             return Ok(Some(ClassMember {
                 name,
                 kind: ClassMemberKind::Method { params, body },
             }));
         }
-        
+
         // Check for field declarations
         if self.accept(TokenType::Var) {
             let name_token = self.expect(TokenType::Ident, "Expected field name")?;
-            let name = name_token.text.ok_or_else(|| anyhow!("Field name token missing text"))?;
-            
+            let name = name_token
+                .text
+                .ok_or_else(|| anyhow!("Field name token missing text"))?;
+
             let initializer = if self.accept(TokenType::Equal) {
                 Some(self.parse_expression()?)
             } else {
                 None
             };
-            
+
             self.expect(TokenType::Semicolon, "Expected ';' after field declaration")?;
-            
+
             return Ok(Some(ClassMember {
                 name,
                 kind: ClassMemberKind::Field(initializer),
             }));
         }
-        
+
         // No valid member found
         Ok(None)
     }
@@ -568,72 +616,94 @@ impl Parser {
 
         // Parse module path (e.g., "std::io")
         let mut module_parts = Vec::new();
-        
+
         let first_part = self.expect(TokenType::Ident, "Expected module name")?;
-        module_parts.push(first_part.text.ok_or_else(|| anyhow!("Module name token missing text"))?);
-        
+        module_parts.push(
+            first_part
+                .text
+                .ok_or_else(|| anyhow!("Module name token missing text"))?,
+        );
+
         while self.accept(TokenType::DoubleColon) {
             // Check if this is the final :: before import items
-            if self.check(TokenType::Star) || self.check(TokenType::LeftBrace) || self.check(TokenType::Ident) {
+            if self.check(TokenType::Star)
+                || self.check(TokenType::LeftBrace)
+                || self.check(TokenType::Ident)
+            {
                 // This is the final :: before import items
                 break;
             } else {
                 // This is part of the module path
                 let part = self.expect(TokenType::Ident, "Expected module name after '::'")?;
-                module_parts.push(part.text.ok_or_else(|| anyhow!("Module name token missing text"))?);
+                module_parts.push(
+                    part.text
+                        .ok_or_else(|| anyhow!("Module name token missing text"))?,
+                );
             }
         }
-        
+
         let module = module_parts.join("::");
-        
+
         let items = if self.accept(TokenType::Star) {
             // use module::*
             ImportItems::All
         } else if self.accept(TokenType::LeftBrace) {
             // use module::{item1, item2 as alias}
             let mut import_items = Vec::new();
-            
+
             loop {
                 if self.check(TokenType::RightBrace) {
                     break;
                 }
-                
+
                 let name_token = self.expect(TokenType::Ident, "Expected import item name")?;
-                let name = name_token.text.ok_or_else(|| anyhow!("Import item name token missing text"))?;
-                
+                let name = name_token
+                    .text
+                    .ok_or_else(|| anyhow!("Import item name token missing text"))?;
+
                 let alias = if self.accept(TokenType::As) {
                     let alias_token = self.expect(TokenType::Ident, "Expected alias after 'as'")?;
-                    Some(alias_token.text.ok_or_else(|| anyhow!("Alias token missing text"))?)
+                    Some(
+                        alias_token
+                            .text
+                            .ok_or_else(|| anyhow!("Alias token missing text"))?,
+                    )
                 } else {
                     None
                 };
-                
+
                 import_items.push(ImportItem { name, alias });
-                
+
                 if !self.accept(TokenType::Comma) {
                     break;
                 }
             }
-            
+
             self.expect(TokenType::RightBrace, "Expected '}' after import items")?;
             ImportItems::Specific(import_items)
         } else {
             // use module::item
             let name_token = self.expect(TokenType::Ident, "Expected import item name")?;
-            let name = name_token.text.ok_or_else(|| anyhow!("Import item name token missing text"))?;
-            
+            let name = name_token
+                .text
+                .ok_or_else(|| anyhow!("Import item name token missing text"))?;
+
             let alias = if self.accept(TokenType::As) {
                 let alias_token = self.expect(TokenType::Ident, "Expected alias after 'as'")?;
-                Some(alias_token.text.ok_or_else(|| anyhow!("Alias token missing text"))?)
+                Some(
+                    alias_token
+                        .text
+                        .ok_or_else(|| anyhow!("Alias token missing text"))?,
+                )
             } else {
                 None
             };
-            
+
             ImportItems::Specific(vec![ImportItem { name, alias }])
         };
-        
+
         self.expect(TokenType::Semicolon, "Expected ';' after import statement")?;
-        
+
         Ok(Some(Statement::Import(ImportSpec { module, items })))
     }
 
@@ -672,19 +742,29 @@ impl Parser {
             return Ok(None);
         }
 
-        self.expect(TokenType::Semicolon, "Expected ';' after continue statement")?;
+        self.expect(
+            TokenType::Semicolon,
+            "Expected ';' after continue statement",
+        )?;
         Ok(Some(Statement::Continue))
     }
 
     pub fn try_parse_block_like_expression_statement(&mut self) -> Result<Option<Statement>> {
         // Check for block-like expressions that don't require semicolons
-        if self.check(TokenType::If) || self.check(TokenType::Loop) || self.check(TokenType::While) || self.check(TokenType::For) || self.check(TokenType::Match) || self.check(TokenType::Try) || self.check(TokenType::With) {
+        if self.check(TokenType::If)
+            || self.check(TokenType::Loop)
+            || self.check(TokenType::While)
+            || self.check(TokenType::For)
+            || self.check(TokenType::Match)
+            || self.check(TokenType::Try)
+            || self.check(TokenType::With)
+        {
             // Parse as expression and wrap in Statement::Expression
             if let Ok(expr) = self.parse_expression() {
                 return Ok(Some(Statement::Expression(expr)));
             }
         }
-        
+
         // Try to parse a block expression (will backtrack if it's actually a dictionary)
         if self.check(TokenType::LeftBrace) {
             if let Some(expr) = self.with_checkpoint(|parser| {
@@ -700,7 +780,7 @@ impl Parser {
                 return Ok(Some(Statement::Expression(expr)));
             }
         }
-        
+
         Ok(None)
     }
 }

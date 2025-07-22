@@ -26,68 +26,71 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
     };
 
     // Generate individual test functions that use include_str!
-    let test_functions = test_files.iter().map(|(test_name, include_path, test_type, full_path)| {
-        let test_fn_name = syn::Ident::new(test_name, proc_macro2::Span::call_site());
+    let test_functions =
+        test_files
+            .iter()
+            .map(|(test_name, include_path, test_type, full_path)| {
+                let test_fn_name = syn::Ident::new(test_name, proc_macro2::Span::call_site());
 
-        let test_body = match test_type {
-            TestType::Lex => {
-                let output_path = full_path.replace(".rustleaf", ".lex");
-                quote! {
-                    let source = include_str!(#include_path);
-                    let tokens = rustleaf::lexer::Lexer::tokenize(source).unwrap();
-                    let output = format!("{:#?}", tokens);
-                    std::fs::write(#output_path, output).unwrap();
-                }
-            },
-            TestType::Parse => {
-                let output_path = full_path.replace(".rustleaf", ".parse");
-                quote! {
-                    let source = include_str!(#include_path);
-                    let ast = rustleaf::parser::Parser::parse_str(source).unwrap();
-                    let output = format!("{:#?}", ast);
-                    std::fs::write(#output_path, output).unwrap();
-                }
-            },
-            TestType::Normal => quote! {
-                let source = include_str!(#include_path);
-                let ast = rustleaf::parser::Parser::parse_str(source).unwrap();
-                let _result = rustleaf::eval::evaluate(ast).unwrap();
-            },
-            TestType::Panic => quote! {
-                let source = include_str!(#include_path);
-                let ast = rustleaf::parser::Parser::parse_str(source).unwrap();
-                let _result = rustleaf::eval::evaluate(ast).unwrap();
-            },
-            TestType::Ignore => quote! {
-                let source = include_str!(#include_path);
-                let ast = rustleaf::parser::Parser::parse_str(source).unwrap();
-                let _result = rustleaf::eval::evaluate(ast).unwrap();
-            },
-        };
+                let test_body = match test_type {
+                    TestType::Lex => {
+                        let output_path = full_path.replace(".rustleaf", ".lex");
+                        quote! {
+                            let source = include_str!(#include_path);
+                            let tokens = rustleaf::lexer::Lexer::tokenize(source).unwrap();
+                            let output = format!("{:#?}", tokens);
+                            std::fs::write(#output_path, output).unwrap();
+                        }
+                    }
+                    TestType::Parse => {
+                        let output_path = full_path.replace(".rustleaf", ".parse");
+                        quote! {
+                            let source = include_str!(#include_path);
+                            let ast = rustleaf::parser::Parser::parse_str(source).unwrap();
+                            let output = format!("{:#?}", ast);
+                            std::fs::write(#output_path, output).unwrap();
+                        }
+                    }
+                    TestType::Normal => quote! {
+                        let source = include_str!(#include_path);
+                        let ast = rustleaf::parser::Parser::parse_str(source).unwrap();
+                        let _result = rustleaf::eval::evaluate(ast).unwrap();
+                    },
+                    TestType::Panic => quote! {
+                        let source = include_str!(#include_path);
+                        let ast = rustleaf::parser::Parser::parse_str(source).unwrap();
+                        let _result = rustleaf::eval::evaluate(ast).unwrap();
+                    },
+                    TestType::Ignore => quote! {
+                        let source = include_str!(#include_path);
+                        let ast = rustleaf::parser::Parser::parse_str(source).unwrap();
+                        let _result = rustleaf::eval::evaluate(ast).unwrap();
+                    },
+                };
 
-        match test_type {
-            TestType::Ignore => quote! {
-                #[test]
-                #[ignore]
-                fn #test_fn_name() {
-                    #test_body
+                match test_type {
+                    TestType::Ignore => quote! {
+                        #[test]
+                        #[ignore]
+                        fn #test_fn_name() {
+                            #test_body
+                        }
+                    },
+                    TestType::Panic => quote! {
+                        #[test]
+                        #[should_panic]
+                        fn #test_fn_name() {
+                            #test_body
+                        }
+                    },
+                    _ => quote! {
+                        #[test]
+                        fn #test_fn_name() {
+                            #test_body
+                        }
+                    },
                 }
-            },
-            TestType::Panic => quote! {
-                #[test]
-                #[should_panic]
-                fn #test_fn_name() {
-                    #test_body
-                }
-            },
-            _ => quote! {
-                #[test]
-                fn #test_fn_name() {
-                    #test_body
-                }
-            },
-        }
-    });
+            });
 
     let expanded = quote! {
         #(#test_functions)*

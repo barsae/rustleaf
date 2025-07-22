@@ -36,7 +36,7 @@ pub enum Statement {
     FnDecl {
         name: String,
         params: Vec<Parameter>,
-        body: Block, // Function body is a block
+        body: Block,  // Function body is a block
         is_pub: bool, // pub keyword
     },
 
@@ -266,8 +266,8 @@ pub struct DictPattern {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct CatchClause {
-    pub pattern: Pattern,      // Can pattern match on error object
-    pub body: Block, // Catch body is block
+    pub pattern: Pattern, // Can pattern match on error object
+    pub body: Block,      // Catch body is block
 }
 
 #[derive(Debug, Clone, PartialEq)]

@@ -53,7 +53,9 @@ impl MacroDefinition {
 }
 
 /// Extract macro definitions from parsed statements
-pub fn extract_macro_definitions(statements: &[Statement]) -> Result<(MacroRegistry, Vec<Statement>)> {
+pub fn extract_macro_definitions(
+    statements: &[Statement],
+) -> Result<(MacroRegistry, Vec<Statement>)> {
     let mut registry = MacroRegistry::new();
     let mut non_macro_statements = Vec::new();
 
@@ -70,11 +72,26 @@ pub fn extract_macro_definitions(statements: &[Statement]) -> Result<(MacroRegis
 
 /// Extract a macro definition from a statement if it's a macro
 fn extract_macro_definition(stmt: &Statement) -> Option<MacroDefinition> {
-    if let Statement::Macro { name, args: _, statement } = stmt {
+    if let Statement::Macro {
+        name,
+        args: _,
+        statement,
+    } = stmt
+    {
         if name == "macro" {
             // This is a macro definition: #[macro] fn name() {}
-            if let Statement::FnDecl { name, params, body, is_pub: _ } = statement.as_ref() {
-                return Some(MacroDefinition::new(name.clone(), params.clone(), body.clone()));
+            if let Statement::FnDecl {
+                name,
+                params,
+                body,
+                is_pub: _,
+            } = statement.as_ref()
+            {
+                return Some(MacroDefinition::new(
+                    name.clone(),
+                    params.clone(),
+                    body.clone(),
+                ));
             }
         }
     }
@@ -99,7 +116,11 @@ pub fn apply_macro_expansions(
 /// Expand a single statement, applying any macro annotations
 fn expand_statement(stmt: Statement, registry: &MacroRegistry) -> Result<Vec<Statement>> {
     match stmt {
-        Statement::Macro { name, args: _, statement } => {
+        Statement::Macro {
+            name,
+            args: _,
+            statement,
+        } => {
             if let Some(_macro_def) = registry.get_macro(&name) {
                 // For now, just return the original statement without the macro annotation
                 // TODO: Implement actual macro expansion by calling the macro function
@@ -116,7 +137,12 @@ fn expand_statement(stmt: Statement, registry: &MacroRegistry) -> Result<Vec<Sta
             let expanded_expr = expand_expression(expr, registry)?;
             Ok(vec![Statement::Expression(expanded_expr)])
         }
-        Statement::FnDecl { name, params, body, is_pub } => {
+        Statement::FnDecl {
+            name,
+            params,
+            body,
+            is_pub,
+        } => {
             let expanded_body = expand_block(body, registry)?;
             Ok(vec![Statement::FnDecl {
                 name,
@@ -125,7 +151,11 @@ fn expand_statement(stmt: Statement, registry: &MacroRegistry) -> Result<Vec<Sta
                 is_pub,
             }])
         }
-        Statement::ClassDecl { name, members, is_pub } => {
+        Statement::ClassDecl {
+            name,
+            members,
+            is_pub,
+        } => {
             let expanded_members = expand_class_members(members, registry)?;
             Ok(vec![Statement::ClassDecl {
                 name,
@@ -155,9 +185,12 @@ fn expand_block(block: Block, registry: &MacroRegistry) -> Result<Block> {
 }
 
 /// Expand class members
-fn expand_class_members(members: Vec<ClassMember>, registry: &MacroRegistry) -> Result<Vec<ClassMember>> {
+fn expand_class_members(
+    members: Vec<ClassMember>,
+    registry: &MacroRegistry,
+) -> Result<Vec<ClassMember>> {
     let mut expanded_members = Vec::new();
-    
+
     for member in members {
         let expanded_kind = match member.kind {
             ClassMemberKind::Method { params, body } => {
@@ -177,12 +210,12 @@ fn expand_class_members(members: Vec<ClassMember>, registry: &MacroRegistry) -> 
             // For other member types, return as-is
             other => other,
         };
-        
+
         expanded_members.push(ClassMember {
             name: member.name,
             kind: expanded_kind,
         });
     }
-    
+
     Ok(expanded_members)
 }

@@ -70,7 +70,9 @@ impl Lexer {
             },
             LexerRule {
                 pattern: Regex::new(r"^/\*!([^*]|\*[^/])*\*/").unwrap(),
-                token_type: |s| Token::with_text(TokenType::InnerDocCommentBlock, &s[3..s.len() - 2]),
+                token_type: |s| {
+                    Token::with_text(TokenType::InnerDocCommentBlock, &s[3..s.len() - 2])
+                },
                 ignore: false,
             },
             // Regular comments (ignored)

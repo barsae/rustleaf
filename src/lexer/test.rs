@@ -167,7 +167,12 @@ string""""#;
 
         assert_eq!(
             tokens,
-            vec![Token::simple(TokenType::True), Token::simple(TokenType::False), Token::simple(TokenType::Null), Token::simple(TokenType::Eof),]
+            vec![
+                Token::simple(TokenType::True),
+                Token::simple(TokenType::False),
+                Token::simple(TokenType::Null),
+                Token::simple(TokenType::Eof),
+            ]
         );
     }
 
@@ -259,7 +264,14 @@ string""""#;
         let source = "# macro";
         let tokens = Lexer::tokenize(source).unwrap();
 
-        assert_eq!(tokens, vec![Token::simple(TokenType::Hash), Token::simple(TokenType::Macro), Token::simple(TokenType::Eof),]);
+        assert_eq!(
+            tokens,
+            vec![
+                Token::simple(TokenType::Hash),
+                Token::simple(TokenType::Macro),
+                Token::simple(TokenType::Eof),
+            ]
+        );
     }
 
     #[test]

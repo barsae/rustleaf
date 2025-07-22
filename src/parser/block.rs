@@ -23,6 +23,9 @@ impl Parser {
         }
 
         self.expect(TokenType::RightBrace, "Expected '}' after block")?;
-        Ok(Block { statements, final_expr })
+        Ok(Block {
+            statements,
+            final_expr,
+        })
     }
 }
