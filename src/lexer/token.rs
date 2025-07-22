@@ -1,26 +1,49 @@
 /// Token types for RustLeaf
 
 #[derive(Debug, Clone, PartialEq)]
-pub enum Token {
+pub struct Token {
+    pub token_type: TokenType,
+    pub text: Option<String>,
+}
+
+impl Token {
+    /// Create a new token with type and optional text
+    pub fn new(token_type: TokenType, text: Option<String>) -> Self {
+        Self { token_type, text }
+    }
+
+    /// Create a simple token without text (for punctuation, keywords, etc.)
+    pub fn simple(token_type: TokenType) -> Self {
+        Self::new(token_type, None)
+    }
+
+    /// Create a token with text (for literals, identifiers, etc.)
+    pub fn with_text(token_type: TokenType, text: &str) -> Self {
+        Self::new(token_type, Some(text.to_string()))
+    }
+}
+
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+pub enum TokenType {
     // Literals
-    Int(i64),
-    Float(f64),
-    String(String),          // "regular strings"
-    RawString(String),       // r"raw strings"
-    MultilineString(String), // """multiline strings"""
-    StringPart(String),      // For interpolation
+    Int,
+    Float,
+    String,          // "regular strings"
+    RawString,       // r"raw strings"
+    MultilineString, // """multiline strings"""
+    StringPart,      // For interpolation
     True,
     False,
     Null,
 
     // Documentation Comments
-    DocComment(String),           // /// content
-    DocCommentBlock(String),      // /** content */
-    InnerDocComment(String),      // //! content
-    InnerDocCommentBlock(String), // /*! content */
+    DocComment,           // /// content
+    DocCommentBlock,      // /** content */
+    InnerDocComment,      // //! content
+    InnerDocCommentBlock, // /*! content */
 
     // Identifiers and Keywords
-    Ident(String),
+    Ident,
     Var,
     Fn,
     If,

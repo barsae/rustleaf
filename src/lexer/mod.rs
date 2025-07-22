@@ -6,4 +6,4 @@ mod token;
 
 // Re-export public API
 pub use core::Lexer;
-pub use token::Token;
+pub use token::{Token, TokenType};

@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use crate::lexer::{Lexer, Token};
+    use crate::lexer::{Lexer, Token, TokenType};
 
     #[test]
     fn test_keywords() {
@@ -10,21 +10,21 @@ mod tests {
         assert_eq!(
             tokens,
             vec![
-                Token::Var,
-                Token::Fn,
-                Token::If,
-                Token::Else,
-                Token::While,
-                Token::For,
-                Token::Loop,
-                Token::Return,
-                Token::Break,
-                Token::Continue,
-                Token::Class,
-                Token::Static,
-                Token::Self_,
-                Token::Super,
-                Token::Eof,
+                Token::simple(TokenType::Var),
+                Token::simple(TokenType::Fn),
+                Token::simple(TokenType::If),
+                Token::simple(TokenType::Else),
+                Token::simple(TokenType::While),
+                Token::simple(TokenType::For),
+                Token::simple(TokenType::Loop),
+                Token::simple(TokenType::Return),
+                Token::simple(TokenType::Break),
+                Token::simple(TokenType::Continue),
+                Token::simple(TokenType::Class),
+                Token::simple(TokenType::Static),
+                Token::simple(TokenType::Self_),
+                Token::simple(TokenType::Super),
+                Token::simple(TokenType::Eof),
             ]
         );
     }
@@ -37,16 +37,16 @@ mod tests {
         assert_eq!(
             tokens,
             vec![
-                Token::Pub,
-                Token::Use,
-                Token::Raise,
-                Token::Import,
-                Token::Export,
-                Token::Match,
-                Token::Try,
-                Token::Catch,
-                Token::Macro,
-                Token::Eof,
+                Token::simple(TokenType::Pub),
+                Token::simple(TokenType::Use),
+                Token::simple(TokenType::Raise),
+                Token::simple(TokenType::Import),
+                Token::simple(TokenType::Export),
+                Token::simple(TokenType::Match),
+                Token::simple(TokenType::Try),
+                Token::simple(TokenType::Catch),
+                Token::simple(TokenType::Macro),
+                Token::simple(TokenType::Eof),
             ]
         );
     }
@@ -59,14 +59,14 @@ mod tests {
         assert_eq!(
             tokens,
             vec![
-                Token::Ident("hello".to_string()),
-                Token::Ident("world".to_string()),
-                Token::Ident("_private".to_string()),
-                Token::Ident("camelCase".to_string()),
-                Token::Ident("snake_case".to_string()),
-                Token::Ident("CONSTANT".to_string()),
-                Token::Ident("x123".to_string()),
-                Token::Eof,
+                Token::with_text(TokenType::Ident, "hello"),
+                Token::with_text(TokenType::Ident, "world"),
+                Token::with_text(TokenType::Ident, "_private"),
+                Token::with_text(TokenType::Ident, "camelCase"),
+                Token::with_text(TokenType::Ident, "snake_case"),
+                Token::with_text(TokenType::Ident, "CONSTANT"),
+                Token::with_text(TokenType::Ident, "x123"),
+                Token::simple(TokenType::Eof),
             ]
         );
     }
@@ -79,16 +79,16 @@ mod tests {
         assert_eq!(
             tokens,
             vec![
-                Token::Int(42),
-                Token::Int(0),
-                Token::Int(123),
-                Token::Int(1000000),
-                Token::Int(255),
-                Token::Int(255),
-                Token::Int(63),
-                Token::Int(10),
-                Token::Int(240),
-                Token::Eof,
+                Token::with_text(TokenType::Int, "42"),
+                Token::with_text(TokenType::Int, "0"),
+                Token::with_text(TokenType::Int, "123"),
+                Token::with_text(TokenType::Int, "1_000_000"),
+                Token::with_text(TokenType::Int, "255"),
+                Token::with_text(TokenType::Int, "0xFF"),
+                Token::with_text(TokenType::Int, "0o77"),
+                Token::with_text(TokenType::Int, "10"),
+                Token::with_text(TokenType::Int, "240"),
+                Token::simple(TokenType::Eof),
             ]
         );
     }
@@ -101,13 +101,13 @@ mod tests {
         assert_eq!(
             tokens,
             vec![
-                Token::Float(3.14159),
-                Token::Float(1.0),
-                Token::Float(0.1),
-                Token::Float(1e10),
-                Token::Float(2.5e-4),
-                Token::Float(1e6),
-                Token::Eof,
+                Token::with_text(TokenType::Float, "3.14159"),
+                Token::with_text(TokenType::Float, "1.0"),
+                Token::with_text(TokenType::Float, "0.1"),
+                Token::with_text(TokenType::Float, "1e10"),
+                Token::with_text(TokenType::Float, "2.5e-4"),
+                Token::with_text(TokenType::Float, "1E+6"),
+                Token::simple(TokenType::Eof),
             ]
         );
     }
@@ -120,10 +120,10 @@ mod tests {
         assert_eq!(
             tokens,
             vec![
-                Token::String("hello".to_string()),
-                Token::String("world\\n".to_string()),
-                Token::RawString("raw\\string".to_string()),
-                Token::Eof,
+                Token::with_text(TokenType::String, "hello"),
+                Token::with_text(TokenType::String, "world\\n"),
+                Token::with_text(TokenType::RawString, "raw\\string"),
+                Token::simple(TokenType::Eof),
             ]
         );
     }
@@ -137,8 +137,8 @@ line""""#;
         assert_eq!(
             tokens,
             vec![
-                Token::MultilineString("multi\nline".to_string()),
-                Token::Eof,
+                Token::with_text(TokenType::MultilineString, "multi\nline"),
+                Token::simple(TokenType::Eof),
             ]
         );
     }
@@ -152,10 +152,10 @@ string""""#;
         assert_eq!(
             tokens,
             vec![
-                Token::String("regular".to_string()),
-                Token::RawString("raw".to_string()),
-                Token::MultilineString("multiline\nstring".to_string()),
-                Token::Eof,
+                Token::with_text(TokenType::String, "regular"),
+                Token::with_text(TokenType::RawString, "raw"),
+                Token::with_text(TokenType::MultilineString, "multiline\nstring"),
+                Token::simple(TokenType::Eof),
             ]
         );
     }
@@ -167,7 +167,7 @@ string""""#;
 
         assert_eq!(
             tokens,
-            vec![Token::True, Token::False, Token::Null, Token::Eof,]
+            vec![Token::simple(TokenType::True), Token::simple(TokenType::False), Token::simple(TokenType::Null), Token::simple(TokenType::Eof),]
         );
     }
 
@@ -179,33 +179,33 @@ string""""#;
         assert_eq!(
             tokens,
             vec![
-                Token::Plus,
-                Token::Minus,
-                Token::Star,
-                Token::Slash,
-                Token::Percent,
-                Token::StarStar,
-                Token::Equal,
-                Token::PlusEqual,
-                Token::MinusEqual,
-                Token::StarEqual,
-                Token::SlashEqual,
-                Token::PercentEqual,
-                Token::EqualEqual,
-                Token::BangEqual,
-                Token::Less,
-                Token::Greater,
-                Token::LessEqual,
-                Token::GreaterEqual,
-                Token::Ampersand,
-                Token::Pipe,
-                Token::Caret,
-                Token::Tilde,
-                Token::LessLess,
-                Token::GreaterGreater,
-                Token::DotDot,
-                Token::DotDotEqual,
-                Token::Eof,
+                Token::simple(TokenType::Plus),
+                Token::simple(TokenType::Minus),
+                Token::simple(TokenType::Star),
+                Token::simple(TokenType::Slash),
+                Token::simple(TokenType::Percent),
+                Token::simple(TokenType::StarStar),
+                Token::simple(TokenType::Equal),
+                Token::simple(TokenType::PlusEqual),
+                Token::simple(TokenType::MinusEqual),
+                Token::simple(TokenType::StarEqual),
+                Token::simple(TokenType::SlashEqual),
+                Token::simple(TokenType::PercentEqual),
+                Token::simple(TokenType::EqualEqual),
+                Token::simple(TokenType::BangEqual),
+                Token::simple(TokenType::Less),
+                Token::simple(TokenType::Greater),
+                Token::simple(TokenType::LessEqual),
+                Token::simple(TokenType::GreaterEqual),
+                Token::simple(TokenType::Ampersand),
+                Token::simple(TokenType::Pipe),
+                Token::simple(TokenType::Caret),
+                Token::simple(TokenType::Tilde),
+                Token::simple(TokenType::LessLess),
+                Token::simple(TokenType::GreaterGreater),
+                Token::simple(TokenType::DotDot),
+                Token::simple(TokenType::DotDotEqual),
+                Token::simple(TokenType::Eof),
             ]
         );
     }
@@ -218,19 +218,19 @@ string""""#;
         assert_eq!(
             tokens,
             vec![
-                Token::LeftParen,
-                Token::RightParen,
-                Token::LeftBrace,
-                Token::RightBrace,
-                Token::LeftBracket,
-                Token::RightBracket,
-                Token::Comma,
-                Token::Semicolon,
-                Token::Dot,
-                Token::Colon,
-                Token::DoubleColon,
-                Token::Hash,
-                Token::Eof,
+                Token::simple(TokenType::LeftParen),
+                Token::simple(TokenType::RightParen),
+                Token::simple(TokenType::LeftBrace),
+                Token::simple(TokenType::RightBrace),
+                Token::simple(TokenType::LeftBracket),
+                Token::simple(TokenType::RightBracket),
+                Token::simple(TokenType::Comma),
+                Token::simple(TokenType::Semicolon),
+                Token::simple(TokenType::Dot),
+                Token::simple(TokenType::Colon),
+                Token::simple(TokenType::DoubleColon),
+                Token::simple(TokenType::Hash),
+                Token::simple(TokenType::Eof),
             ]
         );
     }
@@ -243,13 +243,13 @@ string""""#;
         assert_eq!(
             tokens,
             vec![
-                Token::And,
-                Token::Or,
-                Token::Xor,
-                Token::Not,
-                Token::In,
-                Token::Is,
-                Token::Eof,
+                Token::simple(TokenType::And),
+                Token::simple(TokenType::Or),
+                Token::simple(TokenType::Xor),
+                Token::simple(TokenType::Not),
+                Token::simple(TokenType::In),
+                Token::simple(TokenType::Is),
+                Token::simple(TokenType::Eof),
             ]
         );
     }
@@ -259,7 +259,7 @@ string""""#;
         let source = "# macro";
         let tokens = Lexer::tokenize(source).unwrap();
 
-        assert_eq!(tokens, vec![Token::Hash, Token::Macro, Token::Eof,]);
+        assert_eq!(tokens, vec![Token::simple(TokenType::Hash), Token::simple(TokenType::Macro), Token::simple(TokenType::Eof),]);
     }
 
     #[test]
@@ -270,11 +270,11 @@ string""""#;
         assert_eq!(
             tokens,
             vec![
-                Token::Hash,
-                Token::LeftBracket,
-                Token::Ident("test".to_string()),
-                Token::RightBracket,
-                Token::Eof,
+                Token::simple(TokenType::Hash),
+                Token::simple(TokenType::LeftBracket),
+                Token::with_text(TokenType::Ident, "test"),
+                Token::simple(TokenType::RightBracket),
+                Token::simple(TokenType::Eof),
             ]
         );
     }
@@ -287,17 +287,17 @@ string""""#;
         assert_eq!(
             tokens,
             vec![
-                Token::Var,
-                Token::Ident("x".to_string()),
-                Token::Equal,
-                Token::Int(42),
-                Token::Semicolon,
-                Token::Var,
-                Token::Ident("y".to_string()),
-                Token::Equal,
-                Token::Int(24),
-                Token::Semicolon,
-                Token::Eof,
+                Token::simple(TokenType::Var),
+                Token::with_text(TokenType::Ident, "x"),
+                Token::simple(TokenType::Equal),
+                Token::with_text(TokenType::Int, "42"),
+                Token::simple(TokenType::Semicolon),
+                Token::simple(TokenType::Var),
+                Token::with_text(TokenType::Ident, "y"),
+                Token::simple(TokenType::Equal),
+                Token::with_text(TokenType::Int, "24"),
+                Token::simple(TokenType::Semicolon),
+                Token::simple(TokenType::Eof),
             ]
         );
     }
@@ -310,12 +310,12 @@ string""""#;
         assert_eq!(
             tokens,
             vec![
-                Token::Var,
-                Token::Ident("x".to_string()),
-                Token::Equal,
-                Token::Int(42),
-                Token::Semicolon,
-                Token::Eof,
+                Token::simple(TokenType::Var),
+                Token::with_text(TokenType::Ident, "x"),
+                Token::simple(TokenType::Equal),
+                Token::with_text(TokenType::Int, "42"),
+                Token::simple(TokenType::Semicolon),
+                Token::simple(TokenType::Eof),
             ]
         );
     }
@@ -328,16 +328,16 @@ string""""#;
         assert_eq!(
             tokens,
             vec![
-                Token::Var,
-                Token::Ident("greeting".to_string()),
-                Token::Equal,
-                Token::String("Hello, ".to_string()),
-                Token::Plus,
-                Token::Ident("name".to_string()),
-                Token::Plus,
-                Token::String("!".to_string()),
-                Token::Semicolon,
-                Token::Eof,
+                Token::simple(TokenType::Var),
+                Token::with_text(TokenType::Ident, "greeting"),
+                Token::simple(TokenType::Equal),
+                Token::with_text(TokenType::String, "Hello, "),
+                Token::simple(TokenType::Plus),
+                Token::with_text(TokenType::Ident, "name"),
+                Token::simple(TokenType::Plus),
+                Token::with_text(TokenType::String, "!"),
+                Token::simple(TokenType::Semicolon),
+                Token::simple(TokenType::Eof),
             ]
         );
     }
@@ -350,21 +350,21 @@ string""""#;
         assert_eq!(
             tokens,
             vec![
-                Token::Fn,
-                Token::Ident("calculate".to_string()),
-                Token::LeftParen,
-                Token::Ident("x".to_string()),
-                Token::Comma,
-                Token::Ident("y".to_string()),
-                Token::RightParen,
-                Token::LeftBrace,
-                Token::Return,
-                Token::Ident("x".to_string()),
-                Token::Star,
-                Token::Ident("y".to_string()),
-                Token::Semicolon,
-                Token::RightBrace,
-                Token::Eof,
+                Token::simple(TokenType::Fn),
+                Token::with_text(TokenType::Ident, "calculate"),
+                Token::simple(TokenType::LeftParen),
+                Token::with_text(TokenType::Ident, "x"),
+                Token::simple(TokenType::Comma),
+                Token::with_text(TokenType::Ident, "y"),
+                Token::simple(TokenType::RightParen),
+                Token::simple(TokenType::LeftBrace),
+                Token::simple(TokenType::Return),
+                Token::with_text(TokenType::Ident, "x"),
+                Token::simple(TokenType::Star),
+                Token::with_text(TokenType::Ident, "y"),
+                Token::simple(TokenType::Semicolon),
+                Token::simple(TokenType::RightBrace),
+                Token::simple(TokenType::Eof),
             ]
         );
     }
@@ -389,10 +389,10 @@ string""""#;
         assert_eq!(
             tokens,
             vec![
-                Token::Ident("x".to_string()),
-                Token::GreaterEqual,
-                Token::Ident("y".to_string()),
-                Token::Eof,
+                Token::with_text(TokenType::Ident, "x"),
+                Token::simple(TokenType::GreaterEqual),
+                Token::with_text(TokenType::Ident, "y"),
+                Token::simple(TokenType::Eof),
             ]
         );
     }
@@ -406,9 +406,9 @@ string""""#;
         assert_eq!(
             tokens,
             vec![
-                Token::Ident("variable".to_string()),
-                Token::Ident("variance".to_string()),
-                Token::Eof,
+                Token::with_text(TokenType::Ident, "variable"),
+                Token::with_text(TokenType::Ident, "variance"),
+                Token::simple(TokenType::Eof),
             ]
         );
     }
@@ -418,7 +418,7 @@ string""""#;
         let source = "";
         let tokens = Lexer::tokenize(source).unwrap();
 
-        assert_eq!(tokens, vec![Token::Eof]);
+        assert_eq!(tokens, vec![Token::simple(TokenType::Eof)]);
     }
 
     #[test]
@@ -426,7 +426,7 @@ string""""#;
         let source = "   \t  \n  \r\n  ";
         let tokens = Lexer::tokenize(source).unwrap();
 
-        assert_eq!(tokens, vec![Token::Eof]);
+        assert_eq!(tokens, vec![Token::simple(TokenType::Eof)]);
     }
 
     #[test]
@@ -438,12 +438,12 @@ string""""#;
         assert_eq!(
             tokens,
             vec![
-                Token::Var,
-                Token::Ident("x".to_string()),
-                Token::Equal,
-                Token::Int(42),
-                Token::Semicolon,
-                Token::Eof,
+                Token::simple(TokenType::Var),
+                Token::with_text(TokenType::Ident, "x"),
+                Token::simple(TokenType::Equal),
+                Token::with_text(TokenType::Int, "42"),
+                Token::simple(TokenType::Semicolon),
+                Token::simple(TokenType::Eof),
             ]
         );
     }
@@ -456,16 +456,16 @@ string""""#;
         assert_eq!(
             tokens,
             vec![
-                Token::Int(0),
-                Token::DotDot,
-                Token::Int(10),
-                Token::Int(0),
-                Token::DotDotEqual,
-                Token::Int(10),
-                Token::Int(1),
-                Token::DotDot,
-                Token::Ident("n".to_string()),
-                Token::Eof,
+                Token::with_text(TokenType::Int, "0"),
+                Token::simple(TokenType::DotDot),
+                Token::with_text(TokenType::Int, "10"),
+                Token::with_text(TokenType::Int, "0"),
+                Token::simple(TokenType::DotDotEqual),
+                Token::with_text(TokenType::Int, "10"),
+                Token::with_text(TokenType::Int, "1"),
+                Token::simple(TokenType::DotDot),
+                Token::with_text(TokenType::Ident, "n"),
+                Token::simple(TokenType::Eof),
             ]
         );
     }
@@ -478,9 +478,9 @@ string""""#;
         assert_eq!(
             tokens,
             vec![
-                Token::DocComment(" This is a doc comment".to_string()),
-                Token::InnerDocComment(" This is an inner doc comment".to_string()),
-                Token::Eof,
+                Token::with_text(TokenType::DocComment, " This is a doc comment"),
+                Token::with_text(TokenType::InnerDocComment, " This is an inner doc comment"),
+                Token::simple(TokenType::Eof),
             ]
         );
     }
@@ -493,9 +493,9 @@ string""""#;
         assert_eq!(
             tokens,
             vec![
-                Token::DocCommentBlock(" Block doc comment ".to_string()),
-                Token::InnerDocCommentBlock(" Inner block doc comment ".to_string()),
-                Token::Eof,
+                Token::with_text(TokenType::DocCommentBlock, "Block doc comment"),
+                Token::with_text(TokenType::InnerDocCommentBlock, "Inner block doc comment"),
+                Token::simple(TokenType::Eof),
             ]
         );
     }
@@ -508,9 +508,9 @@ string""""#;
         assert_eq!(
             tokens,
             vec![
-                Token::DocComment(" Doc comment".to_string()),
-                Token::DocCommentBlock(" Block doc ".to_string()),
-                Token::Eof,
+                Token::with_text(TokenType::DocComment, "Doc comment"),
+                Token::with_text(TokenType::DocCommentBlock, "Block doc"),
+                Token::simple(TokenType::Eof),
             ]
         );
     }
