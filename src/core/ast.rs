@@ -101,6 +101,10 @@ pub enum Expression {
     Gt(Box<Expression>, Box<Expression>), // >
     Ge(Box<Expression>, Box<Expression>), // >=
 
+    // Membership and identity operators
+    In(Box<Expression>, Box<Expression>), // in
+    Is(Box<Expression>, Box<Expression>), // is
+
     // Bitwise operators
     BitAnd(Box<Expression>, Box<Expression>),     // &
     BitOr(Box<Expression>, Box<Expression>),      // |

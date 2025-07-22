@@ -1,0 +1,14 @@
+Program(
+    [
+        Expression(
+            Is(
+                Identifier(
+                    "a",
+                ),
+                Identifier(
+                    "b",
+                ),
+            ),
+        ),
+    ],
+)

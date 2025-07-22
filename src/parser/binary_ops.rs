@@ -75,6 +75,8 @@ impl Parser {
             TokenType::Greater => Some(Expression::Gt),
             TokenType::LessEqual => Some(Expression::Le),
             TokenType::GreaterEqual => Some(Expression::Ge),
+            TokenType::In => Some(Expression::In),
+            TokenType::Is => Some(Expression::Is),
             TokenType::And => Some(Expression::And),
             TokenType::Or => Some(Expression::Or),
             TokenType::Xor => Some(Expression::Xor),
