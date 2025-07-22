@@ -80,4 +80,11 @@ impl Value {
             _ => None,
         }
     }
+
+    pub fn call(&self, args: Args) -> Result<Value> {
+        match self {
+            Value::RustValue(rv) => rv.0.borrow().call(args),
+            _ => Err(anyhow!("Value is not callable: {:?}", self)),
+        }
+    }
 }

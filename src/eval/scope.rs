@@ -5,10 +5,13 @@ use std::rc::Rc;
 
 use crate::core::Value;
 
+#[derive(Clone, Debug, Default)]
+pub struct ScopeRef(Rc<RefCell<Scope>>);
+
 #[derive(Debug, Clone)]
 pub struct Scope {
     vars: HashMap<String, Value>,
-    parent: Option<Rc<RefCell<Scope>>>,
+    parent: Option<ScopeRef>,
 }
 
 impl Default for Scope {
@@ -27,7 +30,7 @@ impl Scope {
     }
 
     /// Create a new scope with a parent
-    pub fn with_parent(parent: Rc<RefCell<Scope>>) -> Self {
+    pub fn with_parent(parent: ScopeRef) -> Self {
         Scope {
             vars: HashMap::new(),
             parent: Some(parent),
@@ -44,7 +47,7 @@ impl Scope {
         if let Some(value) = self.vars.get(name) {
             Some(value.clone())
         } else if let Some(parent) = &self.parent {
-            parent.borrow().get(name)
+            parent.0.borrow().get(name)
         } else {
             None
         }
@@ -56,18 +59,36 @@ impl Scope {
             self.vars.insert(name.to_string(), value);
             Ok(())
         } else if let Some(parent) = &self.parent {
-            parent.borrow_mut().set(name, value)
+            parent.0.borrow_mut().set(name, value)
         } else {
             Err(format!("Undefined variable: {}", name))
         }
     }
+}
 
-    /// Check if a variable exists in this scope or any parent
-    pub fn exists(&self, name: &str) -> bool {
-        self.vars.contains_key(name)
-            || self
-                .parent
-                .as_ref()
-                .is_some_and(|p| p.borrow().exists(name))
+impl ScopeRef {
+    /// Create a new global scope
+    pub fn new() -> Self {
+        Self(Rc::new(RefCell::new(Scope::new())))
+    }
+
+    /// Create a new scope with this scope as parent
+    pub fn child(&self) -> Self {
+        Self(Rc::new(RefCell::new(Scope::with_parent(self.clone()))))
+    }
+
+    /// Define a new variable in this scope
+    pub fn define(&self, name: String, value: Value) {
+        self.0.borrow_mut().define(name, value);
+    }
+
+    /// Get a variable value, checking parent scopes if needed
+    pub fn get(&self, name: &str) -> Option<Value> {
+        self.0.borrow().get(name)
+    }
+
+    /// Set a variable value, checking parent scopes if needed
+    pub fn set(&self, name: &str, value: Value) -> Result<(), String> {
+        self.0.borrow_mut().set(name, value)
     }
 }

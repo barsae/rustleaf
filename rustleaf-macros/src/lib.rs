@@ -52,12 +52,18 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                         }
                     }
                     TestType::Normal => {
-                        let output_path = full_path.replace(".rustleaf", ".parse");
+                        let parse_output_path = full_path.replace(".rustleaf", ".parse");
+                        let eval_output_path = full_path.replace(".rustleaf", ".eval");
                         quote! {
                             let source = include_str!(#include_path);
                             let ast = rustleaf::parser::Parser::parse_str(source).unwrap();
-                            let output = format!("{:#?}", ast);
-                            std::fs::write(#output_path, output).unwrap();
+                            let parse_output = format!("{:#?}", ast);
+                            std::fs::write(#parse_output_path, parse_output).unwrap();
+                            
+                            let eval_ir = rustleaf::eval::Compiler::compile(ast.clone()).unwrap();
+                            let eval_output = format!("{:#?}", eval_ir);
+                            std::fs::write(#eval_output_path, eval_output).unwrap();
+                            
                             let _result = rustleaf::eval::evaluate(ast).unwrap();
                         }
                     }

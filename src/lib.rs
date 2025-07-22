@@ -15,8 +15,12 @@ pub fn run(source: String) -> Result<core::Value> {
     // Parsing (includes lexical analysis)
     let ast = parser::Parser::parse_str(&source)?;
 
+    // Compilation to evaluation IR
+    let eval_ir = eval::Compiler::compile(ast)?;
+    
     // Evaluation
-    eval::evaluate(ast)
+    let mut evaluator = eval::Evaluator::new();
+    evaluator.eval(&eval_ir)
 }
 
 /// Run a RustLeaf program and print the result
