@@ -118,6 +118,8 @@ impl Parser {
             self.try_parse_if_expression()
         } else if self.check(TokenType::Loop) {
             self.try_parse_loop_expression()
+        } else if self.check(TokenType::While) {
+            self.try_parse_while_expression()
         } else if self.accept(TokenType::LeftBracket) {
             self.parse_list_literal()
         } else {
@@ -251,6 +253,14 @@ impl Parser {
         self.expect(TokenType::LeftBrace, "Expected '{' after loop")?;
         let body = self.parse_block()?;
         Ok(Expression::Loop { body })
+    }
+
+    pub fn try_parse_while_expression(&mut self) -> Result<Expression> {
+        self.expect(TokenType::While, "Expected 'while'")?;
+        let condition = Box::new(self.parse_expression()?);
+        self.expect(TokenType::LeftBrace, "Expected '{' after while condition")?;
+        let body = self.parse_block()?;
+        Ok(Expression::While { condition, body })
     }
 
 }

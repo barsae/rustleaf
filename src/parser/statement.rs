@@ -375,7 +375,7 @@ impl Parser {
 
     pub fn try_parse_block_like_expression_statement(&mut self) -> Result<Option<Statement>> {
         // Check for block-like expressions that don't require semicolons
-        if self.check(TokenType::If) || self.check(TokenType::LeftBrace) || self.check(TokenType::Loop) {
+        if self.check(TokenType::If) || self.check(TokenType::LeftBrace) || self.check(TokenType::Loop) || self.check(TokenType::While) {
             // Parse as expression and wrap in Statement::Expression
             if let Ok(expr) = self.parse_expression() {
                 return Ok(Some(Statement::Expression(expr)));
