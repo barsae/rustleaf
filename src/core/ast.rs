@@ -79,6 +79,7 @@ pub enum Expression {
     Literal(LiteralValue),
     Identifier(String),
     Super, // super keyword for parent class access
+    InterpolatedString(Vec<InterpolationPart>), // "Hello ${name}"
 
     // Property access and method calls
     GetAttr(Box<Expression>, String),               // obj.field
@@ -274,6 +275,12 @@ pub struct CatchClause {
 pub struct WithResource {
     pub name: String,
     pub value: Expression,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum InterpolationPart {
+    Text(String),
+    Expression(Expression),
 }
 
 #[derive(Debug, Clone, PartialEq)]

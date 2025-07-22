@@ -1,0 +1,36 @@
+Program(
+    [
+        Expression(
+            InterpolatedString(
+                [
+                    Expression(
+                        Identifier(
+                            "a",
+                        ),
+                    ),
+                    Text(
+                        " and ",
+                    ),
+                    Expression(
+                        Identifier(
+                            "b",
+                        ),
+                    ),
+                    Text(
+                        " equals ",
+                    ),
+                    Expression(
+                        Add(
+                            Identifier(
+                                "a",
+                            ),
+                            Identifier(
+                                "b",
+                            ),
+                        ),
+                    ),
+                ],
+            ),
+        ),
+    ],
+)

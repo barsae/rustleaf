@@ -147,6 +147,8 @@ impl Parser {
             Ok(Expression::Identifier(text))
         } else if self.accept(TokenType::Super) {
             Ok(Expression::Super)
+        } else if self.check(TokenType::StringPart) || self.check(TokenType::InterpolationStart) {
+            self.parse_interpolated_string()
         } else if self.check(TokenType::LeftBrace) {
             self.parse_brace_expression()
         } else if self.check(TokenType::If) {
@@ -502,5 +504,33 @@ impl Parser {
 
         self.expect(TokenType::RightBrace, "Expected '}' to close dictionary")?;
         Ok(Some(Expression::Dict(pairs)))
+    }
+
+    fn parse_interpolated_string(&mut self) -> Result<Expression> {
+        use crate::core::InterpolationPart;
+        let mut parts = Vec::new();
+        
+        loop {
+            if let Some(token) = self.accept_token(TokenType::StringPart) {
+                // Text part
+                let text = token
+                    .text
+                    .ok_or_else(|| anyhow!("StringPart token missing text"))?;
+                parts.push(InterpolationPart::Text(text));
+            } else if self.accept(TokenType::InterpolationStart) {
+                // Expression part
+                let expr = self.parse_expression()?;
+                parts.push(InterpolationPart::Expression(expr));
+                self.expect(TokenType::InterpolationEnd, "Expected closing '}' in string interpolation")?;
+            } else {
+                break;
+            }
+        }
+        
+        if parts.is_empty() {
+            return Err(anyhow!("Empty interpolated string"));
+        }
+        
+        Ok(Expression::InterpolatedString(parts))
     }
 }

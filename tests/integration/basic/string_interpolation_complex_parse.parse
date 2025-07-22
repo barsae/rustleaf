@@ -1,0 +1,30 @@
+Program(
+    [
+        Expression(
+            InterpolatedString(
+                [
+                    Text(
+                        "Value: ",
+                    ),
+                    Expression(
+                        Add(
+                            Identifier(
+                                "x",
+                            ),
+                            Mul(
+                                Identifier(
+                                    "y",
+                                ),
+                                Literal(
+                                    Int(
+                                        2,
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ],
+            ),
+        ),
+    ],
+)
