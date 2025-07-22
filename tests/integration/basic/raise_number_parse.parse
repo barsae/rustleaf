@@ -1,0 +1,18 @@
+Program(
+    [
+        Expression(
+            FunctionCall(
+                Identifier(
+                    "raise",
+                ),
+                [
+                    Literal(
+                        Int(
+                            42,
+                        ),
+                    ),
+                ],
+            ),
+        ),
+    ],
+)

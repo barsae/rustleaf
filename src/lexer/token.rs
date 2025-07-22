@@ -74,7 +74,6 @@ pub enum TokenType {
     In,
     Is,
     Pub,
-    Raise,
     Use,
 
     // Macro Keywords

@@ -1,0 +1,10 @@
+Program(
+    [
+        Expression(
+            GetAttr(
+                Super,
+                "method",
+            ),
+        ),
+    ],
+)

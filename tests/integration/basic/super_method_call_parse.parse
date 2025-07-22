@@ -1,0 +1,11 @@
+Program(
+    [
+        Expression(
+            MethodCall(
+                Super,
+                "method",
+                [],
+            ),
+        ),
+    ],
+)

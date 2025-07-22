@@ -78,6 +78,7 @@ pub enum Expression {
     // Literals and identifiers
     Literal(LiteralValue),
     Identifier(String),
+    Super, // super keyword for parent class access
 
     // Property access and method calls
     GetAttr(Box<Expression>, String),               // obj.field

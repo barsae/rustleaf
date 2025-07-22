@@ -39,7 +39,7 @@ mod tests {
             vec![
                 Token::simple(TokenType::Pub),
                 Token::simple(TokenType::Use),
-                Token::simple(TokenType::Raise),
+                Token::with_text(TokenType::Ident, "raise"),
                 Token::simple(TokenType::Import),
                 Token::simple(TokenType::Export),
                 Token::simple(TokenType::Match),

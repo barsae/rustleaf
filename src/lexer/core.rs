@@ -453,11 +453,6 @@ impl Lexer {
                 ignore: false,
             },
             LexerRule {
-                pattern: Regex::new(r"^raise\b").unwrap(),
-                token_type: |_| Token::simple(TokenType::Raise),
-                ignore: false,
-            },
-            LexerRule {
                 pattern: Regex::new(r"^with\b").unwrap(),
                 token_type: |_| Token::simple(TokenType::With),
                 ignore: false,
