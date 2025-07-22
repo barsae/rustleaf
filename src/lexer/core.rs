@@ -419,11 +419,6 @@ impl Lexer {
                 ignore: false,
             },
             LexerRule {
-                pattern: Regex::new(r"^export\b").unwrap(),
-                token_type: |_| Token::simple(TokenType::Export),
-                ignore: false,
-            },
-            LexerRule {
                 pattern: Regex::new(r"^use\b").unwrap(),
                 token_type: |_| Token::simple(TokenType::Use),
                 ignore: false,
@@ -447,11 +442,6 @@ impl Lexer {
             LexerRule {
                 pattern: Regex::new(r"^catch\b").unwrap(),
                 token_type: |_| Token::simple(TokenType::Catch),
-                ignore: false,
-            },
-            LexerRule {
-                pattern: Regex::new(r"^finally\b").unwrap(),
-                token_type: |_| Token::simple(TokenType::Finally),
                 ignore: false,
             },
             LexerRule {

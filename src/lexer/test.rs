@@ -31,7 +31,7 @@ mod tests {
 
     #[test]
     fn test_additional_keywords() {
-        let source = "pub use raise import export match try catch macro";
+        let source = "pub use raise import match try catch macro";
         let tokens = Lexer::tokenize(source).unwrap();
 
         assert_eq!(
@@ -41,7 +41,6 @@ mod tests {
                 Token::simple(TokenType::Use),
                 Token::with_text(TokenType::Ident, "raise"),
                 Token::simple(TokenType::Import),
-                Token::simple(TokenType::Export),
                 Token::simple(TokenType::Match),
                 Token::simple(TokenType::Try),
                 Token::simple(TokenType::Catch),
