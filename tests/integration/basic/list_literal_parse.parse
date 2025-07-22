@@ -1,0 +1,35 @@
+Program(
+    [
+        Expression(
+            List(
+                [
+                    Literal(
+                        Int(
+                            1,
+                        ),
+                    ),
+                    Literal(
+                        Int(
+                            2,
+                        ),
+                    ),
+                    Literal(
+                        Int(
+                            3,
+                        ),
+                    ),
+                    Literal(
+                        String(
+                            "hello",
+                        ),
+                    ),
+                    Literal(
+                        Bool(
+                            true,
+                        ),
+                    ),
+                ],
+            ),
+        ),
+    ],
+)

@@ -116,6 +116,8 @@ impl Parser {
             self.parse_block_expression()
         } else if self.check(TokenType::If) {
             self.try_parse_if_expression()
+        } else if self.accept(TokenType::LeftBracket) {
+            self.parse_list_literal()
         } else {
             Err(anyhow!(
                 "Unexpected token: {:?}",
@@ -210,6 +212,36 @@ impl Parser {
             then_expr,
             else_expr,
         })
+    }
+
+    pub fn parse_list_literal(&mut self) -> Result<Expression> {
+        // Opening [ already consumed by parse_primary
+        let mut elements = Vec::new();
+
+        // Handle empty list
+        if self.accept(TokenType::RightBracket) {
+            return Ok(Expression::List(elements));
+        }
+
+        // Parse comma-separated expressions
+        loop {
+            elements.push(self.parse_expression()?);
+            
+            if self.accept(TokenType::RightBracket) {
+                break;
+            } else if self.accept(TokenType::Comma) {
+                // Check for trailing comma before ]
+                if self.check(TokenType::RightBracket) {
+                    self.advance(); // consume the ]
+                    break;
+                }
+                continue;
+            } else {
+                return Err(anyhow!("Expected ',' or ']' in list literal"));
+            }
+        }
+
+        Ok(Expression::List(elements))
     }
 
 }
