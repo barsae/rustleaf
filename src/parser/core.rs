@@ -29,7 +29,14 @@ impl Parser {
         let mut statements = Vec::new();
 
         while !self.is_at_end() {
-            statements.push(self.parse_statement()?);
+            // Try to parse as a statement first
+            if let Some(stmt) = self.try_parse_statement()? {
+                statements.push(stmt);
+            } else {
+                // Fall back to parsing as a top-level expression
+                let expr = self.parse_expression()?;
+                statements.push(Statement::Expression(expr));
+            }
         }
 
         Ok(Program(statements))
