@@ -39,74 +39,78 @@ impl Parser {
 
     // ===== Statement Parsing =====
 
+
     fn parse_statement(&mut self) -> Result<Statement> {
-        // Parse macro annotations first
-        let macros = self.parse_macro_annotations()?;
-
-        match self.peek().token_type {
-            TokenType::Var => self.parse_var_declaration(macros),
-            TokenType::Fn => self.parse_function_declaration(macros),
-            TokenType::Pub => {
-                self.expect(TokenType::Pub, "Expected 'pub'")?;
-                match self.peek().token_type {
-                    TokenType::Fn => self.parse_function_declaration_pub(macros),
-                    TokenType::Class => self.parse_class_declaration_pub(macros),
-                    _ => Err(anyhow!("Expected function or class after 'pub'")),
-                }
-            }
-            TokenType::Class => self.parse_class_declaration(macros),
-            TokenType::Use => self.parse_import_statement(),
-            TokenType::Return => self.parse_return_statement(),
-            TokenType::Break => self.parse_break_statement(),
-            TokenType::Continue => self.parse_continue_statement(),
-            _ => {
-                if !macros.is_empty() {
-                    return Err(anyhow!("Macros can only be applied to declarations"));
-                }
-                // Check if this looks like an assignment
-                if self.is_assignment() {
-                    self.parse_assignment()
-                } else {
-                    // Expression statement
-                    let expr = self.parse_expression()?;
-                    self.expect(TokenType::Semicolon, "Expected ';'")?;
-                    Ok(Statement::Expression(expr))
-                }
-            }
-        }
-    }
-
-    fn parse_macro_annotations(&mut self) -> Result<Vec<MacroAnnotation>> {
-        let mut macros = Vec::new();
-
-        while self.accept(TokenType::Hash).is_some() {
-            self.expect(TokenType::LeftBracket, "Expected '[' after '#'")?;
-
-            let name_token = self.expect(TokenType::Ident, "Expected macro name")?;
-            let name = name_token.text.ok_or_else(|| anyhow!("Identifier token missing text"))?;
-            let mut args = Vec::new();
-
-            if self.accept(TokenType::LeftParen).is_some() {
-                while !self.check(TokenType::RightParen) && !self.is_at_end() {
-                    if let Some(arg) = self.parse_macro_arg()? {
-                        args.push(arg);
-                    }
-
-                    if !self.check(TokenType::RightParen) {
-                        self.expect(TokenType::Comma, "Expected ',' between macro arguments")?;
-                    }
-                }
-
-                self.expect(TokenType::RightParen, "Expected ')' after macro arguments")?;
-            }
-
-            self.expect(TokenType::RightBracket, "Expected ']' after macro")?;
-
-            macros.push(MacroAnnotation { name, args });
+        // Check for macro annotation first
+        if let Some(macro_stmt) = self.try_parse_single_macro_annotation()? {
+            return Ok(macro_stmt);
         }
 
-        Ok(macros)
+        // Try declaration parsers first
+        if let Some(stmt) = self.try_parse_var_declaration()? {
+            return Ok(stmt);
+        }
+        if let Some(stmt) = self.try_parse_function_declaration()? {
+            return Ok(stmt);
+        }
+        if let Some(stmt) = self.try_parse_pub_declaration()? {
+            return Ok(stmt);
+        }
+        if let Some(stmt) = self.try_parse_class_declaration()? {
+            return Ok(stmt);
+        }
+        if let Some(stmt) = self.try_parse_import_statement()? {
+            return Ok(stmt);
+        }
+        if let Some(stmt) = self.try_parse_return_statement()? {
+            return Ok(stmt);
+        }
+        if let Some(stmt) = self.try_parse_break_statement()? {
+            return Ok(stmt);
+        }
+        if let Some(stmt) = self.try_parse_continue_statement()? {
+            return Ok(stmt);
+        }
+        if let Some(stmt) = self.try_parse_assignment()? {
+            return Ok(stmt);
+        }
+
+        // Fall back to expression statement
+        let expr = self.parse_expression()?;
+        self.expect(TokenType::Semicolon, "Expected ';'")?;
+        Ok(Statement::Expression(expr))
     }
+
+    fn try_parse_single_macro_annotation(&mut self) -> Result<Option<Statement>> {
+        if self.accept(TokenType::Hash).is_none() {
+            return Ok(None);
+        }
+
+        self.expect(TokenType::LeftBracket, "Expected '[' after '#'")?;
+        let name_token = self.expect(TokenType::Ident, "Expected macro name")?;
+        let name = name_token.text.ok_or_else(|| anyhow!("Identifier token missing text"))?;
+        let mut args = Vec::new();
+
+        if self.accept(TokenType::LeftParen).is_some() {
+            while !self.check(TokenType::RightParen) && !self.is_at_end() {
+                if let Some(arg) = self.parse_macro_arg()? {
+                    args.push(arg);
+                }
+
+                if !self.check(TokenType::RightParen) {
+                    self.expect(TokenType::Comma, "Expected ',' between macro arguments")?;
+                }
+            }
+
+            self.expect(TokenType::RightParen, "Expected ')' after macro arguments")?;
+        }
+
+        self.expect(TokenType::RightBracket, "Expected ']' after macro")?;
+        // Recurse
+        let statement = Box::new(self.parse_statement()?);
+        Ok(Some(Statement::Macro { name, args, statement }))
+    }
+
 
     fn parse_macro_arg(&mut self) -> Result<Option<MacroArg>> {
         match self.peek().token_type {
@@ -131,38 +135,20 @@ impl Parser {
         }
     }
 
-    fn parse_var_declaration(&mut self, macros: Vec<MacroAnnotation>) -> Result<Statement> {
-        self.expect(TokenType::Var, "Expected 'var'")?;
-        let pattern = self.parse_pattern()?;
+    fn try_parse_var_declaration(&mut self) -> Result<Option<Statement>> {
+        if self.accept(TokenType::Var).is_none() {
+            return Ok(None);
+        }
 
+        let pattern = self.parse_pattern()?;
         let value = if self.accept(TokenType::Equal).is_some() {
             Some(self.parse_expression()?)
         } else {
             None
         };
-
         self.expect(TokenType::Semicolon, "Expected ';'")?;
 
-        Ok(Statement::VarDecl {
-            pattern,
-            value,
-            macros,
-        })
-    }
-
-    fn is_assignment(&mut self) -> bool {
-        // Look ahead to see if this is an assignment
-        let saved_current = self.current;
-
-        // Try to parse an lvalue
-        let is_assign = if self.parse_lvalue_lookahead() {
-            self.is_assign_op()
-        } else {
-            false
-        };
-
-        self.current = saved_current;
-        is_assign
+        Ok(Some(Statement::VarDecl { pattern, value }))
     }
 
     fn parse_lvalue_lookahead(&mut self) -> bool {
@@ -288,11 +274,11 @@ impl Parser {
     }
 
     fn parse_primary(&mut self) -> Result<Expression> {
-        if let Some(_) = self.accept(TokenType::True) {
+        if self.accept(TokenType::True).is_some() {
             Ok(Expression::Literal(LiteralValue::Bool(true)))
-        } else if let Some(_) = self.accept(TokenType::False) {
+        } else if self.accept(TokenType::False).is_some() {
             Ok(Expression::Literal(LiteralValue::Bool(false)))
-        } else if let Some(_) = self.accept(TokenType::Null) {
+        } else if self.accept(TokenType::Null).is_some() {
             Ok(Expression::Literal(LiteralValue::Null))
         } else if let Some(token) = self.accept(TokenType::Int) {
             let text = token.text.as_ref()
@@ -516,39 +502,71 @@ impl Parser {
         }
     }
 
-    fn parse_assignment(&mut self) -> Result<Statement> {
-        Err(anyhow!("Assignment parsing not implemented yet"))
+    fn try_parse_assignment(&mut self) -> Result<Option<Statement>> {
+        // TODO: Implement assignment parsing
+        Ok(None)
     }
 
-    fn parse_function_declaration(&mut self, _macros: Vec<MacroAnnotation>) -> Result<Statement> {
+    fn try_parse_function_declaration(&mut self) -> Result<Option<Statement>> {
+        if self.accept(TokenType::Fn).is_none() {
+            return Ok(None);
+        }
+
+        // TODO: Implement function declaration parsing
         Err(anyhow!("Function declaration parsing not implemented yet"))
     }
 
-    fn parse_function_declaration_pub(&mut self, _macros: Vec<MacroAnnotation>) -> Result<Statement> {
-        Err(anyhow!("Public function declaration parsing not implemented yet"))
+    fn try_parse_pub_declaration(&mut self) -> Result<Option<Statement>> {
+        if self.accept(TokenType::Pub).is_none() {
+            return Ok(None);
+        }
+
+        // TODO: Implement pub declaration parsing
+        Err(anyhow!("Public declaration parsing not implemented yet"))
     }
 
-    fn parse_class_declaration(&mut self, _macros: Vec<MacroAnnotation>) -> Result<Statement> {
+    fn try_parse_class_declaration(&mut self) -> Result<Option<Statement>> {
+        if self.accept(TokenType::Class).is_none() {
+            return Ok(None);
+        }
+
+        // TODO: Implement class declaration parsing
         Err(anyhow!("Class declaration parsing not implemented yet"))
     }
 
-    fn parse_class_declaration_pub(&mut self, _macros: Vec<MacroAnnotation>) -> Result<Statement> {
-        Err(anyhow!("Public class declaration parsing not implemented yet"))
-    }
+    fn try_parse_import_statement(&mut self) -> Result<Option<Statement>> {
+        if self.accept(TokenType::Use).is_none() {
+            return Ok(None);
+        }
 
-    fn parse_import_statement(&mut self) -> Result<Statement> {
+        // TODO: Implement import statement parsing
         Err(anyhow!("Import statement parsing not implemented yet"))
     }
 
-    fn parse_return_statement(&mut self) -> Result<Statement> {
+    fn try_parse_return_statement(&mut self) -> Result<Option<Statement>> {
+        if self.accept(TokenType::Return).is_none() {
+            return Ok(None);
+        }
+
+        // TODO: Implement return statement parsing
         Err(anyhow!("Return statement parsing not implemented yet"))
     }
 
-    fn parse_break_statement(&mut self) -> Result<Statement> {
+    fn try_parse_break_statement(&mut self) -> Result<Option<Statement>> {
+        if self.accept(TokenType::Break).is_none() {
+            return Ok(None);
+        }
+
+        // TODO: Implement break statement parsing
         Err(anyhow!("Break statement parsing not implemented yet"))
     }
 
-    fn parse_continue_statement(&mut self) -> Result<Statement> {
+    fn try_parse_continue_statement(&mut self) -> Result<Option<Statement>> {
+        if self.accept(TokenType::Continue).is_none() {
+            return Ok(None);
+        }
+
+        // TODO: Implement continue statement parsing
         Err(anyhow!("Continue statement parsing not implemented yet"))
     }
 }

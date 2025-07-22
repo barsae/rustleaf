@@ -3,6 +3,13 @@ pub struct Program(pub Vec<Statement>);
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Statement {
+    // Macro annotation wrapping another statement
+    Macro {
+        name: String,
+        args: Vec<MacroArg>,
+        statement: Box<Statement>,
+    },
+
     // Expression statement (expression followed by semicolon)
     Expression(Expression),
 
@@ -10,7 +17,6 @@ pub enum Statement {
     VarDecl {
         pattern: Pattern,
         value: Option<Expression>,
-        macros: Vec<MacroAnnotation>, // #[macro] annotations
     },
 
     // Assignment (statement-only, not expression)
@@ -24,17 +30,15 @@ pub enum Statement {
     FnDecl {
         name: String,
         params: Vec<Parameter>,
-        body: Box<Expression>,        // Function body is a block expression
-        is_pub: bool,                 // pub keyword
-        macros: Vec<MacroAnnotation>, // #[macro] annotations
+        body: Box<Expression>, // Function body is a block expression
+        is_pub: bool,          // pub keyword
     },
 
     // Class declaration
     ClassDecl {
         name: String,
         members: Vec<ClassMember>,
-        is_pub: bool,                 // pub keyword
-        macros: Vec<MacroAnnotation>, // #[macro] annotations
+        is_pub: bool, // pub keyword
     },
 
     // Module imports
@@ -182,7 +186,6 @@ pub enum ParameterKind {
 pub struct ClassMember {
     pub name: String,
     pub kind: ClassMemberKind,
-    pub macros: Vec<MacroAnnotation>, // #[macro] annotations on methods/fields
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -250,12 +253,6 @@ pub struct CatchClause {
 pub struct WithResource {
     pub name: String,
     pub value: Expression,
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct MacroAnnotation {
-    pub name: String,
-    pub args: Vec<MacroArg>,
 }
 
 #[derive(Debug, Clone, PartialEq)]
