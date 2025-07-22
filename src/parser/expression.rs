@@ -116,6 +116,8 @@ impl Parser {
             self.parse_block_expression()
         } else if self.check(TokenType::If) {
             self.try_parse_if_expression()
+        } else if self.check(TokenType::Loop) {
+            self.try_parse_loop_expression()
         } else if self.accept(TokenType::LeftBracket) {
             self.parse_list_literal()
         } else {
@@ -242,6 +244,13 @@ impl Parser {
         }
 
         Ok(Expression::List(elements))
+    }
+
+    pub fn try_parse_loop_expression(&mut self) -> Result<Expression> {
+        self.expect(TokenType::Loop, "Expected 'loop'")?;
+        self.expect(TokenType::LeftBrace, "Expected '{' after loop")?;
+        let body = self.parse_block()?;
+        Ok(Expression::Loop { body })
     }
 
 }

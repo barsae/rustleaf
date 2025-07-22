@@ -1,0 +1,22 @@
+Program(
+    [
+        Expression(
+            Loop {
+                body: Block {
+                    statements: [
+                        Break(
+                            Some(
+                                Literal(
+                                    Int(
+                                        42,
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ],
+                    final_expr: None,
+                },
+            },
+        ),
+    ],
+)

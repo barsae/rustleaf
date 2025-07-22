@@ -42,10 +42,7 @@ impl Parser {
         }
         
         // Try block-like expressions that don't require semicolons
-        if let Some(stmt) = self.try_parse_if_statement()? {
-            return Ok(Some(stmt));
-        }
-        if let Some(stmt) = self.try_parse_block_statement()? {
+        if let Some(stmt) = self.try_parse_block_like_expression_statement()? {
             return Ok(Some(stmt));
         }
 
@@ -376,22 +373,14 @@ impl Parser {
         Ok(Some(Statement::Continue))
     }
 
-    pub fn try_parse_if_statement(&mut self) -> Result<Option<Statement>> {
-        if !self.check(TokenType::If) {
-            return Ok(None);
+    pub fn try_parse_block_like_expression_statement(&mut self) -> Result<Option<Statement>> {
+        // Check for block-like expressions that don't require semicolons
+        if self.check(TokenType::If) || self.check(TokenType::LeftBrace) || self.check(TokenType::Loop) {
+            // Parse as expression and wrap in Statement::Expression
+            if let Ok(expr) = self.parse_expression() {
+                return Ok(Some(Statement::Expression(expr)));
+            }
         }
-
-        let if_expr = self.try_parse_if_expression()?;
-        Ok(Some(Statement::Expression(if_expr)))
-    }
-
-    pub fn try_parse_block_statement(&mut self) -> Result<Option<Statement>> {
-        if !self.check(TokenType::LeftBrace) {
-            return Ok(None);
-        }
-
-        self.advance(); // consume the {
-        let block = self.parse_block()?;
-        Ok(Some(Statement::Expression(Expression::Block(block))))
+        Ok(None)
     }
 }
