@@ -1,0 +1,19 @@
+Program(
+    [
+        Expression(
+            FunctionCall(
+                Identifier(
+                    "func",
+                ),
+                [
+                    Identifier(
+                        "arg1",
+                    ),
+                    Identifier(
+                        "arg2",
+                    ),
+                ],
+            ),
+        ),
+    ],
+)

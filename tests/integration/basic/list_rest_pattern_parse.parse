@@ -1,0 +1,42 @@
+Program(
+    [
+        VarDecl {
+            pattern: ListRest(
+                [
+                    Variable(
+                        "first",
+                    ),
+                ],
+                Some(
+                    "rest",
+                ),
+            ),
+            value: Some(
+                List(
+                    [
+                        Literal(
+                            Int(
+                                1,
+                            ),
+                        ),
+                        Literal(
+                            Int(
+                                2,
+                            ),
+                        ),
+                        Literal(
+                            Int(
+                                3,
+                            ),
+                        ),
+                        Literal(
+                            Int(
+                                4,
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+        },
+    ],
+)

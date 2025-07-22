@@ -155,11 +155,131 @@ impl Parser {
                 }
             }
             TokenType::Int | TokenType::Float | TokenType::String | TokenType::True | TokenType::False | TokenType::Null => {
-                let literal = self.parse_literal_value()?;
-                Ok(Pattern::Literal(literal))
+                // Use with_checkpoint for safe lookahead
+                match self.with_checkpoint(|parser| {
+                    let first_literal = parser.parse_literal_value()?;
+                    
+                    // Check for range operators
+                    if parser.accept(TokenType::DotDot) || parser.accept(TokenType::DotDotEqual) {
+                        // This is a range pattern
+                        let second_literal = parser.parse_literal_value()?;
+                        Ok(Some(Pattern::Range(
+                            Box::new(Pattern::Literal(first_literal)),
+                            Box::new(Pattern::Literal(second_literal))
+                        )))
+                    } else {
+                        // Not a range pattern
+                        Ok(None)
+                    }
+                })? {
+                    Some(range_pattern) => Ok(range_pattern),
+                    None => {
+                        // Parse as simple literal
+                        let literal = self.parse_literal_value()?;
+                        Ok(Pattern::Literal(literal))
+                    }
+                }
+            }
+            TokenType::LeftBracket => {
+                self.parse_list_pattern()
+            }
+            TokenType::LeftBrace => {
+                self.parse_dict_pattern()
             }
             _ => Err(anyhow!("Unsupported pattern type: {:?}", self.peek().token_type)),
         }
+    }
+    
+    fn parse_list_pattern(&mut self) -> Result<Pattern> {
+        self.expect(TokenType::LeftBracket, "Expected '['")?;
+        
+        let mut patterns = Vec::new();
+        let mut rest_var = None;
+        
+        // Handle empty list pattern: []
+        if self.accept(TokenType::RightBracket) {
+            return Ok(Pattern::List(patterns));
+        }
+        
+        loop {
+            // Check for rest pattern: *name
+            if self.accept(TokenType::Star) {
+                let rest_token = self.expect(TokenType::Ident, "Expected identifier after '*'")?;
+                let rest_name = rest_token.text.ok_or_else(|| anyhow!("Identifier token missing text"))?;
+                rest_var = Some(rest_name);
+                
+                // After rest pattern, we can only have the closing bracket or comma + closing bracket
+                if self.accept(TokenType::Comma) {
+                    // Allow trailing comma
+                    if !self.check(TokenType::RightBracket) {
+                        return Err(anyhow!("Rest pattern must be the last element"));
+                    }
+                }
+                break;
+            }
+            
+            // Parse regular pattern
+            patterns.push(self.parse_pattern()?);
+            
+            if self.accept(TokenType::Comma) {
+                // Check for trailing comma
+                if self.check(TokenType::RightBracket) {
+                    break;
+                }
+                continue;
+            } else {
+                break;
+            }
+        }
+        
+        self.expect(TokenType::RightBracket, "Expected ']' to close list pattern")?;
+        
+        if rest_var.is_some() {
+            Ok(Pattern::ListRest(patterns, rest_var))
+        } else {
+            Ok(Pattern::List(patterns))
+        }
+    }
+    
+    fn parse_dict_pattern(&mut self) -> Result<Pattern> {
+        self.expect(TokenType::LeftBrace, "Expected '{'")?;
+        
+        let mut dict_patterns = Vec::new();
+        
+        // Handle empty dict pattern: {}
+        if self.accept(TokenType::RightBrace) {
+            return Ok(Pattern::Dict(dict_patterns));
+        }
+        
+        loop {
+            // Parse key identifier
+            let key_token = self.expect(TokenType::Ident, "Expected identifier for dict pattern key")?;
+            let key = key_token.text.ok_or_else(|| anyhow!("Identifier token missing text"))?;
+            
+            let alias = if self.accept(TokenType::Colon) {
+                // {key: alias} form
+                let alias_token = self.expect(TokenType::Ident, "Expected alias after ':'")?;
+                Some(alias_token.text.ok_or_else(|| anyhow!("Alias token missing text"))?)
+            } else {
+                // {key} form - use key as the variable name
+                None
+            };
+            
+            dict_patterns.push(DictPattern { key, alias });
+            
+            if self.accept(TokenType::Comma) {
+                // Check for trailing comma
+                if self.check(TokenType::RightBrace) {
+                    break;
+                }
+                continue;
+            } else {
+                break;
+            }
+        }
+        
+        self.expect(TokenType::RightBrace, "Expected '}' to close dict pattern")?;
+        Ok(Pattern::Dict(dict_patterns))
     }
 
     pub fn try_parse_assignment(&mut self) -> Result<Option<Statement>> {

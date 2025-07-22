@@ -1,0 +1,11 @@
+Program(
+    [
+        Expression(
+            Literal(
+                String(
+                    "This is a\nmultiline string\nwith multiple lines",
+                ),
+            ),
+        ),
+    ],
+)

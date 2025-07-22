@@ -17,7 +17,10 @@ impl Parser {
             // Unary operators would be 14, but handled separately
 
             // Multiplicative
-            TokenType::Star | TokenType::Slash | TokenType::Percent => 13,
+            TokenType::Star | TokenType::Slash | TokenType::Percent => 14,
+
+            // Pipe operator - between property access and other binary operators
+            TokenType::Colon => 13,
 
             // Additive
             TokenType::Plus | TokenType::Minus => 12,
@@ -65,6 +68,7 @@ impl Parser {
             TokenType::Slash => Some(Expression::Div),
             TokenType::Percent => Some(Expression::Mod),
             TokenType::StarStar => Some(Expression::Pow),
+            TokenType::Colon => Some(Expression::Pipe),
             TokenType::EqualEqual => Some(Expression::Eq),
             TokenType::BangEqual => Some(Expression::Ne),
             TokenType::Less => Some(Expression::Lt),

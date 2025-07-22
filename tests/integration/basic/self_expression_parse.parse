@@ -1,0 +1,10 @@
+Program(
+    [
+        Expression(
+            GetAttr(
+                Self_,
+                "field",
+            ),
+        ),
+    ],
+)

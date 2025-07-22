@@ -1,0 +1,25 @@
+Program(
+    [
+        VarDecl {
+            pattern: Dict(
+                [
+                    DictPattern {
+                        key: "name",
+                        alias: None,
+                    },
+                    DictPattern {
+                        key: "age",
+                        alias: Some(
+                            "user_age",
+                        ),
+                    },
+                ],
+            ),
+            value: Some(
+                Identifier(
+                    "user",
+                ),
+            ),
+        },
+    ],
+)

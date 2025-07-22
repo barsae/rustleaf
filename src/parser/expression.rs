@@ -47,7 +47,17 @@ impl Parser {
                     }
                 }
 
-                left = Expression::FunctionCall(Box::new(left), args);
+                // Check if this is a method call (function call on a property access)
+                left = match left {
+                    Expression::GetAttr(obj, method_name) => {
+                        // Convert obj.method(args) to MethodCall
+                        Expression::MethodCall(obj, method_name, args)
+                    }
+                    _ => {
+                        // Regular function call
+                        Expression::FunctionCall(Box::new(left), args)
+                    }
+                };
             } else {
                 // Binary operators
                 if let Some(expr_constructor) = self.get_binary_expression_constructor(self.peek().token_type) {
@@ -107,11 +117,18 @@ impl Parser {
                 .ok_or_else(|| anyhow!("String token missing text"))?
                 .clone();
             Ok(Expression::Literal(LiteralValue::String(text)))
+        } else if let Some(token) = self.accept_token(TokenType::MultilineString) {
+            let text = token.text.as_ref()
+                .ok_or_else(|| anyhow!("Multiline string token missing text"))?
+                .clone();
+            Ok(Expression::Literal(LiteralValue::String(text)))
         } else if let Some(token) = self.accept_token(TokenType::Ident) {
             let text = token.text.as_ref()
                 .ok_or_else(|| anyhow!("Identifier token missing text"))?
                 .clone();
             Ok(Expression::Identifier(text))
+        } else if self.accept(TokenType::Self_) {
+            Ok(Expression::Self_)
         } else if self.check(TokenType::LeftBrace) {
             self.parse_brace_expression()
         } else if self.check(TokenType::If) {
@@ -184,6 +201,13 @@ impl Parser {
                     .clone();
                 self.advance();
                 Ok(LiteralValue::RawString(text))
+            }
+            TokenType::MultilineString => {
+                let text = token.text.as_ref()
+                    .ok_or_else(|| anyhow!("MultilineString token missing text"))?
+                    .clone();
+                self.advance();
+                Ok(LiteralValue::String(text))
             }
             _ => Err(anyhow!("Expected literal value, found {:?}", token.token_type)),
         }
@@ -409,8 +433,8 @@ impl Parser {
         let mut pairs = Vec::new();
         
         loop {
-            // Parse key expression
-            let key = match self.parse_expression() {
+            // Parse key expression - use precedence lower than pipe to avoid consuming colons
+            let key = match self.parse_precedence(14) { // Higher than pipe precedence (13)
                 Ok(expr) => expr,
                 Err(_) => return Ok(None), // Not a valid expression, not a dictionary
             };

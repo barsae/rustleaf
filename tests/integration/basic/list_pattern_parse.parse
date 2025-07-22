@@ -1,0 +1,40 @@
+Program(
+    [
+        VarDecl {
+            pattern: List(
+                [
+                    Variable(
+                        "a",
+                    ),
+                    Variable(
+                        "b",
+                    ),
+                    Variable(
+                        "c",
+                    ),
+                ],
+            ),
+            value: Some(
+                List(
+                    [
+                        Literal(
+                            Int(
+                                1,
+                            ),
+                        ),
+                        Literal(
+                            Int(
+                                2,
+                            ),
+                        ),
+                        Literal(
+                            Int(
+                                3,
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+        },
+    ],
+)

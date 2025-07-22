@@ -1,0 +1,20 @@
+Program(
+    [
+        Expression(
+            MethodCall(
+                Identifier(
+                    "obj",
+                ),
+                "method",
+                [
+                    Identifier(
+                        "arg1",
+                    ),
+                    Identifier(
+                        "arg2",
+                    ),
+                ],
+            ),
+        ),
+    ],
+)

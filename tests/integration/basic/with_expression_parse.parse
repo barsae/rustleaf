@@ -22,13 +22,11 @@ Program(
                 body: Block {
                     statements: [],
                     final_expr: Some(
-                        FunctionCall(
-                            GetAttr(
-                                Identifier(
-                                    "file",
-                                ),
-                                "read",
+                        MethodCall(
+                            Identifier(
+                                "file",
                             ),
+                            "read",
                             [],
                         ),
                     ),
