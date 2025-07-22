@@ -25,7 +25,7 @@ pub fn run_and_print(source: String) -> Result<()> {
 
     // Only print non-unit values
     if !matches!(result, core::Value::Unit) {
-        println!("{}", core::to_string(&result));
+        println!("{:?}", result);
     }
 
     Ok(())
