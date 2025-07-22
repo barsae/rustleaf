@@ -3,6 +3,8 @@ use crate::core::*;
 use crate::lexer::{Token, TokenType};
 use anyhow::{anyhow, Result};
 
+type BinaryExprConstructor = fn(Box<Expression>, Box<Expression>) -> Expression;
+
 pub struct Parser {
     tokens: Vec<Token>,
     current: usize,
@@ -41,12 +43,12 @@ impl Parser {
         // Parse macro annotations first
         let macros = self.parse_macro_annotations()?;
 
-        match &self.peek().token_type {
+        match self.peek().token_type {
             TokenType::Var => self.parse_var_declaration(macros),
             TokenType::Fn => self.parse_function_declaration(macros),
             TokenType::Pub => {
-                self.advance(); // consume 'pub'
-                match &self.peek().token_type {
+                self.expect(TokenType::Pub, "Expected 'pub'")?;
+                match self.peek().token_type {
                     TokenType::Fn => self.parse_function_declaration_pub(macros),
                     TokenType::Class => self.parse_class_declaration_pub(macros),
                     _ => Err(anyhow!("Expected function or class after 'pub'")),
@@ -67,7 +69,7 @@ impl Parser {
                 } else {
                     // Expression statement
                     let expr = self.parse_expression()?;
-                    self.consume_semicolon()?;
+                    self.expect(TokenType::Semicolon, "Expected ';'")?;
                     Ok(Statement::Expression(expr))
                 }
             }
@@ -77,27 +79,28 @@ impl Parser {
     fn parse_macro_annotations(&mut self) -> Result<Vec<MacroAnnotation>> {
         let mut macros = Vec::new();
 
-        while self.accept(&TokenType::Hash) {
-            self.expect(&TokenType::LeftBracket, "Expected '[' after '#'")?;
+        while self.accept(TokenType::Hash).is_some() {
+            self.expect(TokenType::LeftBracket, "Expected '[' after '#'")?;
 
-            let name = self.consume_identifier("Expected macro name")?;
+            let name_token = self.expect(TokenType::Ident, "Expected macro name")?;
+            let name = name_token.text.ok_or_else(|| anyhow!("Identifier token missing text"))?;
             let mut args = Vec::new();
 
-            if self.accept(&TokenType::LeftParen) {
-                while !self.check(&TokenType::RightParen) && !self.is_at_end() {
+            if self.accept(TokenType::LeftParen).is_some() {
+                while !self.check(TokenType::RightParen) && !self.is_at_end() {
                     if let Some(arg) = self.parse_macro_arg()? {
                         args.push(arg);
                     }
 
-                    if !self.check(&TokenType::RightParen) {
-                        self.expect(&TokenType::Comma, "Expected ',' between macro arguments")?;
+                    if !self.check(TokenType::RightParen) {
+                        self.expect(TokenType::Comma, "Expected ',' between macro arguments")?;
                     }
                 }
 
-                self.expect(&TokenType::RightParen, "Expected ')' after macro arguments")?;
+                self.expect(TokenType::RightParen, "Expected ')' after macro arguments")?;
             }
 
-            self.expect(&TokenType::RightBracket, "Expected ']' after macro")?;
+            self.expect(TokenType::RightBracket, "Expected ']' after macro")?;
 
             macros.push(MacroAnnotation { name, args });
         }
@@ -106,11 +109,12 @@ impl Parser {
     }
 
     fn parse_macro_arg(&mut self) -> Result<Option<MacroArg>> {
-        match &self.peek().token_type {
+        match self.peek().token_type {
             TokenType::Ident => {
-                let name = self.consume_identifier("Expected identifier")?;
+                let name_token = self.expect(TokenType::Ident, "Expected identifier")?;
+                let name = name_token.text.ok_or_else(|| anyhow!("Identifier token missing text"))?;
 
-                if self.accept(&TokenType::Colon) {
+                if self.accept(TokenType::Colon).is_some() {
                     let value = self.parse_literal_value()?;
                     Ok(Some(MacroArg::Named(name, value)))
                 } else {
@@ -128,16 +132,16 @@ impl Parser {
     }
 
     fn parse_var_declaration(&mut self, macros: Vec<MacroAnnotation>) -> Result<Statement> {
-        self.advance(); // consume 'var'
+        self.expect(TokenType::Var, "Expected 'var'")?;
         let pattern = self.parse_pattern()?;
 
-        let value = if self.accept(&TokenType::Equal) {
+        let value = if self.accept(TokenType::Equal).is_some() {
             Some(self.parse_expression()?)
         } else {
             None
         };
 
-        self.consume_semicolon()?;
+        self.expect(TokenType::Semicolon, "Expected ';'")?;
 
         Ok(Statement::VarDecl {
             pattern,
@@ -162,21 +166,21 @@ impl Parser {
     }
 
     fn parse_lvalue_lookahead(&mut self) -> bool {
-        match &self.peek().token_type {
+        match self.peek().token_type {
             TokenType::Ident => {
                 self.advance();
                 // Could be obj.field or obj[key]
                 loop {
-                    if self.accept(&TokenType::Dot) {
-                        if !matches!(&self.peek().token_type, TokenType::Ident) {
+                    if self.accept(TokenType::Dot).is_some() {
+                        if !matches!(self.peek().token_type, TokenType::Ident) {
                             return false;
                         }
                         self.advance();
-                    } else if self.accept(&TokenType::LeftBracket) {
+                    } else if self.accept(TokenType::LeftBracket).is_some() {
                         // Skip the index expression
                         let mut bracket_depth = 1;
                         while bracket_depth > 0 && !self.is_at_end() {
-                            match &self.peek().token_type {
+                            match self.peek().token_type {
                                 TokenType::LeftBracket => bracket_depth += 1,
                                 TokenType::RightBracket => bracket_depth -= 1,
                                 _ => {}
@@ -195,7 +199,7 @@ impl Parser {
 
     fn is_assign_op(&self) -> bool {
         matches!(
-            &self.peek().token_type,
+            self.peek().token_type,
             TokenType::Equal
                 | TokenType::PlusEqual
                 | TokenType::MinusEqual
@@ -214,43 +218,44 @@ impl Parser {
         let mut left = self.parse_unary()?;
 
         while !self.is_at_end() {
-            let op_precedence = self.get_binary_precedence(&self.peek().token_type);
+            let op_precedence = self.get_binary_precedence(self.peek().token_type);
             if op_precedence < min_precedence {
                 break;
             }
 
             // Handle postfix operators (method calls, array access, property access)
-            match &self.peek().token_type {
+            match self.peek().token_type {
                 TokenType::Dot => {
-                    self.advance(); // consume '.'
-                    let property = self.consume_identifier("Expected property name after '.'")?;
+                    self.advance();
+                    let property_token = self.expect(TokenType::Ident, "Expected property name after '.'")?;
+                    let property = property_token.text.ok_or_else(|| anyhow!("Identifier token missing text"))?;
                     left = Expression::GetAttr(Box::new(left), property);
                 }
                 TokenType::LeftBracket => {
-                    self.advance(); // consume '['
+                    self.advance();
                     let index = self.parse_expression()?;
-                    self.expect(&TokenType::RightBracket, "Expected ']' after array index")?;
+                    self.expect(TokenType::RightBracket, "Expected ']' after array index")?;
                     left = Expression::GetItem(Box::new(left), Box::new(index));
                 }
                 TokenType::LeftParen => {
-                    self.advance(); // consume '('
+                    self.advance();
                     let mut args = Vec::new();
-                    
-                    while !self.check(&TokenType::RightParen) && !self.is_at_end() {
+
+                    while !self.check(TokenType::RightParen) && !self.is_at_end() {
                         args.push(self.parse_expression()?);
-                        if !self.check(&TokenType::RightParen) {
-                            self.expect(&TokenType::Comma, "Expected ',' between arguments")?;
+                        if !self.check(TokenType::RightParen) {
+                            self.expect(TokenType::Comma, "Expected ',' between arguments")?;
                         }
                     }
-                    
-                    self.expect(&TokenType::RightParen, "Expected ')' after arguments")?;
+
+                    self.expect(TokenType::RightParen, "Expected ')' after arguments")?;
                     left = Expression::FunctionCall(Box::new(left), args);
                 }
                 _ => {
                     // Binary operators
-                    if let Some(expr_constructor) = self.get_binary_expression_constructor(&self.peek().token_type) {
-                        self.advance(); // consume operator
-                        let right_precedence = if self.is_right_associative_token(&self.previous().token_type) {
+                    if let Some(expr_constructor) = self.get_binary_expression_constructor(self.peek().token_type) {
+                        self.advance();
+                        let right_precedence = if self.is_right_associative_token(self.previous().token_type) {
                             op_precedence
                         } else {
                             op_precedence + 1
@@ -268,75 +273,54 @@ impl Parser {
     }
 
     fn parse_unary(&mut self) -> Result<Expression> {
-        match &self.peek().token_type {
-            TokenType::Minus => {
-                self.advance();
-                let expr = self.parse_unary()?;
-                Ok(Expression::Neg(Box::new(expr)))
-            }
-            TokenType::Not => {
-                self.advance();
-                let expr = self.parse_unary()?;
-                Ok(Expression::Not(Box::new(expr)))
-            }
-            TokenType::Tilde => {
-                self.advance();
-                let expr = self.parse_unary()?;
-                Ok(Expression::BitNot(Box::new(expr)))
-            }
-            _ => self.parse_primary(),
+        if self.accept(TokenType::Minus).is_some() {
+            let expr = self.parse_unary()?;
+            Ok(Expression::Neg(Box::new(expr)))
+        } else if self.accept(TokenType::Not).is_some() {
+            let expr = self.parse_unary()?;
+            Ok(Expression::Not(Box::new(expr)))
+        } else if self.accept(TokenType::Tilde).is_some() {
+            let expr = self.parse_unary()?;
+            Ok(Expression::BitNot(Box::new(expr)))
+        } else {
+            self.parse_primary()
         }
     }
 
     fn parse_primary(&mut self) -> Result<Expression> {
-        let token = self.peek();
-        match &token.token_type {
-            TokenType::True => {
-                self.advance();
-                Ok(Expression::Literal(LiteralValue::Bool(true)))
-            }
-            TokenType::False => {
-                self.advance();
-                Ok(Expression::Literal(LiteralValue::Bool(false)))
-            }
-            TokenType::Null => {
-                self.advance();
-                Ok(Expression::Literal(LiteralValue::Null))
-            }
-            TokenType::Int => {
-                let text = token.text.as_ref()
-                    .ok_or_else(|| anyhow!("Int token missing text"))?;
-                let n = text.parse::<i64>()
-                    .map_err(|e| anyhow!("Failed to parse integer '{}': {}", text, e))?;
-                self.advance();
-                Ok(Expression::Literal(LiteralValue::Int(n)))
-            }
-            TokenType::Float => {
-                let text = token.text.as_ref()
-                    .ok_or_else(|| anyhow!("Float token missing text"))?;
-                let f = text.parse::<f64>()
-                    .map_err(|e| anyhow!("Failed to parse float '{}': {}", text, e))?;
-                self.advance();
-                Ok(Expression::Literal(LiteralValue::Float(f)))
-            }
-            TokenType::String => {
-                let text = token.text.as_ref()
-                    .ok_or_else(|| anyhow!("String token missing text"))?
-                    .clone();
-                self.advance();
-                Ok(Expression::Literal(LiteralValue::String(text)))
-            }
-            TokenType::Ident => {
-                let text = token.text.as_ref()
-                    .ok_or_else(|| anyhow!("Identifier token missing text"))?
-                    .clone();
-                self.advance();
-                Ok(Expression::Identifier(text))
-            }
-            _ => Err(anyhow!(
+        if let Some(_) = self.accept(TokenType::True) {
+            Ok(Expression::Literal(LiteralValue::Bool(true)))
+        } else if let Some(_) = self.accept(TokenType::False) {
+            Ok(Expression::Literal(LiteralValue::Bool(false)))
+        } else if let Some(_) = self.accept(TokenType::Null) {
+            Ok(Expression::Literal(LiteralValue::Null))
+        } else if let Some(token) = self.accept(TokenType::Int) {
+            let text = token.text.as_ref()
+                .ok_or_else(|| anyhow!("Int token missing text"))?;
+            let n = text.parse::<i64>()
+                .map_err(|e| anyhow!("Failed to parse integer '{}': {}", text, e))?;
+            Ok(Expression::Literal(LiteralValue::Int(n)))
+        } else if let Some(token) = self.accept(TokenType::Float) {
+            let text = token.text.as_ref()
+                .ok_or_else(|| anyhow!("Float token missing text"))?;
+            let f = text.parse::<f64>()
+                .map_err(|e| anyhow!("Failed to parse float '{}': {}", text, e))?;
+            Ok(Expression::Literal(LiteralValue::Float(f)))
+        } else if let Some(token) = self.accept(TokenType::String) {
+            let text = token.text.as_ref()
+                .ok_or_else(|| anyhow!("String token missing text"))?
+                .clone();
+            Ok(Expression::Literal(LiteralValue::String(text)))
+        } else if let Some(token) = self.accept(TokenType::Ident) {
+            let text = token.text.as_ref()
+                .ok_or_else(|| anyhow!("Identifier token missing text"))?
+                .clone();
+            Ok(Expression::Identifier(text))
+        } else {
+            Err(anyhow!(
                 "Unexpected token: {:?}",
-                token.token_type
-            )),
+                self.peek().token_type
+            ))
         }
     }
 
@@ -348,7 +332,7 @@ impl Parser {
     }
 
     fn is_at_end(&self) -> bool {
-        matches!(&self.peek().token_type, TokenType::Eof)
+        matches!(self.peek().token_type, TokenType::Eof)
     }
 
     fn peek(&self) -> &Token {
@@ -361,46 +345,28 @@ impl Parser {
 
     // ===== Helper Functions =====
 
-    fn check(&self, token_type: &TokenType) -> bool {
+    fn check(&self, token_type: TokenType) -> bool {
         if self.is_at_end() {
             false
         } else {
-            &self.peek().token_type == token_type
+            self.peek().token_type == token_type
         }
     }
 
-    fn accept(&mut self, token_type: &TokenType) -> bool {
+    fn accept(&mut self, token_type: TokenType) -> Option<Token> {
         if self.check(token_type) {
-            self.advance();
-            true
+            Some(self.advance().clone())
         } else {
-            false
+            None
         }
     }
 
-    fn expect(&mut self, token_type: &TokenType, message: &str) -> Result<()> {
-        if self.accept(token_type) {
-            Ok(())
+    fn expect(&mut self, token_type: TokenType, message: &str) -> Result<Token> {
+        if let Some(token) = self.accept(token_type) {
+            Ok(token)
         } else {
             Err(anyhow!("{}: expected {:?}, found {:?}", message, token_type, self.peek().token_type))
         }
-    }
-
-    fn consume_identifier(&mut self, message: &str) -> Result<String> {
-        match &self.peek().token_type {
-            TokenType::Ident => {
-                let text = self.peek().text.as_ref()
-                    .ok_or_else(|| anyhow!("Identifier token missing text"))?
-                    .clone();
-                self.advance();
-                Ok(text)
-            }
-            _ => Err(anyhow!("{}: expected identifier, found {:?}", message, self.peek().token_type)),
-        }
-    }
-
-    fn consume_semicolon(&mut self) -> Result<()> {
-        self.expect(&TokenType::Semicolon, "Expected ';'")
     }
 
     fn parse_literal_value(&mut self) -> Result<LiteralValue> {
@@ -454,58 +420,58 @@ impl Parser {
 
     // ===== Expression Helper Functions =====
 
-    fn get_binary_precedence(&self, token_type: &TokenType) -> u8 {
+    fn get_binary_precedence(&self, token_type: TokenType) -> u8 {
         match token_type {
             // Postfix operators (highest precedence)
             TokenType::Dot | TokenType::LeftBracket | TokenType::LeftParen => 16,
-            
+
             // Exponentiation
             TokenType::StarStar => 15,
-            
+
             // Unary operators would be 14, but handled separately
-            
+
             // Multiplicative
             TokenType::Star | TokenType::Slash | TokenType::Percent => 13,
-            
+
             // Additive
             TokenType::Plus | TokenType::Minus => 12,
-            
+
             // Shift
             TokenType::LessLess | TokenType::GreaterGreater => 11,
-            
+
             // Range
             TokenType::DotDot | TokenType::DotDotEqual => 10,
-            
+
             // Relational
             TokenType::Less | TokenType::Greater | TokenType::LessEqual | TokenType::GreaterEqual => 9,
             TokenType::In | TokenType::Is => 8,
-            
+
             // Equality
             TokenType::EqualEqual | TokenType::BangEqual => 7,
-            
+
             // Bitwise AND
             TokenType::Ampersand => 6,
-            
+
             // Bitwise XOR
             TokenType::Caret => 5,
-            
+
             // Bitwise OR
             TokenType::Pipe => 4,
-            
+
             // Logical AND
             TokenType::And => 3,
-            
+
             // Logical XOR
             TokenType::Xor => 2,
-            
+
             // Logical OR
             TokenType::Or => 1,
-            
+
             _ => 0, // Not a binary operator
         }
     }
 
-    fn get_binary_expression_constructor(&self, token_type: &TokenType) -> Option<fn(Box<Expression>, Box<Expression>) -> Expression> {
+    fn get_binary_expression_constructor(&self, token_type: TokenType) -> Option<BinaryExprConstructor> {
         match token_type {
             TokenType::Plus => Some(Expression::Add),
             TokenType::Minus => Some(Expression::Sub),
@@ -531,7 +497,7 @@ impl Parser {
         }
     }
 
-    fn is_right_associative_token(&self, token_type: &TokenType) -> bool {
+    fn is_right_associative_token(&self, token_type: TokenType) -> bool {
         // In RustLeaf, only exponentiation is right-associative
         matches!(token_type, TokenType::StarStar)
     }
@@ -540,9 +506,10 @@ impl Parser {
     // These will be implemented next
 
     fn parse_pattern(&mut self) -> Result<Pattern> {
-        match &self.peek().token_type {
+        match self.peek().token_type {
             TokenType::Ident => {
-                let name = self.consume_identifier("Expected identifier")?;
+                let name_token = self.expect(TokenType::Ident, "Expected identifier")?;
+                let name = name_token.text.ok_or_else(|| anyhow!("Identifier token missing text"))?;
                 Ok(Pattern::Variable(name))
             }
             _ => Err(anyhow!("Pattern parsing not fully implemented yet")),

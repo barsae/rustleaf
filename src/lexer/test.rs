@@ -83,11 +83,11 @@ mod tests {
                 Token::with_text(TokenType::Int, "0"),
                 Token::with_text(TokenType::Int, "123"),
                 Token::with_text(TokenType::Int, "1_000_000"),
-                Token::with_text(TokenType::Int, "255"),
                 Token::with_text(TokenType::Int, "0xFF"),
+                Token::with_text(TokenType::Int, "0xff"),
                 Token::with_text(TokenType::Int, "0o77"),
-                Token::with_text(TokenType::Int, "10"),
-                Token::with_text(TokenType::Int, "240"),
+                Token::with_text(TokenType::Int, "0b1010"),
+                Token::with_text(TokenType::Int, "0b1111_0000"),
                 Token::simple(TokenType::Eof),
             ]
         );
@@ -493,8 +493,8 @@ string""""#;
         assert_eq!(
             tokens,
             vec![
-                Token::with_text(TokenType::DocCommentBlock, "Block doc comment"),
-                Token::with_text(TokenType::InnerDocCommentBlock, "Inner block doc comment"),
+                Token::with_text(TokenType::DocCommentBlock, " Block doc comment "),
+                Token::with_text(TokenType::InnerDocCommentBlock, " Inner block doc comment "),
                 Token::simple(TokenType::Eof),
             ]
         );
@@ -508,8 +508,8 @@ string""""#;
         assert_eq!(
             tokens,
             vec![
-                Token::with_text(TokenType::DocComment, "Doc comment"),
-                Token::with_text(TokenType::DocCommentBlock, "Block doc"),
+                Token::with_text(TokenType::DocComment, " Doc comment"),
+                Token::with_text(TokenType::DocCommentBlock, " Block doc "),
                 Token::simple(TokenType::Eof),
             ]
         );
