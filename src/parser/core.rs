@@ -64,7 +64,7 @@ impl Parser {
         }
     }
 
-    pub fn accept(&mut self, token_type: TokenType) -> Option<Token> {
+    pub fn accept_token(&mut self, token_type: TokenType) -> Option<Token> {
         if self.check(token_type) {
             Some(self.advance().clone())
         } else {
@@ -72,8 +72,12 @@ impl Parser {
         }
     }
 
+    pub fn accept(&mut self, token_type: TokenType) -> bool {
+        self.accept_token(token_type).is_some()
+    }
+
     pub fn expect(&mut self, token_type: TokenType, message: &str) -> Result<Token> {
-        if let Some(token) = self.accept(token_type) {
+        if let Some(token) = self.accept_token(token_type) {
             Ok(token)
         } else {
             Err(anyhow!("{}: expected {:?}, found {:?}", message, token_type, self.peek().token_type))

@@ -37,7 +37,7 @@ impl Parser {
     }
 
     pub fn try_parse_macro(&mut self) -> Result<Option<Statement>> {
-        if self.accept(TokenType::Hash).is_none() {
+        if !self.accept(TokenType::Hash) {
             return Ok(None);
         }
 
@@ -46,18 +46,25 @@ impl Parser {
         let name = name_token.text.ok_or_else(|| anyhow!("Identifier token missing text"))?;
         let mut args = Vec::new();
 
-        if self.accept(TokenType::LeftParen).is_some() {
-            while !self.check(TokenType::RightParen) && !self.is_at_end() {
+        if self.accept(TokenType::LeftParen) {
+            loop {
+                if self.is_at_end() {
+                    return Err(anyhow!("Unexpected EOF in macro arguments"));
+                }
+
+                if self.accept(TokenType::RightParen) {
+                    break;
+                }
+
                 if let Some(arg) = self.parse_macro_arg()? {
                     args.push(arg);
                 }
 
-                if !self.check(TokenType::RightParen) {
-                    self.expect(TokenType::Comma, "Expected ',' between macro arguments")?;
+                if !self.accept(TokenType::Comma) {
+                    self.expect(TokenType::RightParen, "Expected ')' after macro arguments")?;
+                    break;
                 }
             }
-
-            self.expect(TokenType::RightParen, "Expected ')' after macro arguments")?;
         }
 
         self.expect(TokenType::RightBracket, "Expected ']' after macro")?;
@@ -72,7 +79,7 @@ impl Parser {
                 let name_token = self.expect(TokenType::Ident, "Expected identifier")?;
                 let name = name_token.text.ok_or_else(|| anyhow!("Identifier token missing text"))?;
 
-                if self.accept(TokenType::Colon).is_some() {
+                if self.accept(TokenType::Colon) {
                     let value = self.parse_literal_value()?;
                     Ok(Some(MacroArg::Named(name, value)))
                 } else {
@@ -90,12 +97,12 @@ impl Parser {
     }
 
     pub fn try_parse_var_declaration(&mut self) -> Result<Option<Statement>> {
-        if self.accept(TokenType::Var).is_none() {
+        if !self.accept(TokenType::Var) {
             return Ok(None);
         }
 
         let pattern = self.parse_pattern()?;
-        let value = if self.accept(TokenType::Equal).is_some() {
+        let value = if self.accept(TokenType::Equal) {
             Some(self.parse_expression()?)
         } else {
             None
@@ -120,21 +127,148 @@ impl Parser {
     }
 
     pub fn try_parse_assignment(&mut self) -> Result<Option<Statement>> {
-        // TODO: Implement assignment parsing
+        // Try to parse an lvalue
+        let saved_pos = self.current;
+        if let Ok(target) = self.try_parse_lvalue() {
+            // Check if we have an assignment operator
+            if let Some(op) = self.try_parse_assign_op() {
+                let value = self.parse_expression()?;
+                self.expect(TokenType::Semicolon, "Expected ';' after assignment")?;
+                return Ok(Some(Statement::Assignment { target, op, value }));
+            }
+        }
+
+        // Reset position if not an assignment
+        self.current = saved_pos;
         Ok(None)
     }
 
+    fn try_parse_lvalue(&mut self) -> Result<LValue> {
+        let mut expr = if let Some(name_token) = self.accept_token(TokenType::Ident) {
+            let name = name_token.text.ok_or_else(|| anyhow!("Identifier token missing text"))?;
+            LValue::Identifier(name)
+        } else {
+            return Err(anyhow!("Expected lvalue"));
+        };
+
+        // Handle chained property/index access
+        loop {
+            if self.accept(TokenType::Dot) {
+                let property_token = self.expect(TokenType::Ident, "Expected property name after '.'")?;
+                let property = property_token.text.ok_or_else(|| anyhow!("Identifier token missing text"))?;
+
+                // Convert LValue to Expression for GetAttr
+                let base_expr = match expr {
+                    LValue::Identifier(name) => Expression::Identifier(name),
+                    LValue::GetAttr(obj, field) => Expression::GetAttr(obj, field),
+                    LValue::GetItem(obj, key) => Expression::GetItem(obj, key),
+                };
+                expr = LValue::GetAttr(Box::new(base_expr), property);
+            } else if self.accept(TokenType::LeftBracket) {
+                let index = self.parse_expression()?;
+                self.expect(TokenType::RightBracket, "Expected ']' after array index")?;
+
+                // Convert LValue to Expression for GetItem
+                let base_expr = match expr {
+                    LValue::Identifier(name) => Expression::Identifier(name),
+                    LValue::GetAttr(obj, field) => Expression::GetAttr(obj, field),
+                    LValue::GetItem(obj, key) => Expression::GetItem(obj, key),
+                };
+                expr = LValue::GetItem(Box::new(base_expr), Box::new(index));
+            } else {
+                break;
+            }
+        }
+
+        Ok(expr)
+    }
+
+    fn try_parse_assign_op(&mut self) -> Option<AssignOp> {
+        if self.accept(TokenType::Equal) {
+            Some(AssignOp::Assign)
+        } else if self.accept(TokenType::PlusEqual) {
+            Some(AssignOp::AddAssign)
+        } else if self.accept(TokenType::MinusEqual) {
+            Some(AssignOp::SubAssign)
+        } else if self.accept(TokenType::StarEqual) {
+            Some(AssignOp::MulAssign)
+        } else if self.accept(TokenType::SlashEqual) {
+            Some(AssignOp::DivAssign)
+        } else if self.accept(TokenType::PercentEqual) {
+            Some(AssignOp::ModAssign)
+        } else {
+            None
+        }
+    }
+
     pub fn try_parse_function_declaration(&mut self) -> Result<Option<Statement>> {
-        if self.accept(TokenType::Fn).is_none() {
+        if !self.accept(TokenType::Fn) {
             return Ok(None);
         }
 
-        // TODO: Implement function declaration parsing
-        Err(anyhow!("Function declaration parsing not implemented yet"))
+        let name_token = self.expect(TokenType::Ident, "Expected function name")?;
+        let name = name_token.text.ok_or_else(|| anyhow!("Function name token missing text"))?;
+
+        self.expect(TokenType::LeftParen, "Expected '(' after function name")?;
+
+        let mut params = Vec::new();
+        loop {
+            if self.is_at_end() {
+                return Err(anyhow!("Unexpected EOF in function parameters"));
+            }
+
+            if self.accept(TokenType::RightParen) {
+                break;
+            }
+
+            let param = self.parse_parameter()?;
+            params.push(param);
+
+            if !self.accept(TokenType::Comma) {
+                self.expect(TokenType::RightParen, "Expected ')' after parameters")?;
+                break;
+            }
+        }
+
+        // For now, expect a simple expression as the body (until we implement block expressions)
+        // This allows functions like: fn add(x, y) x + y
+        let body = Box::new(self.parse_expression()?);
+
+        Ok(Some(Statement::FnDecl {
+            name,
+            params,
+            body,
+            is_pub: false, // Will be handled by try_parse_pub_declaration later
+        }))
+    }
+
+    fn parse_parameter(&mut self) -> Result<Parameter> {
+        // Check for parameter kind prefixes
+        let kind = if self.accept(TokenType::Star) {
+            if self.accept(TokenType::Star) {
+                ParameterKind::Keyword // **name
+            } else {
+                ParameterKind::Rest // *name
+            }
+        } else {
+            ParameterKind::Regular // name
+        };
+
+        let name_token = self.expect(TokenType::Ident, "Expected parameter name")?;
+        let name = name_token.text.ok_or_else(|| anyhow!("Parameter name token missing text"))?;
+
+        // Check for default value
+        let default = if self.accept(TokenType::Equal) {
+            Some(self.parse_literal_value()?)
+        } else {
+            None
+        };
+
+        Ok(Parameter { name, default, kind })
     }
 
     pub fn try_parse_pub_declaration(&mut self) -> Result<Option<Statement>> {
-        if self.accept(TokenType::Pub).is_none() {
+        if !self.accept(TokenType::Pub) {
             return Ok(None);
         }
 
@@ -143,7 +277,7 @@ impl Parser {
     }
 
     pub fn try_parse_class_declaration(&mut self) -> Result<Option<Statement>> {
-        if self.accept(TokenType::Class).is_none() {
+        if !self.accept(TokenType::Class) {
             return Ok(None);
         }
 
@@ -152,7 +286,7 @@ impl Parser {
     }
 
     pub fn try_parse_import_statement(&mut self) -> Result<Option<Statement>> {
-        if self.accept(TokenType::Use).is_none() {
+        if !self.accept(TokenType::Use) {
             return Ok(None);
         }
 
@@ -161,29 +295,41 @@ impl Parser {
     }
 
     pub fn try_parse_return_statement(&mut self) -> Result<Option<Statement>> {
-        if self.accept(TokenType::Return).is_none() {
+        if !self.accept(TokenType::Return) {
             return Ok(None);
         }
 
-        // TODO: Implement return statement parsing
-        Err(anyhow!("Return statement parsing not implemented yet"))
+        let expr = if self.check(TokenType::Semicolon) {
+            None
+        } else {
+            Some(self.parse_expression()?)
+        };
+
+        self.expect(TokenType::Semicolon, "Expected ';' after return statement")?;
+        Ok(Some(Statement::Return(expr)))
     }
 
     pub fn try_parse_break_statement(&mut self) -> Result<Option<Statement>> {
-        if self.accept(TokenType::Break).is_none() {
+        if !self.accept(TokenType::Break) {
             return Ok(None);
         }
 
-        // TODO: Implement break statement parsing
-        Err(anyhow!("Break statement parsing not implemented yet"))
+        let expr = if self.check(TokenType::Semicolon) {
+            None
+        } else {
+            Some(self.parse_expression()?)
+        };
+
+        self.expect(TokenType::Semicolon, "Expected ';' after break statement")?;
+        Ok(Some(Statement::Break(expr)))
     }
 
     pub fn try_parse_continue_statement(&mut self) -> Result<Option<Statement>> {
-        if self.accept(TokenType::Continue).is_none() {
+        if !self.accept(TokenType::Continue) {
             return Ok(None);
         }
 
-        // TODO: Implement continue statement parsing
-        Err(anyhow!("Continue statement parsing not implemented yet"))
+        self.expect(TokenType::Semicolon, "Expected ';' after continue statement")?;
+        Ok(Some(Statement::Continue))
     }
 }

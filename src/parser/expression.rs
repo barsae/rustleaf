@@ -20,47 +20,47 @@ impl Parser {
             }
 
             // Handle postfix operators (method calls, array access, property access)
-            match self.peek().token_type {
-                TokenType::Dot => {
-                    self.advance();
-                    let property_token = self.expect(TokenType::Ident, "Expected property name after '.'")?;
-                    let property = property_token.text.ok_or_else(|| anyhow!("Identifier token missing text"))?;
-                    left = Expression::GetAttr(Box::new(left), property);
-                }
-                TokenType::LeftBracket => {
-                    self.advance();
-                    let index = self.parse_expression()?;
-                    self.expect(TokenType::RightBracket, "Expected ']' after array index")?;
-                    left = Expression::GetItem(Box::new(left), Box::new(index));
-                }
-                TokenType::LeftParen => {
-                    self.advance();
-                    let mut args = Vec::new();
+            if self.accept(TokenType::Dot) {
+                let property_token = self.expect(TokenType::Ident, "Expected property name after '.'")?;
+                let property = property_token.text.ok_or_else(|| anyhow!("Identifier token missing text"))?;
+                left = Expression::GetAttr(Box::new(left), property);
+            } else if self.accept(TokenType::LeftBracket) {
+                let index = self.parse_expression()?;
+                self.expect(TokenType::RightBracket, "Expected ']' after array index")?;
+                left = Expression::GetItem(Box::new(left), Box::new(index));
+            } else if self.accept(TokenType::LeftParen) {
+                let mut args = Vec::new();
 
-                    while !self.check(TokenType::RightParen) && !self.is_at_end() {
-                        args.push(self.parse_expression()?);
-                        if !self.check(TokenType::RightParen) {
-                            self.expect(TokenType::Comma, "Expected ',' between arguments")?;
-                        }
+                loop {
+                    if self.is_at_end() {
+                        return Err(anyhow!("Unexpected EOF in function call arguments"));
                     }
-
-                    self.expect(TokenType::RightParen, "Expected ')' after arguments")?;
-                    left = Expression::FunctionCall(Box::new(left), args);
-                }
-                _ => {
-                    // Binary operators
-                    if let Some(expr_constructor) = self.get_binary_expression_constructor(self.peek().token_type) {
-                        self.advance();
-                        let right_precedence = if self.is_right_associative_token(self.previous().token_type) {
-                            op_precedence
-                        } else {
-                            op_precedence + 1
-                        };
-                        let right = self.parse_precedence(right_precedence)?;
-                        left = expr_constructor(Box::new(left), Box::new(right));
-                    } else {
+                    
+                    if self.accept(TokenType::RightParen) {
                         break;
                     }
+                    
+                    args.push(self.parse_expression()?);
+                    if !self.accept(TokenType::Comma) {
+                        self.expect(TokenType::RightParen, "Expected ')' after arguments")?;
+                        break;
+                    }
+                }
+
+                left = Expression::FunctionCall(Box::new(left), args);
+            } else {
+                // Binary operators
+                if let Some(expr_constructor) = self.get_binary_expression_constructor(self.peek().token_type) {
+                    self.advance();
+                    let right_precedence = if self.is_right_associative_token(self.previous().token_type) {
+                        op_precedence
+                    } else {
+                        op_precedence + 1
+                    };
+                    let right = self.parse_precedence(right_precedence)?;
+                    left = expr_constructor(Box::new(left), Box::new(right));
+                } else {
+                    break;
                 }
             }
         }
@@ -69,13 +69,13 @@ impl Parser {
     }
 
     pub fn parse_unary(&mut self) -> Result<Expression> {
-        if self.accept(TokenType::Minus).is_some() {
+        if self.accept(TokenType::Minus) {
             let expr = self.parse_unary()?;
             Ok(Expression::Neg(Box::new(expr)))
-        } else if self.accept(TokenType::Not).is_some() {
+        } else if self.accept(TokenType::Not) {
             let expr = self.parse_unary()?;
             Ok(Expression::Not(Box::new(expr)))
-        } else if self.accept(TokenType::Tilde).is_some() {
+        } else if self.accept(TokenType::Tilde) {
             let expr = self.parse_unary()?;
             Ok(Expression::BitNot(Box::new(expr)))
         } else {
@@ -84,30 +84,30 @@ impl Parser {
     }
 
     pub fn parse_primary(&mut self) -> Result<Expression> {
-        if self.accept(TokenType::True).is_some() {
+        if self.accept(TokenType::True) {
             Ok(Expression::Literal(LiteralValue::Bool(true)))
-        } else if self.accept(TokenType::False).is_some() {
+        } else if self.accept(TokenType::False) {
             Ok(Expression::Literal(LiteralValue::Bool(false)))
-        } else if self.accept(TokenType::Null).is_some() {
+        } else if self.accept(TokenType::Null) {
             Ok(Expression::Literal(LiteralValue::Null))
-        } else if let Some(token) = self.accept(TokenType::Int) {
+        } else if let Some(token) = self.accept_token(TokenType::Int) {
             let text = token.text.as_ref()
                 .ok_or_else(|| anyhow!("Int token missing text"))?;
             let n = text.parse::<i64>()
                 .map_err(|e| anyhow!("Failed to parse integer '{}': {}", text, e))?;
             Ok(Expression::Literal(LiteralValue::Int(n)))
-        } else if let Some(token) = self.accept(TokenType::Float) {
+        } else if let Some(token) = self.accept_token(TokenType::Float) {
             let text = token.text.as_ref()
                 .ok_or_else(|| anyhow!("Float token missing text"))?;
             let f = text.parse::<f64>()
                 .map_err(|e| anyhow!("Failed to parse float '{}': {}", text, e))?;
             Ok(Expression::Literal(LiteralValue::Float(f)))
-        } else if let Some(token) = self.accept(TokenType::String) {
+        } else if let Some(token) = self.accept_token(TokenType::String) {
             let text = token.text.as_ref()
                 .ok_or_else(|| anyhow!("String token missing text"))?
                 .clone();
             Ok(Expression::Literal(LiteralValue::String(text)))
-        } else if let Some(token) = self.accept(TokenType::Ident) {
+        } else if let Some(token) = self.accept_token(TokenType::Ident) {
             let text = token.text.as_ref()
                 .ok_or_else(|| anyhow!("Identifier token missing text"))?
                 .clone();
