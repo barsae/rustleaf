@@ -1,0 +1,26 @@
+Program(
+    [
+        FnDecl {
+            name: "decorated_function",
+            params: [],
+            body: Block {
+                statements: [
+                    VarDecl {
+                        pattern: Variable(
+                            "result",
+                        ),
+                        value: Some(
+                            Literal(
+                                Int(
+                                    42,
+                                ),
+                            ),
+                        ),
+                    },
+                ],
+                final_expr: None,
+            },
+            is_pub: false,
+        },
+    ],
+)

@@ -12,7 +12,7 @@ You are working on a RustLeaf language parser implemented in Rust. The lexer alr
 
 ## Current State
 - Lexer tokenizes `..` as `TokenType::DotDot`
-- Lexer tokenizes `..=` as `TokenType::DotDotEqual`  
+- Lexer tokenizes `..=` as `TokenType::DotDotEqual`
 - Range operators are NOT in the binary expression constructor mapping
 - No precedence defined for range operators
 
@@ -44,6 +44,7 @@ You are working on a RustLeaf language parser implemented in Rust. The lexer alr
 - `tests/integration/basic/*.rustleaf` - Add test files
 
 ## Success Criteria
+Use `just test` to run your new integration tests, review the output in the resulting `.parse` file for correctness. This is sufficient testing for now.
 - `1..10` parses as binary expression with exclusive range
 - `1..=10` parses as binary expression with inclusive range
 - Range operators have appropriate precedence

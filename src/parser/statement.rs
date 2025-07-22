@@ -70,8 +70,16 @@ impl Parser {
         }
 
         self.expect(TokenType::LeftBracket, "Expected '[' after '#'")?;
-        let name_token = self.expect(TokenType::Ident, "Expected macro name")?;
-        let name = name_token.text.ok_or_else(|| anyhow!("Identifier token missing text"))?;
+        
+        // Accept either identifier or macro keyword
+        let name = if self.check(TokenType::Ident) {
+            let token = self.advance();
+            token.text.clone().ok_or_else(|| anyhow!("Identifier token missing text"))?
+        } else if self.accept(TokenType::Macro) {
+            "macro".to_string()
+        } else {
+            return Err(anyhow!("Expected macro name: identifier or 'macro'"));
+        };
         let mut args = Vec::new();
 
         if self.accept(TokenType::LeftParen) {

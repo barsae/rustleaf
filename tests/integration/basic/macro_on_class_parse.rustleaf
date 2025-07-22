@@ -1,0 +1,5 @@
+#[serializable]
+class User {
+    var name;
+    var email;
+}

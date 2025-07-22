@@ -32,7 +32,11 @@ impl Parser {
             statements.push(self.parse_statement()?);
         }
 
-        Ok(Program(statements))
+        // Apply macro expansion to the parsed AST
+        let (registry, non_macro_statements) = crate::core::extract_macro_definitions(&statements)?;
+        let expanded_statements = crate::core::apply_macro_expansions(non_macro_statements, &registry)?;
+
+        Ok(Program(expanded_statements))
     }
 
     // ===== Helper Functions =====

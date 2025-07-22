@@ -7,7 +7,7 @@ Program(
             value: Some(
                 Literal(
                     Int(
-                        42,
+                        100,
                     ),
                 ),
             ),

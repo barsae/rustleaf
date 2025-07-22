@@ -40,7 +40,7 @@ You are working on a RustLeaf language parser implemented in Rust. The lexer alr
      - `string_interpolation_simple_parse.rustleaf`: `"Hello ${name}"`
      - `string_interpolation_complex_parse.rustleaf`: `"Value: ${x + y}"`
      - `string_interpolation_multiple_parse.rustleaf`: `"${a} and ${b}"`
-   - Run `just test` to ensure all tests pass
+   - **IMPORTANT**: Use `just test` (not `cargo test`) to run tests - this regenerates test cases and ensures proc macros pick up new test files
 
 ## Files to Modify
 - `src/core/ast.rs` - Add interpolated string AST representation
@@ -49,6 +49,7 @@ You are working on a RustLeaf language parser implemented in Rust. The lexer alr
 - `tests/integration/basic/*.rustleaf` - Add test files
 
 ## Success Criteria
+Use `just test` to run your new integration tests, review the output in the resulting `.parse` file for correctness. This is sufficient testing for now.
 - `"Hello ${name}"` parses with embedded expression
 - `"${expr}"` works with any expression type
 - Multiple interpolations in same string work

@@ -1,0 +1,22 @@
+Program(
+    [
+        ClassDecl {
+            name: "User",
+            members: [
+                ClassMember {
+                    name: "name",
+                    kind: Field(
+                        None,
+                    ),
+                },
+                ClassMember {
+                    name: "email",
+                    kind: Field(
+                        None,
+                    ),
+                },
+            ],
+            is_pub: false,
+        },
+    ],
+)

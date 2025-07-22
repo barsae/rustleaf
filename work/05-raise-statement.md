@@ -36,7 +36,7 @@ You are working on a RustLeaf language parser implemented in Rust. The lexer alr
      - `raise_statement_parse.rustleaf`: `raise error;`
      - `raise_expression_parse.rustleaf`: `raise Exception("message");`
      - `raise_empty_parse.rustleaf`: `raise;` (if supported)
-   - Run `just test` to ensure all tests pass
+   - **IMPORTANT**: Use `just test` (not `cargo test`) to run tests - this regenerates test cases and ensures proc macros pick up new test files
 
 ## Files to Modify
 - `src/core/ast.rs` - Add `Raise` variant to `Statement` enum
@@ -44,6 +44,7 @@ You are working on a RustLeaf language parser implemented in Rust. The lexer alr
 - `tests/integration/basic/*.rustleaf` - Add test files
 
 ## Success Criteria
+Use `just test` to run your new integration tests, review the output in the resulting `.parse` file for correctness. This is sufficient testing for now.
 - `raise expression;` parses as raise statement
 - Raise statements work with any expression type
 - Optional expression handling (if bare `raise;` is supported)

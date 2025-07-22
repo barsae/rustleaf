@@ -36,7 +36,7 @@ You are working on a RustLeaf language parser implemented in Rust. The lexer alr
      - `in_operator_parse.rustleaf`: `item in collection`
      - `is_operator_parse.rustleaf`: `a is b`
      - `is_not_parse.rustleaf`: `a is not b` (if supported)
-   - Run `just test` to ensure all tests pass
+   - **IMPORTANT**: Use `just test` (not `cargo test`) to run tests - this regenerates test cases and ensures proc macros pick up new test files
 
 ## Files to Modify
 - `src/parser/binary_ops.rs` - Add in/is operator mappings
@@ -44,6 +44,7 @@ You are working on a RustLeaf language parser implemented in Rust. The lexer alr
 - `tests/integration/basic/*.rustleaf` - Add test files
 
 ## Success Criteria
+Use `just test` to run your new integration tests, review the output in the resulting `.parse` file for correctness. This is sufficient testing for now.
 - `item in collection` parses as binary expression
 - `a is b` parses as binary expression
 - Operators have appropriate precedence (similar to comparisons)

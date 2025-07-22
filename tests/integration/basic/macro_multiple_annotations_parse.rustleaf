@@ -1,0 +1,6 @@
+#[first_macro]
+#[second_macro(config: "test")]
+#[third_macro]
+fn decorated_function() {
+    var result = 42;
+}

@@ -1,0 +1,9 @@
+#[macro]
+fn log_calls(ast_node) {
+    ast_node
+}
+
+#[log_calls]
+fn target_function() {
+    var x = 42;
+}
