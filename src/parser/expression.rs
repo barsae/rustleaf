@@ -112,8 +112,8 @@ impl Parser {
                 .ok_or_else(|| anyhow!("Identifier token missing text"))?
                 .clone();
             Ok(Expression::Identifier(text))
-        } else if self.accept(TokenType::LeftBrace) {
-            self.parse_block_expression()
+        } else if self.check(TokenType::LeftBrace) {
+            self.parse_brace_expression()
         } else if self.check(TokenType::If) {
             self.try_parse_if_expression()
         } else if self.check(TokenType::Loop) {
@@ -384,5 +384,56 @@ impl Parser {
         
         Ok(Expression::Lambda { params, body })
     }
+
+    pub fn parse_brace_expression(&mut self) -> Result<Expression> {
+        self.expect(TokenType::LeftBrace, "Expected '{'")?;
+        
+        // Handle empty dict: {}
+        if self.accept(TokenType::RightBrace) {
+            return Ok(Expression::Dict(Vec::new()));
+        }
+        
+        // Try to parse as dictionary first
+        let checkpoint = self.current;
+        if let Ok(dict_expr) = self.try_parse_dict_content() {
+            return Ok(dict_expr);
+        }
+        
+        // Reset and parse as block
+        self.current = checkpoint;
+        self.parse_block_expression()
+    }
+
+    pub fn try_parse_dict_content(&mut self) -> Result<Expression> {
+        let mut pairs = Vec::new();
+        
+        loop {
+            // Parse key expression
+            let key = self.parse_expression()?;
+            
+            // Must be followed by ':'
+            self.expect(TokenType::Colon, "Expected ':' after dictionary key")?;
+            
+            // Parse value expression
+            let value = self.parse_expression()?;
+            
+            pairs.push((key, value));
+            
+            // Check for continuation
+            if self.accept(TokenType::Comma) {
+                // Allow trailing comma before }
+                if self.check(TokenType::RightBrace) {
+                    break;
+                }
+                continue;
+            } else {
+                break;
+            }
+        }
+        
+        self.expect(TokenType::RightBrace, "Expected '}' to close dictionary")?;
+        Ok(Expression::Dict(pairs))
+    }
+
 
 }

@@ -83,4 +83,23 @@ impl Parser {
             Err(anyhow!("{}: expected {:?}, found {:?}", message, token_type, self.peek().token_type))
         }
     }
+
+    /// Try parsing with automatic backtracking on None or error
+    pub fn with_checkpoint<T, F>(&mut self, parse_fn: F) -> Result<Option<T>>
+    where
+        F: FnOnce(&mut Self) -> Result<Option<T>>,
+    {
+        let checkpoint = self.current;
+        match parse_fn(self) {
+            Ok(Some(result)) => Ok(Some(result)),
+            Ok(None) => {
+                self.current = checkpoint;
+                Ok(None)
+            }
+            Err(e) => {
+                self.current = checkpoint;
+                Err(e)
+            }
+        }
+    }
 }

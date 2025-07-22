@@ -1,0 +1,34 @@
+Program(
+    [
+        Expression(
+            Dict(
+                [
+                    (
+                        Literal(
+                            String(
+                                "a",
+                            ),
+                        ),
+                        Literal(
+                            Int(
+                                1,
+                            ),
+                        ),
+                    ),
+                    (
+                        Literal(
+                            String(
+                                "b",
+                            ),
+                        ),
+                        Literal(
+                            Int(
+                                2,
+                            ),
+                        ),
+                    ),
+                ],
+            ),
+        ),
+    ],
+)
