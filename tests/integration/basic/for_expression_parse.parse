@@ -1,0 +1,47 @@
+Program(
+    [
+        Expression(
+            For {
+                pattern: Variable(
+                    "x",
+                ),
+                iter: List(
+                    [
+                        Literal(
+                            Int(
+                                1,
+                            ),
+                        ),
+                        Literal(
+                            Int(
+                                2,
+                            ),
+                        ),
+                        Literal(
+                            Int(
+                                3,
+                            ),
+                        ),
+                    ],
+                ),
+                body: Block {
+                    statements: [
+                        Expression(
+                            FunctionCall(
+                                Identifier(
+                                    "print",
+                                ),
+                                [
+                                    Identifier(
+                                        "x",
+                                    ),
+                                ],
+                            ),
+                        ),
+                    ],
+                    final_expr: None,
+                },
+            },
+        ),
+    ],
+)

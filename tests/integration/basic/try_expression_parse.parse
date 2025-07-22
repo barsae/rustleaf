@@ -1,0 +1,34 @@
+Program(
+    [
+        Expression(
+            Try {
+                body: Block {
+                    statements: [],
+                    final_expr: Some(
+                        FunctionCall(
+                            Identifier(
+                                "risky_operation",
+                            ),
+                            [],
+                        ),
+                    ),
+                },
+                catch: CatchClause {
+                    pattern: Variable(
+                        "e",
+                    ),
+                    body: Block {
+                        statements: [],
+                        final_expr: Some(
+                            Literal(
+                                String(
+                                    "error occurred",
+                                ),
+                            ),
+                        ),
+                    },
+                },
+            },
+        ),
+    ],
+)

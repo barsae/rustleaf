@@ -1,0 +1,63 @@
+Program(
+    [
+        Expression(
+            Match {
+                expr: Identifier(
+                    "x",
+                ),
+                cases: [
+                    MatchCase {
+                        pattern: Literal(
+                            Int(
+                                0,
+                            ),
+                        ),
+                        guard: None,
+                        body: Block {
+                            statements: [],
+                            final_expr: Some(
+                                Literal(
+                                    String(
+                                        "zero",
+                                    ),
+                                ),
+                            ),
+                        },
+                    },
+                    MatchCase {
+                        pattern: Literal(
+                            Int(
+                                1,
+                            ),
+                        ),
+                        guard: None,
+                        body: Block {
+                            statements: [],
+                            final_expr: Some(
+                                Literal(
+                                    String(
+                                        "one",
+                                    ),
+                                ),
+                            ),
+                        },
+                    },
+                    MatchCase {
+                        pattern: Wildcard,
+                        guard: None,
+                        body: Block {
+                            statements: [],
+                            final_expr: Some(
+                                Literal(
+                                    String(
+                                        "other",
+                                    ),
+                                ),
+                            ),
+                        },
+                    },
+                ],
+            },
+        ),
+    ],
+)

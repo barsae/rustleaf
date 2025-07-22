@@ -1,0 +1,11 @@
+match x {
+    case 0 {
+        "zero"
+    }
+    case 1 {
+        "one"
+    }
+    case _ {
+        "other"
+    }
+}

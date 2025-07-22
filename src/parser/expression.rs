@@ -120,6 +120,14 @@ impl Parser {
             self.try_parse_loop_expression()
         } else if self.check(TokenType::While) {
             self.try_parse_while_expression()
+        } else if self.check(TokenType::For) {
+            self.try_parse_for_expression()
+        } else if self.check(TokenType::Match) {
+            self.try_parse_match_expression()
+        } else if self.check(TokenType::Try) {
+            self.try_parse_try_expression()
+        } else if self.check(TokenType::With) {
+            self.try_parse_with_expression()
         } else if self.accept(TokenType::LeftBracket) {
             self.parse_list_literal()
         } else {
@@ -261,6 +269,85 @@ impl Parser {
         self.expect(TokenType::LeftBrace, "Expected '{' after while condition")?;
         let body = self.parse_block()?;
         Ok(Expression::While { condition, body })
+    }
+
+    pub fn try_parse_for_expression(&mut self) -> Result<Expression> {
+        self.expect(TokenType::For, "Expected 'for'")?;
+        let pattern = self.parse_pattern()?;
+        self.expect(TokenType::In, "Expected 'in' after for pattern")?;
+        let iter = Box::new(self.parse_expression()?);
+        self.expect(TokenType::LeftBrace, "Expected '{' after for iterator")?;
+        let body = self.parse_block()?;
+        Ok(Expression::For { pattern, iter, body })
+    }
+
+    pub fn try_parse_match_expression(&mut self) -> Result<Expression> {
+        self.expect(TokenType::Match, "Expected 'match'")?;
+        let expr = Box::new(self.parse_expression()?);
+        self.expect(TokenType::LeftBrace, "Expected '{' after match expression")?;
+        
+        let mut cases = Vec::new();
+        while !self.check(TokenType::RightBrace) && !self.is_at_end() {
+            self.expect(TokenType::Case, "Expected 'case' in match arm")?;
+            let pattern = self.parse_pattern()?;
+            
+            // Optional guard
+            let guard = if self.accept(TokenType::If) {
+                Some(self.parse_expression()?)
+            } else {
+                None
+            };
+            
+            self.expect(TokenType::LeftBrace, "Expected '{' after match pattern")?;
+            let body = self.parse_block()?;
+            
+            cases.push(MatchCase { pattern, guard, body });
+        }
+        
+        self.expect(TokenType::RightBrace, "Expected '}' after match cases")?;
+        Ok(Expression::Match { expr, cases })
+    }
+
+    pub fn try_parse_try_expression(&mut self) -> Result<Expression> {
+        self.expect(TokenType::Try, "Expected 'try'")?;
+        self.expect(TokenType::LeftBrace, "Expected '{' after 'try'")?;
+        let body = self.parse_block()?;
+        
+        self.expect(TokenType::Catch, "Expected 'catch' after try block")?;
+        let pattern = self.parse_pattern()?;
+        self.expect(TokenType::LeftBrace, "Expected '{' after catch pattern")?;
+        let catch_body = self.parse_block()?;
+        
+        let catch = CatchClause {
+            pattern,
+            body: catch_body,
+        };
+        
+        Ok(Expression::Try { body, catch })
+    }
+
+    pub fn try_parse_with_expression(&mut self) -> Result<Expression> {
+        self.expect(TokenType::With, "Expected 'with'")?;
+        
+        let mut resources = Vec::new();
+        loop {
+            let name_token = self.expect(TokenType::Ident, "Expected resource identifier")?;
+            let name = name_token.text.ok_or_else(|| anyhow!("Identifier token missing text"))?;
+            
+            self.expect(TokenType::Equal, "Expected '=' after resource name")?;
+            let value = self.parse_expression()?;
+            
+            resources.push(WithResource { name, value });
+            
+            if !self.accept(TokenType::Comma) {
+                break;
+            }
+        }
+        
+        self.expect(TokenType::LeftBrace, "Expected '{' after with resources")?;
+        let body = self.parse_block()?;
+        
+        Ok(Expression::With { resources, body })
     }
 
 }

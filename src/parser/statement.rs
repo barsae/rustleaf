@@ -151,9 +151,17 @@ impl Parser {
             TokenType::Ident => {
                 let name_token = self.expect(TokenType::Ident, "Expected identifier")?;
                 let name = name_token.text.ok_or_else(|| anyhow!("Identifier token missing text"))?;
-                Ok(Pattern::Variable(name))
+                if name == "_" {
+                    Ok(Pattern::Wildcard)
+                } else {
+                    Ok(Pattern::Variable(name))
+                }
             }
-            _ => Err(anyhow!("Pattern parsing not fully implemented yet")),
+            TokenType::Int | TokenType::Float | TokenType::String | TokenType::True | TokenType::False | TokenType::Null => {
+                let literal = self.parse_literal_value()?;
+                Ok(Pattern::Literal(literal))
+            }
+            _ => Err(anyhow!("Unsupported pattern type: {:?}", self.peek().token_type)),
         }
     }
 
@@ -375,7 +383,7 @@ impl Parser {
 
     pub fn try_parse_block_like_expression_statement(&mut self) -> Result<Option<Statement>> {
         // Check for block-like expressions that don't require semicolons
-        if self.check(TokenType::If) || self.check(TokenType::LeftBrace) || self.check(TokenType::Loop) || self.check(TokenType::While) {
+        if self.check(TokenType::If) || self.check(TokenType::LeftBrace) || self.check(TokenType::Loop) || self.check(TokenType::While) || self.check(TokenType::For) || self.check(TokenType::Match) || self.check(TokenType::Try) || self.check(TokenType::With) {
             // Parse as expression and wrap in Statement::Expression
             if let Ok(expr) = self.parse_expression() {
                 return Ok(Some(Statement::Expression(expr)));
