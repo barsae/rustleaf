@@ -128,6 +128,8 @@ impl Parser {
             self.try_parse_try_expression()
         } else if self.check(TokenType::With) {
             self.try_parse_with_expression()
+        } else if self.check(TokenType::Pipe) {
+            self.try_parse_lambda_expression()
         } else if self.accept(TokenType::LeftBracket) {
             self.parse_list_literal()
         } else {
@@ -348,6 +350,39 @@ impl Parser {
         let body = self.parse_block()?;
         
         Ok(Expression::With { resources, body })
+    }
+
+    pub fn try_parse_lambda_expression(&mut self) -> Result<Expression> {
+        self.expect(TokenType::Pipe, "Expected '|' to start lambda")?;
+        
+        let mut params = Vec::new();
+        
+        // Parse parameters until closing |
+        while !self.check(TokenType::Pipe) && !self.is_at_end() {
+            let param_token = self.expect(TokenType::Ident, "Expected parameter name")?;
+            let param_name = param_token.text.ok_or_else(|| anyhow!("Identifier token missing text"))?;
+            params.push(param_name);
+            
+            if !self.accept(TokenType::Comma) {
+                break;
+            }
+        }
+        
+        self.expect(TokenType::Pipe, "Expected '|' to end lambda parameters")?;
+        
+        // Parse body - either expression or block
+        let body = if self.check(TokenType::LeftBrace) {
+            // Block body: |x| { ... }
+            self.advance(); // consume {
+            let block = self.parse_block()?;
+            LambdaBody::Block(block)
+        } else {
+            // Expression body: |x| x + 1
+            let expr = self.parse_expression()?;
+            LambdaBody::Expression(Box::new(expr))
+        };
+        
+        Ok(Expression::Lambda { params, body })
     }
 
 }

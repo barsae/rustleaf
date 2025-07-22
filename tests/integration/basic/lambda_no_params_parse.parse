@@ -1,0 +1,16 @@
+Program(
+    [
+        Expression(
+            Lambda {
+                params: [],
+                body: Expression(
+                    Literal(
+                        Int(
+                            42,
+                        ),
+                    ),
+                ),
+            },
+        ),
+    ],
+)

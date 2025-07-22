@@ -156,7 +156,7 @@ pub enum Expression {
     // Closures
     Lambda {
         params: Vec<String>,
-        body: Box<Expression>, // Lambdas can have single expressions, not just blocks
+        body: LambdaBody,
     },
 
     // Collections
@@ -172,6 +172,12 @@ pub enum LiteralValue {
     Float(f64),
     String(String),
     RawString(String), // r"..." strings
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum LambdaBody {
+    Expression(Box<Expression>), // |x| x + 1
+    Block(Block),                // |x| { print(x); x + 1 }
 }
 
 #[derive(Debug, Clone, PartialEq)]
