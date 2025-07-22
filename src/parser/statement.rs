@@ -392,18 +392,17 @@ impl Parser {
         
         // Try to parse a block expression (will backtrack if it's actually a dictionary)
         if self.check(TokenType::LeftBrace) {
-            let checkpoint = self.current;
-            if let Ok(expr) = self.parse_expression() {
+            if let Some(expr) = self.with_checkpoint(|parser| {
+                let expr = parser.parse_expression()?;
                 // Check if this parsed as a block (not a dictionary)
                 if matches!(expr, Expression::Block(_)) {
-                    return Ok(Some(Statement::Expression(expr)));
+                    Ok(Some(expr))
                 } else {
-                    // It was a dictionary - backtrack
-                    self.current = checkpoint;
+                    // It was a dictionary - signal to backtrack
+                    Ok(None)
                 }
-            } else {
-                // Failed to parse - backtrack
-                self.current = checkpoint;
+            })? {
+                return Ok(Some(Statement::Expression(expr)));
             }
         }
         

@@ -393,23 +393,27 @@ impl Parser {
             return Ok(Expression::Dict(Vec::new()));
         }
         
-        // Try to parse as dictionary first
-        let checkpoint = self.current;
-        if let Ok(dict_expr) = self.try_parse_dict_content() {
+        // Try to parse as dictionary first, fall back to block
+        if let Some(dict_expr) = self.with_checkpoint(|parser| {
+            parser.try_parse_dict_content()
+        })? {
             return Ok(dict_expr);
         }
         
-        // Reset and parse as block
-        self.current = checkpoint;
-        self.parse_block_expression()
+        // Parse as block expression (opening { already consumed)
+        let block = self.parse_block()?;
+        Ok(Expression::Block(block))
     }
 
-    pub fn try_parse_dict_content(&mut self) -> Result<Expression> {
+    pub fn try_parse_dict_content(&mut self) -> Result<Option<Expression>> {
         let mut pairs = Vec::new();
         
         loop {
             // Parse key expression
-            let key = self.parse_expression()?;
+            let key = match self.parse_expression() {
+                Ok(expr) => expr,
+                Err(_) => return Ok(None), // Not a valid expression, not a dictionary
+            };
             
             // Must be followed by ':'
             self.expect(TokenType::Colon, "Expected ':' after dictionary key")?;
@@ -432,7 +436,7 @@ impl Parser {
         }
         
         self.expect(TokenType::RightBrace, "Expected '}' to close dictionary")?;
-        Ok(Expression::Dict(pairs))
+        Ok(Some(Expression::Dict(pairs)))
     }
 
 
