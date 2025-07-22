@@ -20,25 +20,5 @@ Program(
                 else_expr: None,
             },
         ),
-        Expression(
-            If {
-                condition: Literal(
-                    Bool(
-                        true,
-                    ),
-                ),
-                then_expr: Block {
-                    statements: [],
-                    final_expr: Some(
-                        Literal(
-                            Int(
-                                43,
-                            ),
-                        ),
-                    ),
-                },
-                else_expr: None,
-            },
-        ),
     ],
 )

@@ -40,6 +40,14 @@ impl Parser {
         if let Some(stmt) = self.try_parse_assignment()? {
             return Ok(Some(stmt));
         }
+        
+        // Try block-like expressions that don't require semicolons
+        if let Some(stmt) = self.try_parse_if_statement()? {
+            return Ok(Some(stmt));
+        }
+        if let Some(stmt) = self.try_parse_block_statement()? {
+            return Ok(Some(stmt));
+        }
 
         // Fall back to expression statement
         self.try_parse_expression_statement()
@@ -366,5 +374,24 @@ impl Parser {
 
         self.expect(TokenType::Semicolon, "Expected ';' after continue statement")?;
         Ok(Some(Statement::Continue))
+    }
+
+    pub fn try_parse_if_statement(&mut self) -> Result<Option<Statement>> {
+        if !self.check(TokenType::If) {
+            return Ok(None);
+        }
+
+        let if_expr = self.try_parse_if_expression()?;
+        Ok(Some(Statement::Expression(if_expr)))
+    }
+
+    pub fn try_parse_block_statement(&mut self) -> Result<Option<Statement>> {
+        if !self.check(TokenType::LeftBrace) {
+            return Ok(None);
+        }
+
+        self.advance(); // consume the {
+        let block = self.parse_block()?;
+        Ok(Some(Statement::Expression(Expression::Block(block))))
     }
 }
