@@ -19,9 +19,6 @@ impl Parser {
         if let Some(stmt) = self.try_parse_function_declaration()? {
             return Ok(Some(stmt));
         }
-        if let Some(stmt) = self.try_parse_pub_declaration()? {
-            return Ok(Some(stmt));
-        }
         if let Some(stmt) = self.try_parse_class_declaration()? {
             return Ok(Some(stmt));
         }
@@ -241,10 +238,18 @@ impl Parser {
     }
 
     pub fn try_parse_function_declaration(&mut self) -> Result<Option<Statement>> {
-        if !self.accept(TokenType::Fn) {
-            return Ok(None);
-        }
-
+        self.with_checkpoint(|parser| {
+            let is_pub = parser.accept(TokenType::Pub);
+            
+            if !parser.accept(TokenType::Fn) {
+                return Ok(None);
+            }
+            
+            Ok(Some(parser.parse_function_body(is_pub)?))
+        })
+    }
+    
+    fn parse_function_body(&mut self, is_pub: bool) -> Result<Statement> {
         let name_token = self.expect(TokenType::Ident, "Expected function name")?;
         let name = name_token.text.ok_or_else(|| anyhow!("Function name token missing text"))?;
 
@@ -282,12 +287,12 @@ impl Parser {
             }
         };
 
-        Ok(Some(Statement::FnDecl {
+        Ok(Statement::FnDecl {
             name,
             params,
             body,
-            is_pub: false, // Will be handled by try_parse_pub_declaration later
-        }))
+            is_pub,
+        })
     }
 
     fn parse_parameter(&mut self) -> Result<Parameter> {
@@ -315,22 +320,117 @@ impl Parser {
         Ok(Parameter { name, default, kind })
     }
 
-    pub fn try_parse_pub_declaration(&mut self) -> Result<Option<Statement>> {
-        if !self.accept(TokenType::Pub) {
-            return Ok(None);
-        }
-
-        // TODO: Implement pub declaration parsing
-        Err(anyhow!("Public declaration parsing not implemented yet"))
-    }
 
     pub fn try_parse_class_declaration(&mut self) -> Result<Option<Statement>> {
-        if !self.accept(TokenType::Class) {
-            return Ok(None);
+        self.with_checkpoint(|parser| {
+            let is_pub = parser.accept(TokenType::Pub);
+            
+            if !parser.accept(TokenType::Class) {
+                return Ok(None);
+            }
+            
+            Ok(Some(parser.parse_class_body(is_pub)?))
+        })
+    }
+    
+    fn parse_class_body(&mut self, is_pub: bool) -> Result<Statement> {
+        let name_token = self.expect(TokenType::Ident, "Expected class name")?;
+        let name = name_token.text.ok_or_else(|| anyhow!("Class name token missing text"))?;
+        
+        self.expect(TokenType::LeftBrace, "Expected '{' after class name")?;
+        
+        let mut members = Vec::new();
+        
+        while !self.check(TokenType::RightBrace) && !self.is_at_end() {
+            if let Some(member) = self.parse_class_member()? {
+                members.push(member);
+            }
         }
-
-        // TODO: Implement class declaration parsing
-        Err(anyhow!("Class declaration parsing not implemented yet"))
+        
+        self.expect(TokenType::RightBrace, "Expected '}' after class body")?;
+        
+        Ok(Statement::ClassDecl {
+            name,
+            members,
+            is_pub,
+        })
+    }
+    
+    fn parse_class_member(&mut self) -> Result<Option<ClassMember>> {
+        // Check for static methods
+        if self.accept(TokenType::Static) {
+            self.expect(TokenType::Fn, "Expected 'fn' after 'static'")?;
+            let name_token = self.expect(TokenType::Ident, "Expected method name")?;
+            let name = name_token.text.ok_or_else(|| anyhow!("Method name token missing text"))?;
+            
+            self.expect(TokenType::LeftParen, "Expected '(' after method name")?;
+            let mut params = Vec::new();
+            
+            // Parse parameters
+            while !self.check(TokenType::RightParen) && !self.is_at_end() {
+                params.push(self.parse_parameter()?);
+                if !self.accept(TokenType::Comma) {
+                    break;
+                }
+            }
+            self.expect(TokenType::RightParen, "Expected ')' after parameters")?;
+            
+            self.expect(TokenType::LeftBrace, "Expected '{' after method signature")?;
+            let body = self.parse_block()?;
+            
+            return Ok(Some(ClassMember {
+                name,
+                kind: ClassMemberKind::StaticMethod { params, body },
+            }));
+        }
+        
+        // Check for regular methods
+        if self.accept(TokenType::Fn) {
+            let name_token = self.expect(TokenType::Ident, "Expected method name")?;
+            let name = name_token.text.ok_or_else(|| anyhow!("Method name token missing text"))?;
+            
+            self.expect(TokenType::LeftParen, "Expected '(' after method name")?;
+            let mut params = Vec::new();
+            
+            // Parse parameters
+            while !self.check(TokenType::RightParen) && !self.is_at_end() {
+                params.push(self.parse_parameter()?);
+                if !self.accept(TokenType::Comma) {
+                    break;
+                }
+            }
+            self.expect(TokenType::RightParen, "Expected ')' after parameters")?;
+            
+            self.expect(TokenType::LeftBrace, "Expected '{' after method signature")?;
+            let body = self.parse_block()?;
+            
+            return Ok(Some(ClassMember {
+                name,
+                kind: ClassMemberKind::Method { params, body },
+            }));
+        }
+        
+        // Check for field declarations
+        if self.accept(TokenType::Var) {
+            let name_token = self.expect(TokenType::Ident, "Expected field name")?;
+            let name = name_token.text.ok_or_else(|| anyhow!("Field name token missing text"))?;
+            
+            let initializer = if self.accept(TokenType::Equal) {
+                Some(self.parse_expression()?)
+            } else {
+                None
+            };
+            
+            self.expect(TokenType::Semicolon, "Expected ';' after field declaration")?;
+            
+            return Ok(Some(ClassMember {
+                name,
+                kind: ClassMemberKind::Field(initializer),
+            }));
+        }
+        
+        // No valid member found
+        Ok(None)
     }
 
     pub fn try_parse_import_statement(&mut self) -> Result<Option<Statement>> {
@@ -338,8 +438,75 @@ impl Parser {
             return Ok(None);
         }
 
-        // TODO: Implement import statement parsing
-        Err(anyhow!("Import statement parsing not implemented yet"))
+        // Parse module path (e.g., "std::io")
+        let mut module_parts = Vec::new();
+        
+        let first_part = self.expect(TokenType::Ident, "Expected module name")?;
+        module_parts.push(first_part.text.ok_or_else(|| anyhow!("Module name token missing text"))?);
+        
+        while self.accept(TokenType::DoubleColon) {
+            // Check if this is the final :: before import items
+            if self.check(TokenType::Star) || self.check(TokenType::LeftBrace) || self.check(TokenType::Ident) {
+                // This is the final :: before import items
+                break;
+            } else {
+                // This is part of the module path
+                let part = self.expect(TokenType::Ident, "Expected module name after '::'")?;
+                module_parts.push(part.text.ok_or_else(|| anyhow!("Module name token missing text"))?);
+            }
+        }
+        
+        let module = module_parts.join("::");
+        
+        let items = if self.accept(TokenType::Star) {
+            // use module::*
+            ImportItems::All
+        } else if self.accept(TokenType::LeftBrace) {
+            // use module::{item1, item2 as alias}
+            let mut import_items = Vec::new();
+            
+            loop {
+                if self.check(TokenType::RightBrace) {
+                    break;
+                }
+                
+                let name_token = self.expect(TokenType::Ident, "Expected import item name")?;
+                let name = name_token.text.ok_or_else(|| anyhow!("Import item name token missing text"))?;
+                
+                let alias = if self.accept(TokenType::As) {
+                    let alias_token = self.expect(TokenType::Ident, "Expected alias after 'as'")?;
+                    Some(alias_token.text.ok_or_else(|| anyhow!("Alias token missing text"))?)
+                } else {
+                    None
+                };
+                
+                import_items.push(ImportItem { name, alias });
+                
+                if !self.accept(TokenType::Comma) {
+                    break;
+                }
+            }
+            
+            self.expect(TokenType::RightBrace, "Expected '}' after import items")?;
+            ImportItems::Specific(import_items)
+        } else {
+            // use module::item
+            let name_token = self.expect(TokenType::Ident, "Expected import item name")?;
+            let name = name_token.text.ok_or_else(|| anyhow!("Import item name token missing text"))?;
+            
+            let alias = if self.accept(TokenType::As) {
+                let alias_token = self.expect(TokenType::Ident, "Expected alias after 'as'")?;
+                Some(alias_token.text.ok_or_else(|| anyhow!("Alias token missing text"))?)
+            } else {
+                None
+            };
+            
+            ImportItems::Specific(vec![ImportItem { name, alias }])
+        };
+        
+        self.expect(TokenType::Semicolon, "Expected ';' after import statement")?;
+        
+        Ok(Some(Statement::Import(ImportSpec { module, items })))
     }
 
     pub fn try_parse_return_statement(&mut self) -> Result<Option<Statement>> {

@@ -1,0 +1,10 @@
+Program(
+    [
+        Import(
+            ImportSpec {
+                module: "std",
+                items: All,
+            },
+        ),
+    ],
+)
