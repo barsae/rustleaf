@@ -1,0 +1,15 @@
+Program(
+    [
+        Assignment {
+            target: Identifier(
+                "x",
+            ),
+            op: Assign,
+            value: Literal(
+                Int(
+                    42,
+                ),
+            ),
+        },
+    ],
+)

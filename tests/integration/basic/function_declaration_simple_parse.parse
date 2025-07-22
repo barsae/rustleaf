@@ -1,0 +1,33 @@
+Program(
+    [
+        FnDecl {
+            name: "add",
+            params: [
+                Parameter {
+                    name: "x",
+                    default: None,
+                    kind: Regular,
+                },
+                Parameter {
+                    name: "y",
+                    default: None,
+                    kind: Regular,
+                },
+            ],
+            body: Block {
+                statements: [],
+                final_expr: Some(
+                    Add(
+                        Identifier(
+                            "x",
+                        ),
+                        Identifier(
+                            "y",
+                        ),
+                    ),
+                ),
+            },
+            is_pub: false,
+        },
+    ],
+)

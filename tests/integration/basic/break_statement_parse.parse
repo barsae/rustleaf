@@ -1,0 +1,13 @@
+Program(
+    [
+        Break(
+            Some(
+                Literal(
+                    Int(
+                        42,
+                    ),
+                ),
+            ),
+        ),
+    ],
+)

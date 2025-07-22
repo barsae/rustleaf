@@ -1,0 +1,20 @@
+Program(
+    [
+        Macro {
+            name: "test",
+            args: [],
+            statement: VarDecl {
+                pattern: Variable(
+                    "x",
+                ),
+                value: Some(
+                    Literal(
+                        Int(
+                            42,
+                        ),
+                    ),
+                ),
+            },
+        },
+    ],
+)

@@ -1,0 +1,18 @@
+Program(
+    [
+        Expression(
+            Add(
+                Literal(
+                    Int(
+                        1,
+                    ),
+                ),
+                Literal(
+                    Int(
+                        2,
+                    ),
+                ),
+            ),
+        ),
+    ],
+)

@@ -1,0 +1,18 @@
+Program(
+    [
+        Assignment {
+            target: GetAttr(
+                Identifier(
+                    "obj",
+                ),
+                "field",
+            ),
+            op: Assign,
+            value: Literal(
+                Int(
+                    10,
+                ),
+            ),
+        },
+    ],
+)

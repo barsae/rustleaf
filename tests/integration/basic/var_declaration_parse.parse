@@ -1,0 +1,16 @@
+Program(
+    [
+        VarDecl {
+            pattern: Variable(
+                "x",
+            ),
+            value: Some(
+                Literal(
+                    Int(
+                        42,
+                    ),
+                ),
+            ),
+        },
+    ],
+)

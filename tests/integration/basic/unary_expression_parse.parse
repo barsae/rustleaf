@@ -1,0 +1,13 @@
+Program(
+    [
+        Expression(
+            Neg(
+                Literal(
+                    Int(
+                        42,
+                    ),
+                ),
+            ),
+        ),
+    ],
+)

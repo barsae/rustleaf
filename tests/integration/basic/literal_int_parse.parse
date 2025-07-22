@@ -1,0 +1,11 @@
+Program(
+    [
+        Expression(
+            Literal(
+                Int(
+                    123,
+                ),
+            ),
+        ),
+    ],
+)

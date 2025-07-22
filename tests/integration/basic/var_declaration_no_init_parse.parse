@@ -1,0 +1,10 @@
+Program(
+    [
+        VarDecl {
+            pattern: Variable(
+                "y",
+            ),
+            value: None,
+        },
+    ],
+)

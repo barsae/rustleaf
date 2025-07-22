@@ -26,32 +26,40 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
     };
 
     // Generate individual test functions that use include_str!
-    let test_functions = test_files.iter().map(|(test_name, file_path, test_type)| {
+    let test_functions = test_files.iter().map(|(test_name, include_path, test_type, full_path)| {
         let test_fn_name = syn::Ident::new(test_name, proc_macro2::Span::call_site());
 
         let test_body = match test_type {
-            TestType::Lex => quote! {
-                let source = include_str!(#file_path);
-                let tokens = rustleaf::lexer::Lexer::tokenize(source).unwrap();
-                println!("Tokens: {:#?}", tokens);
+            TestType::Lex => {
+                let output_path = full_path.replace(".rustleaf", ".lex");
+                quote! {
+                    let source = include_str!(#include_path);
+                    let tokens = rustleaf::lexer::Lexer::tokenize(source).unwrap();
+                    let output = format!("{:#?}", tokens);
+                    std::fs::write(#output_path, output).unwrap();
+                }
             },
-            TestType::Parse => quote! {
-                let source = include_str!(#file_path);
-                let ast = rustleaf::parser::Parser::parse_str(source).unwrap();
-                println!("AST: {:#?}", ast);
+            TestType::Parse => {
+                let output_path = full_path.replace(".rustleaf", ".parse");
+                quote! {
+                    let source = include_str!(#include_path);
+                    let ast = rustleaf::parser::Parser::parse_str(source).unwrap();
+                    let output = format!("{:#?}", ast);
+                    std::fs::write(#output_path, output).unwrap();
+                }
             },
             TestType::Normal => quote! {
-                let source = include_str!(#file_path);
+                let source = include_str!(#include_path);
                 let ast = rustleaf::parser::Parser::parse_str(source).unwrap();
                 let _result = rustleaf::eval::evaluate(ast).unwrap();
             },
             TestType::Panic => quote! {
-                let source = include_str!(#file_path);
+                let source = include_str!(#include_path);
                 let ast = rustleaf::parser::Parser::parse_str(source).unwrap();
                 let _result = rustleaf::eval::evaluate(ast).unwrap();
             },
             TestType::Ignore => quote! {
-                let source = include_str!(#file_path);
+                let source = include_str!(#include_path);
                 let ast = rustleaf::parser::Parser::parse_str(source).unwrap();
                 let _result = rustleaf::eval::evaluate(ast).unwrap();
             },
@@ -90,7 +98,7 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
 
 fn discover_rustleaf_files(
     test_dir: &str,
-) -> Result<Vec<(String, String, TestType)>, std::io::Error> {
+) -> Result<Vec<(String, String, TestType, String)>, std::io::Error> {
     let mut test_files = Vec::new();
     let test_path = Path::new(test_dir);
 
@@ -133,7 +141,7 @@ fn discover_rustleaf_files(
                         .to_string_lossy();
                     let include_path = format!("{test_dir_name}/{filename}");
 
-                    test_files.push((test_name, include_path, test_type));
+                    test_files.push((test_name, include_path, test_type, file_path));
                 }
             }
         }

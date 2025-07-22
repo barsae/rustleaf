@@ -1,0 +1,24 @@
+Program(
+    [
+        Expression(
+            If {
+                condition: Literal(
+                    Bool(
+                        true,
+                    ),
+                ),
+                then_expr: Block {
+                    statements: [],
+                    final_expr: Some(
+                        Literal(
+                            Int(
+                                42,
+                            ),
+                        ),
+                    ),
+                },
+                else_expr: None,
+            },
+        ),
+    ],
+)

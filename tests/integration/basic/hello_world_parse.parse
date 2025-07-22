@@ -1,0 +1,18 @@
+Program(
+    [
+        Expression(
+            FunctionCall(
+                Identifier(
+                    "print",
+                ),
+                [
+                    Literal(
+                        String(
+                            "hello, world",
+                        ),
+                    ),
+                ],
+            ),
+        ),
+    ],
+)

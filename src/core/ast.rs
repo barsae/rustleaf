@@ -2,6 +2,12 @@
 pub struct Program(pub Vec<Statement>);
 
 #[derive(Debug, Clone, PartialEq)]
+pub struct Block {
+    pub statements: Vec<Statement>,
+    pub final_expr: Option<Box<Expression>>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
 pub enum Statement {
     // Macro annotation wrapping another statement
     Macro {
@@ -30,8 +36,8 @@ pub enum Statement {
     FnDecl {
         name: String,
         params: Vec<Parameter>,
-        body: Box<Expression>, // Function body is a block expression
-        is_pub: bool,          // pub keyword
+        body: Block, // Function body is a block
+        is_pub: bool, // pub keyword
     },
 
     // Class declaration
@@ -116,11 +122,11 @@ pub enum Expression {
     Pipe(Box<Expression>, Box<Expression>), // expr1 : expr2
 
     // Control flow expressions
-    Block(Vec<Statement>),
+    Block(Block),
     If {
         condition: Box<Expression>,
-        then_expr: Box<Expression>,
-        else_expr: Option<Box<Expression>>,
+        then_expr: Block,
+        else_expr: Option<Block>,
     },
     Match {
         expr: Box<Expression>,
@@ -128,29 +134,29 @@ pub enum Expression {
     },
     While {
         condition: Box<Expression>,
-        body: Box<Expression>,
+        body: Block,
     },
     For {
         pattern: Pattern,
         iter: Box<Expression>,
-        body: Box<Expression>,
+        body: Block,
     },
     Loop {
-        body: Box<Expression>,
+        body: Block,
     },
     Try {
-        body: Box<Expression>,
+        body: Block,
         catch: CatchClause,
     },
     With {
         resources: Vec<WithResource>,
-        body: Box<Expression>,
+        body: Block,
     },
 
     // Closures
     Lambda {
         params: Vec<String>,
-        body: Box<Expression>,
+        body: Box<Expression>, // Lambdas can have single expressions, not just blocks
     },
 
     // Collections
@@ -193,11 +199,11 @@ pub enum ClassMemberKind {
     Field(Option<Expression>), // Optional initializer
     Method {
         params: Vec<Parameter>,
-        body: Box<Expression>, // Methods have expression bodies too
+        body: Block, // Methods have block bodies
     },
     StaticMethod {
         params: Vec<Parameter>,
-        body: Box<Expression>,
+        body: Block,
     },
 }
 
@@ -223,7 +229,7 @@ pub struct ImportItem {
 pub struct MatchCase {
     pub pattern: Pattern,
     pub guard: Option<Expression>,
-    pub body: Box<Expression>, // Match case bodies are expressions
+    pub body: Block, // Match case bodies are blocks
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -246,7 +252,7 @@ pub struct DictPattern {
 #[derive(Debug, Clone, PartialEq)]
 pub struct CatchClause {
     pub pattern: Pattern,      // Can pattern match on error object
-    pub body: Box<Expression>, // Catch body is expression
+    pub body: Block, // Catch body is block
 }
 
 #[derive(Debug, Clone, PartialEq)]

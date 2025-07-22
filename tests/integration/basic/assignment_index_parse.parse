@@ -1,0 +1,22 @@
+Program(
+    [
+        Assignment {
+            target: GetItem(
+                Identifier(
+                    "arr",
+                ),
+                Literal(
+                    Int(
+                        0,
+                    ),
+                ),
+            ),
+            op: Assign,
+            value: Literal(
+                Int(
+                    99,
+                ),
+            ),
+        },
+    ],
+)

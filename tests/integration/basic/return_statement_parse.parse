@@ -1,0 +1,13 @@
+Program(
+    [
+        Return(
+            Some(
+                Literal(
+                    Int(
+                        42,
+                    ),
+                ),
+            ),
+        ),
+    ],
+)

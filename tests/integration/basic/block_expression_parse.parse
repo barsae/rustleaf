@@ -1,0 +1,36 @@
+Program(
+    [
+        Expression(
+            Block(
+                Block {
+                    statements: [
+                        VarDecl {
+                            pattern: Variable(
+                                "x",
+                            ),
+                            value: Some(
+                                Literal(
+                                    Int(
+                                        10,
+                                    ),
+                                ),
+                            ),
+                        },
+                    ],
+                    final_expr: Some(
+                        Add(
+                            Identifier(
+                                "x",
+                            ),
+                            Literal(
+                                Int(
+                                    5,
+                                ),
+                            ),
+                        ),
+                    ),
+                },
+            ),
+        ),
+    ],
+)

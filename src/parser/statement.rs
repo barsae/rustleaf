@@ -4,36 +4,62 @@ use anyhow::{anyhow, Result};
 
 use super::Parser;
 
-macro_rules! try_parsers {
-    ($self:expr, $($parser:ident),+ $(,)?) => {
-        $(
-            if let Some(stmt) = $self.$parser()? {
-                return Ok(stmt);
-            }
-        )+
-    };
-}
-
 impl Parser {
     pub fn parse_statement(&mut self) -> Result<Statement> {
-        try_parsers!(
-            self,
-            try_parse_macro,
-            try_parse_var_declaration,
-            try_parse_function_declaration,
-            try_parse_pub_declaration,
-            try_parse_class_declaration,
-            try_parse_import_statement,
-            try_parse_return_statement,
-            try_parse_break_statement,
-            try_parse_continue_statement,
-            try_parse_assignment,
-        );
+        self.try_parse_statement()?.ok_or_else(|| anyhow!("Expected statement"))
+    }
+
+    pub fn try_parse_statement(&mut self) -> Result<Option<Statement>> {
+        if let Some(stmt) = self.try_parse_macro()? {
+            return Ok(Some(stmt));
+        }
+        if let Some(stmt) = self.try_parse_var_declaration()? {
+            return Ok(Some(stmt));
+        }
+        if let Some(stmt) = self.try_parse_function_declaration()? {
+            return Ok(Some(stmt));
+        }
+        if let Some(stmt) = self.try_parse_pub_declaration()? {
+            return Ok(Some(stmt));
+        }
+        if let Some(stmt) = self.try_parse_class_declaration()? {
+            return Ok(Some(stmt));
+        }
+        if let Some(stmt) = self.try_parse_import_statement()? {
+            return Ok(Some(stmt));
+        }
+        if let Some(stmt) = self.try_parse_return_statement()? {
+            return Ok(Some(stmt));
+        }
+        if let Some(stmt) = self.try_parse_break_statement()? {
+            return Ok(Some(stmt));
+        }
+        if let Some(stmt) = self.try_parse_continue_statement()? {
+            return Ok(Some(stmt));
+        }
+        if let Some(stmt) = self.try_parse_assignment()? {
+            return Ok(Some(stmt));
+        }
 
         // Fall back to expression statement
-        let expr = self.parse_expression()?;
-        self.expect(TokenType::Semicolon, "Expected ';'")?;
-        Ok(Statement::Expression(expr))
+        self.try_parse_expression_statement()
+    }
+
+    fn try_parse_expression_statement(&mut self) -> Result<Option<Statement>> {
+        let saved_pos = self.current;
+        if let Ok(expr) = self.parse_expression() {
+            if self.accept(TokenType::Semicolon) {
+                Ok(Some(Statement::Expression(expr)))
+            } else {
+                // No semicolon - backtrack and return None
+                self.current = saved_pos;
+                Ok(None)
+            }
+        } else {
+            // Couldn't parse expression either
+            self.current = saved_pos;
+            Ok(None)
+        }
     }
 
     pub fn try_parse_macro(&mut self) -> Result<Option<Statement>> {
@@ -230,9 +256,18 @@ impl Parser {
             }
         }
 
-        // For now, expect a simple expression as the body (until we implement block expressions)
-        // This allows functions like: fn add(x, y) x + y
-        let body = Box::new(self.parse_expression()?);
+        // Function body can be either a block or a simple expression
+        let body = if self.accept(TokenType::LeftBrace) {
+            // Block body: fn name() { statements }
+            self.parse_block()?
+        } else {
+            // Simple expression body: fn name() expr
+            let expr = self.parse_expression()?;
+            Block {
+                statements: vec![],
+                final_expr: Some(Box::new(expr)),
+            }
+        };
 
         Ok(Some(Statement::FnDecl {
             name,

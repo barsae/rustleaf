@@ -112,6 +112,10 @@ impl Parser {
                 .ok_or_else(|| anyhow!("Identifier token missing text"))?
                 .clone();
             Ok(Expression::Identifier(text))
+        } else if self.accept(TokenType::LeftBrace) {
+            self.parse_block_expression()
+        } else if self.check(TokenType::If) {
+            self.try_parse_if_expression()
         } else {
             Err(anyhow!(
                 "Unexpected token: {:?}",
@@ -168,4 +172,44 @@ impl Parser {
             _ => Err(anyhow!("Expected literal value, found {:?}", token.token_type)),
         }
     }
+
+    pub fn parse_block_expression(&mut self) -> Result<Expression> {
+        // Opening { already consumed by parse_primary
+        let block = self.parse_block()?;
+        Ok(Expression::Block(block))
+    }
+
+    pub fn try_parse_if_expression(&mut self) -> Result<Expression> {
+        self.expect(TokenType::If, "Expected 'if'")?;
+        
+        let condition = Box::new(self.parse_expression()?);
+        
+        self.expect(TokenType::LeftBrace, "Expected '{' after if condition")?;
+        let then_expr = self.parse_block()?;
+        
+        let mut else_expr = None;
+        
+        // Handle else clause
+        if self.accept(TokenType::Else) {
+            if self.accept(TokenType::If) {
+                // else if - parse as nested if expression
+                let nested_if = self.try_parse_if_expression()?;
+                else_expr = Some(Block {
+                    statements: vec![],
+                    final_expr: Some(Box::new(nested_if)),
+                });
+            } else {
+                // final else clause
+                self.expect(TokenType::LeftBrace, "Expected '{' after else")?;
+                else_expr = Some(self.parse_block()?);
+            }
+        }
+        
+        Ok(Expression::If {
+            condition,
+            then_expr,
+            else_expr,
+        })
+    }
+
 }

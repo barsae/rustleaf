@@ -1,0 +1,40 @@
+Program(
+    [
+        Expression(
+            If {
+                condition: Gt(
+                    Identifier(
+                        "x",
+                    ),
+                    Literal(
+                        Int(
+                            0,
+                        ),
+                    ),
+                ),
+                then_expr: Block {
+                    statements: [],
+                    final_expr: Some(
+                        Literal(
+                            String(
+                                "positive",
+                            ),
+                        ),
+                    ),
+                },
+                else_expr: Some(
+                    Block {
+                        statements: [],
+                        final_expr: Some(
+                            Literal(
+                                String(
+                                    "zero or negative",
+                                ),
+                            ),
+                        ),
+                    },
+                ),
+            },
+        ),
+    ],
+)
