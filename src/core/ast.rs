@@ -121,6 +121,10 @@ pub enum Expression {
     // Pipe operator
     Pipe(Box<Expression>, Box<Expression>), // expr1 : expr2
 
+    // Range operators
+    RangeExclusive(Box<Expression>, Box<Expression>), // expr1..expr2
+    RangeInclusive(Box<Expression>, Box<Expression>), // expr1..=expr2
+
     // Control flow expressions
     Block(Block),
     If {

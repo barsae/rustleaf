@@ -83,6 +83,8 @@ impl Parser {
             TokenType::Caret => Some(Expression::BitXor),
             TokenType::LessLess => Some(Expression::LeftShift),
             TokenType::GreaterGreater => Some(Expression::RightShift),
+            TokenType::DotDot => Some(Expression::RangeExclusive),
+            TokenType::DotDotEqual => Some(Expression::RangeInclusive),
             _ => None,
         }
     }

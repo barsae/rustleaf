@@ -1,0 +1,18 @@
+Program(
+    [
+        Expression(
+            RangeExclusive(
+                Literal(
+                    Int(
+                        1,
+                    ),
+                ),
+                Literal(
+                    Int(
+                        10,
+                    ),
+                ),
+            ),
+        ),
+    ],
+)

@@ -1,0 +1,23 @@
+Program(
+    [
+        VarDecl {
+            pattern: Variable(
+                "x",
+            ),
+            value: Some(
+                RangeExclusive(
+                    Literal(
+                        Int(
+                            1,
+                        ),
+                    ),
+                    Literal(
+                        Int(
+                            2,
+                        ),
+                    ),
+                ),
+            ),
+        },
+    ],
+)
