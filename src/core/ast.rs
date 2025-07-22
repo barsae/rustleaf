@@ -78,7 +78,6 @@ pub enum Expression {
     // Literals and identifiers
     Literal(LiteralValue),
     Identifier(String),
-    Self_, // self reference in methods
 
     // Property access and method calls
     GetAttr(Box<Expression>, String),               // obj.field

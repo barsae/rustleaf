@@ -22,7 +22,7 @@ mod tests {
                 Token::simple(TokenType::Continue),
                 Token::simple(TokenType::Class),
                 Token::simple(TokenType::Static),
-                Token::simple(TokenType::Self_),
+                Token::with_text(TokenType::Ident, "self"),
                 Token::simple(TokenType::Super),
                 Token::simple(TokenType::Eof),
             ]

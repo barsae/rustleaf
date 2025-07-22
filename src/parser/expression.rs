@@ -127,8 +127,6 @@ impl Parser {
                 .ok_or_else(|| anyhow!("Identifier token missing text"))?
                 .clone();
             Ok(Expression::Identifier(text))
-        } else if self.accept(TokenType::Self_) {
-            Ok(Expression::Self_)
         } else if self.check(TokenType::LeftBrace) {
             self.parse_brace_expression()
         } else if self.check(TokenType::If) {

@@ -1,6 +1,9 @@
 
 # RustLeaf
 
+## Personality
+Don't say "you're right" or statements like that to indicate that you understand. Reserve such statements for when you've actually performed an analysis.
+
 ## Specs
 
 The specifications live at `./specs/*.md`. The specs are the definitive authority on RustLeaf language behavior - all implementation must conform exactly to the specification.

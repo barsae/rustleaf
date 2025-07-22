@@ -2,7 +2,9 @@ Program(
     [
         Expression(
             GetAttr(
-                Self_,
+                Identifier(
+                    "self",
+                ),
                 "field",
             ),
         ),

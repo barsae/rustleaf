@@ -464,11 +464,6 @@ impl Lexer {
             },
             // OOP
             LexerRule {
-                pattern: Regex::new(r"^self\b").unwrap(),
-                token_type: |_| Token::simple(TokenType::Self_),
-                ignore: false,
-            },
-            LexerRule {
                 pattern: Regex::new(r"^super\b").unwrap(),
                 token_type: |_| Token::simple(TokenType::Super),
                 ignore: false,
