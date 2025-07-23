@@ -238,6 +238,8 @@ impl Compiler {
                 Ok(Eval::Is(Box::new(compiled_left), Box::new(compiled_right)))
             }
             Expression::In(left, right) => self.compile_method_call_op_swapped(*left, *right, "op_contains"),
+            Expression::NotIn(left, right) => self.compile_not_in(*left, *right),
+            Expression::IsNot(left, right) => self.compile_is_not(*left, *right),
             
             // Unary operators - most become method calls
             Expression::Neg(expr) => self.compile_unary_method_call(*expr, "op_neg"),
@@ -276,6 +278,9 @@ impl Compiler {
                     }
                     _ => Err(anyhow::anyhow!("Only variable patterns are supported in for loops for now: {:?}", pattern)),
                 }
+            }
+            Expression::InterpolatedString(parts) => {
+                self.compile_interpolated_string(parts)
             }
             
             _ => Err(anyhow::anyhow!("Expression not yet implemented: {:?}", expr)),
@@ -340,5 +345,63 @@ impl Compiler {
             }
             None => Ok(Eval::Block(eval_statements, None)),
         }
+    }
+
+    // Helper to compile "not in" as !(left in right)
+    fn compile_not_in(&mut self, left: Expression, right: Expression) -> Result<Eval> {
+        let in_expr = self.compile_method_call_op_swapped(left, right, "op_contains")?;
+        Ok(Eval::LogicalNot(Box::new(in_expr)))
+    }
+
+    // Helper to compile "is not" as !(left is right)  
+    fn compile_is_not(&mut self, left: Expression, right: Expression) -> Result<Eval> {
+        let compiled_left = self.compile_expression(left)?;
+        let compiled_right = self.compile_expression(right)?;
+        let is_expr = Eval::Is(Box::new(compiled_left), Box::new(compiled_right));
+        Ok(Eval::LogicalNot(Box::new(is_expr)))
+    }
+
+    // Helper to compile interpolated strings as string concatenation
+    // "Hello ${name}" becomes "Hello " + name
+    // "${a} and ${b}" becomes a + " and " + b
+    fn compile_interpolated_string(&mut self, parts: Vec<InterpolationPart>) -> Result<Eval> {
+        if parts.is_empty() {
+            return Ok(Eval::Literal(Value::String(String::new())));
+        }
+
+        // Convert each part to an Eval expression
+        let mut compiled_parts = Vec::new();
+        for part in parts {
+            match part {
+                InterpolationPart::Text(text) => {
+                    compiled_parts.push(Eval::Literal(Value::String(text)));
+                }
+                InterpolationPart::Expression(expr) => {
+                    // Wrap non-string expressions in str() conversion
+                    let compiled_expr = self.compile_expression(expr)?;
+                    let str_call = Eval::Call(
+                        Box::new(Eval::Variable("str".to_string())),
+                        vec![compiled_expr]
+                    );
+                    compiled_parts.push(str_call);
+                }
+            }
+        }
+
+        // If there's only one part, return it directly
+        if compiled_parts.len() == 1 {
+            return Ok(compiled_parts.into_iter().next().unwrap());
+        }
+
+        // Build a chain of additions: a + b + c + ...
+        let mut parts_iter = compiled_parts.into_iter();
+        let mut result = parts_iter.next().unwrap();
+        for part in parts_iter {
+            // Use the same pattern as Expression::Add: left.op_add(right)
+            let get_method = Eval::GetAttr(Box::new(result), "op_add".to_string());
+            result = Eval::Call(Box::new(get_method), vec![part]);
+        }
+
+        Ok(result)
     }
 }

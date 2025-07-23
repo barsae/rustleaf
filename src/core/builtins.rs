@@ -106,3 +106,21 @@ pub fn is_unit(args: Args) -> Result<Value> {
     let result = matches!(value, Value::Unit);
     Ok(Value::Bool(result))
 }
+
+pub fn str_conversion(args: Args) -> Result<Value> {
+    args.set_function_name("str");
+    let value = args.expect("value")?;
+    args.complete()?;
+    
+    let string_repr = match value {
+        Value::Null => "null".to_string(),
+        Value::Unit => "unit".to_string(),
+        Value::Bool(b) => b.to_string(),
+        Value::Int(i) => i.to_string(),
+        Value::Float(f) => f.to_string(),
+        Value::String(s) => s.clone(),
+        _ => format!("{:?}", value), // Fallback to debug representation
+    };
+    
+    Ok(Value::String(string_repr))
+}

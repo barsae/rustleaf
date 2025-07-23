@@ -81,6 +81,8 @@ pub enum TokenType {
     Not,
     In,
     Is,
+    NotIn,  // not in
+    IsNot,  // is not
     Pub,
     Use,
 

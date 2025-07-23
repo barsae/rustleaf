@@ -25,8 +25,7 @@ Ok(
         Token(Int, "1"),
         Token(Semicolon),
         Token(Ident, "a"),
-        Token(Is),
-        Token(Not),
+        Token(IsNot),
         Token(Ident, "String"),
         Token(Semicolon),
         Token(Eof),
@@ -52,14 +51,12 @@ Ok(
                 ),
             },
             Expression(
-                Is(
+                IsNot(
                     Identifier(
                         "a",
                     ),
-                    Not(
-                        Identifier(
-                            "String",
-                        ),
+                    Identifier(
+                        "String",
                     ),
                 ),
             ),
@@ -85,11 +82,11 @@ Ok(
             ),
         ],
         Some(
-            Is(
-                Variable(
-                    "a",
-                ),
-                LogicalNot(
+            LogicalNot(
+                Is(
+                    Variable(
+                        "a",
+                    ),
                     Variable(
                         "String",
                     ),

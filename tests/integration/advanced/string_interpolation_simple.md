@@ -1,7 +1,8 @@
-# Program 🔴
+# Program 🟢
 ```rustleaf
-// #[fail_quietly]
-"Hello ${name}";
+var name = "World";
+var result = "Hello ${name}";
+assert(result == "Hello World");
 ```
 
 # Output
@@ -9,8 +10,8 @@ None
 
 # Result
 ```rust
-Err(
-    "Expression not yet implemented: InterpolatedString([Text(\"Hello \"), Expression(Identifier(\"name\"))])",
+Ok(
+    Unit,
 )
 ```
 
@@ -18,10 +19,25 @@ Err(
 ```rust
 Ok(
     [
+        Token(Var),
+        Token(Ident, "name"),
+        Token(Equal),
+        Token(String, "World"),
+        Token(Semicolon),
+        Token(Var),
+        Token(Ident, "result"),
+        Token(Equal),
         Token(StringPart, "Hello "),
         Token(InterpolationStart),
         Token(Ident, "name"),
         Token(InterpolationEnd),
+        Token(Semicolon),
+        Token(Ident, "assert"),
+        Token(LeftParen),
+        Token(Ident, "result"),
+        Token(EqualEqual),
+        Token(String, "Hello World"),
+        Token(RightParen),
         Token(Semicolon),
         Token(Eof),
     ],
@@ -33,15 +49,51 @@ Ok(
 Ok(
     Program(
         [
-            Expression(
-                InterpolatedString(
-                    [
-                        Text(
-                            "Hello ",
+            VarDecl {
+                pattern: Variable(
+                    "name",
+                ),
+                value: Some(
+                    Literal(
+                        String(
+                            "World",
                         ),
-                        Expression(
+                    ),
+                ),
+            },
+            VarDecl {
+                pattern: Variable(
+                    "result",
+                ),
+                value: Some(
+                    InterpolatedString(
+                        [
+                            Text(
+                                "Hello ",
+                            ),
+                            Expression(
+                                Identifier(
+                                    "name",
+                                ),
+                            ),
+                        ],
+                    ),
+                ),
+            },
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
                             Identifier(
-                                "name",
+                                "result",
+                            ),
+                            Literal(
+                                String(
+                                    "Hello World",
+                                ),
                             ),
                         ),
                     ],
@@ -54,7 +106,71 @@ Ok(
 
 # Eval
 ```rust
-Err(
-    "Expression not yet implemented: InterpolatedString([Text(\"Hello \"), Expression(Identifier(\"name\"))])",
+Ok(
+    Block(
+        [
+            Declare(
+                "name",
+                Some(
+                    Literal(
+                        String(
+                            "World",
+                        ),
+                    ),
+                ),
+            ),
+            Declare(
+                "result",
+                Some(
+                    Call(
+                        GetAttr(
+                            Literal(
+                                String(
+                                    "Hello ",
+                                ),
+                            ),
+                            "op_add",
+                        ),
+                        [
+                            Call(
+                                Variable(
+                                    "str",
+                                ),
+                                [
+                                    Variable(
+                                        "name",
+                                    ),
+                                ],
+                            ),
+                        ],
+                    ),
+                ),
+            ),
+        ],
+        Some(
+            Call(
+                Variable(
+                    "assert",
+                ),
+                [
+                    Call(
+                        GetAttr(
+                            Variable(
+                                "result",
+                            ),
+                            "op_eq",
+                        ),
+                        [
+                            Literal(
+                                String(
+                                    "Hello World",
+                                ),
+                            ),
+                        ],
+                    ),
+                ],
+            ),
+        ),
+    ),
 )
 ```

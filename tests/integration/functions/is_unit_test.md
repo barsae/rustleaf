@@ -1,4 +1,4 @@
-# Program 🔴
+# Program 🟢
 ```rustleaf
 // Test is_unit with various values
 assert(not is_unit(42));
@@ -19,8 +19,8 @@ None
 
 # Result
 ```rust
-Err(
-    "Value is not callable: Bool(false)",
+Ok(
+    Unit,
 )
 ```
 
@@ -112,19 +112,19 @@ Ok(
                         "assert",
                     ),
                     [
-                        FunctionCall(
-                            Not(
+                        Not(
+                            FunctionCall(
                                 Identifier(
                                     "is_unit",
                                 ),
-                            ),
-                            [
-                                Literal(
-                                    Int(
-                                        42,
+                                [
+                                    Literal(
+                                        Int(
+                                            42,
+                                        ),
                                     ),
-                                ),
-                            ],
+                                ],
+                            ),
                         ),
                     ],
                 ),
@@ -135,19 +135,19 @@ Ok(
                         "assert",
                     ),
                     [
-                        FunctionCall(
-                            Not(
+                        Not(
+                            FunctionCall(
                                 Identifier(
                                     "is_unit",
                                 ),
-                            ),
-                            [
-                                Literal(
-                                    String(
-                                        "hello",
+                                [
+                                    Literal(
+                                        String(
+                                            "hello",
+                                        ),
                                     ),
-                                ),
-                            ],
+                                ],
+                            ),
                         ),
                     ],
                 ),
@@ -158,19 +158,19 @@ Ok(
                         "assert",
                     ),
                     [
-                        FunctionCall(
-                            Not(
+                        Not(
+                            FunctionCall(
                                 Identifier(
                                     "is_unit",
                                 ),
-                            ),
-                            [
-                                Literal(
-                                    Bool(
-                                        true,
+                                [
+                                    Literal(
+                                        Bool(
+                                            true,
+                                        ),
                                     ),
-                                ),
-                            ],
+                                ],
+                            ),
                         ),
                     ],
                 ),
@@ -181,17 +181,17 @@ Ok(
                         "assert",
                     ),
                     [
-                        FunctionCall(
-                            Not(
+                        Not(
+                            FunctionCall(
                                 Identifier(
                                     "is_unit",
                                 ),
+                                [
+                                    List(
+                                        [],
+                                    ),
+                                ],
                             ),
-                            [
-                                List(
-                                    [],
-                                ),
-                            ],
                         ),
                     ],
                 ),
@@ -202,17 +202,17 @@ Ok(
                         "assert",
                     ),
                     [
-                        FunctionCall(
-                            Not(
+                        Not(
+                            FunctionCall(
                                 Identifier(
                                     "is_unit",
                                 ),
+                                [
+                                    Dict(
+                                        [],
+                                    ),
+                                ],
                             ),
-                            [
-                                Dict(
-                                    [],
-                                ),
-                            ],
                         ),
                     ],
                 ),
@@ -276,19 +276,19 @@ Ok(
                     "assert",
                 ),
                 [
-                    Call(
-                        LogicalNot(
+                    LogicalNot(
+                        Call(
                             Variable(
                                 "is_unit",
                             ),
-                        ),
-                        [
-                            Literal(
-                                Int(
-                                    42,
+                            [
+                                Literal(
+                                    Int(
+                                        42,
+                                    ),
                                 ),
-                            ),
-                        ],
+                            ],
+                        ),
                     ),
                 ],
             ),
@@ -297,19 +297,19 @@ Ok(
                     "assert",
                 ),
                 [
-                    Call(
-                        LogicalNot(
+                    LogicalNot(
+                        Call(
                             Variable(
                                 "is_unit",
                             ),
-                        ),
-                        [
-                            Literal(
-                                String(
-                                    "hello",
+                            [
+                                Literal(
+                                    String(
+                                        "hello",
+                                    ),
                                 ),
-                            ),
-                        ],
+                            ],
+                        ),
                     ),
                 ],
             ),
@@ -318,19 +318,19 @@ Ok(
                     "assert",
                 ),
                 [
-                    Call(
-                        LogicalNot(
+                    LogicalNot(
+                        Call(
                             Variable(
                                 "is_unit",
                             ),
-                        ),
-                        [
-                            Literal(
-                                Bool(
-                                    true,
+                            [
+                                Literal(
+                                    Bool(
+                                        true,
+                                    ),
                                 ),
-                            ),
-                        ],
+                            ],
+                        ),
                     ),
                 ],
             ),
@@ -339,17 +339,17 @@ Ok(
                     "assert",
                 ),
                 [
-                    Call(
-                        LogicalNot(
+                    LogicalNot(
+                        Call(
                             Variable(
                                 "is_unit",
                             ),
+                            [
+                                List(
+                                    [],
+                                ),
+                            ],
                         ),
-                        [
-                            List(
-                                [],
-                            ),
-                        ],
                     ),
                 ],
             ),
@@ -358,17 +358,17 @@ Ok(
                     "assert",
                 ),
                 [
-                    Call(
-                        LogicalNot(
+                    LogicalNot(
+                        Call(
                             Variable(
                                 "is_unit",
                             ),
+                            [
+                                Dict(
+                                    [],
+                                ),
+                            ],
                         ),
-                        [
-                            Dict(
-                                [],
-                            ),
-                        ],
                     ),
                 ],
             ),

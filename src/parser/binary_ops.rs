@@ -36,7 +36,7 @@ impl Parser {
             | TokenType::Greater
             | TokenType::LessEqual
             | TokenType::GreaterEqual => 9,
-            TokenType::In | TokenType::Is => 8,
+            TokenType::In | TokenType::Is | TokenType::NotIn | TokenType::IsNot => 8,
 
             // Equality
             TokenType::EqualEqual | TokenType::BangEqual => 7,
@@ -83,6 +83,8 @@ impl Parser {
             TokenType::GreaterEqual => Some(Expression::Ge),
             TokenType::In => Some(Expression::In),
             TokenType::Is => Some(Expression::Is),
+            TokenType::NotIn => Some(Expression::NotIn),
+            TokenType::IsNot => Some(Expression::IsNot),
             TokenType::And => Some(Expression::And),
             TokenType::Or => Some(Expression::Or),
             TokenType::Xor => Some(Expression::Xor),
