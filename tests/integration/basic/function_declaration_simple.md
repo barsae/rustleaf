@@ -4,9 +4,7 @@ fn add(x, y) x + y
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

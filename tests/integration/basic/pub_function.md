@@ -6,9 +6,7 @@ pub fn greet(name) {
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

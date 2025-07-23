@@ -5,9 +5,7 @@ super.method();
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

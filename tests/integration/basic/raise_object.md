@@ -5,9 +5,7 @@ raise(NetworkError.new(404, "Resource not found"));
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

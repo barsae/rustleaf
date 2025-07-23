@@ -11,9 +11,7 @@ class Person {
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

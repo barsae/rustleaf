@@ -4,9 +4,7 @@ fn sum(*args) args
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

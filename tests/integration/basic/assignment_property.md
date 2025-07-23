@@ -5,9 +5,7 @@ obj.field = 10;
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

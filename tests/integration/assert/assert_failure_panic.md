@@ -4,9 +4,7 @@ assert(false, "This should fail");
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

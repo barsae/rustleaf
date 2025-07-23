@@ -8,9 +8,7 @@ assert(y == 15);
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

@@ -5,9 +5,7 @@ raise("File not found");
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

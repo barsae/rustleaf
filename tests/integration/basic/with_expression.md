@@ -7,9 +7,7 @@ with file = open("data.txt") {
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

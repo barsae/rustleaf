@@ -9,9 +9,7 @@ if x > 0 {
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

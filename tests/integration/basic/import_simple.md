@@ -5,9 +5,7 @@ use std::*;
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

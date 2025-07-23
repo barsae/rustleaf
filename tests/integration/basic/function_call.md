@@ -5,9 +5,7 @@ func(arg1, arg2);
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

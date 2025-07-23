@@ -5,9 +5,7 @@ self.field;
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

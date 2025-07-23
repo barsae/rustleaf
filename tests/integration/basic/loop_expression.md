@@ -6,9 +6,7 @@ loop {
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

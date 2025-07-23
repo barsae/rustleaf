@@ -6,9 +6,7 @@ with multiple lines""";
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

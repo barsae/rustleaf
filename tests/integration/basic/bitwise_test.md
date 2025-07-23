@@ -16,9 +16,7 @@ assert((~5) == -6);  // Two's complement
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

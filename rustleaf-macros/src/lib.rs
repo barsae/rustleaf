@@ -65,9 +65,15 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                         output_section: &str, execution_output: &str, lex_output: &str, 
                         parse_output: &str, eval_output: &str| -> String {
                         // Reconstruct the entire markdown from template
+                        let output_display = if output_section == "None" {
+                            format!("# Output\n{}", output_section)
+                        } else {
+                            format!("# Output\n```\n{}\n```", output_section)
+                        };
+                        
                         format!(
-                            "# Program {}\n```rustleaf\n{}\n```\n\n# Output\n```\n{}\n```\n\n# Result\n```rust\n{}\n```\n\n# Lex\n```rust\n{}\n```\n\n# Parse\n```rust\n{}\n```\n\n# Eval\n```rust\n{}\n```",
-                            circle, source, output_section, execution_output, lex_output, parse_output, eval_output
+                            "# Program {}\n```rustleaf\n{}\n```\n\n{}\n\n# Result\n```rust\n{}\n```\n\n# Lex\n```rust\n{}\n```\n\n# Parse\n```rust\n{}\n```\n\n# Eval\n```rust\n{}\n```",
+                            circle, source, output_display, execution_output, lex_output, parse_output, eval_output
                         )
                     };
                     

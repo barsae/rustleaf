@@ -4,9 +4,7 @@ fn greet(name = "world") name
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

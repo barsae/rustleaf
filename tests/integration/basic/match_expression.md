@@ -15,9 +15,7 @@ match x {
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

@@ -15,9 +15,7 @@ assert(true);  // Just test that it doesn't crash
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

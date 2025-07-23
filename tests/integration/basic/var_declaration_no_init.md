@@ -4,9 +4,7 @@ var y;
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

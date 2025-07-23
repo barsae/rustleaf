@@ -5,9 +5,7 @@ arr[0] = 99;
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

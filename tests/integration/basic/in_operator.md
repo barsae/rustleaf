@@ -5,9 +5,7 @@ item in collection;
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

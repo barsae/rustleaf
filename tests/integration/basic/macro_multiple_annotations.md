@@ -9,9 +9,7 @@ fn decorated_function() {
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

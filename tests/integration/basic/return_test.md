@@ -9,9 +9,7 @@ assert(result == 42);
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

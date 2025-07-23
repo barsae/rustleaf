@@ -5,9 +5,7 @@ data : transform() : validate();
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

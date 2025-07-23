@@ -5,9 +5,7 @@ var x = ;
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

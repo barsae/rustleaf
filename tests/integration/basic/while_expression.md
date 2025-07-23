@@ -7,9 +7,7 @@ while x < 10 {
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

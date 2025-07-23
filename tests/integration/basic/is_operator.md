@@ -5,9 +5,7 @@ a is b;
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

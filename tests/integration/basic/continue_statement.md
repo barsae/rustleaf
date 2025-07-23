@@ -5,9 +5,7 @@ continue;
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

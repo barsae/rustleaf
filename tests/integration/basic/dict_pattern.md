@@ -5,9 +5,7 @@ var {name, age: user_age} = user;
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

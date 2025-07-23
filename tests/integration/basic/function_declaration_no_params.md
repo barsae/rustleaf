@@ -4,9 +4,7 @@ fn hello() 42
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

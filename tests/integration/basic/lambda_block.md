@@ -8,9 +8,7 @@
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

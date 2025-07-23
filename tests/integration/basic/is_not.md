@@ -5,9 +5,7 @@ a is not b;
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

@@ -9,9 +9,7 @@ class User {
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

@@ -4,9 +4,7 @@ true;
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

@@ -12,9 +12,7 @@ fn target_function() {
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

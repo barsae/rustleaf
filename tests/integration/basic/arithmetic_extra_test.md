@@ -15,9 +15,7 @@ assert(2 ** 3.0 == 8.0);
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

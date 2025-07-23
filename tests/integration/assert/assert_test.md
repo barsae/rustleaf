@@ -3,13 +3,10 @@
 assert(true);
 assert(1 == 1);
 assert(10 + 5 == 15, "Math should work");
-print("All assertions passed!");
 ```
 
 # Output
-```
-String("All assertions passed!")
-```
+None
 
 # Result
 ```rust
@@ -43,11 +40,6 @@ Ok(
         Token(Int, "15"),
         Token(Comma),
         Token(String, "Math should work"),
-        Token(RightParen),
-        Token(Semicolon),
-        Token(Ident, "print"),
-        Token(LeftParen),
-        Token(String, "All assertions passed!"),
         Token(RightParen),
         Token(Semicolon),
         Token(Eof),
@@ -128,20 +120,6 @@ Ok(
                     ],
                 ),
             ),
-            Expression(
-                FunctionCall(
-                    Identifier(
-                        "print",
-                    ),
-                    [
-                        Literal(
-                            String(
-                                "All assertions passed!",
-                            ),
-                        ),
-                    ],
-                ),
-            ),
         ],
     ),
 )
@@ -188,6 +166,8 @@ Ok(
                     ),
                 ],
             ),
+        ],
+        Some(
             Call(
                 Variable(
                     "assert",
@@ -225,20 +205,6 @@ Ok(
                     Literal(
                         String(
                             "Math should work",
-                        ),
-                    ),
-                ],
-            ),
-        ],
-        Some(
-            Call(
-                Variable(
-                    "print",
-                ),
-                [
-                    Literal(
-                        String(
-                            "All assertions passed!",
                         ),
                     ),
                 ],

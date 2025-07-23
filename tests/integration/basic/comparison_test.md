@@ -18,9 +18,7 @@ assert("hello" == "hello");
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

@@ -9,9 +9,7 @@ try {
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

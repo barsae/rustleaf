@@ -5,9 +5,7 @@ super;
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

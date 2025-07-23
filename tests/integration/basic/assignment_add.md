@@ -5,9 +5,7 @@ x += 5;
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust

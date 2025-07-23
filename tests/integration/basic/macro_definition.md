@@ -7,9 +7,7 @@ fn test_macro(ast_node) {
 ```
 
 # Output
-```
 None
-```
 
 # Result
 ```rust
