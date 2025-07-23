@@ -1,0 +1,15 @@
+// Basic comparison tests
+assert(3 == 3);
+assert(3 != 4);
+assert(3 < 4);
+assert(4 > 3);
+assert(3 <= 3);
+assert(3 >= 3);
+
+// Mixed numeric comparisons
+assert(3 == 3.0);
+assert(3.5 > 3);
+
+// String comparisons
+assert("a" < "b");
+assert("hello" == "hello");

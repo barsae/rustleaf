@@ -1,4 +1,4 @@
-# Program
+# Program 🟢
 
 ```rustleaf
 var y;

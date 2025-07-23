@@ -1,4 +1,4 @@
-# Program
+# Program 🟢
 
 ```rustleaf
 // Test basic arithmetic
@@ -38,14 +38,14 @@ print("All comprehensive tests passed!");
 # Output
 
 ```
-
+String("All comprehensive tests passed!")
 ```
 
 # Result
 
 ```rust
-Err(
-    "No attribute 'op_eq' on value Int(5)",
+Ok(
+    Unit,
 )
 ```
 

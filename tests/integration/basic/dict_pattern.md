@@ -1,4 +1,4 @@
-# Program
+# Program 🔴
 
 ```rustleaf
 var {name, age: user_age} = user;

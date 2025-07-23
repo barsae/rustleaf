@@ -1,4 +1,4 @@
-# Program
+# Program 🔴
 
 ```rustleaf
 var [a, b, c] = [1, 2, 3];

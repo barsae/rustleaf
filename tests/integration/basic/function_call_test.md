@@ -1,4 +1,4 @@
-# Program
+# Program 🟢
 
 ```rustleaf
 fn add(x, y) x + y

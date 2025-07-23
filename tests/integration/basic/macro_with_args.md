@@ -1,4 +1,4 @@
-# Program
+# Program 🟢
 
 ```rustleaf
 #[test(arg1: "value", arg2: 42)]

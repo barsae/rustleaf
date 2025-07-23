@@ -1,4 +1,4 @@
-# Program
+# Program 🟢
 
 ```rustleaf
 fn sum(*args) args

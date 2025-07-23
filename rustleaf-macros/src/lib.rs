@@ -32,6 +32,7 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
 
                 // Use the same comprehensive test infrastructure for all test types
                 let md_output_path = full_path.replace(".rustleaf", ".md");
+                let is_panic_test = matches!(test_type, TestType::Panic);
                 let test_body = quote! {
                     let source = include_str!(#include_path);
                     
@@ -58,7 +59,7 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                     };
                     
                     // Try evaluation (only if all previous stages succeeded)
-                    let (output_section, execution_output) = match rustleaf::parser::Parser::parse_str(source) {
+                    let (output_section, execution_output, eval_success) = match rustleaf::parser::Parser::parse_str(source) {
                         Ok(ast) => {
                             rustleaf::core::start_print_capture();
                             let result = rustleaf::eval::evaluate(ast);
@@ -71,14 +72,23 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                                 captured_output.join("\n")
                             };
                             
-                            (output_section, execution_output)
+                            let eval_success = result.is_ok();
+                            (output_section, execution_output, eval_success)
                         }
-                        Err(_) => ("Skipped due to parse error".to_string(), "Skipped due to parse error".to_string()),
+                        Err(_) => ("Skipped due to parse error".to_string(), "Skipped due to parse error".to_string(), false),
+                    };
+                    
+                    // For panic tests, success means it should fail (red circle = expected behavior)
+                    // For normal tests, success means it should succeed (green circle = expected behavior)
+                    let circle = if #is_panic_test {
+                        if eval_success { "🔴" } else { "🟢" }
+                    } else {
+                        if eval_success { "🟢" } else { "🔴" }
                     };
                     
                     let md_content = format!(
-                        "# Program\n\n```rustleaf\n{}\n```\n\n# Output\n\n```\n{}\n```\n\n# Result\n\n```rust\n{}\n```\n\n# Lex\n\n```rust\n{}\n```\n\n# Parse\n\n```rust\n{}\n```\n\n# Eval\n\n```rust\n{}\n```\n",
-                        source, output_section, execution_output, lex_output, parse_output, eval_output
+                        "# Program {}\n\n```rustleaf\n{}\n```\n\n# Output\n\n```\n{}\n```\n\n# Result\n\n```rust\n{}\n```\n\n# Lex\n\n```rust\n{}\n```\n\n# Parse\n\n```rust\n{}\n```\n\n# Eval\n\n```rust\n{}\n```\n",
+                        circle, source, output_section, execution_output, lex_output, parse_output, eval_output
                     );
                     std::fs::write(#md_output_path, md_content).unwrap();
                 };
@@ -131,10 +141,6 @@ fn discover_rustleaf_files(
     let mut test_files = Vec::new();
     let test_path = Path::new(test_dir);
 
-    if !test_path.exists() {
-        // Create the directory if it doesn't exist
-        fs::create_dir_all(test_path)?;
-    }
 
     for entry in fs::read_dir(test_path)? {
         let entry = entry?;

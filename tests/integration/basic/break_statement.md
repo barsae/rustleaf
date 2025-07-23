@@ -1,4 +1,4 @@
-# Program
+# Program 🔴
 
 ```rustleaf
 break 42;

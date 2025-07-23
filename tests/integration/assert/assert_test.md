@@ -1,4 +1,4 @@
-# Program
+# Program 🟢
 
 ```rustleaf
 assert(true);
@@ -10,14 +10,14 @@ print("All assertions passed!");
 # Output
 
 ```
-
+String("All assertions passed!")
 ```
 
 # Result
 
 ```rust
-Err(
-    "No attribute 'op_eq' on value Int(1)",
+Ok(
+    Unit,
 )
 ```
 

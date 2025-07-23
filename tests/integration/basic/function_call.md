@@ -1,4 +1,4 @@
-# Program
+# Program 🔴
 
 ```rustleaf
 func(arg1, arg2);

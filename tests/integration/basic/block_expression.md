@@ -1,4 +1,4 @@
-# Program
+# Program 🟢
 
 ```rustleaf
 var y = {
@@ -17,8 +17,8 @@ assert(y == 15);
 # Result
 
 ```rust
-Err(
-    "No attribute 'op_eq' on value Int(15)",
+Ok(
+    Unit,
 )
 ```
 

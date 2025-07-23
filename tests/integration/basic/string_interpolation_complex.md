@@ -1,4 +1,4 @@
-# Program
+# Program 🔴
 
 ```rustleaf
 "Value: ${x + y * 2}";

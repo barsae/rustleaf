@@ -1,4 +1,4 @@
-# Program
+# Program 🔴
 
 ```rustleaf
 var [first, *rest] = [1, 2, 3, 4];

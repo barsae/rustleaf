@@ -1,4 +1,4 @@
-# Program
+# Program 🟢
 
 ```rustleaf
 var x = 5;
@@ -8,14 +8,14 @@ print(if x > 0 { "positive" } else { "zero or negative" });
 # Output
 
 ```
-
+String("positive")
 ```
 
 # Result
 
 ```rust
-Err(
-    "No attribute 'op_gt' on value Int(5)",
+Ok(
+    Unit,
 )
 ```
 

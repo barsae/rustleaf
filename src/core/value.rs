@@ -74,6 +74,14 @@ impl Value {
         Value::Dict(DictRef::default())
     }
 
+    pub fn new_list_with_values(values: Vec<Value>) -> Self {
+        Value::List(ListRef(Rc::new(RefCell::new(values))))
+    }
+
+    pub fn new_dict_with_map(map: indexmap::IndexMap<String, Value>) -> Self {
+        Value::Dict(DictRef(Rc::new(RefCell::new(map))))
+    }
+
     pub fn rust_value(val: Box<dyn RustValue>) -> Self {
         Value::RustValue(RustValueRef(Rc::new(RefCell::new(val))))
     }
@@ -115,6 +123,20 @@ impl Value {
             "op_mul" => Some(self.bind_method(op_mul)),
             "op_div" => Some(self.bind_method(op_div)),
             "op_neg" => Some(self.bind_method(op_neg)),
+            "op_eq" => Some(self.bind_method(op_eq)),
+            "op_ne" => Some(self.bind_method(op_ne)),
+            "op_lt" => Some(self.bind_method(op_lt)),
+            "op_le" => Some(self.bind_method(op_le)),
+            "op_gt" => Some(self.bind_method(op_gt)),
+            "op_ge" => Some(self.bind_method(op_ge)),
+            "op_mod" => Some(self.bind_method(op_mod)),
+            "op_pow" => Some(self.bind_method(op_pow)),
+            "op_bitwise_and" => Some(self.bind_method(op_bitwise_and)),
+            "op_bitwise_or" => Some(self.bind_method(op_bitwise_or)),
+            "op_bitwise_xor" => Some(self.bind_method(op_bitwise_xor)),
+            "op_bitwise_not" => Some(self.bind_method(op_bitwise_not)),
+            "op_lshift" => Some(self.bind_method(op_lshift)),
+            "op_rshift" => Some(self.bind_method(op_rshift)),
             _ => None,
         }
     }
@@ -128,6 +150,14 @@ impl Value {
             "op_mul" => Some(self.bind_method(op_mul)),
             "op_div" => Some(self.bind_method(op_div)),
             "op_neg" => Some(self.bind_method(op_neg)),
+            "op_eq" => Some(self.bind_method(op_eq)),
+            "op_ne" => Some(self.bind_method(op_ne)),
+            "op_lt" => Some(self.bind_method(op_lt)),
+            "op_le" => Some(self.bind_method(op_le)),
+            "op_gt" => Some(self.bind_method(op_gt)),
+            "op_ge" => Some(self.bind_method(op_ge)),
+            "op_mod" => Some(self.bind_method(op_mod)),
+            "op_pow" => Some(self.bind_method(op_pow)),
             _ => None,
         }
     }
@@ -137,12 +167,23 @@ impl Value {
 
         match name {
             "op_add" => Some(self.bind_method(op_add)), // String concatenation
+            "op_eq" => Some(self.bind_method(op_eq)),
+            "op_ne" => Some(self.bind_method(op_ne)),
+            "op_lt" => Some(self.bind_method(op_lt)),
+            "op_le" => Some(self.bind_method(op_le)),
+            "op_gt" => Some(self.bind_method(op_gt)),
+            "op_ge" => Some(self.bind_method(op_ge)),
             _ => None,
         }
     }
 
-    fn get_bool_attr(&self, _name: &str) -> Option<Value> {
-        // TODO: Implement bool operator methods
-        None
+    fn get_bool_attr(&self, name: &str) -> Option<Value> {
+        use crate::core::builtin_ops::*;
+
+        match name {
+            "op_eq" => Some(self.bind_method(op_eq)),
+            "op_ne" => Some(self.bind_method(op_ne)),
+            _ => None,
+        }
     }
 }

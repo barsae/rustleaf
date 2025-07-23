@@ -1,4 +1,4 @@
-# Program
+# Program 🟢
 
 ```rustleaf
 [1, 2, 3, "hello", true];
@@ -13,8 +13,30 @@
 # Result
 
 ```rust
-Err(
-    "eval not implemented for: List([Literal(Int(1)), Literal(Int(2)), Literal(Int(3)), Literal(String(\"hello\")), Literal(Bool(true))])",
+Ok(
+    List(
+        ListRef(
+            RefCell {
+                value: [
+                    Int(
+                        1,
+                    ),
+                    Int(
+                        2,
+                    ),
+                    Int(
+                        3,
+                    ),
+                    String(
+                        "hello",
+                    ),
+                    Bool(
+                        true,
+                    ),
+                ],
+            },
+        ),
+    ),
 )
 ```
 

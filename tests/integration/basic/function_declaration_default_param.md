@@ -1,4 +1,4 @@
-# Program
+# Program 🟢
 
 ```rustleaf
 fn greet(name = "world") name

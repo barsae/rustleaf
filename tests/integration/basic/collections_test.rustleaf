@@ -1,0 +1,11 @@
+// List creation test
+let my_list = [1, 2, 3];
+assert(true);  // Just test that it doesn't crash
+
+// Dict creation test  
+let my_dict = {"a": 1, "b": 2};
+assert(true);  // Just test that it doesn't crash
+
+// Mixed key types in dict
+let mixed_dict = {1: "one", "two": 2, true: "yes"};
+assert(true);  // Just test that it doesn't crash

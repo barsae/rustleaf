@@ -1,4 +1,4 @@
-# Program
+# Program 🔴
 
 ```rustleaf
 with file = open("data.txt") {

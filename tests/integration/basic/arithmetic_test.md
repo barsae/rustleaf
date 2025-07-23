@@ -1,4 +1,4 @@
-# Program
+# Program 🟢
 
 ```rustleaf
 print(1 + 2);

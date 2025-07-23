@@ -1,4 +1,4 @@
-# Program
+# Program 🟢
 
 ```rustleaf
 print(-42);
@@ -13,13 +13,14 @@ print(~5);
 Int(-42)
 Bool(false)
 Bool(true)
+Int(-6)
 ```
 
 # Result
 
 ```rust
-Err(
-    "No attribute 'op_bitwise_not' on value Int(5)",
+Ok(
+    Unit,
 )
 ```
 

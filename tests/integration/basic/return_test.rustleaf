@@ -1,0 +1,26 @@
+// Test return statement in function
+fn test_return() {
+    return 42;
+}
+
+let result = test_return();
+assert(result == 42);
+
+// Test return without value
+fn test_return_unit() {
+    return;
+}
+
+let unit_result = test_return_unit();
+assert(true);  // Just test it doesn't crash
+
+// Test early return
+fn test_early_return(x) {
+    if x > 10 {
+        return "big";
+    }
+    return "small";
+}
+
+assert(test_early_return(15) == "big");
+assert(test_early_return(5) == "small");

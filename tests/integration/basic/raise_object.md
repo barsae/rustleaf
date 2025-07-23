@@ -1,4 +1,4 @@
-# Program
+# Program 🔴
 
 ```rustleaf
 raise(NetworkError.new(404, "Resource not found"));

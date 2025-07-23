@@ -1,4 +1,4 @@
-# Program
+# Program 🔴
 
 ```rustleaf
 "${a} and ${b} equals ${a + b}";

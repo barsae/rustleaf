@@ -1,4 +1,4 @@
-# Program
+# Program 🟢
 
 ```rustleaf
 {"a": 1, "b": 2};
@@ -13,8 +13,21 @@
 # Result
 
 ```rust
-Err(
-    "eval not implemented for: Dict([(Literal(String(\"a\")), Literal(Int(1))), (Literal(String(\"b\")), Literal(Int(2)))])",
+Ok(
+    Dict(
+        DictRef(
+            RefCell {
+                value: {
+                    "a": Int(
+                        1,
+                    ),
+                    "b": Int(
+                        2,
+                    ),
+                },
+            },
+        ),
+    ),
 )
 ```
 

@@ -1,4 +1,4 @@
-# Program
+# Program 🔴
 
 ```rustleaf
 return 42;
@@ -14,7 +14,7 @@ return 42;
 
 ```rust
 Err(
-    "eval not implemented for: Return(Some(Literal(Int(42))))",
+    "Unexpected return: Int(42)",
 )
 ```
 

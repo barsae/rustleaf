@@ -1,4 +1,4 @@
-# Program
+# Program 🔴
 
 ```rustleaf
 arr[0] = 99;

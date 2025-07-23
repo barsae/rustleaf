@@ -1,0 +1,647 @@
+# Program 🟢
+
+```rustleaf
+// Test modulo operator
+assert(7 % 3 == 1);
+assert(8 % 4 == 0);
+assert(7.5 % 2.5 == 0.0);
+assert(7 % 2.0 == 1.0);
+
+// Test power operator  
+assert(2 ** 3 == 8);
+assert(2 ** 0 == 1);
+assert(3.0 ** 2.0 == 9.0);
+assert(2 ** 3.0 == 8.0);
+```
+
+# Output
+
+```
+
+```
+
+# Result
+
+```rust
+Ok(
+    Unit,
+)
+```
+
+# Lex
+
+```rust
+Ok(
+    [
+        Token(Ident, "assert"),
+        Token(LeftParen),
+        Token(Int, "7"),
+        Token(Percent),
+        Token(Int, "3"),
+        Token(EqualEqual),
+        Token(Int, "1"),
+        Token(RightParen),
+        Token(Semicolon),
+        Token(Ident, "assert"),
+        Token(LeftParen),
+        Token(Int, "8"),
+        Token(Percent),
+        Token(Int, "4"),
+        Token(EqualEqual),
+        Token(Int, "0"),
+        Token(RightParen),
+        Token(Semicolon),
+        Token(Ident, "assert"),
+        Token(LeftParen),
+        Token(Float, "7.5"),
+        Token(Percent),
+        Token(Float, "2.5"),
+        Token(EqualEqual),
+        Token(Float, "0.0"),
+        Token(RightParen),
+        Token(Semicolon),
+        Token(Ident, "assert"),
+        Token(LeftParen),
+        Token(Int, "7"),
+        Token(Percent),
+        Token(Float, "2.0"),
+        Token(EqualEqual),
+        Token(Float, "1.0"),
+        Token(RightParen),
+        Token(Semicolon),
+        Token(Ident, "assert"),
+        Token(LeftParen),
+        Token(Int, "2"),
+        Token(StarStar),
+        Token(Int, "3"),
+        Token(EqualEqual),
+        Token(Int, "8"),
+        Token(RightParen),
+        Token(Semicolon),
+        Token(Ident, "assert"),
+        Token(LeftParen),
+        Token(Int, "2"),
+        Token(StarStar),
+        Token(Int, "0"),
+        Token(EqualEqual),
+        Token(Int, "1"),
+        Token(RightParen),
+        Token(Semicolon),
+        Token(Ident, "assert"),
+        Token(LeftParen),
+        Token(Float, "3.0"),
+        Token(StarStar),
+        Token(Float, "2.0"),
+        Token(EqualEqual),
+        Token(Float, "9.0"),
+        Token(RightParen),
+        Token(Semicolon),
+        Token(Ident, "assert"),
+        Token(LeftParen),
+        Token(Int, "2"),
+        Token(StarStar),
+        Token(Float, "3.0"),
+        Token(EqualEqual),
+        Token(Float, "8.0"),
+        Token(RightParen),
+        Token(Semicolon),
+        Token(Eof),
+    ],
+)
+```
+
+# Parse
+
+```rust
+Ok(
+    Program(
+        [
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            Mod(
+                                Literal(
+                                    Int(
+                                        7,
+                                    ),
+                                ),
+                                Literal(
+                                    Int(
+                                        3,
+                                    ),
+                                ),
+                            ),
+                            Literal(
+                                Int(
+                                    1,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            Mod(
+                                Literal(
+                                    Int(
+                                        8,
+                                    ),
+                                ),
+                                Literal(
+                                    Int(
+                                        4,
+                                    ),
+                                ),
+                            ),
+                            Literal(
+                                Int(
+                                    0,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            Mod(
+                                Literal(
+                                    Float(
+                                        7.5,
+                                    ),
+                                ),
+                                Literal(
+                                    Float(
+                                        2.5,
+                                    ),
+                                ),
+                            ),
+                            Literal(
+                                Float(
+                                    0.0,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            Mod(
+                                Literal(
+                                    Int(
+                                        7,
+                                    ),
+                                ),
+                                Literal(
+                                    Float(
+                                        2.0,
+                                    ),
+                                ),
+                            ),
+                            Literal(
+                                Float(
+                                    1.0,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            Pow(
+                                Literal(
+                                    Int(
+                                        2,
+                                    ),
+                                ),
+                                Literal(
+                                    Int(
+                                        3,
+                                    ),
+                                ),
+                            ),
+                            Literal(
+                                Int(
+                                    8,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            Pow(
+                                Literal(
+                                    Int(
+                                        2,
+                                    ),
+                                ),
+                                Literal(
+                                    Int(
+                                        0,
+                                    ),
+                                ),
+                            ),
+                            Literal(
+                                Int(
+                                    1,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            Pow(
+                                Literal(
+                                    Float(
+                                        3.0,
+                                    ),
+                                ),
+                                Literal(
+                                    Float(
+                                        2.0,
+                                    ),
+                                ),
+                            ),
+                            Literal(
+                                Float(
+                                    9.0,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            Pow(
+                                Literal(
+                                    Int(
+                                        2,
+                                    ),
+                                ),
+                                Literal(
+                                    Float(
+                                        3.0,
+                                    ),
+                                ),
+                            ),
+                            Literal(
+                                Float(
+                                    8.0,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+        ],
+    ),
+)
+```
+
+# Eval
+
+```rust
+Ok(
+    Block(
+        [
+            Call(
+                Variable(
+                    "assert",
+                ),
+                [
+                    Call(
+                        GetAttr(
+                            Call(
+                                GetAttr(
+                                    Literal(
+                                        Int(
+                                            7,
+                                        ),
+                                    ),
+                                    "op_mod",
+                                ),
+                                [
+                                    Literal(
+                                        Int(
+                                            3,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                            "op_eq",
+                        ),
+                        [
+                            Literal(
+                                Int(
+                                    1,
+                                ),
+                            ),
+                        ],
+                    ),
+                ],
+            ),
+            Call(
+                Variable(
+                    "assert",
+                ),
+                [
+                    Call(
+                        GetAttr(
+                            Call(
+                                GetAttr(
+                                    Literal(
+                                        Int(
+                                            8,
+                                        ),
+                                    ),
+                                    "op_mod",
+                                ),
+                                [
+                                    Literal(
+                                        Int(
+                                            4,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                            "op_eq",
+                        ),
+                        [
+                            Literal(
+                                Int(
+                                    0,
+                                ),
+                            ),
+                        ],
+                    ),
+                ],
+            ),
+            Call(
+                Variable(
+                    "assert",
+                ),
+                [
+                    Call(
+                        GetAttr(
+                            Call(
+                                GetAttr(
+                                    Literal(
+                                        Float(
+                                            7.5,
+                                        ),
+                                    ),
+                                    "op_mod",
+                                ),
+                                [
+                                    Literal(
+                                        Float(
+                                            2.5,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                            "op_eq",
+                        ),
+                        [
+                            Literal(
+                                Float(
+                                    0.0,
+                                ),
+                            ),
+                        ],
+                    ),
+                ],
+            ),
+            Call(
+                Variable(
+                    "assert",
+                ),
+                [
+                    Call(
+                        GetAttr(
+                            Call(
+                                GetAttr(
+                                    Literal(
+                                        Int(
+                                            7,
+                                        ),
+                                    ),
+                                    "op_mod",
+                                ),
+                                [
+                                    Literal(
+                                        Float(
+                                            2.0,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                            "op_eq",
+                        ),
+                        [
+                            Literal(
+                                Float(
+                                    1.0,
+                                ),
+                            ),
+                        ],
+                    ),
+                ],
+            ),
+            Call(
+                Variable(
+                    "assert",
+                ),
+                [
+                    Call(
+                        GetAttr(
+                            Call(
+                                GetAttr(
+                                    Literal(
+                                        Int(
+                                            2,
+                                        ),
+                                    ),
+                                    "op_pow",
+                                ),
+                                [
+                                    Literal(
+                                        Int(
+                                            3,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                            "op_eq",
+                        ),
+                        [
+                            Literal(
+                                Int(
+                                    8,
+                                ),
+                            ),
+                        ],
+                    ),
+                ],
+            ),
+            Call(
+                Variable(
+                    "assert",
+                ),
+                [
+                    Call(
+                        GetAttr(
+                            Call(
+                                GetAttr(
+                                    Literal(
+                                        Int(
+                                            2,
+                                        ),
+                                    ),
+                                    "op_pow",
+                                ),
+                                [
+                                    Literal(
+                                        Int(
+                                            0,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                            "op_eq",
+                        ),
+                        [
+                            Literal(
+                                Int(
+                                    1,
+                                ),
+                            ),
+                        ],
+                    ),
+                ],
+            ),
+            Call(
+                Variable(
+                    "assert",
+                ),
+                [
+                    Call(
+                        GetAttr(
+                            Call(
+                                GetAttr(
+                                    Literal(
+                                        Float(
+                                            3.0,
+                                        ),
+                                    ),
+                                    "op_pow",
+                                ),
+                                [
+                                    Literal(
+                                        Float(
+                                            2.0,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                            "op_eq",
+                        ),
+                        [
+                            Literal(
+                                Float(
+                                    9.0,
+                                ),
+                            ),
+                        ],
+                    ),
+                ],
+            ),
+        ],
+        Some(
+            Call(
+                Variable(
+                    "assert",
+                ),
+                [
+                    Call(
+                        GetAttr(
+                            Call(
+                                GetAttr(
+                                    Literal(
+                                        Int(
+                                            2,
+                                        ),
+                                    ),
+                                    "op_pow",
+                                ),
+                                [
+                                    Literal(
+                                        Float(
+                                            3.0,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                            "op_eq",
+                        ),
+                        [
+                            Literal(
+                                Float(
+                                    8.0,
+                                ),
+                            ),
+                        ],
+                    ),
+                ],
+            ),
+        ),
+    ),
+)
+```

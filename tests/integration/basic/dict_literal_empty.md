@@ -1,4 +1,4 @@
-# Program
+# Program 🟢
 
 ```rustleaf
 {};
@@ -13,8 +13,14 @@
 # Result
 
 ```rust
-Err(
-    "eval not implemented for: Dict([])",
+Ok(
+    Dict(
+        DictRef(
+            RefCell {
+                value: {},
+            },
+        ),
+    ),
 )
 ```
 

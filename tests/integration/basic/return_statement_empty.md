@@ -1,4 +1,4 @@
-# Program
+# Program 🔴
 
 ```rustleaf
 return;
@@ -14,7 +14,7 @@ return;
 
 ```rust
 Err(
-    "eval not implemented for: Return(None)",
+    "Unexpected return: Unit",
 )
 ```
 

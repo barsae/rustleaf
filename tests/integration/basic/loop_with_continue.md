@@ -1,4 +1,4 @@
-# Program
+# Program 🟢
 
 ```rustleaf
 var i = 0;
@@ -14,14 +14,14 @@ print(loop {
 # Output
 
 ```
-
+Int(30)
 ```
 
 # Result
 
 ```rust
-Err(
-    "No attribute 'op_lt' on value Int(1)",
+Ok(
+    Unit,
 )
 ```
 

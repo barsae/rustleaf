@@ -1,4 +1,4 @@
-# Program
+# Program 🟢
 
 ```rustleaf
 if true { 42 }

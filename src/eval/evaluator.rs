@@ -231,6 +231,13 @@ impl Evaluator {
             Eval::Continue => {
                 Err(ControlFlow::Continue)
             }
+            Eval::Return(expr) => {
+                let value = match expr {
+                    Some(e) => self.eval(e)?,
+                    None => Value::Unit,
+                };
+                Err(ControlFlow::Return(value))
+            }
             Eval::GetAttr(obj_expr, attr_name) => {
                 let obj_value = self.eval(obj_expr)?;
                 match obj_value.get_attr(attr_name) {
@@ -267,6 +274,34 @@ impl Evaluator {
                 let right_val = self.eval(right)?;
                 // Identity comparison - same as == for now, could be object identity later
                 Ok(Value::Bool(left_val == right_val))
+            }
+            
+            // Collections
+            Eval::List(elements) => {
+                let mut list_values = Vec::new();
+                for element in elements {
+                    list_values.push(self.eval(element)?);
+                }
+                Ok(Value::new_list_with_values(list_values))
+            }
+            Eval::Dict(pairs) => {
+                let mut dict_map = indexmap::IndexMap::new();
+                for (key_expr, value_expr) in pairs {
+                    let key_val = self.eval(key_expr)?;
+                    let value_val = self.eval(value_expr)?;
+                    
+                    // Convert key to string
+                    let key_str = match key_val {
+                        Value::String(s) => s,
+                        Value::Int(i) => i.to_string(),
+                        Value::Float(f) => f.to_string(),
+                        Value::Bool(b) => b.to_string(),
+                        _ => return Err(ControlFlow::Error(anyhow!("Dictionary keys must be strings, numbers, or booleans, got {:?}", key_val))),
+                    };
+                    
+                    dict_map.insert(key_str, value_val);
+                }
+                Ok(Value::new_dict_with_map(dict_map))
             }
             
             x => Err(ControlFlow::Error(anyhow!("eval not implemented for: {:?}", x)))
