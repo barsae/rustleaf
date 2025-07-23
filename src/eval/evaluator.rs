@@ -95,6 +95,25 @@ impl Evaluator {
                 let right_val = self.eval(right)?;
                 self.eval_binary_op(op, left_val, right_val)
             }
+            Eval::If(condition, then_expr, else_expr) => {
+                let condition_val = self.eval(condition)?;
+                
+                // Check if condition is truthy
+                let is_truthy = match condition_val {
+                    Value::Bool(b) => b,
+                    Value::Unit => false,
+                    _ => true, // All other values are truthy (like Python/JavaScript)
+                };
+                
+                if is_truthy {
+                    self.eval(then_expr)
+                } else {
+                    match else_expr {
+                        Some(expr) => self.eval(expr),
+                        None => Ok(Value::Unit),
+                    }
+                }
+            }
             x => Err(anyhow!("eval not implemented for: {:?}", eval))
         }
     }

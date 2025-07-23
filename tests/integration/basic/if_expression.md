@@ -18,7 +18,7 @@ if x > 0 {
 
 ```rust
 Err(
-    "Expression not yet implemented: If { condition: Gt(Identifier(\"x\"), Literal(Int(0))), then_expr: Block { statements: [], final_expr: Some(Literal(String(\"positive\"))) }, else_expr: Some(Block { statements: [], final_expr: Some(Literal(String(\"zero or negative\"))) }) }",
+    "Undefined variable: x",
 )
 ```
 
@@ -93,7 +93,46 @@ Ok(
 # Eval
 
 ```rust
-Err(
-    "Expression not yet implemented: If { condition: Gt(Identifier(\"x\"), Literal(Int(0))), then_expr: Block { statements: [], final_expr: Some(Literal(String(\"positive\"))) }, else_expr: Some(Block { statements: [], final_expr: Some(Literal(String(\"zero or negative\"))) }) }",
+Ok(
+    Block(
+        [
+            If(
+                BinaryOp(
+                    Gt,
+                    Variable(
+                        "x",
+                    ),
+                    Literal(
+                        Int(
+                            0,
+                        ),
+                    ),
+                ),
+                Block(
+                    [],
+                    Some(
+                        Literal(
+                            String(
+                                "positive",
+                            ),
+                        ),
+                    ),
+                ),
+                Some(
+                    Block(
+                        [],
+                        Some(
+                            Literal(
+                                String(
+                                    "zero or negative",
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        ],
+        None,
+    ),
 )
 ```

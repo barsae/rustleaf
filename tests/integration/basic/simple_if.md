@@ -13,8 +13,8 @@ if true { 42 }
 # Result
 
 ```rust
-Err(
-    "Expression not yet implemented: If { condition: Literal(Bool(true)), then_expr: Block { statements: [], final_expr: Some(Literal(Int(42))) }, else_expr: None }",
+Ok(
+    Unit,
 )
 ```
 
@@ -67,7 +67,29 @@ Ok(
 # Eval
 
 ```rust
-Err(
-    "Expression not yet implemented: If { condition: Literal(Bool(true)), then_expr: Block { statements: [], final_expr: Some(Literal(Int(42))) }, else_expr: None }",
+Ok(
+    Block(
+        [
+            If(
+                Literal(
+                    Bool(
+                        true,
+                    ),
+                ),
+                Block(
+                    [],
+                    Some(
+                        Literal(
+                            Int(
+                                42,
+                            ),
+                        ),
+                    ),
+                ),
+                None,
+            ),
+        ],
+        None,
+    ),
 )
 ```

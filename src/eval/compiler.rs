@@ -215,6 +215,15 @@ impl Compiler {
                 let compiled_expr = self.compile_expression(*expr)?;
                 Ok(Eval::UnaryOp(super::core::UnaryOp::BitNot, Box::new(compiled_expr)))
             }
+            Expression::If { condition, then_expr, else_expr } => {
+                let compiled_condition = self.compile_expression(*condition)?;
+                let compiled_then = self.compile_block_helper(then_expr)?;
+                let compiled_else = match else_expr {
+                    Some(block) => Some(Box::new(self.compile_block_helper(block)?)),
+                    None => None,
+                };
+                Ok(Eval::If(Box::new(compiled_condition), Box::new(compiled_then), compiled_else))
+            }
             
             _ => Err(anyhow::anyhow!("Expression not yet implemented: {:?}", expr)),
         }
@@ -233,6 +242,24 @@ impl Compiler {
             LiteralValue::Int(i) => Value::Int(i),
             LiteralValue::Float(f) => Value::Float(f),
             LiteralValue::String(s) | LiteralValue::RawString(s) => Value::String(s),
+        }
+    }
+
+    fn compile_block_helper(&mut self, block: crate::core::Block) -> Result<Eval> {
+        let mut eval_statements = Vec::new();
+        
+        // Compile all statements
+        for stmt in block.statements {
+            eval_statements.push(self.compile_statement(stmt)?);
+        }
+        
+        // Handle final expression
+        match block.final_expr {
+            Some(expr) => {
+                let compiled_final_expr = self.compile_expression(*expr)?;
+                Ok(Eval::Block(eval_statements, Some(Box::new(compiled_final_expr))))
+            }
+            None => Ok(Eval::Block(eval_statements, None)),
         }
     }
 }
