@@ -176,6 +176,35 @@ pub fn op_eq(self_value: &Value, args: Args) -> Result<Value> {
             true
         }
         
+        // Dictionary comparisons
+        (Value::Dict(a), Value::Dict(b)) => {
+            let dict_a = a.borrow();
+            let dict_b = b.borrow();
+            
+            // Check if they have the same number of keys
+            if dict_a.len() != dict_b.len() {
+                return Ok(Value::Bool(false));
+            }
+            
+            // Compare each key-value pair
+            for (key, value_a) in dict_a.iter() {
+                match dict_b.get(key) {
+                    Some(value_b) => {
+                        // Use op_eq recursively for each value
+                        let eq_result = op_eq(value_a, Args::positional(vec![value_b.clone()]))?;
+                        match eq_result {
+                            Value::Bool(false) => return Ok(Value::Bool(false)),
+                            Value::Bool(true) => continue,
+                            _ => unreachable!("op_eq should always return Bool"),
+                        }
+                    }
+                    None => return Ok(Value::Bool(false)), // Key not found in dict_b
+                }
+            }
+            
+            true
+        }
+        
         // Everything else is false
         _ => false,
     };

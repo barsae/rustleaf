@@ -1,15 +1,15 @@
-# Program 🔴
+# Program 🟢
 ```rustleaf
 // #[fail_quietly]
 // Test expressions in collections
-let list_with_expr = [1 + 2, 3 * 4];
+var list_with_expr = [1 + 2, 3 * 4];
 
 // Test expressions in dict
-let dict_with_expr = {"sum": 1 + 2, "product": 3 * 4};
+var dict_with_expr = {"sum": 1 + 2, "product": 3 * 4};
 
 // Test variable in collections
-let x = 5;
-let list_with_var = [x, x + 1];
+var x = 5;
+var list_with_var = [x, x + 1];
 ```
 
 # Output
@@ -17,14 +17,16 @@ None
 
 # Result
 ```rust
-Skipped due to parse error
+Ok(
+    Unit,
+)
 ```
 
 # Lex
 ```rust
 Ok(
     [
-        Token(Ident, "let"),
+        Token(Var),
         Token(Ident, "list_with_expr"),
         Token(Equal),
         Token(LeftBracket),
@@ -37,12 +39,7 @@ Ok(
         Token(Int, "4"),
         Token(RightBracket),
         Token(Semicolon),
-        Token(Ident, "assert"),
-        Token(LeftParen),
-        Token(True),
-        Token(RightParen),
-        Token(Semicolon),
-        Token(Ident, "let"),
+        Token(Var),
         Token(Ident, "dict_with_expr"),
         Token(Equal),
         Token(LeftBrace),
@@ -59,17 +56,12 @@ Ok(
         Token(Int, "4"),
         Token(RightBrace),
         Token(Semicolon),
-        Token(Ident, "assert"),
-        Token(LeftParen),
-        Token(True),
-        Token(RightParen),
-        Token(Semicolon),
-        Token(Ident, "let"),
+        Token(Var),
         Token(Ident, "x"),
         Token(Equal),
         Token(Int, "5"),
         Token(Semicolon),
-        Token(Ident, "let"),
+        Token(Var),
         Token(Ident, "list_with_var"),
         Token(Equal),
         Token(LeftBracket),
@@ -80,11 +72,6 @@ Ok(
         Token(Int, "1"),
         Token(RightBracket),
         Token(Semicolon),
-        Token(Ident, "assert"),
-        Token(LeftParen),
-        Token(True),
-        Token(RightParen),
-        Token(Semicolon),
         Token(Eof),
     ],
 )
@@ -92,12 +79,278 @@ Ok(
 
 # Parse
 ```rust
-Err(
-    "Expected statement",
+Ok(
+    Program(
+        [
+            VarDecl {
+                pattern: Variable(
+                    "list_with_expr",
+                ),
+                value: Some(
+                    List(
+                        [
+                            Add(
+                                Literal(
+                                    Int(
+                                        1,
+                                    ),
+                                ),
+                                Literal(
+                                    Int(
+                                        2,
+                                    ),
+                                ),
+                            ),
+                            Mul(
+                                Literal(
+                                    Int(
+                                        3,
+                                    ),
+                                ),
+                                Literal(
+                                    Int(
+                                        4,
+                                    ),
+                                ),
+                            ),
+                        ],
+                    ),
+                ),
+            },
+            VarDecl {
+                pattern: Variable(
+                    "dict_with_expr",
+                ),
+                value: Some(
+                    Dict(
+                        [
+                            (
+                                Literal(
+                                    String(
+                                        "sum",
+                                    ),
+                                ),
+                                Add(
+                                    Literal(
+                                        Int(
+                                            1,
+                                        ),
+                                    ),
+                                    Literal(
+                                        Int(
+                                            2,
+                                        ),
+                                    ),
+                                ),
+                            ),
+                            (
+                                Literal(
+                                    String(
+                                        "product",
+                                    ),
+                                ),
+                                Mul(
+                                    Literal(
+                                        Int(
+                                            3,
+                                        ),
+                                    ),
+                                    Literal(
+                                        Int(
+                                            4,
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ],
+                    ),
+                ),
+            },
+            VarDecl {
+                pattern: Variable(
+                    "x",
+                ),
+                value: Some(
+                    Literal(
+                        Int(
+                            5,
+                        ),
+                    ),
+                ),
+            },
+            VarDecl {
+                pattern: Variable(
+                    "list_with_var",
+                ),
+                value: Some(
+                    List(
+                        [
+                            Identifier(
+                                "x",
+                            ),
+                            Add(
+                                Identifier(
+                                    "x",
+                                ),
+                                Literal(
+                                    Int(
+                                        1,
+                                    ),
+                                ),
+                            ),
+                        ],
+                    ),
+                ),
+            },
+        ],
+    ),
 )
 ```
 
 # Eval
 ```rust
-Skipped due to parse error
+Ok(
+    Block(
+        [
+            Declare(
+                "list_with_expr",
+                Some(
+                    List(
+                        [
+                            Call(
+                                GetAttr(
+                                    Literal(
+                                        Int(
+                                            1,
+                                        ),
+                                    ),
+                                    "op_add",
+                                ),
+                                [
+                                    Literal(
+                                        Int(
+                                            2,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                            Call(
+                                GetAttr(
+                                    Literal(
+                                        Int(
+                                            3,
+                                        ),
+                                    ),
+                                    "op_mul",
+                                ),
+                                [
+                                    Literal(
+                                        Int(
+                                            4,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                        ],
+                    ),
+                ),
+            ),
+            Declare(
+                "dict_with_expr",
+                Some(
+                    Dict(
+                        [
+                            (
+                                Literal(
+                                    String(
+                                        "sum",
+                                    ),
+                                ),
+                                Call(
+                                    GetAttr(
+                                        Literal(
+                                            Int(
+                                                1,
+                                            ),
+                                        ),
+                                        "op_add",
+                                    ),
+                                    [
+                                        Literal(
+                                            Int(
+                                                2,
+                                            ),
+                                        ),
+                                    ],
+                                ),
+                            ),
+                            (
+                                Literal(
+                                    String(
+                                        "product",
+                                    ),
+                                ),
+                                Call(
+                                    GetAttr(
+                                        Literal(
+                                            Int(
+                                                3,
+                                            ),
+                                        ),
+                                        "op_mul",
+                                    ),
+                                    [
+                                        Literal(
+                                            Int(
+                                                4,
+                                            ),
+                                        ),
+                                    ],
+                                ),
+                            ),
+                        ],
+                    ),
+                ),
+            ),
+            Declare(
+                "x",
+                Some(
+                    Literal(
+                        Int(
+                            5,
+                        ),
+                    ),
+                ),
+            ),
+            Declare(
+                "list_with_var",
+                Some(
+                    List(
+                        [
+                            Variable(
+                                "x",
+                            ),
+                            Call(
+                                GetAttr(
+                                    Variable(
+                                        "x",
+                                    ),
+                                    "op_add",
+                                ),
+                                [
+                                    Literal(
+                                        Int(
+                                            1,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                        ],
+                    ),
+                ),
+            ),
+        ],
+        None,
+    ),
+)
 ```
