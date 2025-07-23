@@ -1,18 +1,13 @@
 # Program 🟢
 ```rustleaf
-print(1 + 2);
-print(5 - 3);
-print(4 * 3);
-print(10 / 2);
+assert(1 + 2 == 3);
+assert(5 - 3 == 2);
+assert(4 * 3 == 12);
+assert(10 / 2 == 5.0);
 ```
 
 # Output
-```
-Int(3)
-Int(2)
-Int(12)
-Float(5.0)
-```
+None
 
 # Result
 ```rust
@@ -25,32 +20,40 @@ Ok(
 ```rust
 Ok(
     [
-        Token(Ident, "print"),
+        Token(Ident, "assert"),
         Token(LeftParen),
         Token(Int, "1"),
         Token(Plus),
         Token(Int, "2"),
+        Token(EqualEqual),
+        Token(Int, "3"),
         Token(RightParen),
         Token(Semicolon),
-        Token(Ident, "print"),
+        Token(Ident, "assert"),
         Token(LeftParen),
         Token(Int, "5"),
         Token(Minus),
         Token(Int, "3"),
+        Token(EqualEqual),
+        Token(Int, "2"),
         Token(RightParen),
         Token(Semicolon),
-        Token(Ident, "print"),
+        Token(Ident, "assert"),
         Token(LeftParen),
         Token(Int, "4"),
         Token(Star),
         Token(Int, "3"),
+        Token(EqualEqual),
+        Token(Int, "12"),
         Token(RightParen),
         Token(Semicolon),
-        Token(Ident, "print"),
+        Token(Ident, "assert"),
         Token(LeftParen),
         Token(Int, "10"),
         Token(Slash),
         Token(Int, "2"),
+        Token(EqualEqual),
+        Token(Float, "5.0"),
         Token(RightParen),
         Token(Semicolon),
         Token(Eof),
@@ -66,34 +69,20 @@ Ok(
             Expression(
                 FunctionCall(
                     Identifier(
-                        "print",
+                        "assert",
                     ),
                     [
-                        Add(
-                            Literal(
-                                Int(
-                                    1,
+                        Eq(
+                            Add(
+                                Literal(
+                                    Int(
+                                        1,
+                                    ),
                                 ),
-                            ),
-                            Literal(
-                                Int(
-                                    2,
-                                ),
-                            ),
-                        ),
-                    ],
-                ),
-            ),
-            Expression(
-                FunctionCall(
-                    Identifier(
-                        "print",
-                    ),
-                    [
-                        Sub(
-                            Literal(
-                                Int(
-                                    5,
+                                Literal(
+                                    Int(
+                                        2,
+                                    ),
                                 ),
                             ),
                             Literal(
@@ -108,18 +97,25 @@ Ok(
             Expression(
                 FunctionCall(
                     Identifier(
-                        "print",
+                        "assert",
                     ),
                     [
-                        Mul(
-                            Literal(
-                                Int(
-                                    4,
+                        Eq(
+                            Sub(
+                                Literal(
+                                    Int(
+                                        5,
+                                    ),
+                                ),
+                                Literal(
+                                    Int(
+                                        3,
+                                    ),
                                 ),
                             ),
                             Literal(
                                 Int(
-                                    3,
+                                    2,
                                 ),
                             ),
                         ),
@@ -129,18 +125,53 @@ Ok(
             Expression(
                 FunctionCall(
                     Identifier(
-                        "print",
+                        "assert",
                     ),
                     [
-                        Div(
-                            Literal(
-                                Int(
-                                    10,
+                        Eq(
+                            Mul(
+                                Literal(
+                                    Int(
+                                        4,
+                                    ),
+                                ),
+                                Literal(
+                                    Int(
+                                        3,
+                                    ),
                                 ),
                             ),
                             Literal(
                                 Int(
-                                    2,
+                                    12,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            Div(
+                                Literal(
+                                    Int(
+                                        10,
+                                    ),
+                                ),
+                                Literal(
+                                    Int(
+                                        2,
+                                    ),
+                                ),
+                            ),
+                            Literal(
+                                Float(
+                                    5.0,
                                 ),
                             ),
                         ),
@@ -159,17 +190,65 @@ Ok(
         [
             Call(
                 Variable(
-                    "print",
+                    "assert",
                 ),
                 [
                     Call(
                         GetAttr(
+                            Call(
+                                GetAttr(
+                                    Literal(
+                                        Int(
+                                            1,
+                                        ),
+                                    ),
+                                    "op_add",
+                                ),
+                                [
+                                    Literal(
+                                        Int(
+                                            2,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                            "op_eq",
+                        ),
+                        [
                             Literal(
                                 Int(
-                                    1,
+                                    3,
                                 ),
                             ),
-                            "op_add",
+                        ],
+                    ),
+                ],
+            ),
+            Call(
+                Variable(
+                    "assert",
+                ),
+                [
+                    Call(
+                        GetAttr(
+                            Call(
+                                GetAttr(
+                                    Literal(
+                                        Int(
+                                            5,
+                                        ),
+                                    ),
+                                    "op_sub",
+                                ),
+                                [
+                                    Literal(
+                                        Int(
+                                            3,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                            "op_eq",
                         ),
                         [
                             Literal(
@@ -183,46 +262,34 @@ Ok(
             ),
             Call(
                 Variable(
-                    "print",
+                    "assert",
                 ),
                 [
                     Call(
                         GetAttr(
-                            Literal(
-                                Int(
-                                    5,
+                            Call(
+                                GetAttr(
+                                    Literal(
+                                        Int(
+                                            4,
+                                        ),
+                                    ),
+                                    "op_mul",
                                 ),
+                                [
+                                    Literal(
+                                        Int(
+                                            3,
+                                        ),
+                                    ),
+                                ],
                             ),
-                            "op_sub",
+                            "op_eq",
                         ),
                         [
                             Literal(
                                 Int(
-                                    3,
-                                ),
-                            ),
-                        ],
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "print",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Literal(
-                                Int(
-                                    4,
-                                ),
-                            ),
-                            "op_mul",
-                        ),
-                        [
-                            Literal(
-                                Int(
-                                    3,
+                                    12,
                                 ),
                             ),
                         ],
@@ -233,22 +300,34 @@ Ok(
         Some(
             Call(
                 Variable(
-                    "print",
+                    "assert",
                 ),
                 [
                     Call(
                         GetAttr(
-                            Literal(
-                                Int(
-                                    10,
+                            Call(
+                                GetAttr(
+                                    Literal(
+                                        Int(
+                                            10,
+                                        ),
+                                    ),
+                                    "op_div",
                                 ),
+                                [
+                                    Literal(
+                                        Int(
+                                            2,
+                                        ),
+                                    ),
+                                ],
                             ),
-                            "op_div",
+                            "op_eq",
                         ),
                         [
                             Literal(
-                                Int(
-                                    2,
+                                Float(
+                                    5.0,
                                 ),
                             ),
                         ],

@@ -1,16 +1,18 @@
 # Program 🟢
 ```rustleaf
-// Test modulo operator
-assert(7 % 3 == 1);
-assert(8 % 4 == 0);
-assert(7.5 % 2.5 == 0.0);
-assert(7 % 2.0 == 1.0);
+// #[fail_quietly]
+// Bitwise operators test
+assert((5 & 3) == 1);  // 101 & 011 = 001
+assert((5 | 3) == 7);  // 101 | 011 = 111
+assert((5 ^ 3) == 6);  // 101 ^ 011 = 110
 
-// Test power operator
-assert(2 ** 3 == 8);
-assert(2 ** 0 == 1);
-assert(3.0 ** 2.0 == 9.0);
-assert(2 ** 3.0 == 8.0);
+// Bit shifts
+assert((8 << 1) == 16);
+assert((8 >> 1) == 4);
+assert((8 >> 2) == 2);
+
+// Bitwise NOT
+assert((~5) == -6);  // Two's complement
 ```
 
 # Output
@@ -29,74 +31,79 @@ Ok(
     [
         Token(Ident, "assert"),
         Token(LeftParen),
-        Token(Int, "7"),
-        Token(Percent),
+        Token(LeftParen),
+        Token(Int, "5"),
+        Token(Ampersand),
         Token(Int, "3"),
+        Token(RightParen),
         Token(EqualEqual),
         Token(Int, "1"),
         Token(RightParen),
         Token(Semicolon),
         Token(Ident, "assert"),
         Token(LeftParen),
+        Token(LeftParen),
+        Token(Int, "5"),
+        Token(Pipe),
+        Token(Int, "3"),
+        Token(RightParen),
+        Token(EqualEqual),
+        Token(Int, "7"),
+        Token(RightParen),
+        Token(Semicolon),
+        Token(Ident, "assert"),
+        Token(LeftParen),
+        Token(LeftParen),
+        Token(Int, "5"),
+        Token(Caret),
+        Token(Int, "3"),
+        Token(RightParen),
+        Token(EqualEqual),
+        Token(Int, "6"),
+        Token(RightParen),
+        Token(Semicolon),
+        Token(Ident, "assert"),
+        Token(LeftParen),
+        Token(LeftParen),
         Token(Int, "8"),
-        Token(Percent),
+        Token(LessLess),
+        Token(Int, "1"),
+        Token(RightParen),
+        Token(EqualEqual),
+        Token(Int, "16"),
+        Token(RightParen),
+        Token(Semicolon),
+        Token(Ident, "assert"),
+        Token(LeftParen),
+        Token(LeftParen),
+        Token(Int, "8"),
+        Token(GreaterGreater),
+        Token(Int, "1"),
+        Token(RightParen),
+        Token(EqualEqual),
         Token(Int, "4"),
-        Token(EqualEqual),
-        Token(Int, "0"),
         Token(RightParen),
         Token(Semicolon),
         Token(Ident, "assert"),
         Token(LeftParen),
-        Token(Float, "7.5"),
-        Token(Percent),
-        Token(Float, "2.5"),
-        Token(EqualEqual),
-        Token(Float, "0.0"),
-        Token(RightParen),
-        Token(Semicolon),
-        Token(Ident, "assert"),
         Token(LeftParen),
-        Token(Int, "7"),
-        Token(Percent),
-        Token(Float, "2.0"),
-        Token(EqualEqual),
-        Token(Float, "1.0"),
-        Token(RightParen),
-        Token(Semicolon),
-        Token(Ident, "assert"),
-        Token(LeftParen),
-        Token(Int, "2"),
-        Token(StarStar),
-        Token(Int, "3"),
-        Token(EqualEqual),
         Token(Int, "8"),
-        Token(RightParen),
-        Token(Semicolon),
-        Token(Ident, "assert"),
-        Token(LeftParen),
+        Token(GreaterGreater),
         Token(Int, "2"),
-        Token(StarStar),
-        Token(Int, "0"),
-        Token(EqualEqual),
-        Token(Int, "1"),
         Token(RightParen),
-        Token(Semicolon),
-        Token(Ident, "assert"),
-        Token(LeftParen),
-        Token(Float, "3.0"),
-        Token(StarStar),
-        Token(Float, "2.0"),
         Token(EqualEqual),
-        Token(Float, "9.0"),
-        Token(RightParen),
-        Token(Semicolon),
-        Token(Ident, "assert"),
-        Token(LeftParen),
         Token(Int, "2"),
-        Token(StarStar),
-        Token(Float, "3.0"),
+        Token(RightParen),
+        Token(Semicolon),
+        Token(Ident, "assert"),
+        Token(LeftParen),
+        Token(LeftParen),
+        Token(Tilde),
+        Token(Int, "5"),
+        Token(RightParen),
         Token(EqualEqual),
-        Token(Float, "8.0"),
+        Token(Minus),
+        Token(Int, "6"),
         Token(RightParen),
         Token(Semicolon),
         Token(Eof),
@@ -116,10 +123,10 @@ Ok(
                     ),
                     [
                         Eq(
-                            Mod(
+                            BitAnd(
                                 Literal(
                                     Int(
-                                        7,
+                                        5,
                                     ),
                                 ),
                                 Literal(
@@ -144,7 +151,63 @@ Ok(
                     ),
                     [
                         Eq(
-                            Mod(
+                            BitOr(
+                                Literal(
+                                    Int(
+                                        5,
+                                    ),
+                                ),
+                                Literal(
+                                    Int(
+                                        3,
+                                    ),
+                                ),
+                            ),
+                            Literal(
+                                Int(
+                                    7,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            BitXor(
+                                Literal(
+                                    Int(
+                                        5,
+                                    ),
+                                ),
+                                Literal(
+                                    Int(
+                                        3,
+                                    ),
+                                ),
+                            ),
+                            Literal(
+                                Int(
+                                    6,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            LeftShift(
                                 Literal(
                                     Int(
                                         8,
@@ -152,13 +215,13 @@ Ok(
                                 ),
                                 Literal(
                                     Int(
-                                        4,
+                                        1,
                                     ),
                                 ),
                             ),
                             Literal(
                                 Int(
-                                    0,
+                                    16,
                                 ),
                             ),
                         ),
@@ -172,77 +235,21 @@ Ok(
                     ),
                     [
                         Eq(
-                            Mod(
-                                Literal(
-                                    Float(
-                                        7.5,
-                                    ),
-                                ),
-                                Literal(
-                                    Float(
-                                        2.5,
-                                    ),
-                                ),
-                            ),
-                            Literal(
-                                Float(
-                                    0.0,
-                                ),
-                            ),
-                        ),
-                    ],
-                ),
-            ),
-            Expression(
-                FunctionCall(
-                    Identifier(
-                        "assert",
-                    ),
-                    [
-                        Eq(
-                            Mod(
+                            RightShift(
                                 Literal(
                                     Int(
-                                        7,
-                                    ),
-                                ),
-                                Literal(
-                                    Float(
-                                        2.0,
-                                    ),
-                                ),
-                            ),
-                            Literal(
-                                Float(
-                                    1.0,
-                                ),
-                            ),
-                        ),
-                    ],
-                ),
-            ),
-            Expression(
-                FunctionCall(
-                    Identifier(
-                        "assert",
-                    ),
-                    [
-                        Eq(
-                            Pow(
-                                Literal(
-                                    Int(
-                                        2,
+                                        8,
                                     ),
                                 ),
                                 Literal(
                                     Int(
-                                        3,
+                                        1,
                                     ),
                                 ),
                             ),
                             Literal(
                                 Int(
-                                    8,
+                                    4,
                                 ),
                             ),
                         ),
@@ -256,21 +263,21 @@ Ok(
                     ),
                     [
                         Eq(
-                            Pow(
+                            RightShift(
                                 Literal(
                                     Int(
-                                        2,
+                                        8,
                                     ),
                                 ),
                                 Literal(
                                     Int(
-                                        0,
+                                        2,
                                     ),
                                 ),
                             ),
                             Literal(
                                 Int(
-                                    1,
+                                    2,
                                 ),
                             ),
                         ),
@@ -284,49 +291,18 @@ Ok(
                     ),
                     [
                         Eq(
-                            Pow(
-                                Literal(
-                                    Float(
-                                        3.0,
-                                    ),
-                                ),
-                                Literal(
-                                    Float(
-                                        2.0,
-                                    ),
-                                ),
-                            ),
-                            Literal(
-                                Float(
-                                    9.0,
-                                ),
-                            ),
-                        ),
-                    ],
-                ),
-            ),
-            Expression(
-                FunctionCall(
-                    Identifier(
-                        "assert",
-                    ),
-                    [
-                        Eq(
-                            Pow(
+                            BitNot(
                                 Literal(
                                     Int(
-                                        2,
-                                    ),
-                                ),
-                                Literal(
-                                    Float(
-                                        3.0,
+                                        5,
                                     ),
                                 ),
                             ),
-                            Literal(
-                                Float(
-                                    8.0,
+                            Neg(
+                                Literal(
+                                    Int(
+                                        6,
+                                    ),
                                 ),
                             ),
                         ),
@@ -354,10 +330,10 @@ Ok(
                                 GetAttr(
                                     Literal(
                                         Int(
-                                            7,
+                                            5,
                                         ),
                                     ),
-                                    "op_mod",
+                                    "op_bitwise_and",
                                 ),
                                 [
                                     Literal(
@@ -373,6 +349,78 @@ Ok(
                             Literal(
                                 Int(
                                     1,
+                                ),
+                            ),
+                        ],
+                    ),
+                ],
+            ),
+            Call(
+                Variable(
+                    "assert",
+                ),
+                [
+                    Call(
+                        GetAttr(
+                            Call(
+                                GetAttr(
+                                    Literal(
+                                        Int(
+                                            5,
+                                        ),
+                                    ),
+                                    "op_bitwise_or",
+                                ),
+                                [
+                                    Literal(
+                                        Int(
+                                            3,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                            "op_eq",
+                        ),
+                        [
+                            Literal(
+                                Int(
+                                    7,
+                                ),
+                            ),
+                        ],
+                    ),
+                ],
+            ),
+            Call(
+                Variable(
+                    "assert",
+                ),
+                [
+                    Call(
+                        GetAttr(
+                            Call(
+                                GetAttr(
+                                    Literal(
+                                        Int(
+                                            5,
+                                        ),
+                                    ),
+                                    "op_bitwise_xor",
+                                ),
+                                [
+                                    Literal(
+                                        Int(
+                                            3,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                            "op_eq",
+                        ),
+                        [
+                            Literal(
+                                Int(
+                                    6,
                                 ),
                             ),
                         ],
@@ -393,12 +441,12 @@ Ok(
                                             8,
                                         ),
                                     ),
-                                    "op_mod",
+                                    "op_lshift",
                                 ),
                                 [
                                     Literal(
                                         Int(
-                                            4,
+                                            1,
                                         ),
                                     ),
                                 ],
@@ -408,43 +456,7 @@ Ok(
                         [
                             Literal(
                                 Int(
-                                    0,
-                                ),
-                            ),
-                        ],
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Call(
-                                GetAttr(
-                                    Literal(
-                                        Float(
-                                            7.5,
-                                        ),
-                                    ),
-                                    "op_mod",
-                                ),
-                                [
-                                    Literal(
-                                        Float(
-                                            2.5,
-                                        ),
-                                    ),
-                                ],
-                            ),
-                            "op_eq",
-                        ),
-                        [
-                            Literal(
-                                Float(
-                                    0.0,
+                                    16,
                                 ),
                             ),
                         ],
@@ -462,15 +474,15 @@ Ok(
                                 GetAttr(
                                     Literal(
                                         Int(
-                                            7,
+                                            8,
                                         ),
                                     ),
-                                    "op_mod",
+                                    "op_rshift",
                                 ),
                                 [
                                     Literal(
-                                        Float(
-                                            2.0,
+                                        Int(
+                                            1,
                                         ),
                                     ),
                                 ],
@@ -479,8 +491,8 @@ Ok(
                         ),
                         [
                             Literal(
-                                Float(
-                                    1.0,
+                                Int(
+                                    4,
                                 ),
                             ),
                         ],
@@ -496,19 +508,19 @@ Ok(
                         GetAttr(
                             Call(
                                 GetAttr(
+                                    Literal(
+                                        Int(
+                                            8,
+                                        ),
+                                    ),
+                                    "op_rshift",
+                                ),
+                                [
                                     Literal(
                                         Int(
                                             2,
                                         ),
                                     ),
-                                    "op_pow",
-                                ),
-                                [
-                                    Literal(
-                                        Int(
-                                            3,
-                                        ),
-                                    ),
                                 ],
                             ),
                             "op_eq",
@@ -516,79 +528,7 @@ Ok(
                         [
                             Literal(
                                 Int(
-                                    8,
-                                ),
-                            ),
-                        ],
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Call(
-                                GetAttr(
-                                    Literal(
-                                        Int(
-                                            2,
-                                        ),
-                                    ),
-                                    "op_pow",
-                                ),
-                                [
-                                    Literal(
-                                        Int(
-                                            0,
-                                        ),
-                                    ),
-                                ],
-                            ),
-                            "op_eq",
-                        ),
-                        [
-                            Literal(
-                                Int(
-                                    1,
-                                ),
-                            ),
-                        ],
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Call(
-                                GetAttr(
-                                    Literal(
-                                        Float(
-                                            3.0,
-                                        ),
-                                    ),
-                                    "op_pow",
-                                ),
-                                [
-                                    Literal(
-                                        Float(
-                                            2.0,
-                                        ),
-                                    ),
-                                ],
-                            ),
-                            "op_eq",
-                        ),
-                        [
-                            Literal(
-                                Float(
-                                    9.0,
+                                    2,
                                 ),
                             ),
                         ],
@@ -608,26 +548,26 @@ Ok(
                                 GetAttr(
                                     Literal(
                                         Int(
-                                            2,
+                                            5,
                                         ),
                                     ),
-                                    "op_pow",
+                                    "op_bitwise_not",
                                 ),
-                                [
-                                    Literal(
-                                        Float(
-                                            3.0,
-                                        ),
-                                    ),
-                                ],
+                                [],
                             ),
                             "op_eq",
                         ),
                         [
-                            Literal(
-                                Float(
-                                    8.0,
+                            Call(
+                                GetAttr(
+                                    Literal(
+                                        Int(
+                                            6,
+                                        ),
+                                    ),
+                                    "op_neg",
                                 ),
+                                [],
                             ),
                         ],
                     ),

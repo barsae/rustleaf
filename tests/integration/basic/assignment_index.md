@@ -1,7 +1,9 @@
 # Program 🔴
 ```rustleaf
 // #[fail_quietly]
+var arr = [1, 2, 3];
 arr[0] = 99;
+assert(arr == [99, 2, 3]);
 ```
 
 # Output
@@ -18,12 +20,36 @@ Err(
 ```rust
 Ok(
     [
+        Token(Var),
+        Token(Ident, "arr"),
+        Token(Equal),
+        Token(LeftBracket),
+        Token(Int, "1"),
+        Token(Comma),
+        Token(Int, "2"),
+        Token(Comma),
+        Token(Int, "3"),
+        Token(RightBracket),
+        Token(Semicolon),
         Token(Ident, "arr"),
         Token(LeftBracket),
         Token(Int, "0"),
         Token(RightBracket),
         Token(Equal),
         Token(Int, "99"),
+        Token(Semicolon),
+        Token(Ident, "assert"),
+        Token(LeftParen),
+        Token(Ident, "arr"),
+        Token(EqualEqual),
+        Token(LeftBracket),
+        Token(Int, "99"),
+        Token(Comma),
+        Token(Int, "2"),
+        Token(Comma),
+        Token(Int, "3"),
+        Token(RightBracket),
+        Token(RightParen),
         Token(Semicolon),
         Token(Eof),
     ],
@@ -35,6 +61,32 @@ Ok(
 Ok(
     Program(
         [
+            VarDecl {
+                pattern: Variable(
+                    "arr",
+                ),
+                value: Some(
+                    List(
+                        [
+                            Literal(
+                                Int(
+                                    1,
+                                ),
+                            ),
+                            Literal(
+                                Int(
+                                    2,
+                                ),
+                            ),
+                            Literal(
+                                Int(
+                                    3,
+                                ),
+                            ),
+                        ],
+                    ),
+                ),
+            },
             Assignment {
                 target: GetItem(
                     Identifier(
@@ -53,6 +105,39 @@ Ok(
                     ),
                 ),
             },
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            Identifier(
+                                "arr",
+                            ),
+                            List(
+                                [
+                                    Literal(
+                                        Int(
+                                            99,
+                                        ),
+                                    ),
+                                    Literal(
+                                        Int(
+                                            2,
+                                        ),
+                                    ),
+                                    Literal(
+                                        Int(
+                                            3,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                        ),
+                    ],
+                ),
+            ),
         ],
     ),
 )
@@ -63,6 +148,30 @@ Ok(
 Ok(
     Block(
         [
+            Declare(
+                "arr",
+                Some(
+                    List(
+                        [
+                            Literal(
+                                Int(
+                                    1,
+                                ),
+                            ),
+                            Literal(
+                                Int(
+                                    2,
+                                ),
+                            ),
+                            Literal(
+                                Int(
+                                    3,
+                                ),
+                            ),
+                        ],
+                    ),
+                ),
+            ),
             SetItem(
                 Variable(
                     "arr",
@@ -79,7 +188,44 @@ Ok(
                 ),
             ),
         ],
-        None,
+        Some(
+            Call(
+                Variable(
+                    "assert",
+                ),
+                [
+                    Call(
+                        GetAttr(
+                            Variable(
+                                "arr",
+                            ),
+                            "op_eq",
+                        ),
+                        [
+                            List(
+                                [
+                                    Literal(
+                                        Int(
+                                            99,
+                                        ),
+                                    ),
+                                    Literal(
+                                        Int(
+                                            2,
+                                        ),
+                                    ),
+                                    Literal(
+                                        Int(
+                                            3,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                        ],
+                    ),
+                ],
+            ),
+        ),
     ),
 )
 ```

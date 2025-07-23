@@ -9,8 +9,20 @@ use crate::core::Args;
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ListRef(Rc<RefCell<Vec<Value>>>);
 
+impl ListRef {
+    pub fn borrow(&self) -> std::cell::Ref<Vec<Value>> {
+        self.0.borrow()
+    }
+}
+
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct DictRef(Rc<RefCell<IndexMap<String, Value>>>);
+
+impl DictRef {
+    pub fn borrow(&self) -> std::cell::Ref<IndexMap<String, Value>> {
+        self.0.borrow()
+    }
+}
 
 #[derive(Clone, Debug)]
 pub struct RustValueRef(Rc<RefCell<Box<dyn RustValue>>>);
@@ -102,6 +114,8 @@ impl Value {
             Value::Float(_) => self.get_float_attr(name),
             Value::String(_) => self.get_string_attr(name),
             Value::Bool(_) => self.get_bool_attr(name),
+            Value::List(_) => self.get_list_attr(name),
+            Value::Dict(_) => self.get_dict_attr(name),
             _ => None,
         }
     }
@@ -173,6 +187,7 @@ impl Value {
             "op_le" => Some(self.bind_method(op_le)),
             "op_gt" => Some(self.bind_method(op_gt)),
             "op_ge" => Some(self.bind_method(op_ge)),
+            "op_contains" => Some(self.bind_method(op_contains)),
             _ => None,
         }
     }
@@ -183,6 +198,24 @@ impl Value {
         match name {
             "op_eq" => Some(self.bind_method(op_eq)),
             "op_ne" => Some(self.bind_method(op_ne)),
+            _ => None,
+        }
+    }
+
+    fn get_list_attr(&self, name: &str) -> Option<Value> {
+        use crate::core::builtin_ops::*;
+
+        match name {
+            "op_contains" => Some(self.bind_method(op_contains)),
+            _ => None,
+        }
+    }
+
+    fn get_dict_attr(&self, name: &str) -> Option<Value> {
+        use crate::core::builtin_ops::*;
+
+        match name {
+            "op_contains" => Some(self.bind_method(op_contains)),
             _ => None,
         }
     }

@@ -419,3 +419,43 @@ pub fn op_rshift(self_value: &Value, args: Args) -> Result<Value> {
         _ => Err(anyhow!("Right shift requires integers, got {:?} and {:?}", self_value, other)),
     }
 }
+
+// Container operations
+pub fn op_contains(self_value: &Value, args: Args) -> Result<Value> {
+    args.set_function_name("op_contains");
+    let item = args.expect("item")?;
+    args.complete()?;
+    
+    match self_value {
+        Value::String(s) => {
+            // Check if item is a substring
+            match &item {
+                Value::String(needle) => Ok(Value::Bool(s.contains(needle))),
+                _ => Err(anyhow!("String contains requires string argument, got {:?}", item)),
+            }
+        }
+        Value::List(list_ref) => {
+            // Check if item is in the list
+            let list = list_ref.borrow();
+            for list_item in list.iter() {
+                if *list_item == item {
+                    return Ok(Value::Bool(true));
+                }
+            }
+            Ok(Value::Bool(false))
+        }
+        Value::Dict(dict_ref) => {
+            // Check if key exists in dictionary
+            let dict = dict_ref.borrow();
+            let key_str = match &item {
+                Value::String(s) => s.clone(),
+                Value::Int(i) => i.to_string(),
+                Value::Float(f) => f.to_string(),
+                Value::Bool(b) => b.to_string(),
+                _ => return Err(anyhow!("Dictionary contains requires string, number, or boolean key, got {:?}", item)),
+            };
+            Ok(Value::Bool(dict.contains_key(&key_str)))
+        }
+        _ => Err(anyhow!("Contains operation not supported for {:?}", self_value)),
+    }
+}

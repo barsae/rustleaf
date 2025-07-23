@@ -169,6 +169,11 @@ impl Parser {
             self.try_parse_lambda_expression()
         } else if self.accept(TokenType::LeftBracket) {
             self.parse_list_literal()
+        } else if self.accept(TokenType::LeftParen) {
+            // Grouped expression: (expr)
+            let expr = self.parse_expression()?;
+            self.expect(TokenType::RightParen, "Expected ')' after grouped expression")?;
+            Ok(expr)
         } else {
             Err(anyhow!("Unexpected token: {:?}", self.peek().token_type))
         }

@@ -7,3 +7,6 @@ mod assert_tests {}
 
 #[rustleaf_tests("tests/integration/basic")]
 mod basic_tests {}
+
+#[rustleaf_tests("tests/integration/failing")]
+mod failing_tests {}

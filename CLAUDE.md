@@ -18,38 +18,38 @@ Don't create one-off test files and scripts. Use the existing testing infrastruc
 
 Integration tests are automatically discovered and generated using the `#[rustleaf_tests]` macro in `rustleaf-macros`.
 
-### Test File Naming Conventions
+### Running Tests
 
-Integration test files use the `.rustleaf` extension and support special suffixes:
+Use `just test` to run all integration tests, which builds the project and runs tests with clippy checks.
 
-- **`_panic.rustleaf`**: Tests that should panic with "Assertion failed"
-  - Generates `#[should_panic]` attribute
-  - Use for testing assertion failures or expected runtime errors
+### Creating New Tests
 
-- **`_ignore.rustleaf`**: Tests that should be ignored by default
-  - Generates `#[ignore]` attribute
-  - Run with `cargo test -- --ignored`
-  - Use for slow tests, known failing tests, or platform-specific tests
+To create a new integration test:
 
-- **`.rustleaf`**: Standard tests that should pass
-  - No special attributes
-  - Run with normal `just test`
+1. Create a `.md` file in the appropriate `tests/integration/` subdirectory
+2. Add a Program section with a rustleaf code block:
+
+```markdown
+# Program 🟢
+```rustleaf
+// Your test code here
+assert(1 + 1 == 2);
+```
+```
+
+The test system will automatically:
+- Execute your code and capture results
+- Update the file with Output, Result, Lex, Parse, and Eval sections
+- Use colored circles: 🟢 for passing tests, 🔴 for failing tests
+
+### Special Test Types
+
+- **`_panic.md`**: Tests expected to panic (generates `#[should_panic]`)
+- **`_ignore.md`**: Tests to skip by default (generates `#[ignore]`)
 
 ### Test Discovery
 
-The macro automatically:
-1. Scans the specified directory for `.rustleaf` files
-2. Generates test function names by converting path separators to underscores
-3. Applies appropriate test attributes based on filename suffixes
-
-### Usage in Test Modules
-
-```rust
-#[rustleaf_tests("tests/integration/basic")]
-mod basic_tests {}
-```
-
-This generates individual test functions for each `.rustleaf` file in the specified directory.
+The `#[rustleaf_tests]` macro automatically discovers `.md` files and generates individual test functions. Add new test directories to `tests/integration/mod.rs`.
 
 
 ## Docs
