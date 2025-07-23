@@ -30,70 +30,68 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
             .map(|(test_name, include_path, test_type, full_path)| {
                 let test_fn_name = syn::Ident::new(test_name, proc_macro2::Span::call_site());
 
-                let test_body = match test_type {
-                    TestType::Normal => {
-                        let md_output_path = full_path.replace(".rustleaf", ".md");
-                        quote! {
-                            let source = include_str!(#include_path);
-                            
-                            // Try lexing
-                            let tokens_result = rustleaf::lexer::Lexer::tokenize(source);
-                            let lex_output = format!("{:#?}", tokens_result);
-                            
-                            // Try parsing (only if lexing succeeded)
-                            let parse_output = match &tokens_result {
-                                Ok(_) => {
-                                    let parse_result = rustleaf::parser::Parser::parse_str(source);
-                                    format!("{:#?}", parse_result)
-                                }
-                                Err(_) => "Skipped due to lex error".to_string(),
-                            };
-                            
-                            // Try compiling to eval IR (only if parsing succeeded)
-                            let eval_output = match rustleaf::parser::Parser::parse_str(source) {
-                                Ok(ast) => {
-                                    let eval_result = rustleaf::eval::Compiler::compile(ast);
-                                    format!("{:#?}", eval_result)
-                                }
-                                Err(_) => "Skipped due to parse error".to_string(),
-                            };
-                            
-                            // Try evaluation (only if all previous stages succeeded)
-                            let (output_section, execution_output) = match rustleaf::parser::Parser::parse_str(source) {
-                                Ok(ast) => {
-                                    rustleaf::core::start_print_capture();
-                                    let result = rustleaf::eval::evaluate(ast);
-                                    let captured_output = rustleaf::core::get_captured_prints();
-                                    let execution_output = format!("{:#?}", result);
-                                    
-                                    let output_section = if captured_output.is_empty() {
-                                        String::new()
-                                    } else {
-                                        captured_output.join("\n")
-                                    };
-                                    
-                                    (output_section, execution_output)
-                                }
-                                Err(_) => ("Skipped due to parse error".to_string(), "Skipped due to parse error".to_string()),
-                            };
-                            
-                            let md_content = format!(
-                                "# Program\n\n```rustleaf\n{}\n```\n\n# Output\n\n```\n{}\n```\n\n# Result\n\n```rust\n{}\n```\n\n# Lex\n\n```rust\n{}\n```\n\n# Parse\n\n```rust\n{}\n```\n\n# Eval\n\n```rust\n{}\n```\n",
-                                source, output_section, execution_output, lex_output, parse_output, eval_output
-                            );
-                            std::fs::write(#md_output_path, md_content).unwrap();
+                // Use the same comprehensive test infrastructure for all test types
+                let md_output_path = full_path.replace(".rustleaf", ".md");
+                let test_body = quote! {
+                    let source = include_str!(#include_path);
+                    
+                    // Try lexing
+                    let tokens_result = rustleaf::lexer::Lexer::tokenize(source);
+                    let lex_output = format!("{:#?}", tokens_result);
+                    
+                    // Try parsing (only if lexing succeeded)
+                    let parse_output = match &tokens_result {
+                        Ok(_) => {
+                            let parse_result = rustleaf::parser::Parser::parse_str(source);
+                            format!("{:#?}", parse_result)
                         }
-                    }
+                        Err(_) => "Skipped due to lex error".to_string(),
+                    };
+                    
+                    // Try compiling to eval IR (only if parsing succeeded)
+                    let eval_output = match rustleaf::parser::Parser::parse_str(source) {
+                        Ok(ast) => {
+                            let eval_result = rustleaf::eval::Compiler::compile(ast);
+                            format!("{:#?}", eval_result)
+                        }
+                        Err(_) => "Skipped due to parse error".to_string(),
+                    };
+                    
+                    // Try evaluation (only if all previous stages succeeded)
+                    let (output_section, execution_output) = match rustleaf::parser::Parser::parse_str(source) {
+                        Ok(ast) => {
+                            rustleaf::core::start_print_capture();
+                            let result = rustleaf::eval::evaluate(ast);
+                            let captured_output = rustleaf::core::get_captured_prints();
+                            let execution_output = format!("{:#?}", result);
+                            
+                            let output_section = if captured_output.is_empty() {
+                                String::new()
+                            } else {
+                                captured_output.join("\n")
+                            };
+                            
+                            (output_section, execution_output)
+                        }
+                        Err(_) => ("Skipped due to parse error".to_string(), "Skipped due to parse error".to_string()),
+                    };
+                    
+                    let md_content = format!(
+                        "# Program\n\n```rustleaf\n{}\n```\n\n# Output\n\n```\n{}\n```\n\n# Result\n\n```rust\n{}\n```\n\n# Lex\n\n```rust\n{}\n```\n\n# Parse\n\n```rust\n{}\n```\n\n# Eval\n\n```rust\n{}\n```\n",
+                        source, output_section, execution_output, lex_output, parse_output, eval_output
+                    );
+                    std::fs::write(#md_output_path, md_content).unwrap();
+                };
+
+                let test_body = match test_type {
                     TestType::Panic => quote! {
-                        let source = include_str!(#include_path);
-                        let ast = rustleaf::parser::Parser::parse_str(source).unwrap();
+                        #test_body
+                        
+                        // For panic tests, we need to actually unwrap the result to trigger the panic
+                        let ast = rustleaf::parser::Parser::parse_str(include_str!(#include_path)).unwrap();
                         let _result = rustleaf::eval::evaluate(ast).unwrap();
                     },
-                    TestType::Ignore => quote! {
-                        let source = include_str!(#include_path);
-                        let ast = rustleaf::parser::Parser::parse_str(source).unwrap();
-                        let _result = rustleaf::eval::evaluate(ast).unwrap();
-                    },
+                    _ => test_body,
                 };
 
                 match test_type {

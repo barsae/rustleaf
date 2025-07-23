@@ -7,10 +7,6 @@ pub enum Eval {
     Literal(Value),
     Variable(String),
 
-    // Basic operations
-    BinaryOp(BinaryOp, Box<Eval>, Box<Eval>),
-    UnaryOp(UnaryOp, Box<Eval>),
-
     // Function calls (all calls - methods, functions, etc.)
     Call(Box<Eval>, Vec<Eval>),
 
@@ -42,29 +38,11 @@ pub enum Eval {
 
     // Block - with optional terminal expression
     Block(Vec<Eval>, Option<Box<Eval>>),
+    
+    // Built-in operations that don't use method dispatch
+    LogicalAnd(Box<Eval>, Box<Eval>),
+    LogicalOr(Box<Eval>, Box<Eval>),
+    LogicalNot(Box<Eval>),
+    Is(Box<Eval>, Box<Eval>),
 }
 
-#[derive(Debug, Clone, PartialEq)]
-pub enum BinaryOp {
-    // Arithmetic
-    Add, Sub, Mul, Div, Mod, Pow,
-
-    // Comparison
-    Eq, Ne, Lt, Le, Gt, Ge,
-
-    // Logical
-    And, Or,
-
-    // Membership
-    In, Is,
-
-    // Bitwise
-    BitAnd, BitOr, BitXor, LeftShift, RightShift,
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub enum UnaryOp {
-    Neg,    // -expr
-    Not,    // not expr
-    BitNot, // ~expr
-}

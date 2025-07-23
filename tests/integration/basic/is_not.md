@@ -63,13 +63,11 @@ Ok(
     Block(
         [],
         Some(
-            BinaryOp(
-                Is,
+            Is(
                 Variable(
                     "a",
                 ),
-                UnaryOp(
-                    Not,
+                LogicalNot(
                     Variable(
                         "b",
                     ),

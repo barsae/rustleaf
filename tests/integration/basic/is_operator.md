@@ -60,8 +60,7 @@ Ok(
     Block(
         [],
         Some(
-            BinaryOp(
-                Is,
+            Is(
                 Variable(
                     "a",
                 ),

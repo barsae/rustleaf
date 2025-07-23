@@ -62,16 +62,20 @@ Ok(
         [
             Assign(
                 "x",
-                BinaryOp(
-                    Add,
-                    Variable(
-                        "x",
-                    ),
-                    Literal(
-                        Int(
-                            5,
+                Call(
+                    GetAttr(
+                        Variable(
+                            "x",
                         ),
+                        "op_add",
                     ),
+                    [
+                        Literal(
+                            Int(
+                                5,
+                            ),
+                        ),
+                    ],
                 ),
             ),
         ],

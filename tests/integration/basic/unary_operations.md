@@ -161,8 +161,7 @@ Ok(
                     "print",
                 ),
                 [
-                    UnaryOp(
-                        Not,
+                    LogicalNot(
                         Literal(
                             Bool(
                                 true,
@@ -176,8 +175,7 @@ Ok(
                     "print",
                 ),
                 [
-                    UnaryOp(
-                        Not,
+                    LogicalNot(
                         Literal(
                             Bool(
                                 false,

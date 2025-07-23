@@ -849,8 +849,7 @@ Ok(
                 [
                     Call(
                         GetAttr(
-                            UnaryOp(
-                                Not,
+                            LogicalNot(
                                 Literal(
                                     Bool(
                                         false,

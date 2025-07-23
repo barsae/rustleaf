@@ -63,31 +63,26 @@ impl Compiler {
                         // Handle compound assignment operators
                         let final_value = match op {
                             AssignOp::Assign => compiled_value,
-                            AssignOp::AddAssign => Eval::BinaryOp(
-                                super::core::BinaryOp::Add,
-                                Box::new(Eval::Variable(name.clone())),
-                                Box::new(compiled_value),
-                            ),
-                            AssignOp::SubAssign => Eval::BinaryOp(
-                                super::core::BinaryOp::Sub,
-                                Box::new(Eval::Variable(name.clone())),
-                                Box::new(compiled_value),
-                            ),
-                            AssignOp::MulAssign => Eval::BinaryOp(
-                                super::core::BinaryOp::Mul,
-                                Box::new(Eval::Variable(name.clone())),
-                                Box::new(compiled_value),
-                            ),
-                            AssignOp::DivAssign => Eval::BinaryOp(
-                                super::core::BinaryOp::Div,
-                                Box::new(Eval::Variable(name.clone())),
-                                Box::new(compiled_value),
-                            ),
-                            AssignOp::ModAssign => Eval::BinaryOp(
-                                super::core::BinaryOp::Mod,
-                                Box::new(Eval::Variable(name.clone())),
-                                Box::new(compiled_value),
-                            ),
+                            AssignOp::AddAssign => {
+                                let get_method = Eval::GetAttr(Box::new(Eval::Variable(name.clone())), "op_add".to_string());
+                                Eval::Call(Box::new(get_method), vec![compiled_value])
+                            },
+                            AssignOp::SubAssign => {
+                                let get_method = Eval::GetAttr(Box::new(Eval::Variable(name.clone())), "op_sub".to_string());
+                                Eval::Call(Box::new(get_method), vec![compiled_value])
+                            },
+                            AssignOp::MulAssign => {
+                                let get_method = Eval::GetAttr(Box::new(Eval::Variable(name.clone())), "op_mul".to_string());
+                                Eval::Call(Box::new(get_method), vec![compiled_value])
+                            },
+                            AssignOp::DivAssign => {
+                                let get_method = Eval::GetAttr(Box::new(Eval::Variable(name.clone())), "op_div".to_string());
+                                Eval::Call(Box::new(get_method), vec![compiled_value])
+                            },
+                            AssignOp::ModAssign => {
+                                let get_method = Eval::GetAttr(Box::new(Eval::Variable(name.clone())), "op_mod".to_string());
+                                Eval::Call(Box::new(get_method), vec![compiled_value])
+                            },
                         };
                         Ok(Eval::Assign(name, Box::new(final_value)))
                     }
@@ -207,38 +202,51 @@ impl Compiler {
                     None => Ok(Eval::Block(eval_statements, None)),
                 }
             }
-            // Binary operators
-            Expression::Add(left, right) => self.compile_binary_op(super::core::BinaryOp::Add, *left, *right),
-            Expression::Sub(left, right) => self.compile_binary_op(super::core::BinaryOp::Sub, *left, *right),
-            Expression::Mul(left, right) => self.compile_binary_op(super::core::BinaryOp::Mul, *left, *right),
-            Expression::Div(left, right) => self.compile_binary_op(super::core::BinaryOp::Div, *left, *right),
-            Expression::Mod(left, right) => self.compile_binary_op(super::core::BinaryOp::Mod, *left, *right),
-            Expression::Pow(left, right) => self.compile_binary_op(super::core::BinaryOp::Pow, *left, *right),
-            Expression::Eq(left, right) => self.compile_binary_op(super::core::BinaryOp::Eq, *left, *right),
-            Expression::Ne(left, right) => self.compile_binary_op(super::core::BinaryOp::Ne, *left, *right),
-            Expression::Lt(left, right) => self.compile_binary_op(super::core::BinaryOp::Lt, *left, *right),
-            Expression::Le(left, right) => self.compile_binary_op(super::core::BinaryOp::Le, *left, *right),
-            Expression::Gt(left, right) => self.compile_binary_op(super::core::BinaryOp::Gt, *left, *right),
-            Expression::Ge(left, right) => self.compile_binary_op(super::core::BinaryOp::Ge, *left, *right),
-            Expression::And(left, right) => self.compile_binary_op(super::core::BinaryOp::And, *left, *right),
-            Expression::Or(left, right) => self.compile_binary_op(super::core::BinaryOp::Or, *left, *right),
-            Expression::In(left, right) => self.compile_binary_op(super::core::BinaryOp::In, *left, *right),
-            Expression::Is(left, right) => self.compile_binary_op(super::core::BinaryOp::Is, *left, *right),
-            Expression::BitAnd(left, right) => self.compile_binary_op(super::core::BinaryOp::BitAnd, *left, *right),
-            Expression::BitOr(left, right) => self.compile_binary_op(super::core::BinaryOp::BitOr, *left, *right),
-            Expression::BitXor(left, right) => self.compile_binary_op(super::core::BinaryOp::BitXor, *left, *right),
-            Expression::LeftShift(left, right) => self.compile_binary_op(super::core::BinaryOp::LeftShift, *left, *right),
-            Expression::RightShift(left, right) => self.compile_binary_op(super::core::BinaryOp::RightShift, *left, *right),
+            // Binary operators - most become method calls
+            Expression::Add(left, right) => self.compile_method_call_op(*left, *right, "op_add"),
+            Expression::Sub(left, right) => self.compile_method_call_op(*left, *right, "op_sub"),
+            Expression::Mul(left, right) => self.compile_method_call_op(*left, *right, "op_mul"),
+            Expression::Div(left, right) => self.compile_method_call_op(*left, *right, "op_div"),
+            Expression::Mod(left, right) => self.compile_method_call_op(*left, *right, "op_mod"),
+            Expression::Pow(left, right) => self.compile_method_call_op(*left, *right, "op_pow"),
+            Expression::Eq(left, right) => self.compile_method_call_op(*left, *right, "op_eq"),
+            Expression::Ne(left, right) => self.compile_method_call_op(*left, *right, "op_ne"),
+            Expression::Lt(left, right) => self.compile_method_call_op(*left, *right, "op_lt"),
+            Expression::Le(left, right) => self.compile_method_call_op(*left, *right, "op_le"),
+            Expression::Gt(left, right) => self.compile_method_call_op(*left, *right, "op_gt"),
+            Expression::Ge(left, right) => self.compile_method_call_op(*left, *right, "op_ge"),
+            Expression::BitAnd(left, right) => self.compile_method_call_op(*left, *right, "op_bitwise_and"),
+            Expression::BitOr(left, right) => self.compile_method_call_op(*left, *right, "op_bitwise_or"),
+            Expression::BitXor(left, right) => self.compile_method_call_op(*left, *right, "op_bitwise_xor"),
+            Expression::LeftShift(left, right) => self.compile_method_call_op(*left, *right, "op_lshift"),
+            Expression::RightShift(left, right) => self.compile_method_call_op(*left, *right, "op_rshift"),
             
-            // Unary operators
-            Expression::Neg(expr) => {
-                self.compile_unary_op(super::core::UnaryOp::Neg, *expr)
+            // Special cases that remain built-in
+            Expression::And(left, right) => {
+                let compiled_left = self.compile_expression(*left)?;
+                let compiled_right = self.compile_expression(*right)?;
+                Ok(Eval::LogicalAnd(Box::new(compiled_left), Box::new(compiled_right)))
             }
+            Expression::Or(left, right) => {
+                let compiled_left = self.compile_expression(*left)?;
+                let compiled_right = self.compile_expression(*right)?;
+                Ok(Eval::LogicalOr(Box::new(compiled_left), Box::new(compiled_right)))
+            }
+            Expression::Is(left, right) => {
+                let compiled_left = self.compile_expression(*left)?;
+                let compiled_right = self.compile_expression(*right)?;
+                Ok(Eval::Is(Box::new(compiled_left), Box::new(compiled_right)))
+            }
+            Expression::In(left, right) => self.compile_method_call_op_swapped(*left, *right, "op_contains"),
+            
+            // Unary operators - most become method calls
+            Expression::Neg(expr) => self.compile_unary_method_call(*expr, "op_neg"),
+            Expression::BitNot(expr) => self.compile_unary_method_call(*expr, "op_bitwise_not"),
+            
+            // Special case that remains built-in 
             Expression::Not(expr) => {
-                self.compile_unary_op(super::core::UnaryOp::Not, *expr)
-            }
-            Expression::BitNot(expr) => {
-                self.compile_unary_op(super::core::UnaryOp::BitNot, *expr)
+                let compiled_expr = self.compile_expression(*expr)?;
+                Ok(Eval::LogicalNot(Box::new(compiled_expr)))
             }
             Expression::If { condition, then_expr, else_expr } => {
                 let compiled_condition = self.compile_expression(*condition)?;
@@ -258,63 +266,32 @@ impl Compiler {
         }
     }
 
-    fn compile_binary_op(&mut self, op: super::core::BinaryOp, left: Expression, right: Expression) -> Result<Eval> {
+    // Helper to compile binary operations to method calls: a + b => a.op_get_attr("op_add").op_call(b)
+    fn compile_method_call_op(&mut self, left: Expression, right: Expression, method_name: &str) -> Result<Eval> {
         let compiled_left = self.compile_expression(left)?;
         let compiled_right = self.compile_expression(right)?;
         
-        // Desugar binary operations to method calls: a + b => a.op_get_attr("op_add").op_call(b)
-        let method_name = match op {
-            super::core::BinaryOp::Add => "op_add",
-            super::core::BinaryOp::Sub => "op_sub", 
-            super::core::BinaryOp::Mul => "op_mul",
-            super::core::BinaryOp::Div => "op_div",
-            super::core::BinaryOp::Mod => "op_mod",
-            super::core::BinaryOp::Pow => "op_pow",
-            super::core::BinaryOp::Eq => "op_eq",
-            super::core::BinaryOp::Ne => "op_ne",
-            super::core::BinaryOp::Lt => "op_lt",
-            super::core::BinaryOp::Le => "op_le",
-            super::core::BinaryOp::Gt => "op_gt",
-            super::core::BinaryOp::Ge => "op_ge",
-            super::core::BinaryOp::BitAnd => "op_bitwise_and",
-            super::core::BinaryOp::BitOr => "op_bitwise_or",
-            super::core::BinaryOp::BitXor => "op_bitwise_xor",
-            super::core::BinaryOp::LeftShift => "op_lshift",
-            super::core::BinaryOp::RightShift => "op_rshift",
-            super::core::BinaryOp::In => "op_contains", // Note: "item in container" => container.op_contains(item)
-            super::core::BinaryOp::Is => return Ok(Eval::BinaryOp(op, Box::new(compiled_left), Box::new(compiled_right))), // Keep 'is' as built-in
-            // Logical operations remain built-in for short-circuit evaluation
-            super::core::BinaryOp::And | super::core::BinaryOp::Or => {
-                return Ok(Eval::BinaryOp(op, Box::new(compiled_left), Box::new(compiled_right)));
-            }
-        };
-        
-        // Special handling for 'in' operator: "item in container" => container.op_contains(item)
-        let (obj_expr, arg_expr) = if matches!(op, super::core::BinaryOp::In) {
-            (compiled_right, compiled_left) // Swap operands for 'in'
-        } else {
-            (compiled_left, compiled_right)
-        };
-        
-        // Create: obj.op_get_attr("method_name").op_call(arg)
-        let get_method = Eval::GetAttr(Box::new(obj_expr), method_name.to_string());  
-        let call_method = Eval::Call(Box::new(get_method), vec![arg_expr]);
+        let get_method = Eval::GetAttr(Box::new(compiled_left), method_name.to_string());
+        let call_method = Eval::Call(Box::new(get_method), vec![compiled_right]);
         
         Ok(call_method)
     }
-
-    fn compile_unary_op(&mut self, op: super::core::UnaryOp, expr: Expression) -> Result<Eval> {
+    
+    // Helper for operators like 'in' where operands are swapped: "item in container" => container.op_contains(item)
+    fn compile_method_call_op_swapped(&mut self, left: Expression, right: Expression, method_name: &str) -> Result<Eval> {
+        let compiled_left = self.compile_expression(left)?;
+        let compiled_right = self.compile_expression(right)?;
+        
+        let get_method = Eval::GetAttr(Box::new(compiled_right), method_name.to_string());
+        let call_method = Eval::Call(Box::new(get_method), vec![compiled_left]);
+        
+        Ok(call_method)
+    }
+    
+    // Helper to compile unary operations to method calls: -a => a.op_get_attr("op_neg").op_call()
+    fn compile_unary_method_call(&mut self, expr: Expression, method_name: &str) -> Result<Eval> {
         let compiled_expr = self.compile_expression(expr)?;
         
-        // Desugar unary operations to method calls: -a => a.op_get_attr("op_neg").op_call()
-        let method_name = match op {
-            super::core::UnaryOp::Neg => "op_neg",
-            super::core::UnaryOp::BitNot => "op_bitwise_not",
-            // 'not' remains built-in for truthiness handling
-            super::core::UnaryOp::Not => return Ok(Eval::UnaryOp(op, Box::new(compiled_expr))),
-        };
-        
-        // Create: expr.op_get_attr("method_name").op_call()
         let get_method = Eval::GetAttr(Box::new(compiled_expr), method_name.to_string());
         let call_method = Eval::Call(Box::new(get_method), vec![]);
         

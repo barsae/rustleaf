@@ -180,15 +180,6 @@ impl Evaluator {
                     .map_err(|err| ControlFlow::Error(anyhow!(err)))?;
                 Ok(Value::Unit)
             }
-            Eval::BinaryOp(op, left, right) => {
-                let left_val = self.eval(left)?;
-                let right_val = self.eval(right)?;
-                self.eval_binary_op(op, left_val, right_val)
-            }
-            Eval::UnaryOp(op, expr) => {
-                let val = self.eval(expr)?;
-                self.eval_unary_op(op, val)
-            }
             Eval::If(condition, then_expr, else_expr) => {
                 let condition_val = self.eval(condition)?;
                 
@@ -247,112 +238,39 @@ impl Evaluator {
                     None => Err(ControlFlow::Error(anyhow!("No attribute '{}' on value {:?}", attr_name, obj_value))),
                 }
             }
+            
+            // Built-in operations that don't use method dispatch
+            Eval::LogicalAnd(left, right) => {
+                let left_val = self.eval(left)?;
+                // Short-circuit evaluation
+                if !left_val.is_truthy().unwrap_or(true) {
+                    Ok(left_val)
+                } else {
+                    self.eval(right)
+                }
+            }
+            Eval::LogicalOr(left, right) => {
+                let left_val = self.eval(left)?;
+                // Short-circuit evaluation
+                if left_val.is_truthy().unwrap_or(true) {
+                    Ok(left_val)
+                } else {
+                    self.eval(right)
+                }
+            }
+            Eval::LogicalNot(expr) => {
+                let val = self.eval(expr)?;
+                Ok(Value::Bool(!val.is_truthy().unwrap_or(true)))
+            }
+            Eval::Is(left, right) => {
+                let left_val = self.eval(left)?;
+                let right_val = self.eval(right)?;
+                // Identity comparison - same as == for now, could be object identity later
+                Ok(Value::Bool(left_val == right_val))
+            }
+            
             x => Err(ControlFlow::Error(anyhow!("eval not implemented for: {:?}", x)))
         }
     }
 
-    fn eval_binary_op(&self, op: &super::core::BinaryOp, left: Value, right: Value) -> EvalResult {
-        use super::core::BinaryOp;
-        use crate::core::Value;
-
-        match (op, &left, &right) {
-            // Arithmetic operations
-            (BinaryOp::Add, Value::Int(a), Value::Int(b)) => Ok(Value::Int(a + b)),
-            (BinaryOp::Add, Value::Float(a), Value::Float(b)) => Ok(Value::Float(a + b)),
-            (BinaryOp::Add, Value::Int(a), Value::Float(b)) => Ok(Value::Float(*a as f64 + b)),
-            (BinaryOp::Add, Value::Float(a), Value::Int(b)) => Ok(Value::Float(a + *b as f64)),
-            (BinaryOp::Add, Value::String(a), Value::String(b)) => Ok(Value::String(format!("{}{}", a, b))),
-
-            (BinaryOp::Sub, Value::Int(a), Value::Int(b)) => Ok(Value::Int(a - b)),
-            (BinaryOp::Sub, Value::Float(a), Value::Float(b)) => Ok(Value::Float(a - b)),
-            (BinaryOp::Sub, Value::Int(a), Value::Float(b)) => Ok(Value::Float(*a as f64 - b)),
-            (BinaryOp::Sub, Value::Float(a), Value::Int(b)) => Ok(Value::Float(a - *b as f64)),
-
-            (BinaryOp::Mul, Value::Int(a), Value::Int(b)) => Ok(Value::Int(a * b)),
-            (BinaryOp::Mul, Value::Float(a), Value::Float(b)) => Ok(Value::Float(a * b)),
-            (BinaryOp::Mul, Value::Int(a), Value::Float(b)) => Ok(Value::Float(*a as f64 * b)),
-            (BinaryOp::Mul, Value::Float(a), Value::Int(b)) => Ok(Value::Float(a * *b as f64)),
-
-            (BinaryOp::Div, Value::Int(a), Value::Int(b)) => {
-                if *b == 0 {
-                    Err(ControlFlow::Error(anyhow!("Division by zero")))
-                } else {
-                    Ok(Value::Float(*a as f64 / *b as f64))
-                }
-            }
-            (BinaryOp::Div, Value::Float(a), Value::Float(b)) => {
-                if *b == 0.0 {
-                    Err(ControlFlow::Error(anyhow!("Division by zero")))
-                } else {
-                    Ok(Value::Float(a / b))
-                }
-            }
-            (BinaryOp::Div, Value::Int(a), Value::Float(b)) => {
-                if *b == 0.0 {
-                    Err(ControlFlow::Error(anyhow!("Division by zero")))
-                } else {
-                    Ok(Value::Float(*a as f64 / b))
-                }
-            }
-            (BinaryOp::Div, Value::Float(a), Value::Int(b)) => {
-                if *b == 0 {
-                    Err(ControlFlow::Error(anyhow!("Division by zero")))
-                } else {
-                    Ok(Value::Float(a / *b as f64))
-                }
-            }
-
-            // Comparison operations
-            (BinaryOp::Eq, a, b) => Ok(Value::Bool(a == b)),
-            (BinaryOp::Ne, a, b) => Ok(Value::Bool(a != b)),
-
-            (BinaryOp::Lt, Value::Int(a), Value::Int(b)) => Ok(Value::Bool(a < b)),
-            (BinaryOp::Lt, Value::Float(a), Value::Float(b)) => Ok(Value::Bool(a < b)),
-            (BinaryOp::Lt, Value::Int(a), Value::Float(b)) => Ok(Value::Bool((*a as f64) < *b)),
-            (BinaryOp::Lt, Value::Float(a), Value::Int(b)) => Ok(Value::Bool(*a < (*b as f64))),
-
-            (BinaryOp::Le, Value::Int(a), Value::Int(b)) => Ok(Value::Bool(a <= b)),
-            (BinaryOp::Le, Value::Float(a), Value::Float(b)) => Ok(Value::Bool(a <= b)),
-            (BinaryOp::Le, Value::Int(a), Value::Float(b)) => Ok(Value::Bool((*a as f64) <= *b)),
-            (BinaryOp::Le, Value::Float(a), Value::Int(b)) => Ok(Value::Bool(*a <= (*b as f64))),
-
-            (BinaryOp::Gt, Value::Int(a), Value::Int(b)) => Ok(Value::Bool(a > b)),
-            (BinaryOp::Gt, Value::Float(a), Value::Float(b)) => Ok(Value::Bool(a > b)),
-            (BinaryOp::Gt, Value::Int(a), Value::Float(b)) => Ok(Value::Bool((*a as f64) > *b)),
-            (BinaryOp::Gt, Value::Float(a), Value::Int(b)) => Ok(Value::Bool(*a > (*b as f64))),
-
-            (BinaryOp::Ge, Value::Int(a), Value::Int(b)) => Ok(Value::Bool(a >= b)),
-            (BinaryOp::Ge, Value::Float(a), Value::Float(b)) => Ok(Value::Bool(a >= b)),
-            (BinaryOp::Ge, Value::Int(a), Value::Float(b)) => Ok(Value::Bool((*a as f64) >= *b)),
-            (BinaryOp::Ge, Value::Float(a), Value::Int(b)) => Ok(Value::Bool(*a >= (*b as f64))),
-
-            // Logical operations  
-            (BinaryOp::And, Value::Bool(a), Value::Bool(b)) => Ok(Value::Bool(*a && *b)),
-            (BinaryOp::Or, Value::Bool(a), Value::Bool(b)) => Ok(Value::Bool(*a || *b)),
-
-            // Unsupported operation
-            _ => Err(ControlFlow::Error(anyhow!("Unsupported binary operation: {:?} between {:?} and {:?}", op, left, right)))
-        }
-    }
-
-    fn eval_unary_op(&self, op: &super::core::UnaryOp, val: Value) -> EvalResult {
-        use super::core::UnaryOp;
-        
-        match (op, &val) {
-            // Arithmetic negation
-            (UnaryOp::Neg, Value::Int(n)) => Ok(Value::Int(-n)),
-            (UnaryOp::Neg, Value::Float(f)) => Ok(Value::Float(-f)),
-            
-            // Logical negation
-            (UnaryOp::Not, Value::Bool(b)) => Ok(Value::Bool(!b)),
-            (UnaryOp::Not, Value::Unit) => Ok(Value::Bool(true)),
-            (UnaryOp::Not, _) => Ok(Value::Bool(false)), // All other values are truthy
-            
-            // Bitwise negation (only for integers)
-            (UnaryOp::BitNot, Value::Int(n)) => Ok(Value::Int(!n)),
-            
-            // Unsupported operation
-            _ => Err(ControlFlow::Error(anyhow!("Unsupported unary operation: {:?} on {:?}", op, val)))
-        }
-    }
 }
