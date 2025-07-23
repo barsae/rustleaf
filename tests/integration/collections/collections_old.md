@@ -1,4 +1,6 @@
-# Program 🟢
+# Program
+Status: 🟢
+
 ```rustleaf
 // List indexing and operations
 var my_list = [1, 2, 3];

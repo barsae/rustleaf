@@ -72,7 +72,7 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                         };
                         
                         format!(
-                            "# Program {}\n```rustleaf\n{}\n```\n\n{}\n\n# Result\n```rust\n{}\n```\n\n# Lex\n```rust\n{}\n```\n\n# Parse\n```rust\n{}\n```\n\n# Eval\n```rust\n{}\n```",
+                            "# Program\nStatus: {}\n\n```rustleaf\n{}\n```\n\n{}\n\n# Result\n```rust\n{}\n```\n\n# Lex\n```rust\n{}\n```\n\n# Parse\n```rust\n{}\n```\n\n# Eval\n```rust\n{}\n```",
                             circle, source, output_display, execution_output, lex_output, parse_output, eval_output
                         )
                     };

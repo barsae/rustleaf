@@ -509,6 +509,20 @@ pub fn op_contains(self_value: &Value, args: Args) -> Result<Value> {
             };
             Ok(Value::Bool(dict.contains_key(&key_str)))
         }
+        Value::Range(range) => {
+            // Check if integer is in range
+            match &item {
+                Value::Int(i) => {
+                    let in_range = if range.inclusive {
+                        *i >= range.start && *i <= range.end
+                    } else {
+                        *i >= range.start && *i < range.end
+                    };
+                    Ok(Value::Bool(in_range))
+                }
+                _ => Err(anyhow!("Range contains requires integer argument, got {:?}", item)),
+            }
+        }
         _ => Err(anyhow!("Contains operation not supported for {:?}", self_value)),
     }
 }
@@ -623,5 +637,25 @@ pub fn op_set_item_dict(self_value: &Value, args: Args) -> Result<Value> {
             Ok(Value::Unit)
         }
         _ => Err(anyhow!("op_set_item_dict called on non-dict: {:?}", self_value)),
+    }
+}
+
+// Range-specific operations
+pub fn range_to_list(self_value: &Value, args: Args) -> Result<Value> {
+    args.set_function_name("to_list");
+    args.complete()?;
+    
+    match self_value {
+        Value::Range(range) => {
+            let mut values = Vec::new();
+            let end_value = if range.inclusive { range.end + 1 } else { range.end };
+            
+            for i in range.start..end_value {
+                values.push(Value::Int(i));
+            }
+            
+            Ok(Value::new_list_with_values(values))
+        }
+        _ => Err(anyhow!("to_list called on non-range: {:?}", self_value)),
     }
 }

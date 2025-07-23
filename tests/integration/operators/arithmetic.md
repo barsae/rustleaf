@@ -1,4 +1,6 @@
-# Program 🟢
+# Program
+Status: 🟢
+
 ```rustleaf
 assert(1 + 2 == 3);
 assert(5 - 3 == 2);

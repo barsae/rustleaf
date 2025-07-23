@@ -1,4 +1,6 @@
-# Program 🟢
+# Program
+Status: 🟢
+
 ```rustleaf
 var x = 1;
 var inner_x;

@@ -1,4 +1,6 @@
-# Program 🟢
+# Program
+Status: 🟢
+
 ```rustleaf
 var z = 0;
 fn add(x, y) {

@@ -1,4 +1,6 @@
-# Program 🟢
+# Program
+Status: 🟢
+
 ```rustleaf
 // Test is_unit with various values
 assert(not is_unit(42));

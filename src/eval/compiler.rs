@@ -283,6 +283,18 @@ impl Compiler {
                 self.compile_interpolated_string(parts)
             }
             
+            // Range expressions
+            Expression::RangeExclusive(start, end) => {
+                let start_val = self.compile_expression(*start)?;
+                let end_val = self.compile_expression(*end)?;
+                self.compile_range(start_val, end_val, false)
+            }
+            Expression::RangeInclusive(start, end) => {
+                let start_val = self.compile_expression(*start)?;
+                let end_val = self.compile_expression(*end)?;
+                self.compile_range(start_val, end_val, true)
+            }
+            
             _ => Err(anyhow::anyhow!("Expression not yet implemented: {:?}", expr)),
         }
     }
@@ -403,5 +415,17 @@ impl Compiler {
         }
 
         Ok(result)
+    }
+
+    // Helper to compile range expressions - for now, only support integer literals
+    fn compile_range(&mut self, start_eval: Eval, end_eval: Eval, inclusive: bool) -> Result<Eval> {
+        // For now, require that both start and end are literal integers
+        match (start_eval, end_eval) {
+            (Eval::Literal(Value::Int(start)), Eval::Literal(Value::Int(end))) => {
+                let range = crate::core::Range { start, end, inclusive };
+                Ok(Eval::Literal(Value::Range(range)))
+            }
+            _ => Err(anyhow::anyhow!("Range expressions currently only support integer literals")),
+        }
     }
 }

@@ -1,4 +1,6 @@
-# Program 🟢
+# Program
+Status: 🟢
+
 ```rustleaf
 #[test(arg1: "value", arg2: 42)]
 var x = 100;

@@ -1,4 +1,6 @@
-# Program 🟢
+# Program
+Status: 🟢
+
 ```rustleaf
 fn add(x, y) { x + y }
 assert(add(2, 3) == 5);

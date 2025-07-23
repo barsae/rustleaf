@@ -1,4 +1,6 @@
-# Program 🟢
+# Program
+Status: 🟢
+
 ```rustleaf
 // Test modulo operator
 assert(7 % 3 == 1);

@@ -1,4 +1,6 @@
-# Program 🟢
+# Program
+Status: 🟢
+
 ```rustleaf
 var arr = [1, 2, 3];
 arr[0] = 99;

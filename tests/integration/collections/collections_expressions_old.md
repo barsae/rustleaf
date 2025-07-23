@@ -1,4 +1,6 @@
-# Program 🟢
+# Program
+Status: 🟢
+
 ```rustleaf
 // Test expressions in collections
 var list_with_expr = [1 + 2, 3 * 4];

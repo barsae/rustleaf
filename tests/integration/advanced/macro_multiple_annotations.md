@@ -1,4 +1,6 @@
-# Program 🟢
+# Program
+Status: 🟢
+
 ```rustleaf
 #[first_macro]
 #[second_macro(config: "test")]

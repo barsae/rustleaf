@@ -30,6 +30,10 @@ test: check-test-dirs
     {{rust_flags}} cargo test
     cargo clippy -- -D warnings
 
+# Generate test summary from integration tests
+test-summary:
+    python3 scripts/generate-test-summary.py
+
 # Check if we need to rebase (main has commits we don't)
 need-rebase:
     #!/bin/bash

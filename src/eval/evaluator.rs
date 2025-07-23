@@ -329,6 +329,34 @@ impl Evaluator {
                             }
                         }
                     }
+                    Value::Range(range) => {
+                        let end_value = if range.inclusive { range.end + 1 } else { range.end };
+                        for i in range.start..end_value {
+                            // Set the loop variable
+                            self.current_env.define(var_name.clone(), Value::Int(i));
+                            
+                            // Execute body
+                            match self.eval(body) {
+                                Ok(_) => {
+                                    // Normal completion, continue to next iteration
+                                }
+                                Err(ControlFlow::Break(value)) => {
+                                    // Break out of loop with value
+                                    result = value;
+                                    break;
+                                }
+                                Err(ControlFlow::Continue) => {
+                                    // Continue to next iteration
+                                    continue;
+                                }
+                                Err(other) => {
+                                    // Restore scope and propagate other control flow (Return, Error)
+                                    self.current_env = previous_env;
+                                    return Err(other);
+                                }
+                            }
+                        }
+                    }
                     _ => {
                         // Restore scope and return error
                         self.current_env = previous_env;

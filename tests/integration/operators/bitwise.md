@@ -1,4 +1,6 @@
-# Program 🟢
+# Program
+Status: 🟢
+
 ```rustleaf
 // Bitwise operators test
 assert((5 & 3) == 1);  // 101 & 011 = 001

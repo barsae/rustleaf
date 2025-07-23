@@ -35,6 +35,13 @@ impl DictRef {
 #[derive(Clone, Debug)]
 pub struct RustValueRef(Rc<RefCell<Box<dyn RustValue>>>);
 
+#[derive(Clone, Debug, PartialEq)]
+pub struct Range {
+    pub start: i64,
+    pub end: i64,
+    pub inclusive: bool,
+}
+
 impl RustValueRef {
     pub fn borrow_mut(&self) -> std::cell::RefMut<Box<dyn RustValue>> {
         self.0.borrow_mut()
@@ -51,6 +58,7 @@ pub enum Value {
     String(String),
     List(ListRef),
     Dict(DictRef),
+    Range(Range),
     RustValue(RustValueRef),
 }
 
@@ -65,6 +73,7 @@ impl PartialEq for Value {
             (Value::String(a), Value::String(b)) => a == b,
             (Value::List(a), Value::List(b)) => Rc::ptr_eq(&a.0, &b.0),
             (Value::Dict(a), Value::Dict(b)) => Rc::ptr_eq(&a.0, &b.0),
+            (Value::Range(a), Value::Range(b)) => a == b,
             (Value::RustValue(a), Value::RustValue(b)) => Rc::ptr_eq(&a.0, &b.0),
             _ => false,
         }
@@ -130,6 +139,7 @@ impl Value {
             Value::Bool(_) => self.get_bool_attr(name),
             Value::List(_) => self.get_list_attr(name),
             Value::Dict(_) => self.get_dict_attr(name),
+            Value::Range(_) => self.get_range_attr(name),
             _ => None,
         }
     }
@@ -220,6 +230,14 @@ impl Value {
         use crate::core::builtin_ops::*;
 
         match name {
+            "length" => {
+                if let Value::List(list_ref) = self {
+                    let list = list_ref.borrow();
+                    Some(Value::Int(list.len() as i64))
+                } else {
+                    None
+                }
+            }
             "op_contains" => Some(self.bind_method(op_contains)),
             "op_get_item" => Some(self.bind_method(op_get_item_list)),
             "op_set_item" => Some(self.bind_method(op_set_item_list)),
@@ -236,6 +254,38 @@ impl Value {
             "op_get_item" => Some(self.bind_method(op_get_item_dict)),
             "op_set_item" => Some(self.bind_method(op_set_item_dict)),
             "op_eq" => Some(self.bind_method(op_eq)),
+            _ => None,
+        }
+    }
+
+    fn get_range_attr(&self, name: &str) -> Option<Value> {
+        use crate::core::builtin_ops::*;
+
+        match name {
+            "start" => {
+                if let Value::Range(range) = self {
+                    Some(Value::Int(range.start))
+                } else {
+                    None
+                }
+            }
+            "end" => {
+                if let Value::Range(range) = self {
+                    Some(Value::Int(range.end))
+                } else {
+                    None
+                }
+            }
+            "inclusive" => {
+                if let Value::Range(range) = self {
+                    Some(Value::Bool(range.inclusive))
+                } else {
+                    None
+                }
+            }
+            "op_contains" => Some(self.bind_method(op_contains)),
+            "op_eq" => Some(self.bind_method(op_eq)),
+            "to_list" => Some(self.bind_method(range_to_list)),
             _ => None,
         }
     }

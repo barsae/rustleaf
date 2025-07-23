@@ -1,4 +1,6 @@
-# Program 🔴
+# Program
+Status: 🔴
+
 ```rustleaf
 // #[fail_quietly]
 data : transform() : validate();

@@ -1,4 +1,6 @@
-# Program 🔴
+# Program
+Status: 🔴
+
 ```rustleaf
 // #[fail_quietly]
 var [a, b, c] = [1, 2, 3];

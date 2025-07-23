@@ -1,4 +1,6 @@
-# Program 🟢
+# Program
+Status: 🟢
+
 ```rustleaf
 var x = 5;
 assert((if x > 0 { "positive" } else { "zero or negative" }) == "positive");
