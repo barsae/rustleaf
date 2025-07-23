@@ -36,7 +36,7 @@ impl Compiler {
                         };
                         Ok(Eval::Declare(name, init))
                     }
-                    _ => todo!("Complex patterns not yet implemented"),
+                    _ => Err(anyhow::anyhow!("Complex patterns not yet implemented")),
                 }
             }
             Statement::Assignment { target, op, value } => {
@@ -108,7 +108,7 @@ impl Compiler {
                 Ok(Eval::Break(compiled_expr))
             }
             Statement::Continue => Ok(Eval::Continue),
-            _ => todo!("Statement not yet implemented: {:?}", stmt),
+            _ => Err(anyhow::anyhow!("Statement not yet implemented: {:?}", stmt)),
         }
     }
 
@@ -216,7 +216,7 @@ impl Compiler {
                 Ok(Eval::UnaryOp(super::core::UnaryOp::BitNot, Box::new(compiled_expr)))
             }
             
-            _ => todo!("Expression not yet implemented: {:?}", expr),
+            _ => Err(anyhow::anyhow!("Expression not yet implemented: {:?}", expr)),
         }
     }
 
