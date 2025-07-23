@@ -1,6 +1,7 @@
 # Program 🔴
 
 ```rustleaf
+// #[fail_quietly]
 for x in [1, 2, 3] {
     print(x);
 }

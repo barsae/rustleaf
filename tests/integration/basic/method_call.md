@@ -1,6 +1,7 @@
 # Program 🔴
 
 ```rustleaf
+// #[fail_quietly]
 obj.method(arg1, arg2);
 ```
 

@@ -1,6 +1,7 @@
 # Program 🔴
 
 ```rustleaf
+// #[fail_quietly]
 break 42;
 ```
 

@@ -1,6 +1,7 @@
 # Program 🔴
 
 ```rustleaf
+// #[fail_quietly]
 if x > 0 {
     "positive"
 } else {

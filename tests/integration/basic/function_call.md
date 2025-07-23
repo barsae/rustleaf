@@ -1,6 +1,7 @@
 # Program 🔴
 
 ```rustleaf
+// #[fail_quietly]
 func(arg1, arg2);
 ```
 

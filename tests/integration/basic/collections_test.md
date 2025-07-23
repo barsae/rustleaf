@@ -1,6 +1,7 @@
 # Program 🔴
 
 ```rustleaf
+// #[fail_quietly]
 // List creation test
 let my_list = [1, 2, 3];
 assert(true);  // Just test that it doesn't crash

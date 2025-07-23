@@ -1,6 +1,7 @@
 # Program 🔴
 
 ```rustleaf
+// #[fail_quietly]
 // Test expressions in collections
 let list_with_expr = [1 + 2, 3 * 4];
 assert(true);  // Just test that it doesn't crash

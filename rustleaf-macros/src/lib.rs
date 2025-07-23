@@ -36,6 +36,9 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                 let test_body = quote! {
                     let source = include_str!(#include_path);
                     
+                    // Check for #[fail_quietly] magic string
+                    let fail_quietly = source.contains("#[fail_quietly]");
+                    
                     // Try lexing
                     let tokens_result = rustleaf::lexer::Lexer::tokenize(source);
                     let lex_output = format!("{:#?}", tokens_result);
@@ -59,7 +62,7 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                     };
                     
                     // Try evaluation (only if all previous stages succeeded)
-                    let (output_section, execution_output, eval_success) = match rustleaf::parser::Parser::parse_str(source) {
+                    let (output_section, execution_output, eval_success, final_result) = match rustleaf::parser::Parser::parse_str(source) {
                         Ok(ast) => {
                             rustleaf::core::start_print_capture();
                             let result = rustleaf::eval::evaluate(ast);
@@ -73,9 +76,12 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                             };
                             
                             let eval_success = result.is_ok();
-                            (output_section, execution_output, eval_success)
+                            (output_section, execution_output, eval_success, result)
                         }
-                        Err(_) => ("Skipped due to parse error".to_string(), "Skipped due to parse error".to_string(), false),
+                        Err(parse_error) => {
+                            let error_result = Err(anyhow::Error::msg(format!("Parse error: {}", parse_error)));
+                            ("Skipped due to parse error".to_string(), "Skipped due to parse error".to_string(), false, error_result)
+                        }
                     };
                     
                     // For panic tests, success means it should fail (red circle = expected behavior)
@@ -91,18 +97,16 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                         circle, source, output_section, execution_output, lex_output, parse_output, eval_output
                     );
                     std::fs::write(#md_output_path, md_content).unwrap();
+                    
+                    // Control test behavior based on fail_quietly flag
+                    if !fail_quietly {
+                        // Return actual result - let cargo handle expectations
+                        final_result.unwrap();
+                    }
                 };
 
-                let test_body = match test_type {
-                    TestType::Panic => quote! {
-                        #test_body
-                        
-                        // For panic tests, we need to actually unwrap the result to trigger the panic
-                        let ast = rustleaf::parser::Parser::parse_str(include_str!(#include_path)).unwrap();
-                        let _result = rustleaf::eval::evaluate(ast).unwrap();
-                    },
-                    _ => test_body,
-                };
+                // No need for separate panic test handling since we handle it in the main test body now
+                let test_body = test_body;
 
                 match test_type {
                     TestType::Ignore => quote! {

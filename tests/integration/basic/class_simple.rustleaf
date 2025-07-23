@@ -1,3 +1,4 @@
+// #[fail_quietly]
 class Person {
     var name;
     

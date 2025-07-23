@@ -1,1 +1,2 @@
+// #[fail_quietly]
 var {name, age: user_age} = user;

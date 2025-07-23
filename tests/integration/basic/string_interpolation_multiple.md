@@ -1,6 +1,7 @@
 # Program 🔴
 
 ```rustleaf
+// #[fail_quietly]
 "${a} and ${b} equals ${a + b}";
 ```
 

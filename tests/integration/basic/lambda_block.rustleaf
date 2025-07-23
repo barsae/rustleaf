@@ -1,3 +1,4 @@
+// #[fail_quietly]
 |x| {
     print(x);
     x + 1

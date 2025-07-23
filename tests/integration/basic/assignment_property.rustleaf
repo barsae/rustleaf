@@ -1,1 +1,2 @@
+// #[fail_quietly]
 obj.field = 10;

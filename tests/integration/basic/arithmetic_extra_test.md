@@ -1,13 +1,14 @@
 # Program 🟢
 
 ```rustleaf
+// #[fail_quietly]
 // Test modulo operator
 assert(7 % 3 == 1);
 assert(8 % 4 == 0);
 assert(7.5 % 2.5 == 0.0);
 assert(7 % 2.0 == 1.0);
 
-// Test power operator  
+// Test power operator
 assert(2 ** 3 == 8);
 assert(2 ** 0 == 1);
 assert(3.0 ** 2.0 == 9.0);

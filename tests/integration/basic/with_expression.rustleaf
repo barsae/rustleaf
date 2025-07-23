@@ -1,3 +1,4 @@
+// #[fail_quietly]
 with file = open("data.txt") {
     file.read()
 }

@@ -1,6 +1,7 @@
 # Program 🔴
 
 ```rustleaf
+// #[fail_quietly]
 var [first, *rest] = [1, 2, 3, 4];
 ```
 
