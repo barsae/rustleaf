@@ -76,6 +76,20 @@ impl Evaluator {
                 // Call the function
                 func_value.call(args_obj)
             }
+            Eval::Declare(name, init_expr) => {
+                let value = match init_expr {
+                    Some(expr) => self.eval(expr)?,
+                    None => Value::Unit,
+                };
+                self.current_env.define(name.clone(), value);
+                Ok(Value::Unit)
+            }
+            Eval::Assign(name, expr) => {
+                let value = self.eval(expr)?;
+                self.current_env.set(name, value)
+                    .map_err(|err| anyhow!(err))?;
+                Ok(Value::Unit)
+            }
             x => Err(anyhow!("eval not implemented for: {:?}", eval))
         }
     }

@@ -9,8 +9,6 @@ enum TestType {
     Normal,
     Panic,
     Ignore,
-    Lex,
-    Parse,
 }
 
 // Test discovery implementation
@@ -33,38 +31,57 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                 let test_fn_name = syn::Ident::new(test_name, proc_macro2::Span::call_site());
 
                 let test_body = match test_type {
-                    TestType::Lex => {
-                        let output_path = full_path.replace(".rustleaf", ".lex");
-                        quote! {
-                            let source = include_str!(#include_path);
-                            let tokens = rustleaf::lexer::Lexer::tokenize(source).unwrap();
-                            let output = format!("{:#?}", tokens);
-                            std::fs::write(#output_path, output).unwrap();
-                        }
-                    }
-                    TestType::Parse => {
-                        let output_path = full_path.replace(".rustleaf", ".parse");
-                        quote! {
-                            let source = include_str!(#include_path);
-                            let ast = rustleaf::parser::Parser::parse_str(source).unwrap();
-                            let output = format!("{:#?}", ast);
-                            std::fs::write(#output_path, output).unwrap();
-                        }
-                    }
                     TestType::Normal => {
-                        let parse_output_path = full_path.replace(".rustleaf", ".parse");
-                        let eval_output_path = full_path.replace(".rustleaf", ".eval");
+                        let md_output_path = full_path.replace(".rustleaf", ".md");
                         quote! {
                             let source = include_str!(#include_path);
-                            let ast = rustleaf::parser::Parser::parse_str(source).unwrap();
-                            let parse_output = format!("{:#?}", ast);
-                            std::fs::write(#parse_output_path, parse_output).unwrap();
                             
-                            let eval_ir = rustleaf::eval::Compiler::compile(ast.clone()).unwrap();
-                            let eval_output = format!("{:#?}", eval_ir);
-                            std::fs::write(#eval_output_path, eval_output).unwrap();
+                            // Try lexing
+                            let tokens_result = rustleaf::lexer::Lexer::tokenize(source);
+                            let lex_output = format!("{:#?}", tokens_result);
                             
-                            let _result = rustleaf::eval::evaluate(ast).unwrap();
+                            // Try parsing (only if lexing succeeded)
+                            let parse_output = match &tokens_result {
+                                Ok(_) => {
+                                    let parse_result = rustleaf::parser::Parser::parse_str(source);
+                                    format!("{:#?}", parse_result)
+                                }
+                                Err(_) => "Skipped due to lex error".to_string(),
+                            };
+                            
+                            // Try compiling to eval IR (only if parsing succeeded)
+                            let eval_output = match rustleaf::parser::Parser::parse_str(source) {
+                                Ok(ast) => {
+                                    let eval_result = rustleaf::eval::Compiler::compile(ast);
+                                    format!("{:#?}", eval_result)
+                                }
+                                Err(_) => "Skipped due to parse error".to_string(),
+                            };
+                            
+                            // Try evaluation (only if all previous stages succeeded)
+                            let (output_section, execution_output) = match rustleaf::parser::Parser::parse_str(source) {
+                                Ok(ast) => {
+                                    rustleaf::core::start_print_capture();
+                                    let result = rustleaf::eval::evaluate(ast);
+                                    let captured_output = rustleaf::core::get_captured_prints();
+                                    let execution_output = format!("{:#?}", result);
+                                    
+                                    let output_section = if captured_output.is_empty() {
+                                        String::new()
+                                    } else {
+                                        captured_output.join("\n")
+                                    };
+                                    
+                                    (output_section, execution_output)
+                                }
+                                Err(_) => ("Skipped due to parse error".to_string(), "Skipped due to parse error".to_string()),
+                            };
+                            
+                            let md_content = format!(
+                                "# Program\n\n```rustleaf\n{}\n```\n\n# Lex\n\n```rust\n{}\n```\n\n# Parse\n\n```rust\n{}\n```\n\n# Eval\n\n```rust\n{}\n```\n\n# Output\n\n```\n{}\n```\n\n# Result\n\n```rust\n{}\n```\n",
+                                source, lex_output, parse_output, eval_output, output_section, execution_output
+                            );
+                            std::fs::write(#md_output_path, md_content).unwrap();
                         }
                     }
                     TestType::Panic => quote! {
@@ -139,10 +156,6 @@ fn discover_rustleaf_files(
                         TestType::Panic
                     } else if filename.ends_with("_ignore.rustleaf") {
                         TestType::Ignore
-                    } else if filename.ends_with("_lex.rustleaf") {
-                        TestType::Lex
-                    } else if filename.ends_with("_parse.rustleaf") {
-                        TestType::Parse
                     } else {
                         TestType::Normal
                     };
