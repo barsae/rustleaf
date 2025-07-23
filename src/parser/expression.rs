@@ -145,8 +145,6 @@ impl Parser {
                 .ok_or_else(|| anyhow!("Identifier token missing text"))?
                 .clone();
             Ok(Expression::Identifier(text))
-        } else if self.accept(TokenType::Super) {
-            Ok(Expression::Super)
         } else if self.check(TokenType::StringPart) || self.check(TokenType::InterpolationStart) {
             self.parse_interpolated_string()
         } else if self.check(TokenType::LeftBrace) {

@@ -1,6 +1,5 @@
 # Program 🟢
 ```rustleaf
-// #[fail_quietly]
 // Test expressions in collections
 var list_with_expr = [1 + 2, 3 * 4];
 

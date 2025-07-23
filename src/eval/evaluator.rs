@@ -221,6 +221,123 @@ impl Evaluator {
                     }
                 }
             }
+            Eval::While(condition, body) => {
+                loop {
+                    // Evaluate condition
+                    let condition_val = self.eval(condition)?;
+                    
+                    // Check if condition is truthy
+                    let is_truthy = match condition_val {
+                        Value::Bool(b) => b,
+                        Value::Unit => false,
+                        _ => true, // All other values are truthy (like Python/JavaScript)
+                    };
+                    
+                    if !is_truthy {
+                        // Condition is false, exit loop
+                        return Ok(Value::Unit);
+                    }
+                    
+                    // Execute body
+                    match self.eval(body) {
+                        Ok(_) => {
+                            // Normal completion, continue looping
+                            continue;
+                        }
+                        Err(ControlFlow::Break(value)) => {
+                            // Break out of loop with value
+                            return Ok(value);
+                        }
+                        Err(ControlFlow::Continue) => {
+                            // Continue to next iteration
+                            continue;
+                        }
+                        Err(other) => {
+                            // Propagate other control flow (Return, Error)
+                            return Err(other);
+                        }
+                    }
+                }
+            }
+            Eval::For(var_name, iter_expr, body) => {
+                // Evaluate the iterator expression
+                let iter_value = self.eval(iter_expr)?;
+                
+                // Create a new scope for the loop variable
+                let loop_scope = self.current_env.child();
+                let previous_env = std::mem::replace(&mut self.current_env, loop_scope);
+                
+                let mut result = Value::Unit;
+                
+                // Iterate based on the collection type
+                match iter_value {
+                    Value::List(list_ref) => {
+                        let list = list_ref.borrow();
+                        for item in list.iter() {
+                            // Set the loop variable
+                            self.current_env.define(var_name.clone(), item.clone());
+                            
+                            // Execute body
+                            match self.eval(body) {
+                                Ok(_) => {
+                                    // Normal completion, continue to next iteration
+                                }
+                                Err(ControlFlow::Break(value)) => {
+                                    // Break out of loop with value
+                                    result = value;
+                                    break;
+                                }
+                                Err(ControlFlow::Continue) => {
+                                    // Continue to next iteration
+                                    continue;
+                                }
+                                Err(other) => {
+                                    // Restore scope and propagate other control flow (Return, Error)
+                                    self.current_env = previous_env;
+                                    return Err(other);
+                                }
+                            }
+                        }
+                    }
+                    Value::Dict(dict_ref) => {
+                        let dict = dict_ref.borrow();
+                        for (key, _value) in dict.iter() {
+                            // For dictionaries, iterate over keys (like Python)
+                            self.current_env.define(var_name.clone(), Value::String(key.clone()));
+                            
+                            // Execute body
+                            match self.eval(body) {
+                                Ok(_) => {
+                                    // Normal completion, continue to next iteration
+                                }
+                                Err(ControlFlow::Break(value)) => {
+                                    // Break out of loop with value
+                                    result = value;
+                                    break;
+                                }
+                                Err(ControlFlow::Continue) => {
+                                    // Continue to next iteration
+                                    continue;
+                                }
+                                Err(other) => {
+                                    // Restore scope and propagate other control flow (Return, Error)
+                                    self.current_env = previous_env;
+                                    return Err(other);
+                                }
+                            }
+                        }
+                    }
+                    _ => {
+                        // Restore scope and return error
+                        self.current_env = previous_env;
+                        return Err(ControlFlow::Error(anyhow!("Cannot iterate over value: {:?}", iter_value)));
+                    }
+                }
+                
+                // Restore the previous scope
+                self.current_env = previous_env;
+                Ok(result)
+            }
             Eval::Break(expr) => {
                 let value = match expr {
                     Some(e) => self.eval(e)?,

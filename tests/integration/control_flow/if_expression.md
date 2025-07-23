@@ -1,6 +1,6 @@
-# Program 🔴
+# Program 🟢
 ```rustleaf
-// #[fail_quietly]
+var x = 1;
 if x > 0 {
     "positive"
 } else {
@@ -13,8 +13,10 @@ None
 
 # Result
 ```rust
-Err(
-    "Undefined variable: x",
+Ok(
+    String(
+        "positive",
+    ),
 )
 ```
 
@@ -22,6 +24,11 @@ Err(
 ```rust
 Ok(
     [
+        Token(Var),
+        Token(Ident, "x"),
+        Token(Equal),
+        Token(Int, "1"),
+        Token(Semicolon),
         Token(If),
         Token(Ident, "x"),
         Token(Greater),
@@ -43,6 +50,18 @@ Ok(
 Ok(
     Program(
         [
+            VarDecl {
+                pattern: Variable(
+                    "x",
+                ),
+                value: Some(
+                    Literal(
+                        Int(
+                            1,
+                        ),
+                    ),
+                ),
+            },
             Expression(
                 If {
                     condition: Gt(
@@ -88,7 +107,18 @@ Ok(
 ```rust
 Ok(
     Block(
-        [],
+        [
+            Declare(
+                "x",
+                Some(
+                    Literal(
+                        Int(
+                            1,
+                        ),
+                    ),
+                ),
+            ),
+        ],
         Some(
             If(
                 Call(

@@ -261,6 +261,22 @@ impl Compiler {
                 let compiled_body = self.compile_block_helper(body)?;
                 Ok(Eval::Loop(Box::new(compiled_body)))
             }
+            Expression::While { condition, body } => {
+                let compiled_condition = self.compile_expression(*condition)?;
+                let compiled_body = self.compile_block_helper(body)?;
+                Ok(Eval::While(Box::new(compiled_condition), Box::new(compiled_body)))
+            }
+            Expression::For { pattern, iter, body } => {
+                // For now, only support simple variable patterns
+                match pattern {
+                    Pattern::Variable(var_name) => {
+                        let compiled_iter = self.compile_expression(*iter)?;
+                        let compiled_body = self.compile_block_helper(body)?;
+                        Ok(Eval::For(var_name, Box::new(compiled_iter), Box::new(compiled_body)))
+                    }
+                    _ => Err(anyhow::anyhow!("Only variable patterns are supported in for loops for now: {:?}", pattern)),
+                }
+            }
             
             _ => Err(anyhow::anyhow!("Expression not yet implemented: {:?}", expr)),
         }

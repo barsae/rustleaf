@@ -1,6 +1,5 @@
 # Program 🟢
 ```rustleaf
-// #[fail_quietly]
 loop {
     break 42;
 }

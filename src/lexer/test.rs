@@ -4,7 +4,7 @@ mod tests {
 
     #[test]
     fn test_keywords() {
-        let source = "var fn if else while for loop return break continue class static self super";
+        let source = "var fn if else while for loop return break continue class static self";
         let tokens = Lexer::tokenize(source).unwrap();
 
         assert_eq!(
@@ -23,7 +23,6 @@ mod tests {
                 Token::simple(TokenType::Class),
                 Token::simple(TokenType::Static),
                 Token::with_text(TokenType::Ident, "self"),
-                Token::simple(TokenType::Super),
                 Token::simple(TokenType::Eof),
             ]
         );

@@ -78,7 +78,6 @@ pub enum Expression {
     // Literals and identifiers
     Literal(LiteralValue),
     Identifier(String),
-    Super, // super keyword for parent class access
     InterpolatedString(Vec<InterpolationPart>), // "Hello ${name}"
 
     // Property access and method calls

@@ -1,6 +1,5 @@
 # Program 🟢
 ```rustleaf
-// #[fail_quietly]
 // List indexing and operations
 var my_list = [1, 2, 3];
 assert(my_list[0] == 1);

@@ -454,12 +454,6 @@ impl Lexer {
                 token_type: |_| Token::simple(TokenType::With),
                 ignore: false,
             },
-            // OOP
-            LexerRule {
-                pattern: Regex::new(r"^super\b").unwrap(),
-                token_type: |_| Token::simple(TokenType::Super),
-                ignore: false,
-            },
             // Logical operators
             LexerRule {
                 pattern: Regex::new(r"^and\b").unwrap(),

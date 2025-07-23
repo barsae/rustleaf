@@ -1,7 +1,8 @@
 # Program 🔴
 ```rustleaf
 // #[fail_quietly]
-a is not b;
+var a = 1;
+a is not String;
 ```
 
 # Output
@@ -10,7 +11,7 @@ None
 # Result
 ```rust
 Err(
-    "Undefined variable: a",
+    "Undefined variable: String",
 )
 ```
 
@@ -18,10 +19,15 @@ Err(
 ```rust
 Ok(
     [
+        Token(Var),
+        Token(Ident, "a"),
+        Token(Equal),
+        Token(Int, "1"),
+        Token(Semicolon),
         Token(Ident, "a"),
         Token(Is),
         Token(Not),
-        Token(Ident, "b"),
+        Token(Ident, "String"),
         Token(Semicolon),
         Token(Eof),
     ],
@@ -33,6 +39,18 @@ Ok(
 Ok(
     Program(
         [
+            VarDecl {
+                pattern: Variable(
+                    "a",
+                ),
+                value: Some(
+                    Literal(
+                        Int(
+                            1,
+                        ),
+                    ),
+                ),
+            },
             Expression(
                 Is(
                     Identifier(
@@ -40,7 +58,7 @@ Ok(
                     ),
                     Not(
                         Identifier(
-                            "b",
+                            "String",
                         ),
                     ),
                 ),
@@ -54,7 +72,18 @@ Ok(
 ```rust
 Ok(
     Block(
-        [],
+        [
+            Declare(
+                "a",
+                Some(
+                    Literal(
+                        Int(
+                            1,
+                        ),
+                    ),
+                ),
+            ),
+        ],
         Some(
             Is(
                 Variable(
@@ -62,7 +91,7 @@ Ok(
                 ),
                 LogicalNot(
                     Variable(
-                        "b",
+                        "String",
                     ),
                 ),
             ),

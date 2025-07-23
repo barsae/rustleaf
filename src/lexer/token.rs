@@ -67,7 +67,6 @@ pub enum TokenType {
     Continue,
     Class,
     Static,
-    Super,
     Import,
     As,
     From,

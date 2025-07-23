@@ -12,7 +12,7 @@ None
 # Result
 ```rust
 Err(
-    "Expression not yet implemented: While { condition: Lt(Identifier(\"x\"), Literal(Int(10))), body: Block { statements: [Assignment { target: Identifier(\"x\"), op: Assign, value: Add(Identifier(\"x\"), Literal(Int(1))) }], final_expr: None } }",
+    "Undefined variable: x",
 )
 ```
 
@@ -84,7 +84,51 @@ Ok(
 
 # Eval
 ```rust
-Err(
-    "Expression not yet implemented: While { condition: Lt(Identifier(\"x\"), Literal(Int(10))), body: Block { statements: [Assignment { target: Identifier(\"x\"), op: Assign, value: Add(Identifier(\"x\"), Literal(Int(1))) }], final_expr: None } }",
+Ok(
+    Block(
+        [],
+        Some(
+            While(
+                Call(
+                    GetAttr(
+                        Variable(
+                            "x",
+                        ),
+                        "op_lt",
+                    ),
+                    [
+                        Literal(
+                            Int(
+                                10,
+                            ),
+                        ),
+                    ],
+                ),
+                Block(
+                    [
+                        Assign(
+                            "x",
+                            Call(
+                                GetAttr(
+                                    Variable(
+                                        "x",
+                                    ),
+                                    "op_add",
+                                ),
+                                [
+                                    Literal(
+                                        Int(
+                                            1,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                        ),
+                    ],
+                    None,
+                ),
+            ),
+        ),
+    ),
 )
 ```

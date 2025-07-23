@@ -1,6 +1,5 @@
 # Program 🟢
 ```rustleaf
-// #[fail_quietly]
 var arr = [1, 2, 3];
 arr[0] = 99;
 assert(arr == [99, 2, 3]);
