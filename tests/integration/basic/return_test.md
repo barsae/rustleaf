@@ -1,24 +1,26 @@
-# Program 🔴
+# Program 🟢
 
 ```rustleaf
 fn test_return() {
     return 42;
 }
 
-let result = test_return();
+var result = test_return();
 assert(result == 42);
 ```
 
 # Output
 
 ```
-Skipped due to parse error
+
 ```
 
 # Result
 
 ```rust
-Skipped due to parse error
+Ok(
+    Unit,
+)
 ```
 
 # Lex
@@ -35,7 +37,7 @@ Ok(
         Token(Int, "42"),
         Token(Semicolon),
         Token(RightBrace),
-        Token(Ident, "let"),
+        Token(Var),
         Token(Ident, "result"),
         Token(Equal),
         Token(Ident, "test_return"),
@@ -57,13 +59,125 @@ Ok(
 # Parse
 
 ```rust
-Err(
-    "Expected statement",
+Ok(
+    Program(
+        [
+            FnDecl {
+                name: "test_return",
+                params: [],
+                body: Block {
+                    statements: [
+                        Return(
+                            Some(
+                                Literal(
+                                    Int(
+                                        42,
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ],
+                    final_expr: None,
+                },
+                is_pub: false,
+            },
+            VarDecl {
+                pattern: Variable(
+                    "result",
+                ),
+                value: Some(
+                    FunctionCall(
+                        Identifier(
+                            "test_return",
+                        ),
+                        [],
+                    ),
+                ),
+            },
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            Identifier(
+                                "result",
+                            ),
+                            Literal(
+                                Int(
+                                    42,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+        ],
+    ),
 )
 ```
 
 # Eval
 
 ```rust
-Skipped due to parse error
+Ok(
+    Block(
+        [
+            Function(
+                "test_return",
+                [],
+                Block(
+                    [
+                        Return(
+                            Some(
+                                Literal(
+                                    Int(
+                                        42,
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ],
+                    None,
+                ),
+            ),
+            Declare(
+                "result",
+                Some(
+                    Call(
+                        Variable(
+                            "test_return",
+                        ),
+                        [],
+                    ),
+                ),
+            ),
+        ],
+        Some(
+            Call(
+                Variable(
+                    "assert",
+                ),
+                [
+                    Call(
+                        GetAttr(
+                            Variable(
+                                "result",
+                            ),
+                            "op_eq",
+                        ),
+                        [
+                            Literal(
+                                Int(
+                                    42,
+                                ),
+                            ),
+                        ],
+                    ),
+                ],
+            ),
+        ),
+    ),
+)
 ```

@@ -2,5 +2,5 @@ fn test_return() {
     return 42;
 }
 
-let result = test_return();
+var result = test_return();
 assert(result == 42);

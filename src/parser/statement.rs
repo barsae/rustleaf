@@ -11,8 +11,6 @@ impl Parser {
     }
 
     pub fn try_parse_statement(&mut self) -> Result<Option<Statement>> {
-        eprintln!("DEBUG: try_parse_statement at token: {:?}", self.peek());
-        
         if let Some(stmt) = self.try_parse_macro()? {
             return Ok(Some(stmt));
         }
@@ -29,7 +27,6 @@ impl Parser {
             return Ok(Some(stmt));
         }
         if let Some(stmt) = self.try_parse_return_statement()? {
-            eprintln!("DEBUG: Found return statement: {:?}", stmt);
             return Ok(Some(stmt));
         }
         if let Some(stmt) = self.try_parse_break_statement()? {
@@ -48,7 +45,6 @@ impl Parser {
         }
 
         // Fall back to expression statement
-        eprintln!("DEBUG: Falling back to expression statement");
         self.try_parse_expression_statement()
     }
 
@@ -712,27 +708,17 @@ impl Parser {
     }
 
     pub fn try_parse_return_statement(&mut self) -> Result<Option<Statement>> {
-        eprintln!("DEBUG: try_parse_return_statement at token: {:?}", self.peek());
-        
         if !self.accept(TokenType::Return) {
-            eprintln!("DEBUG: Not a return token, skipping");
             return Ok(None);
         }
 
-        eprintln!("DEBUG: Found return token, parsing expression. Next token: {:?}", self.peek());
-        
         let expr = if self.check(TokenType::Semicolon) {
-            eprintln!("DEBUG: Return without expression (semicolon found)");
             None
         } else {
-            eprintln!("DEBUG: Parsing return expression");
             Some(self.parse_expression()?)
         };
 
-        eprintln!("DEBUG: Expecting semicolon after return. Current token: {:?}", self.peek());
         self.expect(TokenType::Semicolon, "Expected ';' after return statement")?;
-        
-        eprintln!("DEBUG: Successfully parsed return statement: {:?}", expr);
         Ok(Some(Statement::Return(expr)))
     }
 
