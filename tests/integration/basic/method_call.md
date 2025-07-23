@@ -1,18 +1,15 @@
 # Program 🔴
-
 ```rustleaf
 // #[fail_quietly]
 obj.method(arg1, arg2);
 ```
 
 # Output
-
 ```
-
+None
 ```
 
 # Result
-
 ```rust
 Err(
     "Undefined variable: obj",
@@ -20,7 +17,6 @@ Err(
 ```
 
 # Lex
-
 ```rust
 Ok(
     [
@@ -39,7 +35,6 @@ Ok(
 ```
 
 # Parse
-
 ```rust
 Ok(
     Program(
@@ -66,7 +61,6 @@ Ok(
 ```
 
 # Eval
-
 ```rust
 Ok(
     Block(

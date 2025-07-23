@@ -1,18 +1,15 @@
 # Program 🔴
-
 ```rustleaf
 // #[fail_quietly]
 "${a} and ${b} equals ${a + b}";
 ```
 
 # Output
-
 ```
-
+None
 ```
 
 # Result
-
 ```rust
 Err(
     "Expression not yet implemented: InterpolatedString([Expression(Identifier(\"a\")), Text(\" and \"), Expression(Identifier(\"b\")), Text(\" equals \"), Expression(Add(Identifier(\"a\"), Identifier(\"b\")))])",
@@ -20,7 +17,6 @@ Err(
 ```
 
 # Lex
-
 ```rust
 Ok(
     [
@@ -44,7 +40,6 @@ Ok(
 ```
 
 # Parse
-
 ```rust
 Ok(
     Program(
@@ -87,7 +82,6 @@ Ok(
 ```
 
 # Eval
-
 ```rust
 Err(
     "Expression not yet implemented: InterpolatedString([Expression(Identifier(\"a\")), Text(\" and \"), Expression(Identifier(\"b\")), Text(\" equals \"), Expression(Add(Identifier(\"a\"), Identifier(\"b\")))])",

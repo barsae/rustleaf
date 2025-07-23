@@ -1,5 +1,4 @@
 # Program 🔴
-
 ```rustleaf
 // #[fail_quietly]
 // List creation test
@@ -16,19 +15,16 @@ assert(true);  // Just test that it doesn't crash
 ```
 
 # Output
-
 ```
-Skipped due to parse error
+None
 ```
 
 # Result
-
 ```rust
 Skipped due to parse error
 ```
 
 # Lex
-
 ```rust
 Ok(
     [
@@ -94,7 +90,6 @@ Ok(
 ```
 
 # Parse
-
 ```rust
 Err(
     "Expected statement",
@@ -102,7 +97,6 @@ Err(
 ```
 
 # Eval
-
 ```rust
 Skipped due to parse error
 ```

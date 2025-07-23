@@ -1,2 +1,0 @@
-// #[fail_quietly]
-var x = 1..2;

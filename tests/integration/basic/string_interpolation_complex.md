@@ -1,18 +1,15 @@
 # Program 🔴
-
 ```rustleaf
 // #[fail_quietly]
 "Value: ${x + y * 2}";
 ```
 
 # Output
-
 ```
-
+None
 ```
 
 # Result
-
 ```rust
 Err(
     "Expression not yet implemented: InterpolatedString([Text(\"Value: \"), Expression(Add(Identifier(\"x\"), Mul(Identifier(\"y\"), Literal(Int(2)))))])",
@@ -20,7 +17,6 @@ Err(
 ```
 
 # Lex
-
 ```rust
 Ok(
     [
@@ -39,7 +35,6 @@ Ok(
 ```
 
 # Parse
-
 ```rust
 Ok(
     Program(
@@ -76,7 +71,6 @@ Ok(
 ```
 
 # Eval
-
 ```rust
 Err(
     "Expression not yet implemented: InterpolatedString([Text(\"Value: \"), Expression(Add(Identifier(\"x\"), Mul(Identifier(\"y\"), Literal(Int(2)))))])",

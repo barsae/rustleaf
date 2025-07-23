@@ -1,17 +1,14 @@
 # Program 🟢
-
 ```rustleaf
 [1, 2, 3, "hello", true];
 ```
 
 # Output
-
 ```
-
+None
 ```
 
 # Result
-
 ```rust
 Ok(
     List(
@@ -41,7 +38,6 @@ Ok(
 ```
 
 # Lex
-
 ```rust
 Ok(
     [
@@ -63,7 +59,6 @@ Ok(
 ```
 
 # Parse
-
 ```rust
 Ok(
     Program(
@@ -105,7 +100,6 @@ Ok(
 ```
 
 # Eval
-
 ```rust
 Ok(
     Block(

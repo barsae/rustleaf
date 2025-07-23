@@ -1,5 +1,4 @@
 # Program 🔴
-
 ```rustleaf
 // #[fail_quietly]
 if x > 0 {
@@ -10,13 +9,11 @@ if x > 0 {
 ```
 
 # Output
-
 ```
-
+None
 ```
 
 # Result
-
 ```rust
 Err(
     "Undefined variable: x",
@@ -24,7 +21,6 @@ Err(
 ```
 
 # Lex
-
 ```rust
 Ok(
     [
@@ -45,7 +41,6 @@ Ok(
 ```
 
 # Parse
-
 ```rust
 Ok(
     Program(
@@ -92,7 +87,6 @@ Ok(
 ```
 
 # Eval
-
 ```rust
 Ok(
     Block(

@@ -1,5 +1,4 @@
 # Program 🟢
-
 ```rustleaf
 var i = 0;
 print(loop {
@@ -12,13 +11,11 @@ print(loop {
 ```
 
 # Output
-
 ```
 Int(30)
 ```
 
 # Result
-
 ```rust
 Ok(
     Unit,
@@ -26,7 +23,6 @@ Ok(
 ```
 
 # Lex
-
 ```rust
 Ok(
     [
@@ -67,7 +63,6 @@ Ok(
 ```
 
 # Parse
-
 ```rust
 Ok(
     Program(
@@ -157,7 +152,6 @@ Ok(
 ```
 
 # Eval
-
 ```rust
 Ok(
     Block(

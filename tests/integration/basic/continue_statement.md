@@ -1,18 +1,15 @@
 # Program 🔴
-
 ```rustleaf
 // #[fail_quietly]
 continue;
 ```
 
 # Output
-
 ```
-
+None
 ```
 
 # Result
-
 ```rust
 Err(
     "Unexpected continue",
@@ -20,7 +17,6 @@ Err(
 ```
 
 # Lex
-
 ```rust
 Ok(
     [
@@ -32,7 +28,6 @@ Ok(
 ```
 
 # Parse
-
 ```rust
 Ok(
     Program(
@@ -44,7 +39,6 @@ Ok(
 ```
 
 # Eval
-
 ```rust
 Ok(
     Block(

@@ -1,5 +1,4 @@
 # Program 🟢
-
 ```rustleaf
 // #[fail_quietly]
 // Test modulo operator
@@ -16,13 +15,11 @@ assert(2 ** 3.0 == 8.0);
 ```
 
 # Output
-
 ```
-
+None
 ```
 
 # Result
-
 ```rust
 Ok(
     Unit,
@@ -30,7 +27,6 @@ Ok(
 ```
 
 # Lex
-
 ```rust
 Ok(
     [
@@ -112,7 +108,6 @@ Ok(
 ```
 
 # Parse
-
 ```rust
 Ok(
     Program(
@@ -347,7 +342,6 @@ Ok(
 ```
 
 # Eval
-
 ```rust
 Ok(
     Block(

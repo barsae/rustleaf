@@ -1,17 +1,14 @@
 # Program 🟢
-
 ```rustleaf
 true;
 ```
 
 # Output
-
 ```
-
+None
 ```
 
 # Result
-
 ```rust
 Ok(
     Bool(
@@ -21,7 +18,6 @@ Ok(
 ```
 
 # Lex
-
 ```rust
 Ok(
     [
@@ -33,7 +29,6 @@ Ok(
 ```
 
 # Parse
-
 ```rust
 Ok(
     Program(
@@ -51,7 +46,6 @@ Ok(
 ```
 
 # Eval
-
 ```rust
 Ok(
     Block(

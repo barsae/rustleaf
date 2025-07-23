@@ -1,18 +1,15 @@
 # Program 🟢
-
 ```rustleaf
 #[test(arg1: "value", arg2: 42)]
 var x = 100;
 ```
 
 # Output
-
 ```
-
+None
 ```
 
 # Result
-
 ```rust
 Ok(
     Unit,
@@ -20,7 +17,6 @@ Ok(
 ```
 
 # Lex
-
 ```rust
 Ok(
     [
@@ -48,7 +44,6 @@ Ok(
 ```
 
 # Parse
-
 ```rust
 Ok(
     Program(
@@ -71,7 +66,6 @@ Ok(
 ```
 
 # Eval
-
 ```rust
 Ok(
     Block(

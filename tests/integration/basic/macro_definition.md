@@ -1,5 +1,4 @@
 # Program 🟢
-
 ```rustleaf
 #[macro]
 fn test_macro(ast_node) {
@@ -8,13 +7,11 @@ fn test_macro(ast_node) {
 ```
 
 # Output
-
 ```
-
+None
 ```
 
 # Result
-
 ```rust
 Ok(
     Unit,
@@ -22,7 +19,6 @@ Ok(
 ```
 
 # Lex
-
 ```rust
 Ok(
     [
@@ -44,7 +40,6 @@ Ok(
 ```
 
 # Parse
-
 ```rust
 Ok(
     Program(
@@ -54,7 +49,6 @@ Ok(
 ```
 
 # Eval
-
 ```rust
 Ok(
     Block(

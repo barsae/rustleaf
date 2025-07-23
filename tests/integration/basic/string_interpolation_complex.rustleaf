@@ -1,2 +1,0 @@
-// #[fail_quietly]
-"Value: ${x + y * 2}";

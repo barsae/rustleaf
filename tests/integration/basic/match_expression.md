@@ -1,5 +1,4 @@
 # Program 🔴
-
 ```rustleaf
 // #[fail_quietly]
 match x {
@@ -16,13 +15,11 @@ match x {
 ```
 
 # Output
-
 ```
-
+None
 ```
 
 # Result
-
 ```rust
 Err(
     "Expression not yet implemented: Match { expr: Identifier(\"x\"), cases: [MatchCase { pattern: Literal(Int(0)), guard: None, body: Block { statements: [], final_expr: Some(Literal(String(\"zero\"))) } }, MatchCase { pattern: Literal(Int(1)), guard: None, body: Block { statements: [], final_expr: Some(Literal(String(\"one\"))) } }, MatchCase { pattern: Wildcard, guard: None, body: Block { statements: [], final_expr: Some(Literal(String(\"other\"))) } }] }",
@@ -30,7 +27,6 @@ Err(
 ```
 
 # Lex
-
 ```rust
 Ok(
     [
@@ -59,7 +55,6 @@ Ok(
 ```
 
 # Parse
-
 ```rust
 Ok(
     Program(
@@ -129,7 +124,6 @@ Ok(
 ```
 
 # Eval
-
 ```rust
 Err(
     "Expression not yet implemented: Match { expr: Identifier(\"x\"), cases: [MatchCase { pattern: Literal(Int(0)), guard: None, body: Block { statements: [], final_expr: Some(Literal(String(\"zero\"))) } }, MatchCase { pattern: Literal(Int(1)), guard: None, body: Block { statements: [], final_expr: Some(Literal(String(\"one\"))) } }, MatchCase { pattern: Wildcard, guard: None, body: Block { statements: [], final_expr: Some(Literal(String(\"other\"))) } }] }",

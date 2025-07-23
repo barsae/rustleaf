@@ -1,17 +1,14 @@
 # Program 🟢
-
 ```rustleaf
 print("hello, world");
 ```
 
 # Output
-
 ```
 String("hello, world")
 ```
 
 # Result
-
 ```rust
 Ok(
     Unit,
@@ -19,7 +16,6 @@ Ok(
 ```
 
 # Lex
-
 ```rust
 Ok(
     [
@@ -34,7 +30,6 @@ Ok(
 ```
 
 # Parse
-
 ```rust
 Ok(
     Program(
@@ -59,7 +54,6 @@ Ok(
 ```
 
 # Eval
-
 ```rust
 Ok(
     Block(

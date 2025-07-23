@@ -1,5 +1,4 @@
 # Program 🟢
-
 ```rustleaf
 print(1 + 2);
 print(5 - 3);
@@ -8,7 +7,6 @@ print(10 / 2);
 ```
 
 # Output
-
 ```
 Int(3)
 Int(2)
@@ -17,7 +15,6 @@ Float(5.0)
 ```
 
 # Result
-
 ```rust
 Ok(
     Unit,
@@ -25,7 +22,6 @@ Ok(
 ```
 
 # Lex
-
 ```rust
 Ok(
     [
@@ -63,7 +59,6 @@ Ok(
 ```
 
 # Parse
-
 ```rust
 Ok(
     Program(
@@ -158,7 +153,6 @@ Ok(
 ```
 
 # Eval
-
 ```rust
 Ok(
     Block(

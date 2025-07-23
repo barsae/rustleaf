@@ -1,18 +1,15 @@
 # Program 🔴
-
 ```rustleaf
 // #[fail_quietly]
 super.method();
 ```
 
 # Output
-
 ```
-
+None
 ```
 
 # Result
-
 ```rust
 Err(
     "Expression not yet implemented: Super",
@@ -20,7 +17,6 @@ Err(
 ```
 
 # Lex
-
 ```rust
 Ok(
     [
@@ -36,7 +32,6 @@ Ok(
 ```
 
 # Parse
-
 ```rust
 Ok(
     Program(
@@ -54,7 +49,6 @@ Ok(
 ```
 
 # Eval
-
 ```rust
 Err(
     "Expression not yet implemented: Super",

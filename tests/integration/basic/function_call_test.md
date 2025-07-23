@@ -1,18 +1,15 @@
 # Program 🟢
-
 ```rustleaf
 fn add(x, y) x + y
 print(add(2, 3));
 ```
 
 # Output
-
 ```
 Int(5)
 ```
 
 # Result
-
 ```rust
 Ok(
     Unit,
@@ -20,7 +17,6 @@ Ok(
 ```
 
 # Lex
-
 ```rust
 Ok(
     [
@@ -50,7 +46,6 @@ Ok(
 ```
 
 # Parse
-
 ```rust
 Ok(
     Program(
@@ -116,7 +111,6 @@ Ok(
 ```
 
 # Eval
-
 ```rust
 Ok(
     Block(

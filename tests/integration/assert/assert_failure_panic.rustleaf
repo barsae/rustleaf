@@ -1,1 +1,0 @@
-assert(false, "This should fail");

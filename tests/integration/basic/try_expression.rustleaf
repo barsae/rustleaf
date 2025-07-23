@@ -1,6 +1,0 @@
-// #[fail_quietly]
-try {
-    risky_operation()
-} catch e {
-    "error occurred"
-}

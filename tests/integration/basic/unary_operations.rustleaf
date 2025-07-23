@@ -1,4 +1,0 @@
-print(-42);
-print(!true);
-print(!false);
-print(~5);

@@ -1,18 +1,15 @@
 # Program 🔴
-
 ```rustleaf
 // #[fail_quietly]
 obj.field = 10;
 ```
 
 # Output
-
 ```
-
+None
 ```
 
 # Result
-
 ```rust
 Err(
     "eval not implemented for: SetAttr(Variable(\"obj\"), \"field\", Literal(Int(10)))",
@@ -20,7 +17,6 @@ Err(
 ```
 
 # Lex
-
 ```rust
 Ok(
     [
@@ -36,7 +32,6 @@ Ok(
 ```
 
 # Parse
-
 ```rust
 Ok(
     Program(
@@ -61,7 +56,6 @@ Ok(
 ```
 
 # Eval
-
 ```rust
 Ok(
     Block(

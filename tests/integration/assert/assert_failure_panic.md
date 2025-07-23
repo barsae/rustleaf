@@ -1,17 +1,14 @@
 # Program 🟢
-
 ```rustleaf
 assert(false, "This should fail");
 ```
 
 # Output
-
 ```
-
+None
 ```
 
 # Result
-
 ```rust
 Err(
     "Assertion failed: This should fail",
@@ -19,7 +16,6 @@ Err(
 ```
 
 # Lex
-
 ```rust
 Ok(
     [
@@ -36,7 +32,6 @@ Ok(
 ```
 
 # Parse
-
 ```rust
 Ok(
     Program(
@@ -66,7 +61,6 @@ Ok(
 ```
 
 # Eval
-
 ```rust
 Ok(
     Block(

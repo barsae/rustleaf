@@ -1,5 +1,4 @@
 # Program 🟢
-
 ```rustleaf
 // Basic comparison tests
 assert(3 == 3);
@@ -19,13 +18,11 @@ assert("hello" == "hello");
 ```
 
 # Output
-
 ```
-
+None
 ```
 
 # Result
-
 ```rust
 Ok(
     Unit,
@@ -33,7 +30,6 @@ Ok(
 ```
 
 # Lex
-
 ```rust
 Ok(
     [
@@ -113,7 +109,6 @@ Ok(
 ```
 
 # Parse
-
 ```rust
 Ok(
     Program(
@@ -334,7 +329,6 @@ Ok(
 ```
 
 # Eval
-
 ```rust
 Ok(
     Block(

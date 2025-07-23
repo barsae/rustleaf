@@ -11,6 +11,7 @@ enum TestType {
     Ignore,
 }
 
+
 // Test discovery implementation
 #[proc_macro_attribute]
 pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
@@ -30,30 +31,67 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
             .map(|(test_name, include_path, test_type, full_path)| {
                 let test_fn_name = syn::Ident::new(test_name, proc_macro2::Span::call_site());
 
-                // Use the same comprehensive test infrastructure for all test types
-                let md_output_path = full_path.replace(".rustleaf", ".md");
                 let is_panic_test = matches!(test_type, TestType::Panic);
                 let test_body = quote! {
-                    let source = include_str!(#include_path);
+                    // Read the markdown file and extract rustleaf code block
+                    let md_content = include_str!(#include_path);
+                    
+                    let extract_rustleaf_code_block = |md_content: &str| -> Option<String> {
+                        let lines: Vec<&str> = md_content.lines().collect();
+                        let mut in_rustleaf_block = false;
+                        let mut code_lines = Vec::new();
+                        
+                        for line in lines {
+                            if line.trim() == "```rustleaf" {
+                                in_rustleaf_block = true;
+                                continue;
+                            }
+                            if line.trim() == "```" && in_rustleaf_block {
+                                break;
+                            }
+                            if in_rustleaf_block {
+                                code_lines.push(line);
+                            }
+                        }
+                        
+                        if code_lines.is_empty() {
+                            None
+                        } else {
+                            Some(code_lines.join("\n"))
+                        }
+                    };
+                    
+                    let update_markdown_with_results = |_original_md: &str, source: &str, circle: &str, 
+                        output_section: &str, execution_output: &str, lex_output: &str, 
+                        parse_output: &str, eval_output: &str| -> String {
+                        // Reconstruct the entire markdown from template
+                        format!(
+                            "# Program {}\n```rustleaf\n{}\n```\n\n# Output\n```\n{}\n```\n\n# Result\n```rust\n{}\n```\n\n# Lex\n```rust\n{}\n```\n\n# Parse\n```rust\n{}\n```\n\n# Eval\n```rust\n{}\n```",
+                            circle, source, output_section, execution_output, lex_output, parse_output, eval_output
+                        )
+                    };
+                    
+                    let source = extract_rustleaf_code_block(md_content)
+                        .expect("Failed to find rustleaf code block in markdown file");
                     
                     // Check for #[fail_quietly] magic string
                     let fail_quietly = source.contains("#[fail_quietly]");
                     
                     // Try lexing
-                    let tokens_result = rustleaf::lexer::Lexer::tokenize(source);
+                    let tokens_result = rustleaf::lexer::Lexer::tokenize(&source);
                     let lex_output = format!("{:#?}", tokens_result);
                     
                     // Try parsing (only if lexing succeeded)
                     let parse_output = match &tokens_result {
                         Ok(_) => {
-                            let parse_result = rustleaf::parser::Parser::parse_str(source);
+                            let parse_result = rustleaf::parser::Parser::parse_str(&source);
                             format!("{:#?}", parse_result)
                         }
                         Err(_) => "Skipped due to lex error".to_string(),
                     };
                     
                     // Try compiling to eval IR (only if parsing succeeded)
-                    let eval_output = match rustleaf::parser::Parser::parse_str(source) {
+                    let eval_output = match rustleaf::parser::Parser::parse_str(&source) {
                         Ok(ast) => {
                             let eval_result = rustleaf::eval::Compiler::compile(ast);
                             format!("{:#?}", eval_result)
@@ -62,7 +100,7 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                     };
                     
                     // Try evaluation (only if all previous stages succeeded)
-                    let (output_section, execution_output, eval_success, final_result) = match rustleaf::parser::Parser::parse_str(source) {
+                    let (output_section, execution_output, eval_success, final_result) = match rustleaf::parser::Parser::parse_str(&source) {
                         Ok(ast) => {
                             rustleaf::core::start_print_capture();
                             let result = rustleaf::eval::evaluate(ast);
@@ -70,7 +108,7 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                             let execution_output = format!("{:#?}", result);
                             
                             let output_section = if captured_output.is_empty() {
-                                String::new()
+                                "None".to_string()
                             } else {
                                 captured_output.join("\n")
                             };
@@ -80,7 +118,7 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                         }
                         Err(parse_error) => {
                             let error_result = Err(anyhow::Error::msg(format!("Parse error: {}", parse_error)));
-                            ("Skipped due to parse error".to_string(), "Skipped due to parse error".to_string(), false, error_result)
+                            ("None".to_string(), "Skipped due to parse error".to_string(), false, error_result)
                         }
                     };
                     
@@ -92,11 +130,12 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                         if eval_success { "🟢" } else { "🔴" }
                     };
                     
-                    let md_content = format!(
-                        "# Program {}\n\n```rustleaf\n{}\n```\n\n# Output\n\n```\n{}\n```\n\n# Result\n\n```rust\n{}\n```\n\n# Lex\n\n```rust\n{}\n```\n\n# Parse\n\n```rust\n{}\n```\n\n# Eval\n\n```rust\n{}\n```\n",
-                        circle, source, output_section, execution_output, lex_output, parse_output, eval_output
+                    // Update the markdown file in-place with test results
+                    let updated_md_content = update_markdown_with_results(
+                        md_content, &source, &circle, &output_section, &execution_output, 
+                        &lex_output, &parse_output, &eval_output
                     );
-                    std::fs::write(#md_output_path, md_content).unwrap();
+                    std::fs::write(#full_path, updated_md_content).unwrap();
                     
                     // Control test behavior based on fail_quietly flag
                     if !fail_quietly {
@@ -152,7 +191,7 @@ fn discover_rustleaf_files(
 
         if path.is_file() {
             if let Some(extension) = path.extension() {
-                if extension == "rustleaf" {
+                if extension == "md" {
                     let file_path = path.to_string_lossy().to_string();
 
                     // Generate test function name: strip "./tests/" and convert to function name
@@ -160,9 +199,9 @@ fn discover_rustleaf_files(
 
                     // Determine test type based on filename suffix
                     let filename = path.file_name().unwrap().to_string_lossy();
-                    let test_type = if filename.ends_with("_panic.rustleaf") {
+                    let test_type = if filename.ends_with("_panic.md") {
                         TestType::Panic
-                    } else if filename.ends_with("_ignore.rustleaf") {
+                    } else if filename.ends_with("_ignore.md") {
                         TestType::Ignore
                     } else {
                         TestType::Normal
@@ -196,7 +235,7 @@ fn generate_test_name(file_path: &str) -> String {
         file_path
     };
 
-    // Remove .rustleaf extension and convert path separators to underscores
+    // Remove .md extension and convert path separators to underscores
     let without_extension = if let Some(stem) = Path::new(relative_path).file_stem() {
         let parent = Path::new(relative_path).parent().unwrap_or(Path::new(""));
         if parent.as_os_str().is_empty() {

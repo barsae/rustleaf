@@ -1,5 +1,4 @@
 # Program 🟢
-
 ```rustleaf
 #[first_macro]
 #[second_macro(config: "test")]
@@ -10,13 +9,11 @@ fn decorated_function() {
 ```
 
 # Output
-
 ```
-
+None
 ```
 
 # Result
-
 ```rust
 Ok(
     Unit,
@@ -24,7 +21,6 @@ Ok(
 ```
 
 # Lex
-
 ```rust
 Ok(
     [
@@ -62,7 +58,6 @@ Ok(
 ```
 
 # Parse
-
 ```rust
 Ok(
     Program(
@@ -95,7 +90,6 @@ Ok(
 ```
 
 # Eval
-
 ```rust
 Ok(
     Block(

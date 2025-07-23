@@ -1,5 +1,4 @@
 # Program 🟢
-
 ```rustleaf
 // Test basic arithmetic
 assert(2 + 3 == 5, "Addition should work");
@@ -36,13 +35,11 @@ print("All comprehensive tests passed!");
 ```
 
 # Output
-
 ```
 String("All comprehensive tests passed!")
 ```
 
 # Result
-
 ```rust
 Ok(
     Unit,
@@ -50,7 +47,6 @@ Ok(
 ```
 
 # Lex
-
 ```rust
 Ok(
     [
@@ -217,7 +213,6 @@ Ok(
 ```
 
 # Parse
-
 ```rust
 Ok(
     Program(
@@ -667,7 +662,6 @@ Ok(
 ```
 
 # Eval
-
 ```rust
 Ok(
     Block(

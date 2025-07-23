@@ -1,5 +1,4 @@
 # Program 🔴
-
 ```rustleaf
 // #[fail_quietly]
 try {
@@ -10,13 +9,11 @@ try {
 ```
 
 # Output
-
 ```
-
+None
 ```
 
 # Result
-
 ```rust
 Err(
     "Expression not yet implemented: Try { body: Block { statements: [], final_expr: Some(FunctionCall(Identifier(\"risky_operation\"), [])) }, catch: CatchClause { pattern: Variable(\"e\"), body: Block { statements: [], final_expr: Some(Literal(String(\"error occurred\"))) } } }",
@@ -24,7 +21,6 @@ Err(
 ```
 
 # Lex
-
 ```rust
 Ok(
     [
@@ -45,7 +41,6 @@ Ok(
 ```
 
 # Parse
-
 ```rust
 Ok(
     Program(
@@ -86,7 +81,6 @@ Ok(
 ```
 
 # Eval
-
 ```rust
 Err(
     "Expression not yet implemented: Try { body: Block { statements: [], final_expr: Some(FunctionCall(Identifier(\"risky_operation\"), [])) }, catch: CatchClause { pattern: Variable(\"e\"), body: Block { statements: [], final_expr: Some(Literal(String(\"error occurred\"))) } } }",

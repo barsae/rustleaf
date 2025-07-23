@@ -1,8 +1,0 @@
-// #[fail_quietly]
-class Person {
-    var name;
-    
-    fn greet() {
-        print("Hello");
-    }
-}

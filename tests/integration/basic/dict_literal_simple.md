@@ -1,17 +1,14 @@
 # Program 🟢
-
 ```rustleaf
 {"a": 1, "b": 2};
 ```
 
 # Output
-
 ```
-
+None
 ```
 
 # Result
-
 ```rust
 Ok(
     Dict(
@@ -32,7 +29,6 @@ Ok(
 ```
 
 # Lex
-
 ```rust
 Ok(
     [
@@ -52,7 +48,6 @@ Ok(
 ```
 
 # Parse
-
 ```rust
 Ok(
     Program(
@@ -93,7 +88,6 @@ Ok(
 ```
 
 # Eval
-
 ```rust
 Ok(
     Block(

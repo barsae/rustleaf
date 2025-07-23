@@ -1,5 +1,4 @@
 # Program 🔴
-
 ```rustleaf
 // #[fail_quietly]
 with file = open("data.txt") {
@@ -8,13 +7,11 @@ with file = open("data.txt") {
 ```
 
 # Output
-
 ```
-
+None
 ```
 
 # Result
-
 ```rust
 Err(
     "Expression not yet implemented: With { resources: [WithResource { name: \"file\", value: FunctionCall(Identifier(\"open\"), [Literal(String(\"data.txt\"))]) }], body: Block { statements: [], final_expr: Some(MethodCall(Identifier(\"file\"), \"read\", [])) } }",
@@ -22,7 +19,6 @@ Err(
 ```
 
 # Lex
-
 ```rust
 Ok(
     [
@@ -46,7 +42,6 @@ Ok(
 ```
 
 # Parse
-
 ```rust
 Ok(
     Program(
@@ -90,7 +85,6 @@ Ok(
 ```
 
 # Eval
-
 ```rust
 Err(
     "Expression not yet implemented: With { resources: [WithResource { name: \"file\", value: FunctionCall(Identifier(\"open\"), [Literal(String(\"data.txt\"))]) }], body: Block { statements: [], final_expr: Some(MethodCall(Identifier(\"file\"), \"read\", [])) } }",

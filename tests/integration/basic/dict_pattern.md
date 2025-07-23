@@ -1,18 +1,15 @@
 # Program 🔴
-
 ```rustleaf
 // #[fail_quietly]
 var {name, age: user_age} = user;
 ```
 
 # Output
-
 ```
-
+None
 ```
 
 # Result
-
 ```rust
 Err(
     "Complex patterns not yet implemented",
@@ -20,7 +17,6 @@ Err(
 ```
 
 # Lex
-
 ```rust
 Ok(
     [
@@ -41,7 +37,6 @@ Ok(
 ```
 
 # Parse
-
 ```rust
 Ok(
     Program(
@@ -73,7 +68,6 @@ Ok(
 ```
 
 # Eval
-
 ```rust
 Err(
     "Complex patterns not yet implemented",

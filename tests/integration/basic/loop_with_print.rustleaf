@@ -1,3 +1,0 @@
-print(loop {
-    break 42;
-});

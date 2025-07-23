@@ -1,6 +1,0 @@
-fn test_return() {
-    return 42;
-}
-
-var result = test_return();
-assert(result == 42);

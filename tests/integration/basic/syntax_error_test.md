@@ -1,24 +1,20 @@
 # Program 🔴
-
 ```rustleaf
 // #[fail_quietly]
 var x = ;
 ```
 
 # Output
-
 ```
-Skipped due to parse error
+None
 ```
 
 # Result
-
 ```rust
 Skipped due to parse error
 ```
 
 # Lex
-
 ```rust
 Ok(
     [
@@ -32,7 +28,6 @@ Ok(
 ```
 
 # Parse
-
 ```rust
 Err(
     "Unexpected token: Semicolon",
@@ -40,7 +35,6 @@ Err(
 ```
 
 # Eval
-
 ```rust
 Skipped due to parse error
 ```

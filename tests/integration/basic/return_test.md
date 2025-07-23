@@ -1,5 +1,4 @@
 # Program 🟢
-
 ```rustleaf
 fn test_return() {
     return 42;
@@ -10,13 +9,11 @@ assert(result == 42);
 ```
 
 # Output
-
 ```
-
+None
 ```
 
 # Result
-
 ```rust
 Ok(
     Unit,
@@ -24,7 +21,6 @@ Ok(
 ```
 
 # Lex
-
 ```rust
 Ok(
     [
@@ -57,7 +53,6 @@ Ok(
 ```
 
 # Parse
-
 ```rust
 Ok(
     Program(
@@ -119,7 +114,6 @@ Ok(
 ```
 
 # Eval
-
 ```rust
 Ok(
     Block(

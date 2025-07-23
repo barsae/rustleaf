@@ -1,4 +1,0 @@
-#[macro]
-fn test_macro(ast_node) {
-    ast_node
-}

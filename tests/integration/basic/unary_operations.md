@@ -1,5 +1,4 @@
 # Program 🟢
-
 ```rustleaf
 print(-42);
 print(!true);
@@ -8,7 +7,6 @@ print(~5);
 ```
 
 # Output
-
 ```
 Int(-42)
 Bool(false)
@@ -17,7 +15,6 @@ Int(-6)
 ```
 
 # Result
-
 ```rust
 Ok(
     Unit,
@@ -25,7 +22,6 @@ Ok(
 ```
 
 # Lex
-
 ```rust
 Ok(
     [
@@ -59,7 +55,6 @@ Ok(
 ```
 
 # Parse
-
 ```rust
 Ok(
     Program(
@@ -134,7 +129,6 @@ Ok(
 ```
 
 # Eval
-
 ```rust
 Ok(
     Block(

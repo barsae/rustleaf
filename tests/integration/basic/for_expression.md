@@ -1,5 +1,4 @@
 # Program 🔴
-
 ```rustleaf
 // #[fail_quietly]
 for x in [1, 2, 3] {
@@ -8,13 +7,11 @@ for x in [1, 2, 3] {
 ```
 
 # Output
-
 ```
-
+None
 ```
 
 # Result
-
 ```rust
 Err(
     "Expression not yet implemented: For { pattern: Variable(\"x\"), iter: List([Literal(Int(1)), Literal(Int(2)), Literal(Int(3))]), body: Block { statements: [Expression(FunctionCall(Identifier(\"print\"), [Identifier(\"x\")]))], final_expr: None } }",
@@ -22,7 +19,6 @@ Err(
 ```
 
 # Lex
-
 ```rust
 Ok(
     [
@@ -49,7 +45,6 @@ Ok(
 ```
 
 # Parse
-
 ```rust
 Ok(
     Program(
@@ -103,7 +98,6 @@ Ok(
 ```
 
 # Eval
-
 ```rust
 Err(
     "Expression not yet implemented: For { pattern: Variable(\"x\"), iter: List([Literal(Int(1)), Literal(Int(2)), Literal(Int(3))]), body: Block { statements: [Expression(FunctionCall(Identifier(\"print\"), [Identifier(\"x\")]))], final_expr: None } }",

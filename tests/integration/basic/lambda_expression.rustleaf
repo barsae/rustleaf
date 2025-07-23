@@ -1,2 +1,0 @@
-// #[fail_quietly]
-|x| x + 1;

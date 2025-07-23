@@ -1,18 +1,15 @@
 # Program 🔴
-
 ```rustleaf
 // #[fail_quietly]
 var [a, b, c] = [1, 2, 3];
 ```
 
 # Output
-
 ```
-
+None
 ```
 
 # Result
-
 ```rust
 Err(
     "Complex patterns not yet implemented",
@@ -20,7 +17,6 @@ Err(
 ```
 
 # Lex
-
 ```rust
 Ok(
     [
@@ -47,7 +43,6 @@ Ok(
 ```
 
 # Parse
-
 ```rust
 Ok(
     Program(
@@ -94,7 +89,6 @@ Ok(
 ```
 
 # Eval
-
 ```rust
 Err(
     "Complex patterns not yet implemented",

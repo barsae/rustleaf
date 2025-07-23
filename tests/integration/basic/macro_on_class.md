@@ -1,5 +1,4 @@
 # Program 🔴
-
 ```rustleaf
 // #[fail_quietly]
 #[serializable]
@@ -10,13 +9,11 @@ class User {
 ```
 
 # Output
-
 ```
-
+None
 ```
 
 # Result
-
 ```rust
 Err(
     "Statement not yet implemented: ClassDecl { name: \"User\", members: [ClassMember { name: \"name\", kind: Field(None) }, ClassMember { name: \"email\", kind: Field(None) }], is_pub: false }",
@@ -24,7 +21,6 @@ Err(
 ```
 
 # Lex
-
 ```rust
 Ok(
     [
@@ -48,7 +44,6 @@ Ok(
 ```
 
 # Parse
-
 ```rust
 Ok(
     Program(
@@ -77,7 +72,6 @@ Ok(
 ```
 
 # Eval
-
 ```rust
 Err(
     "Statement not yet implemented: ClassDecl { name: \"User\", members: [ClassMember { name: \"name\", kind: Field(None) }, ClassMember { name: \"email\", kind: Field(None) }], is_pub: false }",

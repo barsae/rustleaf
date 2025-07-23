@@ -1,17 +1,14 @@
 # Program 🟢
-
 ```rustleaf
 var y;
 ```
 
 # Output
-
 ```
-
+None
 ```
 
 # Result
-
 ```rust
 Ok(
     Unit,
@@ -19,7 +16,6 @@ Ok(
 ```
 
 # Lex
-
 ```rust
 Ok(
     [
@@ -32,7 +28,6 @@ Ok(
 ```
 
 # Parse
-
 ```rust
 Ok(
     Program(
@@ -49,7 +44,6 @@ Ok(
 ```
 
 # Eval
-
 ```rust
 Ok(
     Block(

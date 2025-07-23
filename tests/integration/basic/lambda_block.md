@@ -1,5 +1,4 @@
 # Program 🔴
-
 ```rustleaf
 // #[fail_quietly]
 |x| {
@@ -9,13 +8,11 @@
 ```
 
 # Output
-
 ```
-
+None
 ```
 
 # Result
-
 ```rust
 Err(
     "Expression not yet implemented: Lambda { params: [\"x\"], body: Block(Block { statements: [Expression(FunctionCall(Identifier(\"print\"), [Identifier(\"x\")]))], final_expr: Some(Add(Identifier(\"x\"), Literal(Int(1)))) }) }",
@@ -23,7 +20,6 @@ Err(
 ```
 
 # Lex
-
 ```rust
 Ok(
     [
@@ -47,7 +43,6 @@ Ok(
 ```
 
 # Parse
-
 ```rust
 Ok(
     Program(
@@ -95,7 +90,6 @@ Ok(
 ```
 
 # Eval
-
 ```rust
 Err(
     "Expression not yet implemented: Lambda { params: [\"x\"], body: Block(Block { statements: [Expression(FunctionCall(Identifier(\"print\"), [Identifier(\"x\")]))], final_expr: Some(Add(Identifier(\"x\"), Literal(Int(1)))) }) }",

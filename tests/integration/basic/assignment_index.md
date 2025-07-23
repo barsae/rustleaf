@@ -1,18 +1,15 @@
 # Program 🔴
-
 ```rustleaf
 // #[fail_quietly]
 arr[0] = 99;
 ```
 
 # Output
-
 ```
-
+None
 ```
 
 # Result
-
 ```rust
 Err(
     "eval not implemented for: SetItem(Variable(\"arr\"), Literal(Int(0)), Literal(Int(99)))",
@@ -20,7 +17,6 @@ Err(
 ```
 
 # Lex
-
 ```rust
 Ok(
     [
@@ -37,7 +33,6 @@ Ok(
 ```
 
 # Parse
-
 ```rust
 Ok(
     Program(
@@ -66,7 +61,6 @@ Ok(
 ```
 
 # Eval
-
 ```rust
 Ok(
     Block(

@@ -1,5 +1,4 @@
 # Program 🔴
-
 ```rustleaf
 // #[fail_quietly]
 class Person {
@@ -12,13 +11,11 @@ class Person {
 ```
 
 # Output
-
 ```
-
+None
 ```
 
 # Result
-
 ```rust
 Err(
     "Statement not yet implemented: ClassDecl { name: \"Person\", members: [ClassMember { name: \"name\", kind: Field(None) }, ClassMember { name: \"greet\", kind: Method { params: [], body: Block { statements: [Expression(FunctionCall(Identifier(\"print\"), [Literal(String(\"Hello\"))]))], final_expr: None } } }], is_pub: false }",
@@ -26,7 +23,6 @@ Err(
 ```
 
 # Lex
-
 ```rust
 Ok(
     [
@@ -54,7 +50,6 @@ Ok(
 ```
 
 # Parse
-
 ```rust
 Ok(
     Program(
@@ -102,7 +97,6 @@ Ok(
 ```
 
 # Eval
-
 ```rust
 Err(
     "Statement not yet implemented: ClassDecl { name: \"Person\", members: [ClassMember { name: \"name\", kind: Field(None) }, ClassMember { name: \"greet\", kind: Method { params: [], body: Block { statements: [Expression(FunctionCall(Identifier(\"print\"), [Literal(String(\"Hello\"))]))], final_expr: None } } }], is_pub: false }",

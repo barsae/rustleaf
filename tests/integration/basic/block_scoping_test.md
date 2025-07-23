@@ -1,5 +1,4 @@
 # Program 🟢
-
 ```rustleaf
 var x = 1;
 {
@@ -10,14 +9,12 @@ print(x);
 ```
 
 # Output
-
 ```
 Int(2)
 Int(1)
 ```
 
 # Result
-
 ```rust
 Ok(
     Unit,
@@ -25,7 +22,6 @@ Ok(
 ```
 
 # Lex
-
 ```rust
 Ok(
     [
@@ -57,7 +53,6 @@ Ok(
 ```
 
 # Parse
-
 ```rust
 Ok(
     Program(
@@ -125,7 +120,6 @@ Ok(
 ```
 
 # Eval
-
 ```rust
 Ok(
     Block(

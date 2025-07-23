@@ -1,6 +1,0 @@
-// #[fail_quietly]
-#[serializable]
-class User {
-    var name;
-    var email;
-}
