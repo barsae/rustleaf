@@ -8,14 +8,14 @@ print(if x > 0 { "positive" } else { "zero or negative" });
 # Output
 
 ```
-String("positive")
+
 ```
 
 # Result
 
 ```rust
-Ok(
-    Unit,
+Err(
+    "No attribute 'op_gt' on value Int(5)",
 )
 ```
 
@@ -139,16 +139,20 @@ Ok(
                 ),
                 [
                     If(
-                        BinaryOp(
-                            Gt,
-                            Variable(
-                                "x",
-                            ),
-                            Literal(
-                                Int(
-                                    0,
+                        Call(
+                            GetAttr(
+                                Variable(
+                                    "x",
                                 ),
+                                "op_gt",
                             ),
+                            [
+                                Literal(
+                                    Int(
+                                        0,
+                                    ),
+                                ),
+                            ],
                         ),
                         Block(
                             [],

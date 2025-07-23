@@ -14,14 +14,14 @@ print(loop {
 # Output
 
 ```
-Int(30)
+
 ```
 
 # Result
 
 ```rust
-Ok(
-    Unit,
+Err(
+    "No attribute 'op_lt' on value Int(1)",
 )
 ```
 
@@ -184,29 +184,37 @@ Ok(
                             [
                                 Assign(
                                     "i",
-                                    BinaryOp(
-                                        Add,
-                                        Variable(
-                                            "i",
-                                        ),
-                                        Literal(
-                                            Int(
-                                                1,
+                                    Call(
+                                        GetAttr(
+                                            Variable(
+                                                "i",
                                             ),
+                                            "op_add",
                                         ),
+                                        [
+                                            Literal(
+                                                Int(
+                                                    1,
+                                                ),
+                                            ),
+                                        ],
                                     ),
                                 ),
                                 If(
-                                    BinaryOp(
-                                        Lt,
-                                        Variable(
-                                            "i",
-                                        ),
-                                        Literal(
-                                            Int(
-                                                3,
+                                    Call(
+                                        GetAttr(
+                                            Variable(
+                                                "i",
                                             ),
+                                            "op_lt",
                                         ),
+                                        [
+                                            Literal(
+                                                Int(
+                                                    3,
+                                                ),
+                                            ),
+                                        ],
                                     ),
                                     Block(
                                         [
@@ -218,16 +226,20 @@ Ok(
                                 ),
                                 Break(
                                     Some(
-                                        BinaryOp(
-                                            Mul,
-                                            Variable(
-                                                "i",
-                                            ),
-                                            Literal(
-                                                Int(
-                                                    10,
+                                        Call(
+                                            GetAttr(
+                                                Variable(
+                                                    "i",
                                                 ),
+                                                "op_mul",
                                             ),
+                                            [
+                                                Literal(
+                                                    Int(
+                                                        10,
+                                                    ),
+                                                ),
+                                            ],
                                         ),
                                     ),
                                 ),

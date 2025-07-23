@@ -14,7 +14,7 @@ item in collection;
 
 ```rust
 Err(
-    "Undefined variable: item",
+    "Undefined variable: collection",
 )
 ```
 
@@ -60,14 +60,18 @@ Ok(
     Block(
         [],
         Some(
-            BinaryOp(
-                In,
-                Variable(
-                    "item",
+            Call(
+                GetAttr(
+                    Variable(
+                        "collection",
+                    ),
+                    "op_contains",
                 ),
-                Variable(
-                    "collection",
-                ),
+                [
+                    Variable(
+                        "item",
+                    ),
+                ],
             ),
         ),
     ),

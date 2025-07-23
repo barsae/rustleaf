@@ -168,18 +168,22 @@ Ok(
                     "print",
                 ),
                 [
-                    BinaryOp(
-                        Add,
-                        Literal(
-                            Int(
-                                1,
+                    Call(
+                        GetAttr(
+                            Literal(
+                                Int(
+                                    1,
+                                ),
                             ),
+                            "op_add",
                         ),
-                        Literal(
-                            Int(
-                                2,
+                        [
+                            Literal(
+                                Int(
+                                    2,
+                                ),
                             ),
-                        ),
+                        ],
                     ),
                 ],
             ),
@@ -188,18 +192,22 @@ Ok(
                     "print",
                 ),
                 [
-                    BinaryOp(
-                        Sub,
-                        Literal(
-                            Int(
-                                5,
+                    Call(
+                        GetAttr(
+                            Literal(
+                                Int(
+                                    5,
+                                ),
                             ),
+                            "op_sub",
                         ),
-                        Literal(
-                            Int(
-                                3,
+                        [
+                            Literal(
+                                Int(
+                                    3,
+                                ),
                             ),
-                        ),
+                        ],
                     ),
                 ],
             ),
@@ -208,18 +216,22 @@ Ok(
                     "print",
                 ),
                 [
-                    BinaryOp(
-                        Mul,
-                        Literal(
-                            Int(
-                                4,
+                    Call(
+                        GetAttr(
+                            Literal(
+                                Int(
+                                    4,
+                                ),
                             ),
+                            "op_mul",
                         ),
-                        Literal(
-                            Int(
-                                3,
+                        [
+                            Literal(
+                                Int(
+                                    3,
+                                ),
                             ),
-                        ),
+                        ],
                     ),
                 ],
             ),
@@ -230,18 +242,22 @@ Ok(
                     "print",
                 ),
                 [
-                    BinaryOp(
-                        Div,
-                        Literal(
-                            Int(
-                                10,
+                    Call(
+                        GetAttr(
+                            Literal(
+                                Int(
+                                    10,
+                                ),
                             ),
+                            "op_div",
                         ),
-                        Literal(
-                            Int(
-                                2,
+                        [
+                            Literal(
+                                Int(
+                                    2,
+                                ),
                             ),
-                        ),
+                        ],
                     ),
                 ],
             ),

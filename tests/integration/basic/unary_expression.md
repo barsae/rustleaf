@@ -60,13 +60,16 @@ Ok(
     Block(
         [],
         Some(
-            UnaryOp(
-                Neg,
-                Literal(
-                    Int(
-                        42,
+            Call(
+                GetAttr(
+                    Literal(
+                        Int(
+                            42,
+                        ),
                     ),
+                    "op_neg",
                 ),
+                [],
             ),
         ),
     ),

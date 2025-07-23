@@ -38,14 +38,14 @@ print("All comprehensive tests passed!");
 # Output
 
 ```
-String("All comprehensive tests passed!")
+
 ```
 
 # Result
 
 ```rust
-Ok(
-    Unit,
+Err(
+    "No attribute 'op_eq' on value Int(5)",
 )
 ```
 
@@ -677,26 +677,34 @@ Ok(
                     "assert",
                 ),
                 [
-                    BinaryOp(
-                        Eq,
-                        BinaryOp(
-                            Add,
+                    Call(
+                        GetAttr(
+                            Call(
+                                GetAttr(
+                                    Literal(
+                                        Int(
+                                            2,
+                                        ),
+                                    ),
+                                    "op_add",
+                                ),
+                                [
+                                    Literal(
+                                        Int(
+                                            3,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                            "op_eq",
+                        ),
+                        [
                             Literal(
                                 Int(
-                                    2,
+                                    5,
                                 ),
                             ),
-                            Literal(
-                                Int(
-                                    3,
-                                ),
-                            ),
-                        ),
-                        Literal(
-                            Int(
-                                5,
-                            ),
-                        ),
+                        ],
                     ),
                     Literal(
                         String(
@@ -710,26 +718,34 @@ Ok(
                     "assert",
                 ),
                 [
-                    BinaryOp(
-                        Eq,
-                        BinaryOp(
-                            Sub,
+                    Call(
+                        GetAttr(
+                            Call(
+                                GetAttr(
+                                    Literal(
+                                        Int(
+                                            10,
+                                        ),
+                                    ),
+                                    "op_sub",
+                                ),
+                                [
+                                    Literal(
+                                        Int(
+                                            4,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                            "op_eq",
+                        ),
+                        [
                             Literal(
                                 Int(
-                                    10,
+                                    6,
                                 ),
                             ),
-                            Literal(
-                                Int(
-                                    4,
-                                ),
-                            ),
-                        ),
-                        Literal(
-                            Int(
-                                6,
-                            ),
-                        ),
+                        ],
                     ),
                     Literal(
                         String(
@@ -743,26 +759,34 @@ Ok(
                     "assert",
                 ),
                 [
-                    BinaryOp(
-                        Eq,
-                        BinaryOp(
-                            Mul,
+                    Call(
+                        GetAttr(
+                            Call(
+                                GetAttr(
+                                    Literal(
+                                        Int(
+                                            3,
+                                        ),
+                                    ),
+                                    "op_mul",
+                                ),
+                                [
+                                    Literal(
+                                        Int(
+                                            4,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                            "op_eq",
+                        ),
+                        [
                             Literal(
                                 Int(
-                                    3,
+                                    12,
                                 ),
                             ),
-                            Literal(
-                                Int(
-                                    4,
-                                ),
-                            ),
-                        ),
-                        Literal(
-                            Int(
-                                12,
-                            ),
-                        ),
+                        ],
                     ),
                     Literal(
                         String(
@@ -776,29 +800,40 @@ Ok(
                     "assert",
                 ),
                 [
-                    BinaryOp(
-                        Eq,
-                        UnaryOp(
-                            Neg,
-                            Literal(
-                                Int(
-                                    5,
+                    Call(
+                        GetAttr(
+                            Call(
+                                GetAttr(
+                                    Literal(
+                                        Int(
+                                            5,
+                                        ),
+                                    ),
+                                    "op_neg",
                                 ),
+                                [],
                             ),
+                            "op_eq",
                         ),
-                        BinaryOp(
-                            Sub,
-                            Literal(
-                                Int(
-                                    0,
+                        [
+                            Call(
+                                GetAttr(
+                                    Literal(
+                                        Int(
+                                            0,
+                                        ),
+                                    ),
+                                    "op_sub",
                                 ),
+                                [
+                                    Literal(
+                                        Int(
+                                            5,
+                                        ),
+                                    ),
+                                ],
                             ),
-                            Literal(
-                                Int(
-                                    5,
-                                ),
-                            ),
-                        ),
+                        ],
                     ),
                     Literal(
                         String(
@@ -812,21 +847,25 @@ Ok(
                     "assert",
                 ),
                 [
-                    BinaryOp(
-                        Eq,
-                        UnaryOp(
-                            Not,
-                            Literal(
-                                Bool(
-                                    false,
+                    Call(
+                        GetAttr(
+                            UnaryOp(
+                                Not,
+                                Literal(
+                                    Bool(
+                                        false,
+                                    ),
                                 ),
                             ),
+                            "op_eq",
                         ),
-                        Literal(
-                            Bool(
-                                true,
+                        [
+                            Literal(
+                                Bool(
+                                    true,
+                                ),
                             ),
-                        ),
+                        ],
                     ),
                     Literal(
                         String(
@@ -840,24 +879,34 @@ Ok(
                     "assert",
                 ),
                 [
-                    BinaryOp(
-                        Eq,
-                        UnaryOp(
-                            BitNot,
-                            Literal(
-                                Int(
-                                    0,
+                    Call(
+                        GetAttr(
+                            Call(
+                                GetAttr(
+                                    Literal(
+                                        Int(
+                                            0,
+                                        ),
+                                    ),
+                                    "op_bitwise_not",
                                 ),
+                                [],
                             ),
+                            "op_eq",
                         ),
-                        UnaryOp(
-                            Neg,
-                            Literal(
-                                Int(
-                                    1,
+                        [
+                            Call(
+                                GetAttr(
+                                    Literal(
+                                        Int(
+                                            1,
+                                        ),
+                                    ),
+                                    "op_neg",
                                 ),
+                                [],
                             ),
-                        ),
+                        ],
                     ),
                     Literal(
                         String(
@@ -881,16 +930,20 @@ Ok(
                     "assert",
                 ),
                 [
-                    BinaryOp(
-                        Eq,
-                        Variable(
-                            "x",
-                        ),
-                        Literal(
-                            Int(
-                                100,
+                    Call(
+                        GetAttr(
+                            Variable(
+                                "x",
                             ),
+                            "op_eq",
                         ),
+                        [
+                            Literal(
+                                Int(
+                                    100,
+                                ),
+                            ),
+                        ],
                     ),
                     Literal(
                         String(
@@ -916,16 +969,20 @@ Ok(
                             "assert",
                         ),
                         [
-                            BinaryOp(
-                                Eq,
-                                Variable(
-                                    "x",
-                                ),
-                                Literal(
-                                    Int(
-                                        200,
+                            Call(
+                                GetAttr(
+                                    Variable(
+                                        "x",
                                     ),
+                                    "op_eq",
                                 ),
+                                [
+                                    Literal(
+                                        Int(
+                                            200,
+                                        ),
+                                    ),
+                                ],
                             ),
                             Literal(
                                 String(
@@ -942,16 +999,20 @@ Ok(
                     "assert",
                 ),
                 [
-                    BinaryOp(
-                        Eq,
-                        Variable(
-                            "x",
-                        ),
-                        Literal(
-                            Int(
-                                100,
+                    Call(
+                        GetAttr(
+                            Variable(
+                                "x",
                             ),
+                            "op_eq",
                         ),
+                        [
+                            Literal(
+                                Int(
+                                    100,
+                                ),
+                            ),
+                        ],
                     ),
                     Literal(
                         String(
@@ -969,14 +1030,18 @@ Ok(
                 Block(
                     [],
                     Some(
-                        BinaryOp(
-                            Add,
-                            Variable(
-                                "a",
+                        Call(
+                            GetAttr(
+                                Variable(
+                                    "a",
+                                ),
+                                "op_add",
                             ),
-                            Variable(
-                                "b",
-                            ),
+                            [
+                                Variable(
+                                    "b",
+                                ),
+                            ],
                         ),
                     ),
                 ),
@@ -986,30 +1051,34 @@ Ok(
                     "assert",
                 ),
                 [
-                    BinaryOp(
-                        Eq,
-                        Call(
-                            Variable(
-                                "add",
-                            ),
-                            [
-                                Literal(
-                                    Int(
-                                        7,
-                                    ),
+                    Call(
+                        GetAttr(
+                            Call(
+                                Variable(
+                                    "add",
                                 ),
-                                Literal(
-                                    Int(
-                                        8,
+                                [
+                                    Literal(
+                                        Int(
+                                            7,
+                                        ),
                                     ),
-                                ),
-                            ],
-                        ),
-                        Literal(
-                            Int(
-                                15,
+                                    Literal(
+                                        Int(
+                                            8,
+                                        ),
+                                    ),
+                                ],
                             ),
+                            "op_eq",
                         ),
+                        [
+                            Literal(
+                                Int(
+                                    15,
+                                ),
+                            ),
+                        ],
                     ),
                     Literal(
                         String(
@@ -1035,16 +1104,20 @@ Ok(
                             ),
                         ],
                         Some(
-                            BinaryOp(
-                                Mul,
-                                Variable(
-                                    "temp",
-                                ),
-                                Literal(
-                                    Int(
-                                        2,
+                            Call(
+                                GetAttr(
+                                    Variable(
+                                        "temp",
                                     ),
+                                    "op_mul",
                                 ),
+                                [
+                                    Literal(
+                                        Int(
+                                            2,
+                                        ),
+                                    ),
+                                ],
                             ),
                         ),
                     ),
@@ -1055,16 +1128,20 @@ Ok(
                     "assert",
                 ),
                 [
-                    BinaryOp(
-                        Eq,
-                        Variable(
-                            "result",
-                        ),
-                        Literal(
-                            Int(
-                                10,
+                    Call(
+                        GetAttr(
+                            Variable(
+                                "result",
                             ),
+                            "op_eq",
                         ),
+                        [
+                            Literal(
+                                Int(
+                                    10,
+                                ),
+                            ),
+                        ],
                     ),
                     Literal(
                         String(

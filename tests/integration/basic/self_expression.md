@@ -14,7 +14,7 @@ self.field;
 
 ```rust
 Err(
-    "eval not implemented for: GetAttr(Variable(\"self\"), \"field\")",
+    "Undefined variable: self",
 )
 ```
 

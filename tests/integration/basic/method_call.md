@@ -14,7 +14,7 @@ obj.method(arg1, arg2);
 
 ```rust
 Err(
-    "eval not implemented for: GetAttr(Variable(\"obj\"), \"method\")",
+    "Undefined variable: obj",
 )
 ```
 

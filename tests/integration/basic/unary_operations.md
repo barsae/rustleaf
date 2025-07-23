@@ -13,14 +13,13 @@ print(~5);
 Int(-42)
 Bool(false)
 Bool(true)
-Int(-6)
 ```
 
 # Result
 
 ```rust
-Ok(
-    Unit,
+Err(
+    "No attribute 'op_bitwise_not' on value Int(5)",
 )
 ```
 
@@ -144,13 +143,16 @@ Ok(
                     "print",
                 ),
                 [
-                    UnaryOp(
-                        Neg,
-                        Literal(
-                            Int(
-                                42,
+                    Call(
+                        GetAttr(
+                            Literal(
+                                Int(
+                                    42,
+                                ),
                             ),
+                            "op_neg",
                         ),
+                        [],
                     ),
                 ],
             ),
@@ -191,13 +193,16 @@ Ok(
                     "print",
                 ),
                 [
-                    UnaryOp(
-                        BitNot,
-                        Literal(
-                            Int(
-                                5,
+                    Call(
+                        GetAttr(
+                            Literal(
+                                Int(
+                                    5,
+                                ),
                             ),
+                            "op_bitwise_not",
                         ),
+                        [],
                     ),
                 ],
             ),

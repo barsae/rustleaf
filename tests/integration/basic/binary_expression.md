@@ -66,18 +66,22 @@ Ok(
     Block(
         [],
         Some(
-            BinaryOp(
-                Add,
-                Literal(
-                    Int(
-                        1,
+            Call(
+                GetAttr(
+                    Literal(
+                        Int(
+                            1,
+                        ),
                     ),
+                    "op_add",
                 ),
-                Literal(
-                    Int(
-                        2,
+                [
+                    Literal(
+                        Int(
+                            2,
+                        ),
                     ),
-                ),
+                ],
             ),
         ),
     ),

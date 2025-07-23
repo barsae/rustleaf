@@ -109,16 +109,20 @@ Ok(
                                 "print",
                             ),
                             [
-                                BinaryOp(
-                                    Add,
-                                    Literal(
-                                        String(
-                                            "Hello, ",
+                                Call(
+                                    GetAttr(
+                                        Literal(
+                                            String(
+                                                "Hello, ",
+                                            ),
                                         ),
+                                        "op_add",
                                     ),
-                                    Variable(
-                                        "name",
-                                    ),
+                                    [
+                                        Variable(
+                                            "name",
+                                        ),
+                                    ],
                                 ),
                             ],
                         ),

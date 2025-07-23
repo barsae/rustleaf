@@ -232,16 +232,13 @@ impl Compiler {
             
             // Unary operators
             Expression::Neg(expr) => {
-                let compiled_expr = self.compile_expression(*expr)?;
-                Ok(Eval::UnaryOp(super::core::UnaryOp::Neg, Box::new(compiled_expr)))
+                self.compile_unary_op(super::core::UnaryOp::Neg, *expr)
             }
             Expression::Not(expr) => {
-                let compiled_expr = self.compile_expression(*expr)?;
-                Ok(Eval::UnaryOp(super::core::UnaryOp::Not, Box::new(compiled_expr)))
+                self.compile_unary_op(super::core::UnaryOp::Not, *expr)
             }
             Expression::BitNot(expr) => {
-                let compiled_expr = self.compile_expression(*expr)?;
-                Ok(Eval::UnaryOp(super::core::UnaryOp::BitNot, Box::new(compiled_expr)))
+                self.compile_unary_op(super::core::UnaryOp::BitNot, *expr)
             }
             Expression::If { condition, then_expr, else_expr } => {
                 let compiled_condition = self.compile_expression(*condition)?;
@@ -264,7 +261,64 @@ impl Compiler {
     fn compile_binary_op(&mut self, op: super::core::BinaryOp, left: Expression, right: Expression) -> Result<Eval> {
         let compiled_left = self.compile_expression(left)?;
         let compiled_right = self.compile_expression(right)?;
-        Ok(Eval::BinaryOp(op, Box::new(compiled_left), Box::new(compiled_right)))
+        
+        // Desugar binary operations to method calls: a + b => a.op_get_attr("op_add").op_call(b)
+        let method_name = match op {
+            super::core::BinaryOp::Add => "op_add",
+            super::core::BinaryOp::Sub => "op_sub", 
+            super::core::BinaryOp::Mul => "op_mul",
+            super::core::BinaryOp::Div => "op_div",
+            super::core::BinaryOp::Mod => "op_mod",
+            super::core::BinaryOp::Pow => "op_pow",
+            super::core::BinaryOp::Eq => "op_eq",
+            super::core::BinaryOp::Ne => "op_ne",
+            super::core::BinaryOp::Lt => "op_lt",
+            super::core::BinaryOp::Le => "op_le",
+            super::core::BinaryOp::Gt => "op_gt",
+            super::core::BinaryOp::Ge => "op_ge",
+            super::core::BinaryOp::BitAnd => "op_bitwise_and",
+            super::core::BinaryOp::BitOr => "op_bitwise_or",
+            super::core::BinaryOp::BitXor => "op_bitwise_xor",
+            super::core::BinaryOp::LeftShift => "op_lshift",
+            super::core::BinaryOp::RightShift => "op_rshift",
+            super::core::BinaryOp::In => "op_contains", // Note: "item in container" => container.op_contains(item)
+            super::core::BinaryOp::Is => return Ok(Eval::BinaryOp(op, Box::new(compiled_left), Box::new(compiled_right))), // Keep 'is' as built-in
+            // Logical operations remain built-in for short-circuit evaluation
+            super::core::BinaryOp::And | super::core::BinaryOp::Or => {
+                return Ok(Eval::BinaryOp(op, Box::new(compiled_left), Box::new(compiled_right)));
+            }
+        };
+        
+        // Special handling for 'in' operator: "item in container" => container.op_contains(item)
+        let (obj_expr, arg_expr) = if matches!(op, super::core::BinaryOp::In) {
+            (compiled_right, compiled_left) // Swap operands for 'in'
+        } else {
+            (compiled_left, compiled_right)
+        };
+        
+        // Create: obj.op_get_attr("method_name").op_call(arg)
+        let get_method = Eval::GetAttr(Box::new(obj_expr), method_name.to_string());  
+        let call_method = Eval::Call(Box::new(get_method), vec![arg_expr]);
+        
+        Ok(call_method)
+    }
+
+    fn compile_unary_op(&mut self, op: super::core::UnaryOp, expr: Expression) -> Result<Eval> {
+        let compiled_expr = self.compile_expression(expr)?;
+        
+        // Desugar unary operations to method calls: -a => a.op_get_attr("op_neg").op_call()
+        let method_name = match op {
+            super::core::UnaryOp::Neg => "op_neg",
+            super::core::UnaryOp::BitNot => "op_bitwise_not",
+            // 'not' remains built-in for truthiness handling
+            super::core::UnaryOp::Not => return Ok(Eval::UnaryOp(op, Box::new(compiled_expr))),
+        };
+        
+        // Create: expr.op_get_attr("method_name").op_call()
+        let get_method = Eval::GetAttr(Box::new(compiled_expr), method_name.to_string());
+        let call_method = Eval::Call(Box::new(get_method), vec![]);
+        
+        Ok(call_method)
     }
 
     fn compile_literal(&self, lit: LiteralValue) -> Value {

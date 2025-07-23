@@ -46,10 +46,14 @@ impl PartialEq for Value {
 }
 
 pub trait RustValue: fmt::Debug {
-    fn get_attr(&self, name: &str) -> Option<Value>;
-    fn set_attr(&mut self, name: &str, value: Value) -> Result<(), String>;
+    fn get_attr(&self, _name: &str) -> Option<Value> {
+        None
+    }
+    fn set_attr(&mut self, _name: &str, _value: Value) -> Result<(), String> {
+        Err("Cannot set attributes on this type".to_string())
+    }
     fn call(&self, args: Args) -> Result<Value> {
-        Err(anyhow!("this isn't callable"))
+        Err(anyhow!("Cannot call this type"))
     }
 }
 
@@ -74,9 +78,22 @@ impl Value {
         Value::RustValue(RustValueRef(Rc::new(RefCell::new(val))))
     }
 
+    pub fn from_rust<T: RustValue + 'static>(val: T) -> Self {
+        Value::RustValue(RustValueRef(Rc::new(RefCell::new(Box::new(val)))))
+    }
+
+    pub fn bind_method(&self, method_func: fn(&Value, crate::core::Args) -> anyhow::Result<Value>) -> Self {
+        use crate::core::builtin_ops::BoundMethod;
+        Value::from_rust(BoundMethod::new(self, method_func))
+    }
+
     pub fn get_attr(&self, name: &str) -> Option<Value> {
         match self {
             Value::RustValue(rv) => rv.0.borrow().get_attr(name),
+            Value::Int(_) => self.get_int_attr(name),
+            Value::Float(_) => self.get_float_attr(name),
+            Value::String(_) => self.get_string_attr(name),
+            Value::Bool(_) => self.get_bool_attr(name),
             _ => None,
         }
     }
@@ -86,5 +103,46 @@ impl Value {
             Value::RustValue(rv) => rv.0.borrow().call(args),
             _ => Err(anyhow!("Value is not callable: {:?}", self)),
         }
+    }
+
+    // Operator method implementations for built-in types
+    fn get_int_attr(&self, name: &str) -> Option<Value> {
+        use crate::core::builtin_ops::*;
+
+        match name {
+            "op_add" => Some(self.bind_method(op_add)),
+            "op_sub" => Some(self.bind_method(op_sub)),
+            "op_mul" => Some(self.bind_method(op_mul)),
+            "op_div" => Some(self.bind_method(op_div)),
+            "op_neg" => Some(self.bind_method(op_neg)),
+            _ => None,
+        }
+    }
+
+    fn get_float_attr(&self, name: &str) -> Option<Value> {
+        use crate::core::builtin_ops::*;
+
+        match name {
+            "op_add" => Some(self.bind_method(op_add)),
+            "op_sub" => Some(self.bind_method(op_sub)),
+            "op_mul" => Some(self.bind_method(op_mul)),
+            "op_div" => Some(self.bind_method(op_div)),
+            "op_neg" => Some(self.bind_method(op_neg)),
+            _ => None,
+        }
+    }
+
+    fn get_string_attr(&self, name: &str) -> Option<Value> {
+        use crate::core::builtin_ops::*;
+
+        match name {
+            "op_add" => Some(self.bind_method(op_add)), // String concatenation
+            _ => None,
+        }
+    }
+
+    fn get_bool_attr(&self, _name: &str) -> Option<Value> {
+        // TODO: Implement bool operator methods
+        None
     }
 }

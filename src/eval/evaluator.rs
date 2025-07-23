@@ -21,19 +21,11 @@ struct RustLeafFunction {
 
 impl RustLeafFunction {
     fn into_value(self) -> Value {
-        Value::rust_value(Box::new(self))
+        Value::from_rust(self)
     }
 }
 
 impl RustValue for RustLeafFunction {
-    fn get_attr(&self, _name: &str) -> Option<Value> {
-        None
-    }
-    
-    fn set_attr(&mut self, _name: &str, _value: Value) -> Result<(), String> {
-        Err("Cannot set attributes on function".to_string())
-    }
-    
     fn call(&self, args: Args) -> anyhow::Result<Value> {
         // Check argument count first
         if args.len() != self.params.len() {
@@ -102,9 +94,7 @@ impl Evaluator {
     }
 
     fn register_builtin_fn(&mut self, name: &'static str, func: fn(Args) -> anyhow::Result<Value>) {
-        let rust_fn = Value::rust_value(Box::new(
-            RustFunction::new(name, func)
-        ));
+        let rust_fn = Value::from_rust(RustFunction::new(name, func));
         self.globals.define(name.to_string(), rust_fn);
     }
 
@@ -250,7 +240,14 @@ impl Evaluator {
             Eval::Continue => {
                 Err(ControlFlow::Continue)
             }
-            x => Err(ControlFlow::Error(anyhow!("eval not implemented for: {:?}", eval)))
+            Eval::GetAttr(obj_expr, attr_name) => {
+                let obj_value = self.eval(obj_expr)?;
+                match obj_value.get_attr(attr_name) {
+                    Some(value) => Ok(value),
+                    None => Err(ControlFlow::Error(anyhow!("No attribute '{}' on value {:?}", attr_name, obj_value))),
+                }
+            }
+            x => Err(ControlFlow::Error(anyhow!("eval not implemented for: {:?}", x)))
         }
     }
 

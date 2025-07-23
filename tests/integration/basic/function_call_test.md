@@ -130,14 +130,18 @@ Ok(
                 Block(
                     [],
                     Some(
-                        BinaryOp(
-                            Add,
-                            Variable(
-                                "x",
+                        Call(
+                            GetAttr(
+                                Variable(
+                                    "x",
+                                ),
+                                "op_add",
                             ),
-                            Variable(
-                                "y",
-                            ),
+                            [
+                                Variable(
+                                    "y",
+                                ),
+                            ],
                         ),
                     ),
                 ),

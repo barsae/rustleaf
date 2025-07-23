@@ -10,14 +10,14 @@ print("All assertions passed!");
 # Output
 
 ```
-String("All assertions passed!")
+
 ```
 
 # Result
 
 ```rust
-Ok(
-    Unit,
+Err(
+    "No attribute 'op_eq' on value Int(1)",
 )
 ```
 
@@ -175,18 +175,22 @@ Ok(
                     "assert",
                 ),
                 [
-                    BinaryOp(
-                        Eq,
-                        Literal(
-                            Int(
-                                1,
+                    Call(
+                        GetAttr(
+                            Literal(
+                                Int(
+                                    1,
+                                ),
                             ),
+                            "op_eq",
                         ),
-                        Literal(
-                            Int(
-                                1,
+                        [
+                            Literal(
+                                Int(
+                                    1,
+                                ),
                             ),
-                        ),
+                        ],
                     ),
                 ],
             ),
@@ -195,26 +199,34 @@ Ok(
                     "assert",
                 ),
                 [
-                    BinaryOp(
-                        Eq,
-                        BinaryOp(
-                            Add,
+                    Call(
+                        GetAttr(
+                            Call(
+                                GetAttr(
+                                    Literal(
+                                        Int(
+                                            10,
+                                        ),
+                                    ),
+                                    "op_add",
+                                ),
+                                [
+                                    Literal(
+                                        Int(
+                                            5,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                            "op_eq",
+                        ),
+                        [
                             Literal(
                                 Int(
-                                    10,
+                                    15,
                                 ),
                             ),
-                            Literal(
-                                Int(
-                                    5,
-                                ),
-                            ),
-                        ),
-                        Literal(
-                            Int(
-                                15,
-                            ),
-                        ),
+                        ],
                     ),
                     Literal(
                         String(

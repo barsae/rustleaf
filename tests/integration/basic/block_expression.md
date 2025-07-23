@@ -17,8 +17,8 @@ assert(y == 15);
 # Result
 
 ```rust
-Ok(
-    Unit,
+Err(
+    "No attribute 'op_eq' on value Int(15)",
 )
 ```
 
@@ -143,16 +143,20 @@ Ok(
                             ),
                         ],
                         Some(
-                            BinaryOp(
-                                Add,
-                                Variable(
-                                    "x",
-                                ),
-                                Literal(
-                                    Int(
-                                        5,
+                            Call(
+                                GetAttr(
+                                    Variable(
+                                        "x",
                                     ),
+                                    "op_add",
                                 ),
+                                [
+                                    Literal(
+                                        Int(
+                                            5,
+                                        ),
+                                    ),
+                                ],
                             ),
                         ),
                     ),
@@ -165,16 +169,20 @@ Ok(
                     "assert",
                 ),
                 [
-                    BinaryOp(
-                        Eq,
-                        Variable(
-                            "y",
-                        ),
-                        Literal(
-                            Int(
-                                15,
+                    Call(
+                        GetAttr(
+                            Variable(
+                                "y",
                             ),
+                            "op_eq",
                         ),
+                        [
+                            Literal(
+                                Int(
+                                    15,
+                                ),
+                            ),
+                        ],
                     ),
                 ],
             ),

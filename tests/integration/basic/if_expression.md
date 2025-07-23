@@ -98,16 +98,20 @@ Ok(
         [],
         Some(
             If(
-                BinaryOp(
-                    Gt,
-                    Variable(
-                        "x",
-                    ),
-                    Literal(
-                        Int(
-                            0,
+                Call(
+                    GetAttr(
+                        Variable(
+                            "x",
                         ),
+                        "op_gt",
                     ),
+                    [
+                        Literal(
+                            Int(
+                                0,
+                            ),
+                        ),
+                    ],
                 ),
                 Block(
                     [],

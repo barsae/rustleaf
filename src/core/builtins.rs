@@ -27,10 +27,6 @@ impl std::fmt::Debug for RustFunction {
 }
 
 impl RustValue for RustFunction {
-    fn get_attr(&self, _name: &str) -> Option<Value> { None }
-    fn set_attr(&mut self, _name: &str, _value: Value) -> Result<(), String> {
-        Err("Cannot set attributes on built-in function".to_string())
-    }
     fn call(&self, args: Args) -> Result<Value> {
         (self.func)(args)
     }
