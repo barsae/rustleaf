@@ -4,23 +4,28 @@
 continue;
 ```
 
+# Output
+
+```
+
+```
+
+# Result
+
+```rust
+Err(
+    "eval not implemented for: Continue",
+)
+```
+
 # Lex
 
 ```rust
 Ok(
     [
-        Token {
-            token_type: Continue,
-            text: None,
-        },
-        Token {
-            token_type: Semicolon,
-            text: None,
-        },
-        Token {
-            token_type: Eof,
-            text: None,
-        },
+        Token(Continue),
+        Token(Semicolon),
+        Token(Eof),
     ],
 )
 ```
@@ -47,19 +52,5 @@ Ok(
         ],
         None,
     ),
-)
-```
-
-# Output
-
-```
-
-```
-
-# Result
-
-```rust
-Err(
-    "eval not implemented for: Continue",
 )
 ```

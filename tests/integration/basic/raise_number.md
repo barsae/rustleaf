@@ -4,39 +4,31 @@
 raise(42);
 ```
 
+# Output
+
+```
+
+```
+
+# Result
+
+```rust
+Err(
+    "Undefined variable: raise",
+)
+```
+
 # Lex
 
 ```rust
 Ok(
     [
-        Token {
-            token_type: Ident,
-            text: Some(
-                "raise",
-            ),
-        },
-        Token {
-            token_type: LeftParen,
-            text: None,
-        },
-        Token {
-            token_type: Int,
-            text: Some(
-                "42",
-            ),
-        },
-        Token {
-            token_type: RightParen,
-            text: None,
-        },
-        Token {
-            token_type: Semicolon,
-            text: None,
-        },
-        Token {
-            token_type: Eof,
-            text: None,
-        },
+        Token(Ident, "raise"),
+        Token(LeftParen),
+        Token(Int, "42"),
+        Token(RightParen),
+        Token(Semicolon),
+        Token(Eof),
     ],
 )
 ```
@@ -87,19 +79,5 @@ Ok(
         ],
         None,
     ),
-)
-```
-
-# Output
-
-```
-
-```
-
-# Result
-
-```rust
-Err(
-    "Undefined variable: raise",
 )
 ```

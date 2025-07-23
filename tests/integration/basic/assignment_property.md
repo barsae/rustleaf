@@ -4,45 +4,32 @@
 obj.field = 10;
 ```
 
+# Output
+
+```
+
+```
+
+# Result
+
+```rust
+Err(
+    "eval not implemented for: SetAttr(Variable(\"obj\"), \"field\", Literal(Int(10)))",
+)
+```
+
 # Lex
 
 ```rust
 Ok(
     [
-        Token {
-            token_type: Ident,
-            text: Some(
-                "obj",
-            ),
-        },
-        Token {
-            token_type: Dot,
-            text: None,
-        },
-        Token {
-            token_type: Ident,
-            text: Some(
-                "field",
-            ),
-        },
-        Token {
-            token_type: Equal,
-            text: None,
-        },
-        Token {
-            token_type: Int,
-            text: Some(
-                "10",
-            ),
-        },
-        Token {
-            token_type: Semicolon,
-            text: None,
-        },
-        Token {
-            token_type: Eof,
-            text: None,
-        },
+        Token(Ident, "obj"),
+        Token(Dot),
+        Token(Ident, "field"),
+        Token(Equal),
+        Token(Int, "10"),
+        Token(Semicolon),
+        Token(Eof),
     ],
 )
 ```
@@ -92,19 +79,5 @@ Ok(
         ],
         None,
     ),
-)
-```
-
-# Output
-
-```
-
-```
-
-# Result
-
-```rust
-Err(
-    "eval not implemented for: SetAttr(Variable(\"obj\"), \"field\", Literal(Int(10)))",
 )
 ```

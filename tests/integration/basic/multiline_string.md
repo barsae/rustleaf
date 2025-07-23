@@ -6,25 +6,28 @@ multiline string
 with multiple lines""";
 ```
 
+# Output
+
+```
+
+```
+
+# Result
+
+```rust
+Ok(
+    Unit,
+)
+```
+
 # Lex
 
 ```rust
 Ok(
     [
-        Token {
-            token_type: MultilineString,
-            text: Some(
-                "This is a\nmultiline string\nwith multiple lines",
-            ),
-        },
-        Token {
-            token_type: Semicolon,
-            text: None,
-        },
-        Token {
-            token_type: Eof,
-            text: None,
-        },
+        Token(MultilineString, "This is a\nmultiline string\nwith multiple lines"),
+        Token(Semicolon),
+        Token(Eof),
     ],
 )
 ```
@@ -61,19 +64,5 @@ Ok(
         ],
         None,
     ),
-)
-```
-
-# Output
-
-```
-
-```
-
-# Result
-
-```rust
-Ok(
-    Unit,
 )
 ```

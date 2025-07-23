@@ -5,57 +5,35 @@
 var x = 42;
 ```
 
+# Output
+
+```
+
+```
+
+# Result
+
+```rust
+Ok(
+    Unit,
+)
+```
+
 # Lex
 
 ```rust
 Ok(
     [
-        Token {
-            token_type: Hash,
-            text: None,
-        },
-        Token {
-            token_type: LeftBracket,
-            text: None,
-        },
-        Token {
-            token_type: Ident,
-            text: Some(
-                "test",
-            ),
-        },
-        Token {
-            token_type: RightBracket,
-            text: None,
-        },
-        Token {
-            token_type: Var,
-            text: None,
-        },
-        Token {
-            token_type: Ident,
-            text: Some(
-                "x",
-            ),
-        },
-        Token {
-            token_type: Equal,
-            text: None,
-        },
-        Token {
-            token_type: Int,
-            text: Some(
-                "42",
-            ),
-        },
-        Token {
-            token_type: Semicolon,
-            text: None,
-        },
-        Token {
-            token_type: Eof,
-            text: None,
-        },
+        Token(Hash),
+        Token(LeftBracket),
+        Token(Ident, "test"),
+        Token(RightBracket),
+        Token(Var),
+        Token(Ident, "x"),
+        Token(Equal),
+        Token(Int, "42"),
+        Token(Semicolon),
+        Token(Eof),
     ],
 )
 ```
@@ -102,19 +80,5 @@ Ok(
         ],
         None,
     ),
-)
-```
-
-# Output
-
-```
-
-```
-
-# Result
-
-```rust
-Ok(
-    Unit,
 )
 ```

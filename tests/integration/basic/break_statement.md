@@ -4,29 +4,29 @@
 break 42;
 ```
 
+# Output
+
+```
+
+```
+
+# Result
+
+```rust
+Err(
+    "eval not implemented for: Break(Some(Literal(Int(42))))",
+)
+```
+
 # Lex
 
 ```rust
 Ok(
     [
-        Token {
-            token_type: Break,
-            text: None,
-        },
-        Token {
-            token_type: Int,
-            text: Some(
-                "42",
-            ),
-        },
-        Token {
-            token_type: Semicolon,
-            text: None,
-        },
-        Token {
-            token_type: Eof,
-            text: None,
-        },
+        Token(Break),
+        Token(Int, "42"),
+        Token(Semicolon),
+        Token(Eof),
     ],
 )
 ```
@@ -69,19 +69,5 @@ Ok(
         ],
         None,
     ),
-)
-```
-
-# Output
-
-```
-
-```
-
-# Result
-
-```rust
-Err(
-    "eval not implemented for: Break(Some(Literal(Int(42))))",
 )
 ```

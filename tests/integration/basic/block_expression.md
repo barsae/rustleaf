@@ -7,63 +7,36 @@
 }
 ```
 
+# Output
+
+```
+
+```
+
+# Result
+
+```rust
+Ok(
+    Unit,
+)
+```
+
 # Lex
 
 ```rust
 Ok(
     [
-        Token {
-            token_type: LeftBrace,
-            text: None,
-        },
-        Token {
-            token_type: Var,
-            text: None,
-        },
-        Token {
-            token_type: Ident,
-            text: Some(
-                "x",
-            ),
-        },
-        Token {
-            token_type: Equal,
-            text: None,
-        },
-        Token {
-            token_type: Int,
-            text: Some(
-                "10",
-            ),
-        },
-        Token {
-            token_type: Semicolon,
-            text: None,
-        },
-        Token {
-            token_type: Ident,
-            text: Some(
-                "x",
-            ),
-        },
-        Token {
-            token_type: Plus,
-            text: None,
-        },
-        Token {
-            token_type: Int,
-            text: Some(
-                "5",
-            ),
-        },
-        Token {
-            token_type: RightBrace,
-            text: None,
-        },
-        Token {
-            token_type: Eof,
-            text: None,
-        },
+        Token(LeftBrace),
+        Token(Var),
+        Token(Ident, "x"),
+        Token(Equal),
+        Token(Int, "10"),
+        Token(Semicolon),
+        Token(Ident, "x"),
+        Token(Plus),
+        Token(Int, "5"),
+        Token(RightBrace),
+        Token(Eof),
     ],
 )
 ```
@@ -146,19 +119,5 @@ Ok(
         ],
         None,
     ),
-)
-```
-
-# Output
-
-```
-
-```
-
-# Result
-
-```rust
-Err(
-    "eval not implemented for: BinaryOp(Add, Variable(\"x\"), Literal(Int(5)))",
 )
 ```

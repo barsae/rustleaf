@@ -4,39 +4,31 @@
 print("hello, world");
 ```
 
+# Output
+
+```
+String("hello, world")
+```
+
+# Result
+
+```rust
+Ok(
+    Unit,
+)
+```
+
 # Lex
 
 ```rust
 Ok(
     [
-        Token {
-            token_type: Ident,
-            text: Some(
-                "print",
-            ),
-        },
-        Token {
-            token_type: LeftParen,
-            text: None,
-        },
-        Token {
-            token_type: String,
-            text: Some(
-                "hello, world",
-            ),
-        },
-        Token {
-            token_type: RightParen,
-            text: None,
-        },
-        Token {
-            token_type: Semicolon,
-            text: None,
-        },
-        Token {
-            token_type: Eof,
-            text: None,
-        },
+        Token(Ident, "print"),
+        Token(LeftParen),
+        Token(String, "hello, world"),
+        Token(RightParen),
+        Token(Semicolon),
+        Token(Eof),
     ],
 )
 ```
@@ -87,19 +79,5 @@ Ok(
         ],
         None,
     ),
-)
-```
-
-# Output
-
-```
-String("hello, world")
-```
-
-# Result
-
-```rust
-Ok(
-    Unit,
 )
 ```

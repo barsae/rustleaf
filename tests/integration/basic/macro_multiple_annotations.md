@@ -9,143 +9,54 @@ fn decorated_function() {
 }
 ```
 
+# Output
+
+```
+
+```
+
+# Result
+
+```rust
+Err(
+    "Statement not yet implemented: FnDecl { name: \"decorated_function\", params: [], body: Block { statements: [VarDecl { pattern: Variable(\"result\"), value: Some(Literal(Int(42))) }], final_expr: None }, is_pub: false }",
+)
+```
+
 # Lex
 
 ```rust
 Ok(
     [
-        Token {
-            token_type: Hash,
-            text: None,
-        },
-        Token {
-            token_type: LeftBracket,
-            text: None,
-        },
-        Token {
-            token_type: Ident,
-            text: Some(
-                "first_macro",
-            ),
-        },
-        Token {
-            token_type: RightBracket,
-            text: None,
-        },
-        Token {
-            token_type: Hash,
-            text: None,
-        },
-        Token {
-            token_type: LeftBracket,
-            text: None,
-        },
-        Token {
-            token_type: Ident,
-            text: Some(
-                "second_macro",
-            ),
-        },
-        Token {
-            token_type: LeftParen,
-            text: None,
-        },
-        Token {
-            token_type: Ident,
-            text: Some(
-                "config",
-            ),
-        },
-        Token {
-            token_type: Colon,
-            text: None,
-        },
-        Token {
-            token_type: String,
-            text: Some(
-                "test",
-            ),
-        },
-        Token {
-            token_type: RightParen,
-            text: None,
-        },
-        Token {
-            token_type: RightBracket,
-            text: None,
-        },
-        Token {
-            token_type: Hash,
-            text: None,
-        },
-        Token {
-            token_type: LeftBracket,
-            text: None,
-        },
-        Token {
-            token_type: Ident,
-            text: Some(
-                "third_macro",
-            ),
-        },
-        Token {
-            token_type: RightBracket,
-            text: None,
-        },
-        Token {
-            token_type: Fn,
-            text: None,
-        },
-        Token {
-            token_type: Ident,
-            text: Some(
-                "decorated_function",
-            ),
-        },
-        Token {
-            token_type: LeftParen,
-            text: None,
-        },
-        Token {
-            token_type: RightParen,
-            text: None,
-        },
-        Token {
-            token_type: LeftBrace,
-            text: None,
-        },
-        Token {
-            token_type: Var,
-            text: None,
-        },
-        Token {
-            token_type: Ident,
-            text: Some(
-                "result",
-            ),
-        },
-        Token {
-            token_type: Equal,
-            text: None,
-        },
-        Token {
-            token_type: Int,
-            text: Some(
-                "42",
-            ),
-        },
-        Token {
-            token_type: Semicolon,
-            text: None,
-        },
-        Token {
-            token_type: RightBrace,
-            text: None,
-        },
-        Token {
-            token_type: Eof,
-            text: None,
-        },
+        Token(Hash),
+        Token(LeftBracket),
+        Token(Ident, "first_macro"),
+        Token(RightBracket),
+        Token(Hash),
+        Token(LeftBracket),
+        Token(Ident, "second_macro"),
+        Token(LeftParen),
+        Token(Ident, "config"),
+        Token(Colon),
+        Token(String, "test"),
+        Token(RightParen),
+        Token(RightBracket),
+        Token(Hash),
+        Token(LeftBracket),
+        Token(Ident, "third_macro"),
+        Token(RightBracket),
+        Token(Fn),
+        Token(Ident, "decorated_function"),
+        Token(LeftParen),
+        Token(RightParen),
+        Token(LeftBrace),
+        Token(Var),
+        Token(Ident, "result"),
+        Token(Equal),
+        Token(Int, "42"),
+        Token(Semicolon),
+        Token(RightBrace),
+        Token(Eof),
     ],
 )
 ```
@@ -184,20 +95,6 @@ Ok(
 ```
 
 # Eval
-
-```rust
-Err(
-    "Statement not yet implemented: FnDecl { name: \"decorated_function\", params: [], body: Block { statements: [VarDecl { pattern: Variable(\"result\"), value: Some(Literal(Int(42))) }], final_expr: None }, is_pub: false }",
-)
-```
-
-# Output
-
-```
-
-```
-
-# Result
 
 ```rust
 Err(

@@ -4,25 +4,28 @@
 123;
 ```
 
+# Output
+
+```
+
+```
+
+# Result
+
+```rust
+Ok(
+    Unit,
+)
+```
+
 # Lex
 
 ```rust
 Ok(
     [
-        Token {
-            token_type: Int,
-            text: Some(
-                "123",
-            ),
-        },
-        Token {
-            token_type: Semicolon,
-            text: None,
-        },
-        Token {
-            token_type: Eof,
-            text: None,
-        },
+        Token(Int, "123"),
+        Token(Semicolon),
+        Token(Eof),
     ],
 )
 ```
@@ -59,19 +62,5 @@ Ok(
         ],
         None,
     ),
-)
-```
-
-# Output
-
-```
-
-```
-
-# Result
-
-```rust
-Ok(
-    Unit,
 )
 ```

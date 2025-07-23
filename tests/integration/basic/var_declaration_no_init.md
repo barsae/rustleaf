@@ -4,29 +4,29 @@
 var y;
 ```
 
+# Output
+
+```
+
+```
+
+# Result
+
+```rust
+Ok(
+    Unit,
+)
+```
+
 # Lex
 
 ```rust
 Ok(
     [
-        Token {
-            token_type: Var,
-            text: None,
-        },
-        Token {
-            token_type: Ident,
-            text: Some(
-                "y",
-            ),
-        },
-        Token {
-            token_type: Semicolon,
-            text: None,
-        },
-        Token {
-            token_type: Eof,
-            text: None,
-        },
+        Token(Var),
+        Token(Ident, "y"),
+        Token(Semicolon),
+        Token(Eof),
     ],
 )
 ```
@@ -61,19 +61,5 @@ Ok(
         ],
         None,
     ),
-)
-```
-
-# Output
-
-```
-
-```
-
-# Result
-
-```rust
-Ok(
-    Unit,
 )
 ```

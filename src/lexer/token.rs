@@ -1,6 +1,6 @@
 /// Token types for RustLeaf
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Clone, PartialEq)]
 pub struct Token {
     pub token_type: TokenType,
     pub text: Option<String>,
@@ -20,6 +20,15 @@ impl Token {
     /// Create a token with text (for literals, identifiers, etc.)
     pub fn with_text(token_type: TokenType, text: &str) -> Self {
         Self::new(token_type, Some(text.to_string()))
+    }
+}
+
+impl std::fmt::Debug for Token {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match &self.text {
+            Some(text) => write!(f, "Token({:?}, {:?})", self.token_type, text),
+            None => write!(f, "Token({:?})", self.token_type),
+        }
     }
 }
 

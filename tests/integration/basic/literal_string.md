@@ -4,25 +4,28 @@
 "hello";
 ```
 
+# Output
+
+```
+
+```
+
+# Result
+
+```rust
+Ok(
+    Unit,
+)
+```
+
 # Lex
 
 ```rust
 Ok(
     [
-        Token {
-            token_type: String,
-            text: Some(
-                "hello",
-            ),
-        },
-        Token {
-            token_type: Semicolon,
-            text: None,
-        },
-        Token {
-            token_type: Eof,
-            text: None,
-        },
+        Token(String, "hello"),
+        Token(Semicolon),
+        Token(Eof),
     ],
 )
 ```
@@ -59,19 +62,5 @@ Ok(
         ],
         None,
     ),
-)
-```
-
-# Output
-
-```
-
-```
-
-# Result
-
-```rust
-Ok(
-    Unit,
 )
 ```

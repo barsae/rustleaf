@@ -4,23 +4,28 @@
 break;
 ```
 
+# Output
+
+```
+
+```
+
+# Result
+
+```rust
+Err(
+    "eval not implemented for: Break(None)",
+)
+```
+
 # Lex
 
 ```rust
 Ok(
     [
-        Token {
-            token_type: Break,
-            text: None,
-        },
-        Token {
-            token_type: Semicolon,
-            text: None,
-        },
-        Token {
-            token_type: Eof,
-            text: None,
-        },
+        Token(Break),
+        Token(Semicolon),
+        Token(Eof),
     ],
 )
 ```
@@ -51,19 +56,5 @@ Ok(
         ],
         None,
     ),
-)
-```
-
-# Output
-
-```
-
-```
-
-# Result
-
-```rust
-Err(
-    "eval not implemented for: Break(None)",
 )
 ```

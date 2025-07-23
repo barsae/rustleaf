@@ -6,41 +6,32 @@ loop {
 }
 ```
 
+# Output
+
+```
+
+```
+
+# Result
+
+```rust
+Err(
+    "Expression not yet implemented: Loop { body: Block { statements: [Break(Some(Literal(Int(42))))], final_expr: None } }",
+)
+```
+
 # Lex
 
 ```rust
 Ok(
     [
-        Token {
-            token_type: Loop,
-            text: None,
-        },
-        Token {
-            token_type: LeftBrace,
-            text: None,
-        },
-        Token {
-            token_type: Break,
-            text: None,
-        },
-        Token {
-            token_type: Int,
-            text: Some(
-                "42",
-            ),
-        },
-        Token {
-            token_type: Semicolon,
-            text: None,
-        },
-        Token {
-            token_type: RightBrace,
-            text: None,
-        },
-        Token {
-            token_type: Eof,
-            text: None,
-        },
+        Token(Loop),
+        Token(LeftBrace),
+        Token(Break),
+        Token(Int, "42"),
+        Token(Semicolon),
+        Token(RightBrace),
+        Token(Eof),
     ],
 )
 ```
@@ -75,20 +66,6 @@ Ok(
 ```
 
 # Eval
-
-```rust
-Err(
-    "Expression not yet implemented: Loop { body: Block { statements: [Break(Some(Literal(Int(42))))], final_expr: None } }",
-)
-```
-
-# Output
-
-```
-
-```
-
-# Result
 
 ```rust
 Err(

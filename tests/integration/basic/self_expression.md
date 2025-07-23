@@ -4,35 +4,30 @@
 self.field;
 ```
 
+# Output
+
+```
+
+```
+
+# Result
+
+```rust
+Err(
+    "eval not implemented for: GetAttr(Variable(\"self\"), \"field\")",
+)
+```
+
 # Lex
 
 ```rust
 Ok(
     [
-        Token {
-            token_type: Ident,
-            text: Some(
-                "self",
-            ),
-        },
-        Token {
-            token_type: Dot,
-            text: None,
-        },
-        Token {
-            token_type: Ident,
-            text: Some(
-                "field",
-            ),
-        },
-        Token {
-            token_type: Semicolon,
-            text: None,
-        },
-        Token {
-            token_type: Eof,
-            text: None,
-        },
+        Token(Ident, "self"),
+        Token(Dot),
+        Token(Ident, "field"),
+        Token(Semicolon),
+        Token(Eof),
     ],
 )
 ```
@@ -71,19 +66,5 @@ Ok(
         ],
         None,
     ),
-)
-```
-
-# Output
-
-```
-
-```
-
-# Result
-
-```rust
-Err(
-    "eval not implemented for: GetAttr(Variable(\"self\"), \"field\")",
 )
 ```

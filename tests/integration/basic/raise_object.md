@@ -4,73 +4,38 @@
 raise(NetworkError.new(404, "Resource not found"));
 ```
 
+# Output
+
+```
+
+```
+
+# Result
+
+```rust
+Err(
+    "Undefined variable: raise",
+)
+```
+
 # Lex
 
 ```rust
 Ok(
     [
-        Token {
-            token_type: Ident,
-            text: Some(
-                "raise",
-            ),
-        },
-        Token {
-            token_type: LeftParen,
-            text: None,
-        },
-        Token {
-            token_type: Ident,
-            text: Some(
-                "NetworkError",
-            ),
-        },
-        Token {
-            token_type: Dot,
-            text: None,
-        },
-        Token {
-            token_type: Ident,
-            text: Some(
-                "new",
-            ),
-        },
-        Token {
-            token_type: LeftParen,
-            text: None,
-        },
-        Token {
-            token_type: Int,
-            text: Some(
-                "404",
-            ),
-        },
-        Token {
-            token_type: Comma,
-            text: None,
-        },
-        Token {
-            token_type: String,
-            text: Some(
-                "Resource not found",
-            ),
-        },
-        Token {
-            token_type: RightParen,
-            text: None,
-        },
-        Token {
-            token_type: RightParen,
-            text: None,
-        },
-        Token {
-            token_type: Semicolon,
-            text: None,
-        },
-        Token {
-            token_type: Eof,
-            text: None,
-        },
+        Token(Ident, "raise"),
+        Token(LeftParen),
+        Token(Ident, "NetworkError"),
+        Token(Dot),
+        Token(Ident, "new"),
+        Token(LeftParen),
+        Token(Int, "404"),
+        Token(Comma),
+        Token(String, "Resource not found"),
+        Token(RightParen),
+        Token(RightParen),
+        Token(Semicolon),
+        Token(Eof),
     ],
 )
 ```
@@ -149,19 +114,5 @@ Ok(
         ],
         None,
     ),
-)
-```
-
-# Output
-
-```
-
-```
-
-# Result
-
-```rust
-Err(
-    "Undefined variable: raise",
 )
 ```

@@ -10,97 +10,44 @@ class Person {
 }
 ```
 
+# Output
+
+```
+
+```
+
+# Result
+
+```rust
+Err(
+    "Statement not yet implemented: ClassDecl { name: \"Person\", members: [ClassMember { name: \"name\", kind: Field(None) }, ClassMember { name: \"greet\", kind: Method { params: [], body: Block { statements: [Expression(FunctionCall(Identifier(\"print\"), [Literal(String(\"Hello\"))]))], final_expr: None } } }], is_pub: false }",
+)
+```
+
 # Lex
 
 ```rust
 Ok(
     [
-        Token {
-            token_type: Class,
-            text: None,
-        },
-        Token {
-            token_type: Ident,
-            text: Some(
-                "Person",
-            ),
-        },
-        Token {
-            token_type: LeftBrace,
-            text: None,
-        },
-        Token {
-            token_type: Var,
-            text: None,
-        },
-        Token {
-            token_type: Ident,
-            text: Some(
-                "name",
-            ),
-        },
-        Token {
-            token_type: Semicolon,
-            text: None,
-        },
-        Token {
-            token_type: Fn,
-            text: None,
-        },
-        Token {
-            token_type: Ident,
-            text: Some(
-                "greet",
-            ),
-        },
-        Token {
-            token_type: LeftParen,
-            text: None,
-        },
-        Token {
-            token_type: RightParen,
-            text: None,
-        },
-        Token {
-            token_type: LeftBrace,
-            text: None,
-        },
-        Token {
-            token_type: Ident,
-            text: Some(
-                "print",
-            ),
-        },
-        Token {
-            token_type: LeftParen,
-            text: None,
-        },
-        Token {
-            token_type: String,
-            text: Some(
-                "Hello",
-            ),
-        },
-        Token {
-            token_type: RightParen,
-            text: None,
-        },
-        Token {
-            token_type: Semicolon,
-            text: None,
-        },
-        Token {
-            token_type: RightBrace,
-            text: None,
-        },
-        Token {
-            token_type: RightBrace,
-            text: None,
-        },
-        Token {
-            token_type: Eof,
-            text: None,
-        },
+        Token(Class),
+        Token(Ident, "Person"),
+        Token(LeftBrace),
+        Token(Var),
+        Token(Ident, "name"),
+        Token(Semicolon),
+        Token(Fn),
+        Token(Ident, "greet"),
+        Token(LeftParen),
+        Token(RightParen),
+        Token(LeftBrace),
+        Token(Ident, "print"),
+        Token(LeftParen),
+        Token(String, "Hello"),
+        Token(RightParen),
+        Token(Semicolon),
+        Token(RightBrace),
+        Token(RightBrace),
+        Token(Eof),
     ],
 )
 ```
@@ -154,20 +101,6 @@ Ok(
 ```
 
 # Eval
-
-```rust
-Err(
-    "Statement not yet implemented: ClassDecl { name: \"Person\", members: [ClassMember { name: \"name\", kind: Field(None) }, ClassMember { name: \"greet\", kind: Method { params: [], body: Block { statements: [Expression(FunctionCall(Identifier(\"print\"), [Literal(String(\"Hello\"))]))], final_expr: None } } }], is_pub: false }",
-)
-```
-
-# Output
-
-```
-
-```
-
-# Result
 
 ```rust
 Err(

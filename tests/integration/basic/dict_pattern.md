@@ -4,67 +4,37 @@
 var {name, age: user_age} = user;
 ```
 
+# Output
+
+```
+
+```
+
+# Result
+
+```rust
+Err(
+    "Complex patterns not yet implemented",
+)
+```
+
 # Lex
 
 ```rust
 Ok(
     [
-        Token {
-            token_type: Var,
-            text: None,
-        },
-        Token {
-            token_type: LeftBrace,
-            text: None,
-        },
-        Token {
-            token_type: Ident,
-            text: Some(
-                "name",
-            ),
-        },
-        Token {
-            token_type: Comma,
-            text: None,
-        },
-        Token {
-            token_type: Ident,
-            text: Some(
-                "age",
-            ),
-        },
-        Token {
-            token_type: Colon,
-            text: None,
-        },
-        Token {
-            token_type: Ident,
-            text: Some(
-                "user_age",
-            ),
-        },
-        Token {
-            token_type: RightBrace,
-            text: None,
-        },
-        Token {
-            token_type: Equal,
-            text: None,
-        },
-        Token {
-            token_type: Ident,
-            text: Some(
-                "user",
-            ),
-        },
-        Token {
-            token_type: Semicolon,
-            text: None,
-        },
-        Token {
-            token_type: Eof,
-            text: None,
-        },
+        Token(Var),
+        Token(LeftBrace),
+        Token(Ident, "name"),
+        Token(Comma),
+        Token(Ident, "age"),
+        Token(Colon),
+        Token(Ident, "user_age"),
+        Token(RightBrace),
+        Token(Equal),
+        Token(Ident, "user"),
+        Token(Semicolon),
+        Token(Eof),
     ],
 )
 ```
@@ -102,20 +72,6 @@ Ok(
 ```
 
 # Eval
-
-```rust
-Err(
-    "Complex patterns not yet implemented",
-)
-```
-
-# Output
-
-```
-
-```
-
-# Result
 
 ```rust
 Err(

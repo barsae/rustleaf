@@ -4,35 +4,30 @@
 item in collection;
 ```
 
+# Output
+
+```
+
+```
+
+# Result
+
+```rust
+Err(
+    "Undefined variable: item",
+)
+```
+
 # Lex
 
 ```rust
 Ok(
     [
-        Token {
-            token_type: Ident,
-            text: Some(
-                "item",
-            ),
-        },
-        Token {
-            token_type: In,
-            text: None,
-        },
-        Token {
-            token_type: Ident,
-            text: Some(
-                "collection",
-            ),
-        },
-        Token {
-            token_type: Semicolon,
-            text: None,
-        },
-        Token {
-            token_type: Eof,
-            text: None,
-        },
+        Token(Ident, "item"),
+        Token(In),
+        Token(Ident, "collection"),
+        Token(Semicolon),
+        Token(Eof),
     ],
 )
 ```
@@ -76,19 +71,5 @@ Ok(
         ],
         None,
     ),
-)
-```
-
-# Output
-
-```
-
-```
-
-# Result
-
-```rust
-Err(
-    "eval not implemented for: BinaryOp(In, Variable(\"item\"), Variable(\"collection\"))",
 )
 ```

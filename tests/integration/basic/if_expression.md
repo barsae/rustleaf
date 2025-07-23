@@ -8,67 +8,37 @@ if x > 0 {
 }
 ```
 
+# Output
+
+```
+
+```
+
+# Result
+
+```rust
+Err(
+    "Expression not yet implemented: If { condition: Gt(Identifier(\"x\"), Literal(Int(0))), then_expr: Block { statements: [], final_expr: Some(Literal(String(\"positive\"))) }, else_expr: Some(Block { statements: [], final_expr: Some(Literal(String(\"zero or negative\"))) }) }",
+)
+```
+
 # Lex
 
 ```rust
 Ok(
     [
-        Token {
-            token_type: If,
-            text: None,
-        },
-        Token {
-            token_type: Ident,
-            text: Some(
-                "x",
-            ),
-        },
-        Token {
-            token_type: Greater,
-            text: None,
-        },
-        Token {
-            token_type: Int,
-            text: Some(
-                "0",
-            ),
-        },
-        Token {
-            token_type: LeftBrace,
-            text: None,
-        },
-        Token {
-            token_type: String,
-            text: Some(
-                "positive",
-            ),
-        },
-        Token {
-            token_type: RightBrace,
-            text: None,
-        },
-        Token {
-            token_type: Else,
-            text: None,
-        },
-        Token {
-            token_type: LeftBrace,
-            text: None,
-        },
-        Token {
-            token_type: String,
-            text: Some(
-                "zero or negative",
-            ),
-        },
-        Token {
-            token_type: RightBrace,
-            text: None,
-        },
-        Token {
-            token_type: Eof,
-            text: None,
-        },
+        Token(If),
+        Token(Ident, "x"),
+        Token(Greater),
+        Token(Int, "0"),
+        Token(LeftBrace),
+        Token(String, "positive"),
+        Token(RightBrace),
+        Token(Else),
+        Token(LeftBrace),
+        Token(String, "zero or negative"),
+        Token(RightBrace),
+        Token(Eof),
     ],
 )
 ```
@@ -121,20 +91,6 @@ Ok(
 ```
 
 # Eval
-
-```rust
-Err(
-    "Expression not yet implemented: If { condition: Gt(Identifier(\"x\"), Literal(Int(0))), then_expr: Block { statements: [], final_expr: Some(Literal(String(\"positive\"))) }, else_expr: Some(Block { statements: [], final_expr: Some(Literal(String(\"zero or negative\"))) }) }",
-)
-```
-
-# Output
-
-```
-
-```
-
-# Result
 
 ```rust
 Err(

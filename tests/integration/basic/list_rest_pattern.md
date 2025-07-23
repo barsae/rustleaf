@@ -4,99 +4,44 @@
 var [first, *rest] = [1, 2, 3, 4];
 ```
 
+# Output
+
+```
+
+```
+
+# Result
+
+```rust
+Err(
+    "Complex patterns not yet implemented",
+)
+```
+
 # Lex
 
 ```rust
 Ok(
     [
-        Token {
-            token_type: Var,
-            text: None,
-        },
-        Token {
-            token_type: LeftBracket,
-            text: None,
-        },
-        Token {
-            token_type: Ident,
-            text: Some(
-                "first",
-            ),
-        },
-        Token {
-            token_type: Comma,
-            text: None,
-        },
-        Token {
-            token_type: Star,
-            text: None,
-        },
-        Token {
-            token_type: Ident,
-            text: Some(
-                "rest",
-            ),
-        },
-        Token {
-            token_type: RightBracket,
-            text: None,
-        },
-        Token {
-            token_type: Equal,
-            text: None,
-        },
-        Token {
-            token_type: LeftBracket,
-            text: None,
-        },
-        Token {
-            token_type: Int,
-            text: Some(
-                "1",
-            ),
-        },
-        Token {
-            token_type: Comma,
-            text: None,
-        },
-        Token {
-            token_type: Int,
-            text: Some(
-                "2",
-            ),
-        },
-        Token {
-            token_type: Comma,
-            text: None,
-        },
-        Token {
-            token_type: Int,
-            text: Some(
-                "3",
-            ),
-        },
-        Token {
-            token_type: Comma,
-            text: None,
-        },
-        Token {
-            token_type: Int,
-            text: Some(
-                "4",
-            ),
-        },
-        Token {
-            token_type: RightBracket,
-            text: None,
-        },
-        Token {
-            token_type: Semicolon,
-            text: None,
-        },
-        Token {
-            token_type: Eof,
-            text: None,
-        },
+        Token(Var),
+        Token(LeftBracket),
+        Token(Ident, "first"),
+        Token(Comma),
+        Token(Star),
+        Token(Ident, "rest"),
+        Token(RightBracket),
+        Token(Equal),
+        Token(LeftBracket),
+        Token(Int, "1"),
+        Token(Comma),
+        Token(Int, "2"),
+        Token(Comma),
+        Token(Int, "3"),
+        Token(Comma),
+        Token(Int, "4"),
+        Token(RightBracket),
+        Token(Semicolon),
+        Token(Eof),
     ],
 )
 ```
@@ -151,20 +96,6 @@ Ok(
 ```
 
 # Eval
-
-```rust
-Err(
-    "Complex patterns not yet implemented",
-)
-```
-
-# Output
-
-```
-
-```
-
-# Result
 
 ```rust
 Err(

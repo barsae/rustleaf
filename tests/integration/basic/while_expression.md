@@ -6,73 +6,38 @@ while x < 10 {
 }
 ```
 
+# Output
+
+```
+
+```
+
+# Result
+
+```rust
+Err(
+    "Expression not yet implemented: While { condition: Lt(Identifier(\"x\"), Literal(Int(10))), body: Block { statements: [Assignment { target: Identifier(\"x\"), op: Assign, value: Add(Identifier(\"x\"), Literal(Int(1))) }], final_expr: None } }",
+)
+```
+
 # Lex
 
 ```rust
 Ok(
     [
-        Token {
-            token_type: While,
-            text: None,
-        },
-        Token {
-            token_type: Ident,
-            text: Some(
-                "x",
-            ),
-        },
-        Token {
-            token_type: Less,
-            text: None,
-        },
-        Token {
-            token_type: Int,
-            text: Some(
-                "10",
-            ),
-        },
-        Token {
-            token_type: LeftBrace,
-            text: None,
-        },
-        Token {
-            token_type: Ident,
-            text: Some(
-                "x",
-            ),
-        },
-        Token {
-            token_type: Equal,
-            text: None,
-        },
-        Token {
-            token_type: Ident,
-            text: Some(
-                "x",
-            ),
-        },
-        Token {
-            token_type: Plus,
-            text: None,
-        },
-        Token {
-            token_type: Int,
-            text: Some(
-                "1",
-            ),
-        },
-        Token {
-            token_type: Semicolon,
-            text: None,
-        },
-        Token {
-            token_type: RightBrace,
-            text: None,
-        },
-        Token {
-            token_type: Eof,
-            text: None,
-        },
+        Token(While),
+        Token(Ident, "x"),
+        Token(Less),
+        Token(Int, "10"),
+        Token(LeftBrace),
+        Token(Ident, "x"),
+        Token(Equal),
+        Token(Ident, "x"),
+        Token(Plus),
+        Token(Int, "1"),
+        Token(Semicolon),
+        Token(RightBrace),
+        Token(Eof),
     ],
 )
 ```
@@ -124,20 +89,6 @@ Ok(
 ```
 
 # Eval
-
-```rust
-Err(
-    "Expression not yet implemented: While { condition: Lt(Identifier(\"x\"), Literal(Int(10))), body: Block { statements: [Assignment { target: Identifier(\"x\"), op: Assign, value: Add(Identifier(\"x\"), Literal(Int(1))) }], final_expr: None } }",
-)
-```
-
-# Output
-
-```
-
-```
-
-# Result
 
 ```rust
 Err(

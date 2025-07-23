@@ -5,101 +5,44 @@
 var x = 100;
 ```
 
+# Output
+
+```
+
+```
+
+# Result
+
+```rust
+Ok(
+    Unit,
+)
+```
+
 # Lex
 
 ```rust
 Ok(
     [
-        Token {
-            token_type: Hash,
-            text: None,
-        },
-        Token {
-            token_type: LeftBracket,
-            text: None,
-        },
-        Token {
-            token_type: Ident,
-            text: Some(
-                "test",
-            ),
-        },
-        Token {
-            token_type: LeftParen,
-            text: None,
-        },
-        Token {
-            token_type: Ident,
-            text: Some(
-                "arg1",
-            ),
-        },
-        Token {
-            token_type: Colon,
-            text: None,
-        },
-        Token {
-            token_type: String,
-            text: Some(
-                "value",
-            ),
-        },
-        Token {
-            token_type: Comma,
-            text: None,
-        },
-        Token {
-            token_type: Ident,
-            text: Some(
-                "arg2",
-            ),
-        },
-        Token {
-            token_type: Colon,
-            text: None,
-        },
-        Token {
-            token_type: Int,
-            text: Some(
-                "42",
-            ),
-        },
-        Token {
-            token_type: RightParen,
-            text: None,
-        },
-        Token {
-            token_type: RightBracket,
-            text: None,
-        },
-        Token {
-            token_type: Var,
-            text: None,
-        },
-        Token {
-            token_type: Ident,
-            text: Some(
-                "x",
-            ),
-        },
-        Token {
-            token_type: Equal,
-            text: None,
-        },
-        Token {
-            token_type: Int,
-            text: Some(
-                "100",
-            ),
-        },
-        Token {
-            token_type: Semicolon,
-            text: None,
-        },
-        Token {
-            token_type: Eof,
-            text: None,
-        },
+        Token(Hash),
+        Token(LeftBracket),
+        Token(Ident, "test"),
+        Token(LeftParen),
+        Token(Ident, "arg1"),
+        Token(Colon),
+        Token(String, "value"),
+        Token(Comma),
+        Token(Ident, "arg2"),
+        Token(Colon),
+        Token(Int, "42"),
+        Token(RightParen),
+        Token(RightBracket),
+        Token(Var),
+        Token(Ident, "x"),
+        Token(Equal),
+        Token(Int, "100"),
+        Token(Semicolon),
+        Token(Eof),
     ],
 )
 ```
@@ -146,19 +89,5 @@ Ok(
         ],
         None,
     ),
-)
-```
-
-# Output
-
-```
-
-```
-
-# Result
-
-```rust
-Ok(
-    Unit,
 )
 ```

@@ -4,35 +4,30 @@
 1 + 2;
 ```
 
+# Output
+
+```
+
+```
+
+# Result
+
+```rust
+Ok(
+    Unit,
+)
+```
+
 # Lex
 
 ```rust
 Ok(
     [
-        Token {
-            token_type: Int,
-            text: Some(
-                "1",
-            ),
-        },
-        Token {
-            token_type: Plus,
-            text: None,
-        },
-        Token {
-            token_type: Int,
-            text: Some(
-                "2",
-            ),
-        },
-        Token {
-            token_type: Semicolon,
-            text: None,
-        },
-        Token {
-            token_type: Eof,
-            text: None,
-        },
+        Token(Int, "1"),
+        Token(Plus),
+        Token(Int, "2"),
+        Token(Semicolon),
+        Token(Eof),
     ],
 )
 ```
@@ -84,19 +79,5 @@ Ok(
         ],
         None,
     ),
-)
-```
-
-# Output
-
-```
-
-```
-
-# Result
-
-```rust
-Err(
-    "eval not implemented for: BinaryOp(Add, Literal(Int(1)), Literal(Int(2)))",
 )
 ```

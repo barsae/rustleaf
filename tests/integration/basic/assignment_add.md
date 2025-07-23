@@ -4,35 +4,30 @@
 x += 5;
 ```
 
+# Output
+
+```
+
+```
+
+# Result
+
+```rust
+Err(
+    "Undefined variable: x",
+)
+```
+
 # Lex
 
 ```rust
 Ok(
     [
-        Token {
-            token_type: Ident,
-            text: Some(
-                "x",
-            ),
-        },
-        Token {
-            token_type: PlusEqual,
-            text: None,
-        },
-        Token {
-            token_type: Int,
-            text: Some(
-                "5",
-            ),
-        },
-        Token {
-            token_type: Semicolon,
-            text: None,
-        },
-        Token {
-            token_type: Eof,
-            text: None,
-        },
+        Token(Ident, "x"),
+        Token(PlusEqual),
+        Token(Int, "5"),
+        Token(Semicolon),
+        Token(Eof),
     ],
 )
 ```
@@ -82,19 +77,5 @@ Ok(
         ],
         None,
     ),
-)
-```
-
-# Output
-
-```
-
-```
-
-# Result
-
-```rust
-Err(
-    "eval not implemented for: BinaryOp(Add, Variable(\"x\"), Literal(Int(5)))",
 )
 ```

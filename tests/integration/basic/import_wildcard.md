@@ -4,37 +4,31 @@
 use std::*;
 ```
 
+# Output
+
+```
+
+```
+
+# Result
+
+```rust
+Err(
+    "Statement not yet implemented: Import(ImportSpec { module: \"std\", items: All })",
+)
+```
+
 # Lex
 
 ```rust
 Ok(
     [
-        Token {
-            token_type: Use,
-            text: None,
-        },
-        Token {
-            token_type: Ident,
-            text: Some(
-                "std",
-            ),
-        },
-        Token {
-            token_type: DoubleColon,
-            text: None,
-        },
-        Token {
-            token_type: Star,
-            text: None,
-        },
-        Token {
-            token_type: Semicolon,
-            text: None,
-        },
-        Token {
-            token_type: Eof,
-            text: None,
-        },
+        Token(Use),
+        Token(Ident, "std"),
+        Token(DoubleColon),
+        Token(Star),
+        Token(Semicolon),
+        Token(Eof),
     ],
 )
 ```
@@ -57,20 +51,6 @@ Ok(
 ```
 
 # Eval
-
-```rust
-Err(
-    "Statement not yet implemented: Import(ImportSpec { module: \"std\", items: All })",
-)
-```
-
-# Output
-
-```
-
-```
-
-# Result
 
 ```rust
 Err(

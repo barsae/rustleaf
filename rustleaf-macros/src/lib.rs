@@ -78,8 +78,8 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                             };
                             
                             let md_content = format!(
-                                "# Program\n\n```rustleaf\n{}\n```\n\n# Lex\n\n```rust\n{}\n```\n\n# Parse\n\n```rust\n{}\n```\n\n# Eval\n\n```rust\n{}\n```\n\n# Output\n\n```\n{}\n```\n\n# Result\n\n```rust\n{}\n```\n",
-                                source, lex_output, parse_output, eval_output, output_section, execution_output
+                                "# Program\n\n```rustleaf\n{}\n```\n\n# Output\n\n```\n{}\n```\n\n# Result\n\n```rust\n{}\n```\n\n# Lex\n\n```rust\n{}\n```\n\n# Parse\n\n```rust\n{}\n```\n\n# Eval\n\n```rust\n{}\n```\n",
+                                source, output_section, execution_output, lex_output, parse_output, eval_output
                             );
                             std::fs::write(#md_output_path, md_content).unwrap();
                         }

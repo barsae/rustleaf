@@ -4,55 +4,34 @@
 fn greet(name = "world") name
 ```
 
+# Output
+
+```
+
+```
+
+# Result
+
+```rust
+Err(
+    "Statement not yet implemented: FnDecl { name: \"greet\", params: [Parameter { name: \"name\", default: Some(String(\"world\")), kind: Regular }], body: Block { statements: [], final_expr: Some(Identifier(\"name\")) }, is_pub: false }",
+)
+```
+
 # Lex
 
 ```rust
 Ok(
     [
-        Token {
-            token_type: Fn,
-            text: None,
-        },
-        Token {
-            token_type: Ident,
-            text: Some(
-                "greet",
-            ),
-        },
-        Token {
-            token_type: LeftParen,
-            text: None,
-        },
-        Token {
-            token_type: Ident,
-            text: Some(
-                "name",
-            ),
-        },
-        Token {
-            token_type: Equal,
-            text: None,
-        },
-        Token {
-            token_type: String,
-            text: Some(
-                "world",
-            ),
-        },
-        Token {
-            token_type: RightParen,
-            text: None,
-        },
-        Token {
-            token_type: Ident,
-            text: Some(
-                "name",
-            ),
-        },
-        Token {
-            token_type: Eof,
-            text: None,
-        },
+        Token(Fn),
+        Token(Ident, "greet"),
+        Token(LeftParen),
+        Token(Ident, "name"),
+        Token(Equal),
+        Token(String, "world"),
+        Token(RightParen),
+        Token(Ident, "name"),
+        Token(Eof),
     ],
 )
 ```
@@ -92,20 +71,6 @@ Ok(
 ```
 
 # Eval
-
-```rust
-Err(
-    "Statement not yet implemented: FnDecl { name: \"greet\", params: [Parameter { name: \"name\", default: Some(String(\"world\")), kind: Regular }], body: Block { statements: [], final_expr: Some(Identifier(\"name\")) }, is_pub: false }",
-)
-```
-
-# Output
-
-```
-
-```
-
-# Result
 
 ```rust
 Err(

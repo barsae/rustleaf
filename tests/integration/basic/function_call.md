@@ -4,49 +4,33 @@
 func(arg1, arg2);
 ```
 
+# Output
+
+```
+
+```
+
+# Result
+
+```rust
+Err(
+    "Undefined variable: func",
+)
+```
+
 # Lex
 
 ```rust
 Ok(
     [
-        Token {
-            token_type: Ident,
-            text: Some(
-                "func",
-            ),
-        },
-        Token {
-            token_type: LeftParen,
-            text: None,
-        },
-        Token {
-            token_type: Ident,
-            text: Some(
-                "arg1",
-            ),
-        },
-        Token {
-            token_type: Comma,
-            text: None,
-        },
-        Token {
-            token_type: Ident,
-            text: Some(
-                "arg2",
-            ),
-        },
-        Token {
-            token_type: RightParen,
-            text: None,
-        },
-        Token {
-            token_type: Semicolon,
-            text: None,
-        },
-        Token {
-            token_type: Eof,
-            text: None,
-        },
+        Token(Ident, "func"),
+        Token(LeftParen),
+        Token(Ident, "arg1"),
+        Token(Comma),
+        Token(Ident, "arg2"),
+        Token(RightParen),
+        Token(Semicolon),
+        Token(Eof),
     ],
 )
 ```
@@ -99,19 +83,5 @@ Ok(
         ],
         None,
     ),
-)
-```
-
-# Output
-
-```
-
-```
-
-# Result
-
-```rust
-Err(
-    "Undefined variable: func",
 )
 ```

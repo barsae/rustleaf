@@ -4,39 +4,31 @@
 raise("File not found");
 ```
 
+# Output
+
+```
+
+```
+
+# Result
+
+```rust
+Err(
+    "Undefined variable: raise",
+)
+```
+
 # Lex
 
 ```rust
 Ok(
     [
-        Token {
-            token_type: Ident,
-            text: Some(
-                "raise",
-            ),
-        },
-        Token {
-            token_type: LeftParen,
-            text: None,
-        },
-        Token {
-            token_type: String,
-            text: Some(
-                "File not found",
-            ),
-        },
-        Token {
-            token_type: RightParen,
-            text: None,
-        },
-        Token {
-            token_type: Semicolon,
-            text: None,
-        },
-        Token {
-            token_type: Eof,
-            text: None,
-        },
+        Token(Ident, "raise"),
+        Token(LeftParen),
+        Token(String, "File not found"),
+        Token(RightParen),
+        Token(Semicolon),
+        Token(Eof),
     ],
 )
 ```
@@ -87,19 +79,5 @@ Ok(
         ],
         None,
     ),
-)
-```
-
-# Output
-
-```
-
-```
-
-# Result
-
-```rust
-Err(
-    "Undefined variable: raise",
 )
 ```

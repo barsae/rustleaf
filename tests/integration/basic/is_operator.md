@@ -4,35 +4,30 @@
 a is b;
 ```
 
+# Output
+
+```
+
+```
+
+# Result
+
+```rust
+Err(
+    "Undefined variable: a",
+)
+```
+
 # Lex
 
 ```rust
 Ok(
     [
-        Token {
-            token_type: Ident,
-            text: Some(
-                "a",
-            ),
-        },
-        Token {
-            token_type: Is,
-            text: None,
-        },
-        Token {
-            token_type: Ident,
-            text: Some(
-                "b",
-            ),
-        },
-        Token {
-            token_type: Semicolon,
-            text: None,
-        },
-        Token {
-            token_type: Eof,
-            text: None,
-        },
+        Token(Ident, "a"),
+        Token(Is),
+        Token(Ident, "b"),
+        Token(Semicolon),
+        Token(Eof),
     ],
 )
 ```
@@ -76,19 +71,5 @@ Ok(
         ],
         None,
     ),
-)
-```
-
-# Output
-
-```
-
-```
-
-# Result
-
-```rust
-Err(
-    "eval not implemented for: BinaryOp(Is, Variable(\"a\"), Variable(\"b\"))",
 )
 ```

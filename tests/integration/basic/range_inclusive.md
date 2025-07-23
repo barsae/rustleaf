@@ -4,35 +4,30 @@
 1..=10;
 ```
 
+# Output
+
+```
+
+```
+
+# Result
+
+```rust
+Err(
+    "Expression not yet implemented: RangeInclusive(Literal(Int(1)), Literal(Int(10)))",
+)
+```
+
 # Lex
 
 ```rust
 Ok(
     [
-        Token {
-            token_type: Int,
-            text: Some(
-                "1",
-            ),
-        },
-        Token {
-            token_type: DotDotEqual,
-            text: None,
-        },
-        Token {
-            token_type: Int,
-            text: Some(
-                "10",
-            ),
-        },
-        Token {
-            token_type: Semicolon,
-            text: None,
-        },
-        Token {
-            token_type: Eof,
-            text: None,
-        },
+        Token(Int, "1"),
+        Token(DotDotEqual),
+        Token(Int, "10"),
+        Token(Semicolon),
+        Token(Eof),
     ],
 )
 ```
@@ -63,20 +58,6 @@ Ok(
 ```
 
 # Eval
-
-```rust
-Err(
-    "Expression not yet implemented: RangeInclusive(Literal(Int(1)), Literal(Int(10)))",
-)
-```
-
-# Output
-
-```
-
-```
-
-# Result
 
 ```rust
 Err(

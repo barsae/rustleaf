@@ -4,37 +4,31 @@
 if true { 42 }
 ```
 
+# Output
+
+```
+
+```
+
+# Result
+
+```rust
+Err(
+    "Expression not yet implemented: If { condition: Literal(Bool(true)), then_expr: Block { statements: [], final_expr: Some(Literal(Int(42))) }, else_expr: None }",
+)
+```
+
 # Lex
 
 ```rust
 Ok(
     [
-        Token {
-            token_type: If,
-            text: None,
-        },
-        Token {
-            token_type: True,
-            text: None,
-        },
-        Token {
-            token_type: LeftBrace,
-            text: None,
-        },
-        Token {
-            token_type: Int,
-            text: Some(
-                "42",
-            ),
-        },
-        Token {
-            token_type: RightBrace,
-            text: None,
-        },
-        Token {
-            token_type: Eof,
-            text: None,
-        },
+        Token(If),
+        Token(True),
+        Token(LeftBrace),
+        Token(Int, "42"),
+        Token(RightBrace),
+        Token(Eof),
     ],
 )
 ```
@@ -71,20 +65,6 @@ Ok(
 ```
 
 # Eval
-
-```rust
-Err(
-    "Expression not yet implemented: If { condition: Literal(Bool(true)), then_expr: Block { statements: [], final_expr: Some(Literal(Int(42))) }, else_expr: None }",
-)
-```
-
-# Output
-
-```
-
-```
-
-# Result
 
 ```rust
 Err(

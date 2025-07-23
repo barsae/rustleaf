@@ -4,63 +4,36 @@
 {"a": 1, "b": 2};
 ```
 
+# Output
+
+```
+
+```
+
+# Result
+
+```rust
+Err(
+    "eval not implemented for: Dict([(Literal(String(\"a\")), Literal(Int(1))), (Literal(String(\"b\")), Literal(Int(2)))])",
+)
+```
+
 # Lex
 
 ```rust
 Ok(
     [
-        Token {
-            token_type: LeftBrace,
-            text: None,
-        },
-        Token {
-            token_type: String,
-            text: Some(
-                "a",
-            ),
-        },
-        Token {
-            token_type: Colon,
-            text: None,
-        },
-        Token {
-            token_type: Int,
-            text: Some(
-                "1",
-            ),
-        },
-        Token {
-            token_type: Comma,
-            text: None,
-        },
-        Token {
-            token_type: String,
-            text: Some(
-                "b",
-            ),
-        },
-        Token {
-            token_type: Colon,
-            text: None,
-        },
-        Token {
-            token_type: Int,
-            text: Some(
-                "2",
-            ),
-        },
-        Token {
-            token_type: RightBrace,
-            text: None,
-        },
-        Token {
-            token_type: Semicolon,
-            text: None,
-        },
-        Token {
-            token_type: Eof,
-            text: None,
-        },
+        Token(LeftBrace),
+        Token(String, "a"),
+        Token(Colon),
+        Token(Int, "1"),
+        Token(Comma),
+        Token(String, "b"),
+        Token(Colon),
+        Token(Int, "2"),
+        Token(RightBrace),
+        Token(Semicolon),
+        Token(Eof),
     ],
 )
 ```
@@ -143,19 +116,5 @@ Ok(
         ],
         None,
     ),
-)
-```
-
-# Output
-
-```
-
-```
-
-# Result
-
-```rust
-Err(
-    "eval not implemented for: Dict([(Literal(String(\"a\")), Literal(Int(1))), (Literal(String(\"b\")), Literal(Int(2)))])",
 )
 ```
