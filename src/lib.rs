@@ -20,7 +20,14 @@ pub fn run(source: String) -> Result<core::Value> {
     
     // Evaluation
     let mut evaluator = eval::Evaluator::new();
-    evaluator.eval(&eval_ir)
+    evaluator.eval(&eval_ir).map_err(|control_flow| {
+        match control_flow {
+            eval::ControlFlow::Error(err) => err,
+            eval::ControlFlow::Return(val) => anyhow::anyhow!("Unexpected return: {:?}", val),
+            eval::ControlFlow::Break(val) => anyhow::anyhow!("Unexpected break: {:?}", val),
+            eval::ControlFlow::Continue => anyhow::anyhow!("Unexpected continue"),
+        }
+    })
 }
 
 /// Run a RustLeaf program and print the result
