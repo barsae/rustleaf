@@ -2,12 +2,13 @@
 
 ```rustleaf
 fn add(x, y) x + y
+print(add(2, 3));
 ```
 
 # Output
 
 ```
-
+Int(5)
 ```
 
 # Result
@@ -33,6 +34,16 @@ Ok(
         Token(Ident, "x"),
         Token(Plus),
         Token(Ident, "y"),
+        Token(Ident, "print"),
+        Token(LeftParen),
+        Token(Ident, "add"),
+        Token(LeftParen),
+        Token(Int, "2"),
+        Token(Comma),
+        Token(Int, "3"),
+        Token(RightParen),
+        Token(RightParen),
+        Token(Semicolon),
         Token(Eof),
     ],
 )
@@ -73,6 +84,32 @@ Ok(
                 },
                 is_pub: false,
             },
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "print",
+                    ),
+                    [
+                        FunctionCall(
+                            Identifier(
+                                "add",
+                            ),
+                            [
+                                Literal(
+                                    Int(
+                                        2,
+                                    ),
+                                ),
+                                Literal(
+                                    Int(
+                                        3,
+                                    ),
+                                ),
+                            ],
+                        ),
+                    ],
+                ),
+            ),
         ],
     ),
 )
@@ -104,6 +141,30 @@ Ok(
                         ),
                     ),
                 ),
+            ),
+            Call(
+                Variable(
+                    "print",
+                ),
+                [
+                    Call(
+                        Variable(
+                            "add",
+                        ),
+                        [
+                            Literal(
+                                Int(
+                                    2,
+                                ),
+                            ),
+                            Literal(
+                                Int(
+                                    3,
+                                ),
+                            ),
+                        ],
+                    ),
+                ],
             ),
         ],
         None,

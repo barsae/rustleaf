@@ -12,6 +12,65 @@ pub enum ControlFlow {
 
 pub type EvalResult = Result<Value, ControlFlow>;
 
+#[derive(Debug, Clone)]
+struct RustLeafFunction {
+    params: Vec<String>,
+    body: Eval,
+    closure_env: ScopeRef, // Capture the environment where function was defined
+}
+
+impl RustLeafFunction {
+    fn into_value(self) -> Value {
+        Value::rust_value(Box::new(self))
+    }
+}
+
+impl RustValue for RustLeafFunction {
+    fn get_attr(&self, _name: &str) -> Option<Value> {
+        None
+    }
+    
+    fn set_attr(&mut self, _name: &str, _value: Value) -> Result<(), String> {
+        Err("Cannot set attributes on function".to_string())
+    }
+    
+    fn call(&self, args: Args) -> anyhow::Result<Value> {
+        // Check argument count first
+        if args.len() != self.params.len() {
+            return Err(anyhow!("Function expects {} arguments, got {}", self.params.len(), args.len()));
+        }
+        
+        // Create new scope for function execution
+        let function_scope = self.closure_env.child();
+        
+        // Set function name for better error messages
+        args.set_function_name("user function");
+        
+        // Bind parameters to arguments using fluent API
+        for param in &self.params {
+            let arg_value = args.expect(param)?;
+            function_scope.define(param.clone(), arg_value);
+        }
+        
+        // Validate all args consumed
+        args.complete()?;
+        
+        // Create evaluator with function scope - use same globals as parent
+        let mut evaluator = Evaluator {
+            globals: self.closure_env.clone(), // Use closure environment as globals for now
+            current_env: function_scope,
+        };
+        
+        // Evaluate function body
+        match evaluator.eval(&self.body) {
+            Ok(value) => Ok(value),
+            Err(ControlFlow::Return(value)) => Ok(value),
+            Err(ControlFlow::Error(err)) => Err(err),
+            Err(other) => Err(anyhow!("Invalid control flow in function: {:?}", other)),
+        }
+    }
+}
+
 pub struct Evaluator {
     globals: ScopeRef,
     current_env: ScopeRef,
@@ -92,6 +151,16 @@ impl Evaluator {
                     None => Value::Unit,
                 };
                 self.current_env.define(name.clone(), value);
+                Ok(Value::Unit)
+            }
+            Eval::Function(name, params, body) => {
+                let function = RustLeafFunction {
+                    params: params.clone(),
+                    body: (**body).clone(),
+                    closure_env: self.current_env.clone(),
+                };
+                let function_value = function.into_value();
+                self.current_env.define(name.clone(), function_value);
                 Ok(Value::Unit)
             }
             Eval::Assign(name, expr) => {

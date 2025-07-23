@@ -108,6 +108,17 @@ impl Compiler {
                 Ok(Eval::Break(compiled_expr))
             }
             Statement::Continue => Ok(Eval::Continue),
+            Statement::FnDecl { name, params, body, is_pub: _ } => {
+                // Extract parameter names
+                let param_names: Vec<String> = params.into_iter()
+                    .map(|p| p.name)
+                    .collect();
+                
+                // Compile the function body
+                let compiled_body = self.compile_block_helper(body)?;
+                
+                Ok(Eval::Function(name, param_names, Box::new(compiled_body)))
+            }
             _ => Err(anyhow::anyhow!("Statement not yet implemented: {:?}", stmt)),
         }
     }

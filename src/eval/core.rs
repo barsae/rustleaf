@@ -26,6 +26,9 @@ pub enum Eval {
     // Variable declaration
     Declare(String, Option<Box<Eval>>),
 
+    // Function declaration
+    Function(String, Vec<String>, Box<Eval>),
+
     // Control flow
     If(Box<Eval>, Box<Eval>, Option<Box<Eval>>),
     Loop(Box<Eval>),

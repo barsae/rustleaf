@@ -13,8 +13,8 @@ fn sum(*args) args
 # Result
 
 ```rust
-Err(
-    "Statement not yet implemented: FnDecl { name: \"sum\", params: [Parameter { name: \"args\", default: None, kind: Rest }], body: Block { statements: [], final_expr: Some(Identifier(\"args\")) }, is_pub: false }",
+Ok(
+    Unit,
 )
 ```
 
@@ -68,7 +68,25 @@ Ok(
 # Eval
 
 ```rust
-Err(
-    "Statement not yet implemented: FnDecl { name: \"sum\", params: [Parameter { name: \"args\", default: None, kind: Rest }], body: Block { statements: [], final_expr: Some(Identifier(\"args\")) }, is_pub: false }",
+Ok(
+    Block(
+        [
+            Function(
+                "sum",
+                [
+                    "args",
+                ],
+                Block(
+                    [],
+                    Some(
+                        Variable(
+                            "args",
+                        ),
+                    ),
+                ),
+            ),
+        ],
+        None,
+    ),
 )
 ```

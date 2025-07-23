@@ -15,8 +15,8 @@ pub fn greet(name) {
 # Result
 
 ```rust
-Err(
-    "Statement not yet implemented: FnDecl { name: \"greet\", params: [Parameter { name: \"name\", default: None, kind: Regular }], body: Block { statements: [Expression(FunctionCall(Identifier(\"print\"), [Add(Literal(String(\"Hello, \")), Identifier(\"name\"))]))], final_expr: None }, is_pub: true }",
+Ok(
+    Unit,
 )
 ```
 
@@ -94,7 +94,40 @@ Ok(
 # Eval
 
 ```rust
-Err(
-    "Statement not yet implemented: FnDecl { name: \"greet\", params: [Parameter { name: \"name\", default: None, kind: Regular }], body: Block { statements: [Expression(FunctionCall(Identifier(\"print\"), [Add(Literal(String(\"Hello, \")), Identifier(\"name\"))]))], final_expr: None }, is_pub: true }",
+Ok(
+    Block(
+        [
+            Function(
+                "greet",
+                [
+                    "name",
+                ],
+                Block(
+                    [
+                        Call(
+                            Variable(
+                                "print",
+                            ),
+                            [
+                                BinaryOp(
+                                    Add,
+                                    Literal(
+                                        String(
+                                            "Hello, ",
+                                        ),
+                                    ),
+                                    Variable(
+                                        "name",
+                                    ),
+                                ),
+                            ],
+                        ),
+                    ],
+                    None,
+                ),
+            ),
+        ],
+        None,
+    ),
 )
 ```

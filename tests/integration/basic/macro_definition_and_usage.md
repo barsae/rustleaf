@@ -21,8 +21,8 @@ fn target_function() {
 # Result
 
 ```rust
-Err(
-    "Statement not yet implemented: FnDecl { name: \"target_function\", params: [], body: Block { statements: [VarDecl { pattern: Variable(\"x\"), value: Some(Literal(Int(42))) }], final_expr: None }, is_pub: false }",
+Ok(
+    Unit,
 )
 ```
 
@@ -99,7 +99,30 @@ Ok(
 # Eval
 
 ```rust
-Err(
-    "Statement not yet implemented: FnDecl { name: \"target_function\", params: [], body: Block { statements: [VarDecl { pattern: Variable(\"x\"), value: Some(Literal(Int(42))) }], final_expr: None }, is_pub: false }",
+Ok(
+    Block(
+        [
+            Function(
+                "target_function",
+                [],
+                Block(
+                    [
+                        Declare(
+                            "x",
+                            Some(
+                                Literal(
+                                    Int(
+                                        42,
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ],
+                    None,
+                ),
+            ),
+        ],
+        None,
+    ),
 )
 ```

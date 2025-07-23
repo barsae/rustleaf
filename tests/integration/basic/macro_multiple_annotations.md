@@ -18,8 +18,8 @@ fn decorated_function() {
 # Result
 
 ```rust
-Err(
-    "Statement not yet implemented: FnDecl { name: \"decorated_function\", params: [], body: Block { statements: [VarDecl { pattern: Variable(\"result\"), value: Some(Literal(Int(42))) }], final_expr: None }, is_pub: false }",
+Ok(
+    Unit,
 )
 ```
 
@@ -97,7 +97,30 @@ Ok(
 # Eval
 
 ```rust
-Err(
-    "Statement not yet implemented: FnDecl { name: \"decorated_function\", params: [], body: Block { statements: [VarDecl { pattern: Variable(\"result\"), value: Some(Literal(Int(42))) }], final_expr: None }, is_pub: false }",
+Ok(
+    Block(
+        [
+            Function(
+                "decorated_function",
+                [],
+                Block(
+                    [
+                        Declare(
+                            "result",
+                            Some(
+                                Literal(
+                                    Int(
+                                        42,
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ],
+                    None,
+                ),
+            ),
+        ],
+        None,
+    ),
 )
 ```

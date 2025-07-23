@@ -13,8 +13,8 @@ fn hello() 42
 # Result
 
 ```rust
-Err(
-    "Statement not yet implemented: FnDecl { name: \"hello\", params: [], body: Block { statements: [], final_expr: Some(Literal(Int(42))) }, is_pub: false }",
+Ok(
+    Unit,
 )
 ```
 
@@ -62,7 +62,25 @@ Ok(
 # Eval
 
 ```rust
-Err(
-    "Statement not yet implemented: FnDecl { name: \"hello\", params: [], body: Block { statements: [], final_expr: Some(Literal(Int(42))) }, is_pub: false }",
+Ok(
+    Block(
+        [
+            Function(
+                "hello",
+                [],
+                Block(
+                    [],
+                    Some(
+                        Literal(
+                            Int(
+                                42,
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        ],
+        None,
+    ),
 )
 ```

@@ -13,8 +13,8 @@ fn greet(name = "world") name
 # Result
 
 ```rust
-Err(
-    "Statement not yet implemented: FnDecl { name: \"greet\", params: [Parameter { name: \"name\", default: Some(String(\"world\")), kind: Regular }], body: Block { statements: [], final_expr: Some(Identifier(\"name\")) }, is_pub: false }",
+Ok(
+    Unit,
 )
 ```
 
@@ -73,7 +73,25 @@ Ok(
 # Eval
 
 ```rust
-Err(
-    "Statement not yet implemented: FnDecl { name: \"greet\", params: [Parameter { name: \"name\", default: Some(String(\"world\")), kind: Regular }], body: Block { statements: [], final_expr: Some(Identifier(\"name\")) }, is_pub: false }",
+Ok(
+    Block(
+        [
+            Function(
+                "greet",
+                [
+                    "name",
+                ],
+                Block(
+                    [],
+                    Some(
+                        Variable(
+                            "name",
+                        ),
+                    ),
+                ),
+            ),
+        ],
+        None,
+    ),
 )
 ```
