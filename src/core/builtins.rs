@@ -97,3 +97,12 @@ pub fn stop_print_capture() {
         *capture = None;
     }
 }
+
+pub fn is_unit(args: Args) -> Result<Value> {
+    args.set_function_name("is_unit");
+    let value = args.expect("value")?;
+    args.complete()?;
+    
+    let result = matches!(value, Value::Unit);
+    Ok(Value::Bool(result))
+}

@@ -1,6 +1,6 @@
 # Program 🟢
 ```rustleaf
-fn hello() 42
+fn hello() { 42 }
 ```
 
 # Output
@@ -21,7 +21,9 @@ Ok(
         Token(Ident, "hello"),
         Token(LeftParen),
         Token(RightParen),
+        Token(LeftBrace),
         Token(Int, "42"),
+        Token(RightBrace),
         Token(Eof),
     ],
 )

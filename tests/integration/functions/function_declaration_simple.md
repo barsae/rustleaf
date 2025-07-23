@@ -1,6 +1,6 @@
 # Program 🟢
 ```rustleaf
-fn add(x, y) x + y
+fn add(x, y) { x + y }
 ```
 
 # Output
@@ -24,9 +24,11 @@ Ok(
         Token(Comma),
         Token(Ident, "y"),
         Token(RightParen),
+        Token(LeftBrace),
         Token(Ident, "x"),
         Token(Plus),
         Token(Ident, "y"),
+        Token(RightBrace),
         Token(Eof),
     ],
 )

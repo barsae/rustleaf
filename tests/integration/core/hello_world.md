@@ -1,12 +1,10 @@
 # Program 🟢
 ```rustleaf
-print("hello, world");
+assert("hello, world" == "hello, world");
 ```
 
 # Output
-```
-String("hello, world")
-```
+None
 
 # Result
 ```rust
@@ -19,8 +17,10 @@ Ok(
 ```rust
 Ok(
     [
-        Token(Ident, "print"),
+        Token(Ident, "assert"),
         Token(LeftParen),
+        Token(String, "hello, world"),
+        Token(EqualEqual),
         Token(String, "hello, world"),
         Token(RightParen),
         Token(Semicolon),
@@ -37,12 +37,19 @@ Ok(
             Expression(
                 FunctionCall(
                     Identifier(
-                        "print",
+                        "assert",
                     ),
                     [
-                        Literal(
-                            String(
-                                "hello, world",
+                        Eq(
+                            Literal(
+                                String(
+                                    "hello, world",
+                                ),
+                            ),
+                            Literal(
+                                String(
+                                    "hello, world",
+                                ),
                             ),
                         ),
                     ],
@@ -61,13 +68,25 @@ Ok(
         Some(
             Call(
                 Variable(
-                    "print",
+                    "assert",
                 ),
                 [
-                    Literal(
-                        String(
-                            "hello, world",
+                    Call(
+                        GetAttr(
+                            Literal(
+                                String(
+                                    "hello, world",
+                                ),
+                            ),
+                            "op_eq",
                         ),
+                        [
+                            Literal(
+                                String(
+                                    "hello, world",
+                                ),
+                            ),
+                        ],
                     ),
                 ],
             ),

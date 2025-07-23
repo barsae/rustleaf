@@ -1,6 +1,6 @@
 # Program 🟢
 ```rustleaf
-fn greet(name = "world") name
+fn greet(name = "world") { name }
 ```
 
 # Output
@@ -24,7 +24,9 @@ Ok(
         Token(Equal),
         Token(String, "world"),
         Token(RightParen),
+        Token(LeftBrace),
         Token(Ident, "name"),
+        Token(RightBrace),
         Token(Eof),
     ],
 )

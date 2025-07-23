@@ -91,6 +91,7 @@ impl Evaluator {
     fn register_builtins(&mut self) {
         self.register_builtin_fn("print", print);
         self.register_builtin_fn("assert", crate::core::assert);
+        self.register_builtin_fn("is_unit", crate::core::is_unit);
     }
 
     fn register_builtin_fn(&mut self, name: &'static str, func: fn(Args) -> anyhow::Result<Value>) {

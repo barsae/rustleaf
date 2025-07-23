@@ -437,18 +437,9 @@ impl Parser {
             }
         }
 
-        // Function body can be either a block or a simple expression
-        let body = if self.accept(TokenType::LeftBrace) {
-            // Block body: fn name() { statements }
-            self.parse_block()?
-        } else {
-            // Simple expression body: fn name() expr
-            let expr = self.parse_expression()?;
-            Block {
-                statements: vec![],
-                final_expr: Some(Box::new(expr)),
-            }
-        };
+        // Function body must be a block
+        self.expect(TokenType::LeftBrace, "Expected '{' for function body")?;
+        let body = self.parse_block()?;
 
         Ok(Statement::FnDecl {
             name,

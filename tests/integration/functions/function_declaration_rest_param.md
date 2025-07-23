@@ -1,6 +1,6 @@
 # Program 🟢
 ```rustleaf
-fn sum(*args) args
+fn sum(*args) { args }
 ```
 
 # Output
@@ -23,7 +23,9 @@ Ok(
         Token(Star),
         Token(Ident, "args"),
         Token(RightParen),
+        Token(LeftBrace),
         Token(Ident, "args"),
+        Token(RightBrace),
         Token(Eof),
     ],
 )

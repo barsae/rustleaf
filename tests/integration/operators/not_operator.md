@@ -1,9 +1,13 @@
 # Program 🟢
 ```rustleaf
-assert(-42 == -42);
+// Test 'not' as unary operator
 assert(not true == false);
 assert(not false == true);
-assert(~5 == -6);
+
+// Test with expressions
+var x = 5;
+assert(not (x > 10) == true);
+assert(not (x < 3) == true);   // x=5, x<3 is false, not false is true
 ```
 
 # Output
@@ -22,15 +26,6 @@ Ok(
     [
         Token(Ident, "assert"),
         Token(LeftParen),
-        Token(Minus),
-        Token(Int, "42"),
-        Token(EqualEqual),
-        Token(Minus),
-        Token(Int, "42"),
-        Token(RightParen),
-        Token(Semicolon),
-        Token(Ident, "assert"),
-        Token(LeftParen),
         Token(Not),
         Token(True),
         Token(EqualEqual),
@@ -45,13 +40,33 @@ Ok(
         Token(True),
         Token(RightParen),
         Token(Semicolon),
-        Token(Ident, "assert"),
-        Token(LeftParen),
-        Token(Tilde),
+        Token(Var),
+        Token(Ident, "x"),
+        Token(Equal),
         Token(Int, "5"),
+        Token(Semicolon),
+        Token(Ident, "assert"),
+        Token(LeftParen),
+        Token(Not),
+        Token(LeftParen),
+        Token(Ident, "x"),
+        Token(Greater),
+        Token(Int, "10"),
+        Token(RightParen),
         Token(EqualEqual),
-        Token(Minus),
-        Token(Int, "6"),
+        Token(True),
+        Token(RightParen),
+        Token(Semicolon),
+        Token(Ident, "assert"),
+        Token(LeftParen),
+        Token(Not),
+        Token(LeftParen),
+        Token(Ident, "x"),
+        Token(Less),
+        Token(Int, "3"),
+        Token(RightParen),
+        Token(EqualEqual),
+        Token(True),
         Token(RightParen),
         Token(Semicolon),
         Token(Eof),
@@ -64,31 +79,6 @@ Ok(
 Ok(
     Program(
         [
-            Expression(
-                FunctionCall(
-                    Identifier(
-                        "assert",
-                    ),
-                    [
-                        Eq(
-                            Neg(
-                                Literal(
-                                    Int(
-                                        42,
-                                    ),
-                                ),
-                            ),
-                            Neg(
-                                Literal(
-                                    Int(
-                                        42,
-                                    ),
-                                ),
-                            ),
-                        ),
-                    ],
-                ),
-            ),
             Expression(
                 FunctionCall(
                     Identifier(
@@ -135,6 +125,18 @@ Ok(
                     ],
                 ),
             ),
+            VarDecl {
+                pattern: Variable(
+                    "x",
+                ),
+                value: Some(
+                    Literal(
+                        Int(
+                            5,
+                        ),
+                    ),
+                ),
+            },
             Expression(
                 FunctionCall(
                     Identifier(
@@ -142,18 +144,49 @@ Ok(
                     ),
                     [
                         Eq(
-                            BitNot(
-                                Literal(
-                                    Int(
-                                        5,
+                            Not(
+                                Gt(
+                                    Identifier(
+                                        "x",
+                                    ),
+                                    Literal(
+                                        Int(
+                                            10,
+                                        ),
                                     ),
                                 ),
                             ),
-                            Neg(
-                                Literal(
-                                    Int(
-                                        6,
+                            Literal(
+                                Bool(
+                                    true,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            Not(
+                                Lt(
+                                    Identifier(
+                                        "x",
                                     ),
+                                    Literal(
+                                        Int(
+                                            3,
+                                        ),
+                                    ),
+                                ),
+                            ),
+                            Literal(
+                                Bool(
+                                    true,
                                 ),
                             ),
                         ),
@@ -177,42 +210,6 @@ Ok(
                 [
                     Call(
                         GetAttr(
-                            Call(
-                                GetAttr(
-                                    Literal(
-                                        Int(
-                                            42,
-                                        ),
-                                    ),
-                                    "op_neg",
-                                ),
-                                [],
-                            ),
-                            "op_eq",
-                        ),
-                        [
-                            Call(
-                                GetAttr(
-                                    Literal(
-                                        Int(
-                                            42,
-                                        ),
-                                    ),
-                                    "op_neg",
-                                ),
-                                [],
-                            ),
-                        ],
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
                             LogicalNot(
                                 Literal(
                                     Bool(
@@ -258,6 +255,52 @@ Ok(
                     ),
                 ],
             ),
+            Declare(
+                "x",
+                Some(
+                    Literal(
+                        Int(
+                            5,
+                        ),
+                    ),
+                ),
+            ),
+            Call(
+                Variable(
+                    "assert",
+                ),
+                [
+                    Call(
+                        GetAttr(
+                            LogicalNot(
+                                Call(
+                                    GetAttr(
+                                        Variable(
+                                            "x",
+                                        ),
+                                        "op_gt",
+                                    ),
+                                    [
+                                        Literal(
+                                            Int(
+                                                10,
+                                            ),
+                                        ),
+                                    ],
+                                ),
+                            ),
+                            "op_eq",
+                        ),
+                        [
+                            Literal(
+                                Bool(
+                                    true,
+                                ),
+                            ),
+                        ],
+                    ),
+                ],
+            ),
         ],
         Some(
             Call(
@@ -267,30 +310,30 @@ Ok(
                 [
                     Call(
                         GetAttr(
-                            Call(
-                                GetAttr(
-                                    Literal(
-                                        Int(
-                                            5,
+                            LogicalNot(
+                                Call(
+                                    GetAttr(
+                                        Variable(
+                                            "x",
                                         ),
+                                        "op_lt",
                                     ),
-                                    "op_bitwise_not",
+                                    [
+                                        Literal(
+                                            Int(
+                                                3,
+                                            ),
+                                        ),
+                                    ],
                                 ),
-                                [],
                             ),
                             "op_eq",
                         ),
                         [
-                            Call(
-                                GetAttr(
-                                    Literal(
-                                        Int(
-                                            6,
-                                        ),
-                                    ),
-                                    "op_neg",
+                            Literal(
+                                Bool(
+                                    true,
                                 ),
-                                [],
                             ),
                         ],
                     ),

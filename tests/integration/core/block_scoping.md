@@ -1,18 +1,19 @@
 # Program 🟢
 ```rustleaf
 var x = 1;
+var inner_x;
+var outer_x;
 {
     var x = 2;
-    print(x);
+    inner_x = x;
 }
-print(x);
+outer_x = x;
+assert(inner_x == 2);
+assert(outer_x == 1);
 ```
 
 # Output
-```
-Int(2)
-Int(1)
-```
+None
 
 # Result
 ```rust
@@ -30,21 +31,39 @@ Ok(
         Token(Equal),
         Token(Int, "1"),
         Token(Semicolon),
+        Token(Var),
+        Token(Ident, "inner_x"),
+        Token(Semicolon),
+        Token(Var),
+        Token(Ident, "outer_x"),
+        Token(Semicolon),
         Token(LeftBrace),
         Token(Var),
         Token(Ident, "x"),
         Token(Equal),
         Token(Int, "2"),
         Token(Semicolon),
-        Token(Ident, "print"),
-        Token(LeftParen),
+        Token(Ident, "inner_x"),
+        Token(Equal),
         Token(Ident, "x"),
-        Token(RightParen),
         Token(Semicolon),
         Token(RightBrace),
-        Token(Ident, "print"),
-        Token(LeftParen),
+        Token(Ident, "outer_x"),
+        Token(Equal),
         Token(Ident, "x"),
+        Token(Semicolon),
+        Token(Ident, "assert"),
+        Token(LeftParen),
+        Token(Ident, "inner_x"),
+        Token(EqualEqual),
+        Token(Int, "2"),
+        Token(RightParen),
+        Token(Semicolon),
+        Token(Ident, "assert"),
+        Token(LeftParen),
+        Token(Ident, "outer_x"),
+        Token(EqualEqual),
+        Token(Int, "1"),
         Token(RightParen),
         Token(Semicolon),
         Token(Eof),
@@ -69,6 +88,18 @@ Ok(
                     ),
                 ),
             },
+            VarDecl {
+                pattern: Variable(
+                    "inner_x",
+                ),
+                value: None,
+            },
+            VarDecl {
+                pattern: Variable(
+                    "outer_x",
+                ),
+                value: None,
+            },
             Expression(
                 Block(
                     Block {
@@ -85,31 +116,63 @@ Ok(
                                     ),
                                 ),
                             },
-                            Expression(
-                                FunctionCall(
-                                    Identifier(
-                                        "print",
-                                    ),
-                                    [
-                                        Identifier(
-                                            "x",
-                                        ),
-                                    ],
+                            Assignment {
+                                target: Identifier(
+                                    "inner_x",
                                 ),
-                            ),
+                                op: Assign,
+                                value: Identifier(
+                                    "x",
+                                ),
+                            },
                         ],
                         final_expr: None,
                     },
                 ),
             ),
+            Assignment {
+                target: Identifier(
+                    "outer_x",
+                ),
+                op: Assign,
+                value: Identifier(
+                    "x",
+                ),
+            },
             Expression(
                 FunctionCall(
                     Identifier(
-                        "print",
+                        "assert",
                     ),
                     [
-                        Identifier(
-                            "x",
+                        Eq(
+                            Identifier(
+                                "inner_x",
+                            ),
+                            Literal(
+                                Int(
+                                    2,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            Identifier(
+                                "outer_x",
+                            ),
+                            Literal(
+                                Int(
+                                    1,
+                                ),
+                            ),
                         ),
                     ],
                 ),
@@ -134,6 +197,14 @@ Ok(
                     ),
                 ),
             ),
+            Declare(
+                "inner_x",
+                None,
+            ),
+            Declare(
+                "outer_x",
+                None,
+            ),
             Block(
                 [
                     Declare(
@@ -146,28 +217,64 @@ Ok(
                             ),
                         ),
                     ),
-                    Call(
+                    Assign(
+                        "inner_x",
                         Variable(
-                            "print",
+                            "x",
+                        ),
+                    ),
+                ],
+                None,
+            ),
+            Assign(
+                "outer_x",
+                Variable(
+                    "x",
+                ),
+            ),
+            Call(
+                Variable(
+                    "assert",
+                ),
+                [
+                    Call(
+                        GetAttr(
+                            Variable(
+                                "inner_x",
+                            ),
+                            "op_eq",
                         ),
                         [
-                            Variable(
-                                "x",
+                            Literal(
+                                Int(
+                                    2,
+                                ),
                             ),
                         ],
                     ),
                 ],
-                None,
             ),
         ],
         Some(
             Call(
                 Variable(
-                    "print",
+                    "assert",
                 ),
                 [
-                    Variable(
-                        "x",
+                    Call(
+                        GetAttr(
+                            Variable(
+                                "outer_x",
+                            ),
+                            "op_eq",
+                        ),
+                        [
+                            Literal(
+                                Int(
+                                    1,
+                                ),
+                            ),
+                        ],
                     ),
                 ],
             ),

@@ -1,13 +1,11 @@
 # Program 🟢
 ```rustleaf
 var x = 5;
-print(if x > 0 { "positive" } else { "zero or negative" });
+assert((if x > 0 { "positive" } else { "zero or negative" }) == "positive");
 ```
 
 # Output
-```
-String("positive")
-```
+None
 
 # Result
 ```rust
@@ -25,7 +23,8 @@ Ok(
         Token(Equal),
         Token(Int, "5"),
         Token(Semicolon),
-        Token(Ident, "print"),
+        Token(Ident, "assert"),
+        Token(LeftParen),
         Token(LeftParen),
         Token(If),
         Token(Ident, "x"),
@@ -38,6 +37,9 @@ Ok(
         Token(LeftBrace),
         Token(String, "zero or negative"),
         Token(RightBrace),
+        Token(RightParen),
+        Token(EqualEqual),
+        Token(String, "positive"),
         Token(RightParen),
         Token(Semicolon),
         Token(Eof),
@@ -65,43 +67,50 @@ Ok(
             Expression(
                 FunctionCall(
                     Identifier(
-                        "print",
+                        "assert",
                     ),
                     [
-                        If {
-                            condition: Gt(
-                                Identifier(
-                                    "x",
-                                ),
-                                Literal(
-                                    Int(
-                                        0,
+                        Eq(
+                            If {
+                                condition: Gt(
+                                    Identifier(
+                                        "x",
                                     ),
-                                ),
-                            ),
-                            then_expr: Block {
-                                statements: [],
-                                final_expr: Some(
                                     Literal(
-                                        String(
-                                            "positive",
+                                        Int(
+                                            0,
                                         ),
                                     ),
                                 ),
-                            },
-                            else_expr: Some(
-                                Block {
+                                then_expr: Block {
                                     statements: [],
                                     final_expr: Some(
                                         Literal(
                                             String(
-                                                "zero or negative",
+                                                "positive",
                                             ),
                                         ),
                                     ),
                                 },
+                                else_expr: Some(
+                                    Block {
+                                        statements: [],
+                                        final_expr: Some(
+                                            Literal(
+                                                String(
+                                                    "zero or negative",
+                                                ),
+                                            ),
+                                        ),
+                                    },
+                                ),
+                            },
+                            Literal(
+                                String(
+                                    "positive",
+                                ),
                             ),
-                        },
+                        ),
                     ],
                 ),
             ),
@@ -129,47 +138,59 @@ Ok(
         Some(
             Call(
                 Variable(
-                    "print",
+                    "assert",
                 ),
                 [
-                    If(
-                        Call(
-                            GetAttr(
-                                Variable(
-                                    "x",
+                    Call(
+                        GetAttr(
+                            If(
+                                Call(
+                                    GetAttr(
+                                        Variable(
+                                            "x",
+                                        ),
+                                        "op_gt",
+                                    ),
+                                    [
+                                        Literal(
+                                            Int(
+                                                0,
+                                            ),
+                                        ),
+                                    ],
                                 ),
-                                "op_gt",
-                            ),
-                            [
-                                Literal(
-                                    Int(
-                                        0,
+                                Block(
+                                    [],
+                                    Some(
+                                        Literal(
+                                            String(
+                                                "positive",
+                                            ),
+                                        ),
                                     ),
                                 ),
-                            ],
-                        ),
-                        Block(
-                            [],
-                            Some(
-                                Literal(
-                                    String(
-                                        "positive",
-                                    ),
-                                ),
-                            ),
-                        ),
-                        Some(
-                            Block(
-                                [],
                                 Some(
-                                    Literal(
-                                        String(
-                                            "zero or negative",
+                                    Block(
+                                        [],
+                                        Some(
+                                            Literal(
+                                                String(
+                                                    "zero or negative",
+                                                ),
+                                            ),
                                         ),
                                     ),
                                 ),
                             ),
+                            "op_eq",
                         ),
+                        [
+                            Literal(
+                                String(
+                                    "positive",
+                                ),
+                            ),
+                        ],
                     ),
                 ],
             ),

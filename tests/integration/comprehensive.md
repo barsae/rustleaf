@@ -7,7 +7,7 @@ assert(3 * 4 == 12, "Multiplication should work");
 
 // Test unary operations
 assert(-5 == 0 - 5, "Negation should work");
-assert(!false == true, "Logical not should work");
+assert(not false == true, "Logical not should work");
 assert(~0 == -1, "Bitwise not should work");
 
 // Test variables and scoping

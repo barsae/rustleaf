@@ -1,7 +1,12 @@
 # Program 🟢
 ```rustleaf
-fn add(x, y) { x + y }
+var z = 0;
+fn add(x, y) {
+    z += 1;
+    x + y
+}
 assert(add(2, 3) == 5);
+assert(z == 1);
 ```
 
 # Output
@@ -18,6 +23,11 @@ Ok(
 ```rust
 Ok(
     [
+        Token(Var),
+        Token(Ident, "z"),
+        Token(Equal),
+        Token(Int, "0"),
+        Token(Semicolon),
         Token(Fn),
         Token(Ident, "add"),
         Token(LeftParen),
@@ -26,6 +36,10 @@ Ok(
         Token(Ident, "y"),
         Token(RightParen),
         Token(LeftBrace),
+        Token(Ident, "z"),
+        Token(PlusEqual),
+        Token(Int, "1"),
+        Token(Semicolon),
         Token(Ident, "x"),
         Token(Plus),
         Token(Ident, "y"),
@@ -42,6 +56,13 @@ Ok(
         Token(Int, "5"),
         Token(RightParen),
         Token(Semicolon),
+        Token(Ident, "assert"),
+        Token(LeftParen),
+        Token(Ident, "z"),
+        Token(EqualEqual),
+        Token(Int, "1"),
+        Token(RightParen),
+        Token(Semicolon),
         Token(Eof),
     ],
 )
@@ -52,6 +73,18 @@ Ok(
 Ok(
     Program(
         [
+            VarDecl {
+                pattern: Variable(
+                    "z",
+                ),
+                value: Some(
+                    Literal(
+                        Int(
+                            0,
+                        ),
+                    ),
+                ),
+            },
             FnDecl {
                 name: "add",
                 params: [
@@ -67,7 +100,19 @@ Ok(
                     },
                 ],
                 body: Block {
-                    statements: [],
+                    statements: [
+                        Assignment {
+                            target: Identifier(
+                                "z",
+                            ),
+                            op: AddAssign,
+                            value: Literal(
+                                Int(
+                                    1,
+                                ),
+                            ),
+                        },
+                    ],
                     final_expr: Some(
                         Add(
                             Identifier(
@@ -114,6 +159,25 @@ Ok(
                     ],
                 ),
             ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            Identifier(
+                                "z",
+                            ),
+                            Literal(
+                                Int(
+                                    1,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
         ],
     ),
 )
@@ -124,6 +188,16 @@ Ok(
 Ok(
     Block(
         [
+            Declare(
+                "z",
+                Some(
+                    Literal(
+                        Int(
+                            0,
+                        ),
+                    ),
+                ),
+            ),
             Function(
                 "add",
                 [
@@ -131,7 +205,26 @@ Ok(
                     "y",
                 ],
                 Block(
-                    [],
+                    [
+                        Assign(
+                            "z",
+                            Call(
+                                GetAttr(
+                                    Variable(
+                                        "z",
+                                    ),
+                                    "op_add",
+                                ),
+                                [
+                                    Literal(
+                                        Int(
+                                            1,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                        ),
+                    ],
                     Some(
                         Call(
                             GetAttr(
@@ -149,8 +242,6 @@ Ok(
                     ),
                 ),
             ),
-        ],
-        Some(
             Call(
                 Variable(
                     "assert",
@@ -181,6 +272,30 @@ Ok(
                             Literal(
                                 Int(
                                     5,
+                                ),
+                            ),
+                        ],
+                    ),
+                ],
+            ),
+        ],
+        Some(
+            Call(
+                Variable(
+                    "assert",
+                ),
+                [
+                    Call(
+                        GetAttr(
+                            Variable(
+                                "z",
+                            ),
+                            "op_eq",
+                        ),
+                        [
+                            Literal(
+                                Int(
+                                    1,
                                 ),
                             ),
                         ],

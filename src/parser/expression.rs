@@ -88,7 +88,7 @@ impl Parser {
         if self.accept(TokenType::Minus) {
             let expr = self.parse_unary()?;
             Ok(Expression::Neg(Box::new(expr)))
-        } else if self.accept(TokenType::Not) || self.accept(TokenType::Bang) {
+        } else if self.accept(TokenType::Not) {
             let expr = self.parse_unary()?;
             Ok(Expression::Not(Box::new(expr)))
         } else if self.accept(TokenType::Tilde) {

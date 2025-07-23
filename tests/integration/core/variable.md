@@ -1,13 +1,11 @@
 # Program 🟢
 ```rustleaf
 var x = 42;
-print(x);
+assert(x == 42);
 ```
 
 # Output
-```
-Int(42)
-```
+None
 
 # Result
 ```rust
@@ -25,9 +23,11 @@ Ok(
         Token(Equal),
         Token(Int, "42"),
         Token(Semicolon),
-        Token(Ident, "print"),
+        Token(Ident, "assert"),
         Token(LeftParen),
         Token(Ident, "x"),
+        Token(EqualEqual),
+        Token(Int, "42"),
         Token(RightParen),
         Token(Semicolon),
         Token(Eof),
@@ -55,11 +55,18 @@ Ok(
             Expression(
                 FunctionCall(
                     Identifier(
-                        "print",
+                        "assert",
                     ),
                     [
-                        Identifier(
-                            "x",
+                        Eq(
+                            Identifier(
+                                "x",
+                            ),
+                            Literal(
+                                Int(
+                                    42,
+                                ),
+                            ),
                         ),
                     ],
                 ),
@@ -88,11 +95,23 @@ Ok(
         Some(
             Call(
                 Variable(
-                    "print",
+                    "assert",
                 ),
                 [
-                    Variable(
-                        "x",
+                    Call(
+                        GetAttr(
+                            Variable(
+                                "x",
+                            ),
+                            "op_eq",
+                        ),
+                        [
+                            Literal(
+                                Int(
+                                    42,
+                                ),
+                            ),
+                        ],
                     ),
                 ],
             ),

@@ -1,14 +1,12 @@
 # Program 🟢
 ```rustleaf
-print(loop {
+assert((loop {
     break 42;
-});
+}) == 42);
 ```
 
 # Output
-```
-Int(42)
-```
+None
 
 # Result
 ```rust
@@ -21,7 +19,8 @@ Ok(
 ```rust
 Ok(
     [
-        Token(Ident, "print"),
+        Token(Ident, "assert"),
+        Token(LeftParen),
         Token(LeftParen),
         Token(Loop),
         Token(LeftBrace),
@@ -29,6 +28,9 @@ Ok(
         Token(Int, "42"),
         Token(Semicolon),
         Token(RightBrace),
+        Token(RightParen),
+        Token(EqualEqual),
+        Token(Int, "42"),
         Token(RightParen),
         Token(Semicolon),
         Token(Eof),
@@ -44,25 +46,32 @@ Ok(
             Expression(
                 FunctionCall(
                     Identifier(
-                        "print",
+                        "assert",
                     ),
                     [
-                        Loop {
-                            body: Block {
-                                statements: [
-                                    Break(
-                                        Some(
-                                            Literal(
-                                                Int(
-                                                    42,
+                        Eq(
+                            Loop {
+                                body: Block {
+                                    statements: [
+                                        Break(
+                                            Some(
+                                                Literal(
+                                                    Int(
+                                                        42,
+                                                    ),
                                                 ),
                                             ),
                                         ),
-                                    ),
-                                ],
-                                final_expr: None,
+                                    ],
+                                    final_expr: None,
+                                },
                             },
-                        },
+                            Literal(
+                                Int(
+                                    42,
+                                ),
+                            ),
+                        ),
                     ],
                 ),
             ),
@@ -79,24 +88,36 @@ Ok(
         Some(
             Call(
                 Variable(
-                    "print",
+                    "assert",
                 ),
                 [
-                    Loop(
-                        Block(
-                            [
-                                Break(
-                                    Some(
-                                        Literal(
-                                            Int(
-                                                42,
+                    Call(
+                        GetAttr(
+                            Loop(
+                                Block(
+                                    [
+                                        Break(
+                                            Some(
+                                                Literal(
+                                                    Int(
+                                                        42,
+                                                    ),
+                                                ),
                                             ),
                                         ),
-                                    ),
+                                    ],
+                                    None,
                                 ),
-                            ],
-                            None,
+                            ),
+                            "op_eq",
                         ),
+                        [
+                            Literal(
+                                Int(
+                                    42,
+                                ),
+                            ),
+                        ],
                     ),
                 ],
             ),
