@@ -105,6 +105,10 @@ impl Evaluator {
                 let right_val = self.eval(right)?;
                 self.eval_binary_op(op, left_val, right_val)
             }
+            Eval::UnaryOp(op, expr) => {
+                let val = self.eval(expr)?;
+                self.eval_unary_op(op, val)
+            }
             Eval::If(condition, then_expr, else_expr) => {
                 let condition_val = self.eval(condition)?;
                 
@@ -241,6 +245,27 @@ impl Evaluator {
 
             // Unsupported operation
             _ => Err(ControlFlow::Error(anyhow!("Unsupported binary operation: {:?} between {:?} and {:?}", op, left, right)))
+        }
+    }
+
+    fn eval_unary_op(&self, op: &super::core::UnaryOp, val: Value) -> EvalResult {
+        use super::core::UnaryOp;
+        
+        match (op, &val) {
+            // Arithmetic negation
+            (UnaryOp::Neg, Value::Int(n)) => Ok(Value::Int(-n)),
+            (UnaryOp::Neg, Value::Float(f)) => Ok(Value::Float(-f)),
+            
+            // Logical negation
+            (UnaryOp::Not, Value::Bool(b)) => Ok(Value::Bool(!b)),
+            (UnaryOp::Not, Value::Unit) => Ok(Value::Bool(true)),
+            (UnaryOp::Not, _) => Ok(Value::Bool(false)), // All other values are truthy
+            
+            // Bitwise negation (only for integers)
+            (UnaryOp::BitNot, Value::Int(n)) => Ok(Value::Int(!n)),
+            
+            // Unsupported operation
+            _ => Err(ControlFlow::Error(anyhow!("Unsupported unary operation: {:?} on {:?}", op, val)))
         }
     }
 }

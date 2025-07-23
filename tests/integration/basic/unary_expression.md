@@ -13,8 +13,8 @@
 # Result
 
 ```rust
-Err(
-    "eval not implemented for: UnaryOp(Neg, Literal(Int(42)))",
+Ok(
+    Unit,
 )
 ```
 

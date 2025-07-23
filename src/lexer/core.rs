@@ -153,6 +153,11 @@ impl Lexer {
                 ignore: false,
             },
             LexerRule {
+                pattern: Regex::new(r"^!").unwrap(),
+                token_type: |_| Token::simple(TokenType::Bang),
+                ignore: false,
+            },
+            LexerRule {
                 pattern: Regex::new(r"^<=").unwrap(),
                 token_type: |_| Token::simple(TokenType::LessEqual),
                 ignore: false,

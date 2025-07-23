@@ -105,6 +105,7 @@ pub enum TokenType {
     SlashEqual,
     PercentEqual,
     EqualEqual,
+    Bang,
     BangEqual,
     Less,
     Greater,
