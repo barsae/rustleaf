@@ -1,4 +1,4 @@
-# Program 🔴
+# Program 🟢
 ```rustleaf
 // #[fail_quietly]
 var arr = [1, 2, 3];
@@ -11,8 +11,8 @@ None
 
 # Result
 ```rust
-Err(
-    "No attribute 'op_eq' on value List(ListRef(RefCell { value: [Int(99), Int(2), Int(3)] }))",
+Ok(
+    Unit,
 )
 ```
 

@@ -3,16 +3,13 @@
 // #[fail_quietly]
 // Test expressions in collections
 let list_with_expr = [1 + 2, 3 * 4];
-assert(true);  // Just test that it doesn't crash
 
 // Test expressions in dict
 let dict_with_expr = {"sum": 1 + 2, "product": 3 * 4};
-assert(true);  // Just test that it doesn't crash
 
 // Test variable in collections
 let x = 5;
 let list_with_var = [x, x + 1];
-assert(true);  // Just test that it doesn't crash
 ```
 
 # Output

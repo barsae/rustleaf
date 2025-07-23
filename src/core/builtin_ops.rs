@@ -152,6 +152,30 @@ pub fn op_eq(self_value: &Value, args: Args) -> Result<Value> {
         (Value::Int(a), Value::Float(b)) => *a as f64 == *b,
         (Value::Float(a), Value::Int(b)) => *a == *b as f64,
         
+        // List comparisons
+        (Value::List(a), Value::List(b)) => {
+            let list_a = a.borrow();
+            let list_b = b.borrow();
+            
+            // Check length first
+            if list_a.len() != list_b.len() {
+                return Ok(Value::Bool(false));
+            }
+            
+            // Compare elements recursively
+            for (elem_a, elem_b) in list_a.iter().zip(list_b.iter()) {
+                // Use op_eq recursively for each element
+                let eq_result = op_eq(elem_a, Args::positional(vec![elem_b.clone()]))?;
+                match eq_result {
+                    Value::Bool(false) => return Ok(Value::Bool(false)),
+                    Value::Bool(true) => continue,
+                    _ => unreachable!("op_eq should always return Bool"),
+                }
+            }
+            
+            true
+        }
+        
         // Everything else is false
         _ => false,
     };

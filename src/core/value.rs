@@ -223,6 +223,7 @@ impl Value {
             "op_contains" => Some(self.bind_method(op_contains)),
             "op_get_item" => Some(self.bind_method(op_get_item_list)),
             "op_set_item" => Some(self.bind_method(op_set_item_list)),
+            "op_eq" => Some(self.bind_method(op_eq)),
             _ => None,
         }
     }
