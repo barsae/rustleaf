@@ -69,7 +69,8 @@ Ok(
 ```rust
 Ok(
     Block(
-        [
+        [],
+        Some(
             Call(
                 GetAttr(
                     Variable(
@@ -86,8 +87,7 @@ Ok(
                     ),
                 ],
             ),
-        ],
-        None,
+        ),
     ),
 )
 ```

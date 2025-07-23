@@ -83,7 +83,8 @@ Ok(
 ```rust
 Ok(
     Block(
-        [
+        [],
+        Some(
             Call(
                 Variable(
                     "raise",
@@ -111,8 +112,7 @@ Ok(
                     ),
                 ],
             ),
-        ],
-        None,
+        ),
     ),
 )
 ```

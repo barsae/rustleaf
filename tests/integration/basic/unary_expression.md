@@ -14,7 +14,9 @@
 
 ```rust
 Ok(
-    Unit,
+    Int(
+        -42,
+    ),
 )
 ```
 
@@ -56,7 +58,8 @@ Ok(
 ```rust
 Ok(
     Block(
-        [
+        [],
+        Some(
             UnaryOp(
                 Neg,
                 Literal(
@@ -65,8 +68,7 @@ Ok(
                     ),
                 ),
             ),
-        ],
-        None,
+        ),
     ),
 )
 ```

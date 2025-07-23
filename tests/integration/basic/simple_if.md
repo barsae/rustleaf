@@ -14,7 +14,9 @@ if true { 42 }
 
 ```rust
 Ok(
-    Unit,
+    Int(
+        42,
+    ),
 )
 ```
 
@@ -69,7 +71,8 @@ Ok(
 ```rust
 Ok(
     Block(
-        [
+        [],
+        Some(
             If(
                 Literal(
                     Bool(
@@ -88,8 +91,7 @@ Ok(
                 ),
                 None,
             ),
-        ],
-        None,
+        ),
     ),
 )
 ```

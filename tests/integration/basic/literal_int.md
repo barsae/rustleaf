@@ -14,7 +14,9 @@
 
 ```rust
 Ok(
-    Unit,
+    Int(
+        123,
+    ),
 )
 ```
 
@@ -53,14 +55,14 @@ Ok(
 ```rust
 Ok(
     Block(
-        [
+        [],
+        Some(
             Literal(
                 Int(
                     123,
                 ),
             ),
-        ],
-        None,
+        ),
     ),
 )
 ```

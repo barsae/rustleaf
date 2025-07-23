@@ -1,7 +1,7 @@
 use super::Value;
 use crate::core::{Args, RustValue};
 
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 use std::sync::Mutex;
 
 // Global capture for print output during testing
@@ -53,6 +53,30 @@ pub fn print(args: Args) -> Result<Value> {
     
     // Normal behavior: print to stdout
     println!("{}", output);
+    Ok(Value::Unit)
+}
+
+pub fn assert(args: Args) -> Result<Value> {
+    args.set_function_name("assert");
+    let condition = args.expect("condition")?;
+    let message = args.optional("message", Value::String("Assertion failed".to_string()));
+    args.complete()?;
+    
+    // Check if condition is truthy
+    let is_truthy = match condition {
+        Value::Bool(b) => b,
+        Value::Unit | Value::Null => false,
+        _ => true, // All other values are truthy
+    };
+    
+    if !is_truthy {
+        let message_str = match message {
+            Value::String(s) => s,
+            other => format!("{:?}", other),
+        };
+        return Err(anyhow!("Assertion failed: {}", message_str));
+    }
+    
     Ok(Value::Unit)
 }
 

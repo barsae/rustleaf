@@ -14,7 +14,9 @@ true;
 
 ```rust
 Ok(
-    Unit,
+    Bool(
+        true,
+    ),
 )
 ```
 
@@ -53,14 +55,14 @@ Ok(
 ```rust
 Ok(
     Block(
-        [
+        [],
+        Some(
             Literal(
                 Bool(
                     true,
                 ),
             ),
-        ],
-        None,
+        ),
     ),
 )
 ```

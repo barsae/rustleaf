@@ -58,7 +58,8 @@ Ok(
 ```rust
 Ok(
     Block(
-        [
+        [],
+        Some(
             BinaryOp(
                 In,
                 Variable(
@@ -68,8 +69,7 @@ Ok(
                     "collection",
                 ),
             ),
-        ],
-        None,
+        ),
     ),
 )
 ```

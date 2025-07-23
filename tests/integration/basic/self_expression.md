@@ -56,15 +56,15 @@ Ok(
 ```rust
 Ok(
     Block(
-        [
+        [],
+        Some(
             GetAttr(
                 Variable(
                     "self",
                 ),
                 "field",
             ),
-        ],
-        None,
+        ),
     ),
 )
 ```

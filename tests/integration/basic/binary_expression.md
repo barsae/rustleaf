@@ -14,7 +14,9 @@
 
 ```rust
 Ok(
-    Unit,
+    Int(
+        3,
+    ),
 )
 ```
 
@@ -62,7 +64,8 @@ Ok(
 ```rust
 Ok(
     Block(
-        [
+        [],
+        Some(
             BinaryOp(
                 Add,
                 Literal(
@@ -76,8 +79,7 @@ Ok(
                     ),
                 ),
             ),
-        ],
-        None,
+        ),
     ),
 )
 ```

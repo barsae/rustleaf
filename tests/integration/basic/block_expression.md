@@ -1,10 +1,11 @@
 # Program
 
 ```rustleaf
-{
+var y = {
     var x = 10;
     x + 5
-}
+};
+assert(y == 15);
 ```
 
 # Output
@@ -26,6 +27,9 @@ Ok(
 ```rust
 Ok(
     [
+        Token(Var),
+        Token(Ident, "y"),
+        Token(Equal),
         Token(LeftBrace),
         Token(Var),
         Token(Ident, "x"),
@@ -36,6 +40,14 @@ Ok(
         Token(Plus),
         Token(Int, "5"),
         Token(RightBrace),
+        Token(Semicolon),
+        Token(Ident, "assert"),
+        Token(LeftParen),
+        Token(Ident, "y"),
+        Token(EqualEqual),
+        Token(Int, "15"),
+        Token(RightParen),
+        Token(Semicolon),
         Token(Eof),
     ],
 )
@@ -47,36 +59,60 @@ Ok(
 Ok(
     Program(
         [
-            Expression(
-                Block(
-                    Block {
-                        statements: [
-                            VarDecl {
-                                pattern: Variable(
-                                    "x",
-                                ),
-                                value: Some(
+            VarDecl {
+                pattern: Variable(
+                    "y",
+                ),
+                value: Some(
+                    Block(
+                        Block {
+                            statements: [
+                                VarDecl {
+                                    pattern: Variable(
+                                        "x",
+                                    ),
+                                    value: Some(
+                                        Literal(
+                                            Int(
+                                                10,
+                                            ),
+                                        ),
+                                    ),
+                                },
+                            ],
+                            final_expr: Some(
+                                Add(
+                                    Identifier(
+                                        "x",
+                                    ),
                                     Literal(
                                         Int(
-                                            10,
+                                            5,
                                         ),
                                     ),
                                 ),
-                            },
-                        ],
-                        final_expr: Some(
-                            Add(
-                                Identifier(
-                                    "x",
-                                ),
-                                Literal(
-                                    Int(
-                                        5,
-                                    ),
+                            ),
+                        },
+                    ),
+                ),
+            },
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            Identifier(
+                                "y",
+                            ),
+                            Literal(
+                                Int(
+                                    15,
                                 ),
                             ),
                         ),
-                    },
+                    ],
                 ),
             ),
         ],
@@ -90,34 +126,59 @@ Ok(
 Ok(
     Block(
         [
-            Block(
-                [
-                    Declare(
-                        "x",
+            Declare(
+                "y",
+                Some(
+                    Block(
+                        [
+                            Declare(
+                                "x",
+                                Some(
+                                    Literal(
+                                        Int(
+                                            10,
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ],
                         Some(
-                            Literal(
-                                Int(
-                                    10,
+                            BinaryOp(
+                                Add,
+                                Variable(
+                                    "x",
+                                ),
+                                Literal(
+                                    Int(
+                                        5,
+                                    ),
                                 ),
                             ),
                         ),
                     ),
+                ),
+            ),
+        ],
+        Some(
+            Call(
+                Variable(
+                    "assert",
+                ),
+                [
                     BinaryOp(
-                        Add,
+                        Eq,
                         Variable(
-                            "x",
+                            "y",
                         ),
                         Literal(
                             Int(
-                                5,
+                                15,
                             ),
                         ),
                     ),
                 ],
-                None,
             ),
-        ],
-        None,
+        ),
     ),
 )
 ```

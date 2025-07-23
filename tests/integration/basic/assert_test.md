@@ -1,19 +1,16 @@
 # Program
 
 ```rustleaf
-print(1 + 2);
-print(5 - 3);
-print(4 * 3);
-print(10 / 2);
+assert(true);
+assert(1 == 1);
+assert(10 + 5 == 15, "Math should work");
+print("All assertions passed!");
 ```
 
 # Output
 
 ```
-Int(3)
-Int(2)
-Int(12)
-Float(5.0)
+String("All assertions passed!")
 ```
 
 # Result
@@ -29,32 +26,32 @@ Ok(
 ```rust
 Ok(
     [
-        Token(Ident, "print"),
+        Token(Ident, "assert"),
+        Token(LeftParen),
+        Token(True),
+        Token(RightParen),
+        Token(Semicolon),
+        Token(Ident, "assert"),
         Token(LeftParen),
         Token(Int, "1"),
-        Token(Plus),
-        Token(Int, "2"),
+        Token(EqualEqual),
+        Token(Int, "1"),
         Token(RightParen),
         Token(Semicolon),
-        Token(Ident, "print"),
-        Token(LeftParen),
-        Token(Int, "5"),
-        Token(Minus),
-        Token(Int, "3"),
-        Token(RightParen),
-        Token(Semicolon),
-        Token(Ident, "print"),
-        Token(LeftParen),
-        Token(Int, "4"),
-        Token(Star),
-        Token(Int, "3"),
-        Token(RightParen),
-        Token(Semicolon),
-        Token(Ident, "print"),
+        Token(Ident, "assert"),
         Token(LeftParen),
         Token(Int, "10"),
-        Token(Slash),
-        Token(Int, "2"),
+        Token(Plus),
+        Token(Int, "5"),
+        Token(EqualEqual),
+        Token(Int, "15"),
+        Token(Comma),
+        Token(String, "Math should work"),
+        Token(RightParen),
+        Token(Semicolon),
+        Token(Ident, "print"),
+        Token(LeftParen),
+        Token(String, "All assertions passed!"),
         Token(RightParen),
         Token(Semicolon),
         Token(Eof),
@@ -71,10 +68,24 @@ Ok(
             Expression(
                 FunctionCall(
                     Identifier(
-                        "print",
+                        "assert",
                     ),
                     [
-                        Add(
+                        Literal(
+                            Bool(
+                                true,
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
                             Literal(
                                 Int(
                                     1,
@@ -82,8 +93,41 @@ Ok(
                             ),
                             Literal(
                                 Int(
-                                    2,
+                                    1,
                                 ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            Add(
+                                Literal(
+                                    Int(
+                                        10,
+                                    ),
+                                ),
+                                Literal(
+                                    Int(
+                                        5,
+                                    ),
+                                ),
+                            ),
+                            Literal(
+                                Int(
+                                    15,
+                                ),
+                            ),
+                        ),
+                        Literal(
+                            String(
+                                "Math should work",
                             ),
                         ),
                     ],
@@ -95,58 +139,9 @@ Ok(
                         "print",
                     ),
                     [
-                        Sub(
-                            Literal(
-                                Int(
-                                    5,
-                                ),
-                            ),
-                            Literal(
-                                Int(
-                                    3,
-                                ),
-                            ),
-                        ),
-                    ],
-                ),
-            ),
-            Expression(
-                FunctionCall(
-                    Identifier(
-                        "print",
-                    ),
-                    [
-                        Mul(
-                            Literal(
-                                Int(
-                                    4,
-                                ),
-                            ),
-                            Literal(
-                                Int(
-                                    3,
-                                ),
-                            ),
-                        ),
-                    ],
-                ),
-            ),
-            Expression(
-                FunctionCall(
-                    Identifier(
-                        "print",
-                    ),
-                    [
-                        Div(
-                            Literal(
-                                Int(
-                                    10,
-                                ),
-                            ),
-                            Literal(
-                                Int(
-                                    2,
-                                ),
+                        Literal(
+                            String(
+                                "All assertions passed!",
                             ),
                         ),
                     ],
@@ -165,11 +160,23 @@ Ok(
         [
             Call(
                 Variable(
-                    "print",
+                    "assert",
+                ),
+                [
+                    Literal(
+                        Bool(
+                            true,
+                        ),
+                    ),
+                ],
+            ),
+            Call(
+                Variable(
+                    "assert",
                 ),
                 [
                     BinaryOp(
-                        Add,
+                        Eq,
                         Literal(
                             Int(
                                 1,
@@ -177,7 +184,7 @@ Ok(
                         ),
                         Literal(
                             Int(
-                                2,
+                                1,
                             ),
                         ),
                     ),
@@ -185,40 +192,33 @@ Ok(
             ),
             Call(
                 Variable(
-                    "print",
+                    "assert",
                 ),
                 [
                     BinaryOp(
-                        Sub,
-                        Literal(
-                            Int(
-                                5,
+                        Eq,
+                        BinaryOp(
+                            Add,
+                            Literal(
+                                Int(
+                                    10,
+                                ),
+                            ),
+                            Literal(
+                                Int(
+                                    5,
+                                ),
                             ),
                         ),
                         Literal(
                             Int(
-                                3,
+                                15,
                             ),
                         ),
                     ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "print",
-                ),
-                [
-                    BinaryOp(
-                        Mul,
-                        Literal(
-                            Int(
-                                4,
-                            ),
-                        ),
-                        Literal(
-                            Int(
-                                3,
-                            ),
+                    Literal(
+                        String(
+                            "Math should work",
                         ),
                     ),
                 ],
@@ -230,17 +230,9 @@ Ok(
                     "print",
                 ),
                 [
-                    BinaryOp(
-                        Div,
-                        Literal(
-                            Int(
-                                10,
-                            ),
-                        ),
-                        Literal(
-                            Int(
-                                2,
-                            ),
+                    Literal(
+                        String(
+                            "All assertions passed!",
                         ),
                     ),
                 ],

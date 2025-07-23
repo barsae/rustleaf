@@ -14,7 +14,9 @@
 
 ```rust
 Ok(
-    Unit,
+    Float(
+        3.14,
+    ),
 )
 ```
 
@@ -53,14 +55,14 @@ Ok(
 ```rust
 Ok(
     Block(
-        [
+        [],
+        Some(
             Literal(
                 Float(
                     3.14,
                 ),
             ),
-        ],
-        None,
+        ),
     ),
 )
 ```

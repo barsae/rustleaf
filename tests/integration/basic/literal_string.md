@@ -14,7 +14,9 @@
 
 ```rust
 Ok(
-    Unit,
+    String(
+        "hello",
+    ),
 )
 ```
 
@@ -53,14 +55,14 @@ Ok(
 ```rust
 Ok(
     Block(
-        [
+        [],
+        Some(
             Literal(
                 String(
                     "hello",
                 ),
             ),
-        ],
-        None,
+        ),
     ),
 )
 ```

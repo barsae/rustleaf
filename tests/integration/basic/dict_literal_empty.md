@@ -52,12 +52,12 @@ Ok(
 ```rust
 Ok(
     Block(
-        [
+        [],
+        Some(
             Dict(
                 [],
             ),
-        ],
-        None,
+        ),
     ),
 )
 ```

@@ -1,0 +1,32 @@
+// Test basic arithmetic
+assert(2 + 3 == 5, "Addition should work");
+assert(10 - 4 == 6, "Subtraction should work");  
+assert(3 * 4 == 12, "Multiplication should work");
+
+// Test unary operations
+assert(-5 == 0 - 5, "Negation should work");
+assert(!false == true, "Logical not should work");
+assert(~0 == -1, "Bitwise not should work");
+
+// Test variables and scoping
+var x = 100;
+assert(x == 100, "Variable assignment should work");
+
+{
+    var x = 200;
+    assert(x == 200, "Block scoping should work");
+}
+assert(x == 100, "Outer scope should be restored");
+
+// Test functions
+fn add(a, b) a + b
+assert(add(7, 8) == 15, "Function calls should work");
+
+// Test block expressions  
+var result = {
+    var temp = 5;
+    temp * 2
+};
+assert(result == 10, "Block expressions should return values");
+
+print("All comprehensive tests passed!");

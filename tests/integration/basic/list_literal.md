@@ -87,7 +87,8 @@ Ok(
 ```rust
 Ok(
     Block(
-        [
+        [],
+        Some(
             List(
                 [
                     Literal(
@@ -117,8 +118,7 @@ Ok(
                     ),
                 ],
             ),
-        ],
-        None,
+        ),
     ),
 )
 ```

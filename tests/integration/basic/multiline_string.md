@@ -16,7 +16,9 @@ with multiple lines""";
 
 ```rust
 Ok(
-    Unit,
+    String(
+        "This is a\nmultiline string\nwith multiple lines",
+    ),
 )
 ```
 
@@ -55,14 +57,14 @@ Ok(
 ```rust
 Ok(
     Block(
-        [
+        [],
+        Some(
             Literal(
                 String(
                     "This is a\nmultiline string\nwith multiple lines",
                 ),
             ),
-        ],
-        None,
+        ),
     ),
 )
 ```

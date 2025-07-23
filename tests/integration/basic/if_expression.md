@@ -95,7 +95,8 @@ Ok(
 ```rust
 Ok(
     Block(
-        [
+        [],
+        Some(
             If(
                 BinaryOp(
                     Gt,
@@ -131,8 +132,7 @@ Ok(
                     ),
                 ),
             ),
-        ],
-        None,
+        ),
     ),
 )
 ```

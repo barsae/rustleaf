@@ -98,6 +98,7 @@ impl Evaluator {
 
     fn register_builtins(&mut self) {
         self.register_builtin_fn("print", print);
+        self.register_builtin_fn("assert", crate::core::assert);
     }
 
     fn register_builtin_fn(&mut self, name: &'static str, func: fn(Args) -> anyhow::Result<Value>) {
@@ -110,18 +111,38 @@ impl Evaluator {
     pub fn eval(&mut self, eval: &Eval) -> EvalResult {
         match eval {
             Eval::Block(statements, final_expr) => {
+                // Create a new scope for the block
+                let block_scope = self.current_env.child();
+                let previous_env = std::mem::replace(&mut self.current_env, block_scope);
+                
                 let mut result = Value::Unit;
 
                 // Execute each statement in the block
                 for stmt in statements {
-                    self.eval(stmt)?;
+                    match self.eval(stmt) {
+                        Ok(_) => {},
+                        Err(e) => {
+                            // Restore previous scope before propagating error
+                            self.current_env = previous_env;
+                            return Err(e);
+                        }
+                    }
                 }
 
                 // If there's a final expression, evaluate it and return its value
                 if let Some(final_expr) = final_expr {
-                    result = self.eval(final_expr)?;
+                    result = match self.eval(final_expr) {
+                        Ok(val) => val,
+                        Err(e) => {
+                            // Restore previous scope before propagating error
+                            self.current_env = previous_env;
+                            return Err(e);
+                        }
+                    };
                 }
 
+                // Restore the previous scope
+                self.current_env = previous_env;
                 Ok(result)
             }
             Eval::Literal(value) => Ok(value.clone()),
