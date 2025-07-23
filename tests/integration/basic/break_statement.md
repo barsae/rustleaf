@@ -14,7 +14,7 @@ break 42;
 
 ```rust
 Err(
-    "eval not implemented for: Break(Some(Literal(Int(42))))",
+    "Unexpected break: Int(42)",
 )
 ```
 

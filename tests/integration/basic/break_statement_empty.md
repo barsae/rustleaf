@@ -14,7 +14,7 @@ break;
 
 ```rust
 Err(
-    "eval not implemented for: Break(None)",
+    "Unexpected break: Unit",
 )
 ```
 

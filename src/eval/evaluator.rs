@@ -124,6 +124,38 @@ impl Evaluator {
                     }
                 }
             }
+            Eval::Loop(body) => {
+                loop {
+                    match self.eval(body) {
+                        Ok(_) => {
+                            // Normal completion, continue looping
+                            continue;
+                        }
+                        Err(ControlFlow::Break(value)) => {
+                            // Break out of loop with value
+                            return Ok(value);
+                        }
+                        Err(ControlFlow::Continue) => {
+                            // Continue to next iteration
+                            continue;
+                        }
+                        Err(other) => {
+                            // Propagate other control flow (Return, Error)
+                            return Err(other);
+                        }
+                    }
+                }
+            }
+            Eval::Break(expr) => {
+                let value = match expr {
+                    Some(e) => self.eval(e)?,
+                    None => Value::Unit,
+                };
+                Err(ControlFlow::Break(value))
+            }
+            Eval::Continue => {
+                Err(ControlFlow::Continue)
+            }
             x => Err(ControlFlow::Error(anyhow!("eval not implemented for: {:?}", eval)))
         }
     }

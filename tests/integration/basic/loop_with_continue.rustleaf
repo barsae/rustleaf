@@ -1,0 +1,8 @@
+var i = 0;
+print(loop {
+    i = i + 1;
+    if i < 3 {
+        continue;
+    }
+    break i * 10;
+});

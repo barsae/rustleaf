@@ -15,8 +15,8 @@ loop {
 # Result
 
 ```rust
-Err(
-    "Expression not yet implemented: Loop { body: Block { statements: [Break(Some(Literal(Int(42))))], final_expr: None } }",
+Ok(
+    Unit,
 )
 ```
 
@@ -68,7 +68,27 @@ Ok(
 # Eval
 
 ```rust
-Err(
-    "Expression not yet implemented: Loop { body: Block { statements: [Break(Some(Literal(Int(42))))], final_expr: None } }",
+Ok(
+    Block(
+        [
+            Loop(
+                Block(
+                    [
+                        Break(
+                            Some(
+                                Literal(
+                                    Int(
+                                        42,
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ],
+                    None,
+                ),
+            ),
+        ],
+        None,
+    ),
 )
 ```

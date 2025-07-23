@@ -224,6 +224,10 @@ impl Compiler {
                 };
                 Ok(Eval::If(Box::new(compiled_condition), Box::new(compiled_then), compiled_else))
             }
+            Expression::Loop { body } => {
+                let compiled_body = self.compile_block_helper(body)?;
+                Ok(Eval::Loop(Box::new(compiled_body)))
+            }
             
             _ => Err(anyhow::anyhow!("Expression not yet implemented: {:?}", expr)),
         }

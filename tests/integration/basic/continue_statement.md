@@ -14,7 +14,7 @@ continue;
 
 ```rust
 Err(
-    "eval not implemented for: Continue",
+    "Unexpected continue",
 )
 ```
 
