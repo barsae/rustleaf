@@ -1,8 +1,8 @@
 # Program 🟢
 ```rustleaf
-var x = 0;
-x += 5;
-assert(x == 5);
+var x = 12;
+x = 42;
+assert(x == 42);
 ```
 
 # Output
@@ -22,17 +22,17 @@ Ok(
         Token(Var),
         Token(Ident, "x"),
         Token(Equal),
-        Token(Int, "0"),
+        Token(Int, "12"),
         Token(Semicolon),
         Token(Ident, "x"),
-        Token(PlusEqual),
-        Token(Int, "5"),
+        Token(Equal),
+        Token(Int, "42"),
         Token(Semicolon),
         Token(Ident, "assert"),
         Token(LeftParen),
         Token(Ident, "x"),
         Token(EqualEqual),
-        Token(Int, "5"),
+        Token(Int, "42"),
         Token(RightParen),
         Token(Semicolon),
         Token(Eof),
@@ -52,7 +52,7 @@ Ok(
                 value: Some(
                     Literal(
                         Int(
-                            0,
+                            12,
                         ),
                     ),
                 ),
@@ -61,10 +61,10 @@ Ok(
                 target: Identifier(
                     "x",
                 ),
-                op: AddAssign,
+                op: Assign,
                 value: Literal(
                     Int(
-                        5,
+                        42,
                     ),
                 ),
             },
@@ -80,7 +80,7 @@ Ok(
                             ),
                             Literal(
                                 Int(
-                                    5,
+                                    42,
                                 ),
                             ),
                         ),
@@ -102,27 +102,17 @@ Ok(
                 Some(
                     Literal(
                         Int(
-                            0,
+                            12,
                         ),
                     ),
                 ),
             ),
             Assign(
                 "x",
-                Call(
-                    GetAttr(
-                        Variable(
-                            "x",
-                        ),
-                        "op_add",
+                Literal(
+                    Int(
+                        42,
                     ),
-                    [
-                        Literal(
-                            Int(
-                                5,
-                            ),
-                        ),
-                    ],
                 ),
             ),
         ],
@@ -142,7 +132,7 @@ Ok(
                         [
                             Literal(
                                 Int(
-                                    5,
+                                    42,
                                 ),
                             ),
                         ],

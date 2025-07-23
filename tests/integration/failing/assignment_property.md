@@ -1,7 +1,7 @@
 # Program 🔴
 ```rustleaf
 // #[fail_quietly]
-x = 42;
+obj.field = 10;
 ```
 
 # Output
@@ -10,7 +10,7 @@ None
 # Result
 ```rust
 Err(
-    "Undefined variable: x",
+    "Undefined variable: obj",
 )
 ```
 
@@ -18,9 +18,11 @@ Err(
 ```rust
 Ok(
     [
-        Token(Ident, "x"),
+        Token(Ident, "obj"),
+        Token(Dot),
+        Token(Ident, "field"),
         Token(Equal),
-        Token(Int, "42"),
+        Token(Int, "10"),
         Token(Semicolon),
         Token(Eof),
     ],
@@ -33,13 +35,16 @@ Ok(
     Program(
         [
             Assignment {
-                target: Identifier(
-                    "x",
+                target: GetAttr(
+                    Identifier(
+                        "obj",
+                    ),
+                    "field",
                 ),
                 op: Assign,
                 value: Literal(
                     Int(
-                        42,
+                        10,
                     ),
                 ),
             },
@@ -53,11 +58,14 @@ Ok(
 Ok(
     Block(
         [
-            Assign(
-                "x",
+            SetAttr(
+                Variable(
+                    "obj",
+                ),
+                "field",
                 Literal(
                     Int(
-                        42,
+                        10,
                     ),
                 ),
             ),

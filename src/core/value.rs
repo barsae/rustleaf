@@ -13,6 +13,10 @@ impl ListRef {
     pub fn borrow(&self) -> std::cell::Ref<Vec<Value>> {
         self.0.borrow()
     }
+    
+    pub fn borrow_mut(&self) -> std::cell::RefMut<Vec<Value>> {
+        self.0.borrow_mut()
+    }
 }
 
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -22,10 +26,20 @@ impl DictRef {
     pub fn borrow(&self) -> std::cell::Ref<IndexMap<String, Value>> {
         self.0.borrow()
     }
+    
+    pub fn borrow_mut(&self) -> std::cell::RefMut<IndexMap<String, Value>> {
+        self.0.borrow_mut()
+    }
 }
 
 #[derive(Clone, Debug)]
 pub struct RustValueRef(Rc<RefCell<Box<dyn RustValue>>>);
+
+impl RustValueRef {
+    pub fn borrow_mut(&self) -> std::cell::RefMut<Box<dyn RustValue>> {
+        self.0.borrow_mut()
+    }
+}
 
 #[derive(Clone, Debug)]
 pub enum Value {
@@ -207,6 +221,8 @@ impl Value {
 
         match name {
             "op_contains" => Some(self.bind_method(op_contains)),
+            "op_get_item" => Some(self.bind_method(op_get_item_list)),
+            "op_set_item" => Some(self.bind_method(op_set_item_list)),
             _ => None,
         }
     }
@@ -216,6 +232,8 @@ impl Value {
 
         match name {
             "op_contains" => Some(self.bind_method(op_contains)),
+            "op_get_item" => Some(self.bind_method(op_get_item_dict)),
+            "op_set_item" => Some(self.bind_method(op_set_item_dict)),
             _ => None,
         }
     }

@@ -303,8 +303,49 @@ impl Evaluator {
                 }
                 Ok(Value::new_dict_with_map(dict_map))
             }
-            
-            x => Err(ControlFlow::Error(anyhow!("eval not implemented for: {:?}", x)))
+            Eval::GetItem(obj_expr, index_expr) => {
+                let obj_value = self.eval(obj_expr)?;
+                let index_value = self.eval(index_expr)?;
+                
+                // Use operator method system: a[b] → a.op_get_attr("op_get_item").op_call(b)
+                match obj_value.get_attr("op_get_item") {
+                    Some(method) => {
+                        let args = Args::positional(vec![index_value]);
+                        method.call(args).map_err(ControlFlow::Error)
+                    }
+                    None => Err(ControlFlow::Error(anyhow!("No op_get_item method on value {:?}", obj_value))),
+                }
+            }
+            Eval::SetAttr(obj_expr, attr_name, value_expr) => {
+                let obj_value = self.eval(obj_expr)?;
+                let new_value = self.eval(value_expr)?;
+                
+                // For RustValue types, try calling set_attr directly
+                match obj_value {
+                    Value::RustValue(rv) => {
+                        match rv.borrow_mut().set_attr(attr_name, new_value) {
+                            Ok(_) => Ok(Value::Unit),
+                            Err(err) => Err(ControlFlow::Error(anyhow!(err))),
+                        }
+                    }
+                    _ => Err(ControlFlow::Error(anyhow!("Cannot set attribute '{}' on value {:?}", attr_name, obj_value))),
+                }
+            }
+            Eval::SetItem(obj_expr, index_expr, value_expr) => {
+                let obj_value = self.eval(obj_expr)?;
+                let index_value = self.eval(index_expr)?;
+                let new_value = self.eval(value_expr)?;
+                
+                // Use operator method system: a[b] = c → a.op_get_attr("op_set_item").op_call(b, c)
+                match obj_value.get_attr("op_set_item") {
+                    Some(method) => {
+                        let args = Args::positional(vec![index_value, new_value]);
+                        method.call(args).map_err(ControlFlow::Error)?;
+                        Ok(Value::Unit)
+                    }
+                    None => Err(ControlFlow::Error(anyhow!("No op_set_item method on value {:?}", obj_value))),
+                }
+            }
         }
     }
 

@@ -459,3 +459,116 @@ pub fn op_contains(self_value: &Value, args: Args) -> Result<Value> {
         _ => Err(anyhow!("Contains operation not supported for {:?}", self_value)),
     }
 }
+
+// List indexing operations
+pub fn op_get_item_list(self_value: &Value, args: Args) -> Result<Value> {
+    args.set_function_name("op_get_item");
+    let index = args.expect("index")?;
+    args.complete()?;
+    
+    match self_value {
+        Value::List(list_ref) => {
+            let list = list_ref.borrow();
+            match &index {
+                Value::Int(i) => {
+                    let idx = if *i < 0 {
+                        // Negative indexing: -1 is last element
+                        (list.len() as i64 + i) as usize
+                    } else {
+                        *i as usize
+                    };
+                    
+                    if idx < list.len() {
+                        Ok(list[idx].clone())
+                    } else {
+                        Err(anyhow!("List index {} out of range (length: {})", i, list.len()))
+                    }
+                }
+                _ => Err(anyhow!("List index must be integer, got {:?}", index)),
+            }
+        }
+        _ => Err(anyhow!("op_get_item_list called on non-list: {:?}", self_value)),
+    }
+}
+
+pub fn op_set_item_list(self_value: &Value, args: Args) -> Result<Value> {
+    args.set_function_name("op_set_item");
+    let index = args.expect("index")?;
+    let value = args.expect("value")?;
+    args.complete()?;
+    
+    match self_value {
+        Value::List(list_ref) => {
+            let mut list = list_ref.borrow_mut();
+            match &index {
+                Value::Int(i) => {
+                    let idx = if *i < 0 {
+                        // Negative indexing: -1 is last element
+                        (list.len() as i64 + i) as usize
+                    } else {
+                        *i as usize
+                    };
+                    
+                    if idx < list.len() {
+                        list[idx] = value;
+                        Ok(Value::Unit)
+                    } else {
+                        Err(anyhow!("List index {} out of range (length: {})", i, list.len()))
+                    }
+                }
+                _ => Err(anyhow!("List index must be integer, got {:?}", index)),
+            }
+        }
+        _ => Err(anyhow!("op_set_item_list called on non-list: {:?}", self_value)),
+    }
+}
+
+// Dictionary indexing operations
+pub fn op_get_item_dict(self_value: &Value, args: Args) -> Result<Value> {
+    args.set_function_name("op_get_item");
+    let key = args.expect("key")?;
+    args.complete()?;
+    
+    match self_value {
+        Value::Dict(dict_ref) => {
+            let dict = dict_ref.borrow();
+            let key_str = match &key {
+                Value::String(s) => s.clone(),
+                Value::Int(i) => i.to_string(),
+                Value::Float(f) => f.to_string(),
+                Value::Bool(b) => b.to_string(),
+                _ => return Err(anyhow!("Dictionary key must be string, number, or boolean, got {:?}", key)),
+            };
+            
+            match dict.get(&key_str) {
+                Some(value) => Ok(value.clone()),
+                None => Err(anyhow!("Key '{}' not found in dictionary", key_str)),
+            }
+        }
+        _ => Err(anyhow!("op_get_item_dict called on non-dict: {:?}", self_value)),
+    }
+}
+
+pub fn op_set_item_dict(self_value: &Value, args: Args) -> Result<Value> {
+    args.set_function_name("op_set_item");
+    let key = args.expect("key")?;
+    let value = args.expect("value")?;
+    args.complete()?;
+    
+    match self_value {
+        Value::Dict(dict_ref) => {
+            let mut dict = dict_ref.borrow_mut();
+            let key_str = match &key {
+                Value::String(s) => s.clone(),
+                Value::Int(i) => i.to_string(),
+                Value::Float(f) => f.to_string(),
+                Value::Bool(b) => b.to_string(),
+                _ => return Err(anyhow!("Dictionary key must be string, number, or boolean, got {:?}", key)),
+            };
+            
+            dict.insert(key_str, value);
+            Ok(Value::Unit)
+        }
+        _ => Err(anyhow!("op_set_item_dict called on non-dict: {:?}", self_value)),
+    }
+}

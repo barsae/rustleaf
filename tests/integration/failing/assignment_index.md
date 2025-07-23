@@ -12,7 +12,7 @@ None
 # Result
 ```rust
 Err(
-    "eval not implemented for: SetItem(Variable(\"arr\"), Literal(Int(0)), Literal(Int(99)))",
+    "No attribute 'op_eq' on value List(ListRef(RefCell { value: [Int(99), Int(2), Int(3)] }))",
 )
 ```
 

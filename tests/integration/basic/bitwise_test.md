@@ -1,6 +1,5 @@
 # Program 🟢
 ```rustleaf
-// #[fail_quietly]
 // Bitwise operators test
 assert((5 & 3) == 1);  // 101 & 011 = 001
 assert((5 | 3) == 7);  // 101 | 011 = 111
