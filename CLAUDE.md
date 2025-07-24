@@ -37,7 +37,7 @@ assert(1 + 1 == 2);
 ```
 ```
 
-The test system will automatically:
+Running `just test` will automatically:
 - Execute your code and capture results
 - Update the file with Output, Result, Lex, Parse, and Eval sections
 - Use colored circles: 🟢 for passing tests, 🔴 for failing tests
@@ -50,11 +50,3 @@ The test system will automatically:
 ### Test Discovery
 
 The `#[rustleaf_tests]` macro automatically discovers `.md` files and generates individual test functions. Add new test directories to `tests/integration/mod.rs`.
-
-
-## Docs
-
-There is documentation about development processes in `./docs`:
- - `docs/just.md` is instructional material on writing justfiles. It is *not* documentation about *our* justfile.
- - `docs/testing.md` documents integration test naming conventions and the `_panic`/`_ignore` suffixes.
- - `docs/development.md` contains general development guidelines.
