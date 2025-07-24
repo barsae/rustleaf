@@ -207,8 +207,16 @@ Ok(
             Function(
                 "add",
                 [
-                    "x",
-                    "y",
+                    (
+                        "x",
+                        None,
+                        Regular,
+                    ),
+                    (
+                        "y",
+                        None,
+                        Regular,
+                    ),
                 ],
                 Block(
                     [

@@ -183,7 +183,11 @@ Ok(
             Function(
                 "greet",
                 [
-                    "name",
+                    (
+                        "name",
+                        None,
+                        Regular,
+                    ),
                 ],
                 Block(
                     [

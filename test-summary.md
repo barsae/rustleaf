@@ -1,7 +1,7 @@
 # Test Summary
 
 Auto-generated test status summary from integration tests.
-*Generated on: 2025-07-24 14:05:23*
+*Generated on: 2025-07-24 14:18:38*
 
 ## Advanced Tests
 
@@ -64,9 +64,9 @@ Auto-generated test status summary from integration tests.
 - [function_body](tests/integration/functions/function_body.md): 🟢
 - [function_body_test](tests/integration/functions/function_body_test.md): 🟢
 - [function_call](tests/integration/functions/function_call.md): 🟢
-- [function_declaration_default_param](tests/integration/functions/function_declaration_default_param.md): 🟡
+- [function_declaration_default_param](tests/integration/functions/function_declaration_default_param.md): 🟢
 - [function_declaration_no_params](tests/integration/functions/function_declaration_no_params.md): 🟢
-- [function_declaration_rest_param](tests/integration/functions/function_declaration_rest_param.md): 🟡
+- [function_declaration_rest_param](tests/integration/functions/function_declaration_rest_param.md): 🟢
 - [function_declaration_simple](tests/integration/functions/function_declaration_simple.md): 🟢
 - [function_unit](tests/integration/functions/function_unit.md): 🟢
 - [is_unit_test](tests/integration/functions/is_unit_test.md): 🟢
@@ -115,8 +115,8 @@ Auto-generated test status summary from integration tests.
 ## Statistics
 
 - Total tests: 79
-- Passing: 71 🟢
+- Passing: 73 🟢
 - Failing: 0 🔴
-- No asserts: 8 🟡
+- No asserts: 6 🟡
 
-**Pass rate: 89.9%**
+**Pass rate: 92.4%**

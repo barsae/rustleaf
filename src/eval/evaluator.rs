@@ -21,7 +21,7 @@ pub type EvalResult = Result<Value, ControlFlow>;
 
 #[derive(Debug, Clone)]
 struct RustLeafFunction {
-    params: Vec<String>,
+    params: Vec<(String, Option<Value>, ParameterKind)>, // (name, default_value, kind)
     body: Eval,
     closure_env: ScopeRef, // Capture the environment where function was defined
 }
@@ -34,13 +34,44 @@ impl RustLeafFunction {
 
 impl RustValue for RustLeafFunction {
     fn call(&self, args: Args) -> anyhow::Result<Value> {
-        // Check argument count first
-        if args.len() != self.params.len() {
-            return Err(anyhow!(
-                "Function expects {} arguments, got {}",
-                self.params.len(),
-                args.len()
-            ));
+        // Analyze parameter structure
+        let regular_params: Vec<_> = self
+            .params
+            .iter()
+            .filter(|(_, _, kind)| matches!(kind, ParameterKind::Regular))
+            .collect();
+        let rest_param = self
+            .params
+            .iter()
+            .find(|(_, _, kind)| matches!(kind, ParameterKind::Rest));
+
+        // Count required parameters (regular params without defaults)
+        let required_params = regular_params
+            .iter()
+            .filter(|(_, default, _)| default.is_none())
+            .count();
+        let max_regular_params = regular_params.len();
+
+        // Check argument count - with rest params, we accept unlimited args
+        if rest_param.is_some() {
+            // With rest param: need at least required regular params
+            if args.len() < required_params {
+                return Err(anyhow!(
+                    "Function expects at least {} arguments, got {}",
+                    required_params,
+                    args.len()
+                ));
+            }
+        } else {
+            // Without rest param: standard validation
+            if args.len() < required_params || args.len() > max_regular_params {
+                return Err(anyhow!(
+                    "Function expects {} to {} arguments, got {}",
+                    required_params,
+                    max_regular_params,
+                    args.len()
+                ));
+            }
         }
 
         // Create new scope for function execution
@@ -49,10 +80,30 @@ impl RustValue for RustLeafFunction {
         // Set function name for better error messages
         args.set_function_name("user function");
 
-        // Bind parameters to arguments using fluent API
-        for param in &self.params {
-            let arg_value = args.expect(param)?;
-            function_scope.define(param.clone(), arg_value);
+        // Bind regular parameters to arguments using fluent API
+        for (param_name, default_value, kind) in &self.params {
+            match kind {
+                ParameterKind::Regular => {
+                    let arg_value = if let Some(default) = default_value {
+                        // Parameter has default - use optional with default
+                        args.optional(param_name, default.clone())
+                    } else {
+                        // Required parameter
+                        args.expect(param_name)?
+                    };
+                    function_scope.define(param_name.clone(), arg_value);
+                }
+                ParameterKind::Rest => {
+                    // Collect remaining arguments into a list
+                    let rest_args = args.rest();
+                    let list_value = Value::new_list_with_values(rest_args);
+                    function_scope.define(param_name.clone(), list_value);
+                }
+                ParameterKind::Keyword => {
+                    // TODO: Implement keyword parameters later
+                    return Err(anyhow!("Keyword parameters not yet implemented"));
+                }
+            }
         }
 
         // Validate all args consumed
@@ -319,8 +370,14 @@ impl Evaluator {
                 Ok(Value::Unit)
             }
             Eval::Lambda(params, body) => {
+                // Convert Vec<String> to Vec<(String, Option<Value>, ParameterKind)> - lambdas don't have defaults or rest
+                let param_data: Vec<(String, Option<Value>, ParameterKind)> = params
+                    .iter()
+                    .map(|name| (name.clone(), None, ParameterKind::Regular))
+                    .collect();
+
                 let function = RustLeafFunction {
-                    params: params.clone(),
+                    params: param_data,
                     body: (**body).clone(),
                     closure_env: self.current_env.clone(),
                 };

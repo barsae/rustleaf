@@ -347,8 +347,16 @@ Ok(
             Function(
                 "add",
                 [
-                    "x",
-                    "y",
+                    (
+                        "x",
+                        None,
+                        Regular,
+                    ),
+                    (
+                        "y",
+                        None,
+                        Regular,
+                    ),
                 ],
                 Block(
                     [],
@@ -372,8 +380,16 @@ Ok(
             Function(
                 "multiply",
                 [
-                    "a",
-                    "b",
+                    (
+                        "a",
+                        None,
+                        Regular,
+                    ),
+                    (
+                        "b",
+                        None,
+                        Regular,
+                    ),
                 ],
                 Block(
                     [],

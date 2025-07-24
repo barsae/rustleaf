@@ -1,5 +1,5 @@
 /// Core evaluation types - simplified AST for execution
-use crate::core::{ImportItems, Value};
+use crate::core::{ImportItems, ParameterKind, Value};
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Eval {
@@ -26,7 +26,11 @@ pub enum Eval {
     DeclarePattern(EvalPattern, Box<Eval>),
 
     // Function declaration
-    Function(String, Vec<String>, Box<Eval>),
+    Function(
+        String,
+        Vec<(String, Option<Value>, ParameterKind)>,
+        Box<Eval>,
+    ), // name, params with defaults and kinds, body
     // Lambda expression
     Lambda(Vec<String>, Box<Eval>),
 

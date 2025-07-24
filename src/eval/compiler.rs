@@ -194,13 +194,19 @@ impl Compiler {
                 body,
                 is_pub: _,
             } => {
-                // Extract parameter names
-                let param_names: Vec<String> = params.into_iter().map(|p| p.name).collect();
+                // Extract parameter names, compile default values, and preserve kinds
+                let param_data: Vec<(String, Option<Value>, ParameterKind)> = params
+                    .into_iter()
+                    .map(|p| {
+                        let default_value = p.default.map(|lit| self.compile_literal(lit));
+                        (p.name, default_value, p.kind)
+                    })
+                    .collect();
 
                 // Compile the function body
                 let compiled_body = self.compile_block_helper(body)?;
 
-                Ok(Eval::Function(name, param_names, Box::new(compiled_body)))
+                Ok(Eval::Function(name, param_data, Box::new(compiled_body)))
             }
             Statement::ClassDecl {
                 name,

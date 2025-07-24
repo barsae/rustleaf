@@ -508,8 +508,16 @@ Ok(
             Function(
                 "apply",
                 [
-                    "func",
-                    "value",
+                    (
+                        "func",
+                        None,
+                        Regular,
+                    ),
+                    (
+                        "value",
+                        None,
+                        Regular,
+                    ),
                 ],
                 Block(
                     [],
