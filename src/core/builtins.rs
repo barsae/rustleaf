@@ -3,12 +3,15 @@ use crate::core::{Args, RustValue};
 
 use anyhow::{anyhow, Result};
 use std::sync::Mutex;
+use std::cell::RefCell;
 
 // Global capture for print output during testing
 static PRINT_CAPTURE: Mutex<Option<Vec<String>>> = Mutex::new(None);
 
-// Global capture for assertion counting during testing
-static ASSERTION_COUNT: Mutex<Option<u32>> = Mutex::new(None);
+// Thread-local capture for assertion counting during testing
+thread_local! {
+    static ASSERTION_COUNT: RefCell<Option<u32>> = const { RefCell::new(None) };
+}
 
 pub struct RustFunction {
     name: &'static str,
@@ -62,11 +65,11 @@ pub fn assert(args: Args) -> Result<Value> {
     args.complete()?;
     
     // Increment assertion count if capture is enabled
-    if let Ok(mut count) = ASSERTION_COUNT.lock() {
-        if let Some(ref mut counter) = *count {
+    ASSERTION_COUNT.with(|count| {
+        if let Some(ref mut counter) = *count.borrow_mut() {
             *counter += 1;
         }
-    }
+    });
     
     // Check if condition is truthy
     let is_truthy = match condition {
@@ -110,24 +113,21 @@ pub fn stop_print_capture() {
 
 // Helper functions for assertion counting
 pub fn start_assertion_count() {
-    if let Ok(mut count) = ASSERTION_COUNT.lock() {
-        *count = Some(0);
-    }
+    ASSERTION_COUNT.with(|count| {
+        *count.borrow_mut() = Some(0);
+    });
 }
 
 pub fn get_assertion_count() -> u32 {
-    if let Ok(mut count) = ASSERTION_COUNT.lock() {
-        if let Some(counter) = count.take() {
-            return counter;
-        }
-    }
-    0
+    ASSERTION_COUNT.with(|count| {
+        count.borrow_mut().take().unwrap_or(0)
+    })
 }
 
 pub fn stop_assertion_count() {
-    if let Ok(mut count) = ASSERTION_COUNT.lock() {
-        *count = None;
-    }
+    ASSERTION_COUNT.with(|count| {
+        *count.borrow_mut() = None;
+    });
 }
 
 pub fn is_unit(args: Args) -> Result<Value> {

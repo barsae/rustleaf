@@ -51,5 +51,21 @@ pub enum Eval {
     LogicalOr(Box<Eval>, Box<Eval>),
     LogicalNot(Box<Eval>),
     Is(Box<Eval>, Box<Eval>),
+
+    // Class support
+    ClassDecl {
+        name: String,
+        field_names: Vec<String>,
+        field_defaults: Vec<Option<Eval>>,
+        methods: Vec<ClassMethod>,
+    },
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct ClassMethod {
+    pub name: String,
+    pub params: Vec<String>,
+    pub body: Eval,
+    pub is_static: bool,
 }
 
