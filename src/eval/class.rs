@@ -142,7 +142,7 @@ pub struct BoundMethod {
 }
 
 impl RustValue for BoundMethod {
-    fn call(&self, args: Args) -> Result<Value> {
+    fn call(&self, mut args: Args) -> Result<Value> {
         use super::evaluator::{ControlFlow, ErrorKind, Evaluator};
         use anyhow::anyhow;
 

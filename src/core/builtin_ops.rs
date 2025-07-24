@@ -25,7 +25,7 @@ impl RustValue for BoundMethod {
 }
 
 // General operator implementations that work for all value types
-pub fn op_add(self_value: &Value, args: Args) -> Result<Value> {
+pub fn op_add(self_value: &Value, mut args: Args) -> Result<Value> {
     args.set_function_name("op_add");
     let other = args.expect("other")?;
     args.complete()?;
@@ -46,7 +46,7 @@ pub fn op_add(self_value: &Value, args: Args) -> Result<Value> {
     }
 }
 
-pub fn op_sub(self_value: &Value, args: Args) -> Result<Value> {
+pub fn op_sub(self_value: &Value, mut args: Args) -> Result<Value> {
     args.set_function_name("op_sub");
     let other = args.expect("other")?;
     args.complete()?;
@@ -64,7 +64,7 @@ pub fn op_sub(self_value: &Value, args: Args) -> Result<Value> {
     }
 }
 
-pub fn op_mul(self_value: &Value, args: Args) -> Result<Value> {
+pub fn op_mul(self_value: &Value, mut args: Args) -> Result<Value> {
     args.set_function_name("op_mul");
     let other = args.expect("other")?;
     args.complete()?;
@@ -82,7 +82,7 @@ pub fn op_mul(self_value: &Value, args: Args) -> Result<Value> {
     }
 }
 
-pub fn op_div(self_value: &Value, args: Args) -> Result<Value> {
+pub fn op_div(self_value: &Value, mut args: Args) -> Result<Value> {
     args.set_function_name("op_div");
     let other = args.expect("other")?;
     args.complete()?;
@@ -122,7 +122,7 @@ pub fn op_div(self_value: &Value, args: Args) -> Result<Value> {
     }
 }
 
-pub fn op_neg(self_value: &Value, args: Args) -> Result<Value> {
+pub fn op_neg(self_value: &Value, mut args: Args) -> Result<Value> {
     args.set_function_name("op_neg");
     args.complete()?;
 
@@ -134,7 +134,7 @@ pub fn op_neg(self_value: &Value, args: Args) -> Result<Value> {
 }
 
 // Comparison operators
-pub fn op_eq(self_value: &Value, args: Args) -> Result<Value> {
+pub fn op_eq(self_value: &Value, mut args: Args) -> Result<Value> {
     args.set_function_name("op_eq");
     let other = args.expect("other")?;
     args.complete()?;
@@ -212,7 +212,7 @@ pub fn op_eq(self_value: &Value, args: Args) -> Result<Value> {
     Ok(Value::Bool(result))
 }
 
-pub fn op_ne(self_value: &Value, args: Args) -> Result<Value> {
+pub fn op_ne(self_value: &Value, mut args: Args) -> Result<Value> {
     args.set_function_name("op_ne");
     let other = args.expect("other")?;
     args.complete()?;
@@ -225,7 +225,7 @@ pub fn op_ne(self_value: &Value, args: Args) -> Result<Value> {
     }
 }
 
-pub fn op_lt(self_value: &Value, args: Args) -> Result<Value> {
+pub fn op_lt(self_value: &Value, mut args: Args) -> Result<Value> {
     args.set_function_name("op_lt");
     let other = args.expect("other")?;
     args.complete()?;
@@ -248,7 +248,7 @@ pub fn op_lt(self_value: &Value, args: Args) -> Result<Value> {
     Ok(Value::Bool(result))
 }
 
-pub fn op_le(self_value: &Value, args: Args) -> Result<Value> {
+pub fn op_le(self_value: &Value, mut args: Args) -> Result<Value> {
     args.set_function_name("op_le");
     let other = args.expect("other")?;
     args.complete()?;
@@ -271,7 +271,7 @@ pub fn op_le(self_value: &Value, args: Args) -> Result<Value> {
     Ok(Value::Bool(result))
 }
 
-pub fn op_gt(self_value: &Value, args: Args) -> Result<Value> {
+pub fn op_gt(self_value: &Value, mut args: Args) -> Result<Value> {
     args.set_function_name("op_gt");
     let other = args.expect("other")?;
     args.complete()?;
@@ -294,7 +294,7 @@ pub fn op_gt(self_value: &Value, args: Args) -> Result<Value> {
     Ok(Value::Bool(result))
 }
 
-pub fn op_ge(self_value: &Value, args: Args) -> Result<Value> {
+pub fn op_ge(self_value: &Value, mut args: Args) -> Result<Value> {
     args.set_function_name("op_ge");
     let other = args.expect("other")?;
     args.complete()?;
@@ -318,7 +318,7 @@ pub fn op_ge(self_value: &Value, args: Args) -> Result<Value> {
 }
 
 // Additional arithmetic operators
-pub fn op_mod(self_value: &Value, args: Args) -> Result<Value> {
+pub fn op_mod(self_value: &Value, mut args: Args) -> Result<Value> {
     args.set_function_name("op_mod");
     let other = args.expect("other")?;
     args.complete()?;
@@ -364,7 +364,7 @@ pub fn op_mod(self_value: &Value, args: Args) -> Result<Value> {
     }
 }
 
-pub fn op_pow(self_value: &Value, args: Args) -> Result<Value> {
+pub fn op_pow(self_value: &Value, mut args: Args) -> Result<Value> {
     args.set_function_name("op_pow");
     let other = args.expect("other")?;
     args.complete()?;
@@ -400,7 +400,7 @@ pub fn op_pow(self_value: &Value, args: Args) -> Result<Value> {
 }
 
 // Bitwise operators (only work on integers)
-pub fn op_bitwise_and(self_value: &Value, args: Args) -> Result<Value> {
+pub fn op_bitwise_and(self_value: &Value, mut args: Args) -> Result<Value> {
     args.set_function_name("op_bitwise_and");
     let other = args.expect("other")?;
     args.complete()?;
@@ -415,7 +415,7 @@ pub fn op_bitwise_and(self_value: &Value, args: Args) -> Result<Value> {
     }
 }
 
-pub fn op_bitwise_or(self_value: &Value, args: Args) -> Result<Value> {
+pub fn op_bitwise_or(self_value: &Value, mut args: Args) -> Result<Value> {
     args.set_function_name("op_bitwise_or");
     let other = args.expect("other")?;
     args.complete()?;
@@ -430,7 +430,7 @@ pub fn op_bitwise_or(self_value: &Value, args: Args) -> Result<Value> {
     }
 }
 
-pub fn op_bitwise_xor(self_value: &Value, args: Args) -> Result<Value> {
+pub fn op_bitwise_xor(self_value: &Value, mut args: Args) -> Result<Value> {
     args.set_function_name("op_bitwise_xor");
     let other = args.expect("other")?;
     args.complete()?;
@@ -445,7 +445,7 @@ pub fn op_bitwise_xor(self_value: &Value, args: Args) -> Result<Value> {
     }
 }
 
-pub fn op_bitwise_not(self_value: &Value, args: Args) -> Result<Value> {
+pub fn op_bitwise_not(self_value: &Value, mut args: Args) -> Result<Value> {
     args.set_function_name("op_bitwise_not");
     args.complete()?;
 
@@ -458,7 +458,7 @@ pub fn op_bitwise_not(self_value: &Value, args: Args) -> Result<Value> {
     }
 }
 
-pub fn op_lshift(self_value: &Value, args: Args) -> Result<Value> {
+pub fn op_lshift(self_value: &Value, mut args: Args) -> Result<Value> {
     args.set_function_name("op_lshift");
     let other = args.expect("other")?;
     args.complete()?;
@@ -481,7 +481,7 @@ pub fn op_lshift(self_value: &Value, args: Args) -> Result<Value> {
     }
 }
 
-pub fn op_rshift(self_value: &Value, args: Args) -> Result<Value> {
+pub fn op_rshift(self_value: &Value, mut args: Args) -> Result<Value> {
     args.set_function_name("op_rshift");
     let other = args.expect("other")?;
     args.complete()?;
@@ -505,7 +505,7 @@ pub fn op_rshift(self_value: &Value, args: Args) -> Result<Value> {
 }
 
 // Container operations
-pub fn op_contains(self_value: &Value, args: Args) -> Result<Value> {
+pub fn op_contains(self_value: &Value, mut args: Args) -> Result<Value> {
     args.set_function_name("op_contains");
     let item = args.expect("item")?;
     args.complete()?;
@@ -573,7 +573,7 @@ pub fn op_contains(self_value: &Value, args: Args) -> Result<Value> {
 }
 
 // List indexing operations
-pub fn op_get_item_list(self_value: &Value, args: Args) -> Result<Value> {
+pub fn op_get_item_list(self_value: &Value, mut args: Args) -> Result<Value> {
     args.set_function_name("op_get_item");
     let index = args.expect("index")?;
     args.complete()?;
@@ -610,7 +610,7 @@ pub fn op_get_item_list(self_value: &Value, args: Args) -> Result<Value> {
     }
 }
 
-pub fn op_set_item_list(self_value: &Value, args: Args) -> Result<Value> {
+pub fn op_set_item_list(self_value: &Value, mut args: Args) -> Result<Value> {
     args.set_function_name("op_set_item");
     let index = args.expect("index")?;
     let value = args.expect("value")?;
@@ -650,7 +650,7 @@ pub fn op_set_item_list(self_value: &Value, args: Args) -> Result<Value> {
 }
 
 // Dictionary indexing operations
-pub fn op_get_item_dict(self_value: &Value, args: Args) -> Result<Value> {
+pub fn op_get_item_dict(self_value: &Value, mut args: Args) -> Result<Value> {
     args.set_function_name("op_get_item");
     let key = args.expect("key")?;
     args.complete()?;
@@ -683,7 +683,7 @@ pub fn op_get_item_dict(self_value: &Value, args: Args) -> Result<Value> {
     }
 }
 
-pub fn op_set_item_dict(self_value: &Value, args: Args) -> Result<Value> {
+pub fn op_set_item_dict(self_value: &Value, mut args: Args) -> Result<Value> {
     args.set_function_name("op_set_item");
     let key = args.expect("key")?;
     let value = args.expect("value")?;
@@ -716,7 +716,7 @@ pub fn op_set_item_dict(self_value: &Value, args: Args) -> Result<Value> {
 }
 
 // Range-specific operations
-pub fn range_to_list(self_value: &Value, args: Args) -> Result<Value> {
+pub fn range_to_list(self_value: &Value, mut args: Args) -> Result<Value> {
     args.set_function_name("to_list");
     args.complete()?;
 

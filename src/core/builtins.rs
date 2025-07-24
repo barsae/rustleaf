@@ -38,7 +38,7 @@ impl RustValue for RustFunction {
     }
 }
 
-pub fn print(args: Args) -> Result<Value> {
+pub fn print(mut args: Args) -> Result<Value> {
     args.set_function_name("print");
     let arg = args.expect("arg")?;
     args.complete()?;
@@ -58,7 +58,7 @@ pub fn print(args: Args) -> Result<Value> {
     Ok(Value::Unit)
 }
 
-pub fn assert(args: Args) -> Result<Value> {
+pub fn assert(mut args: Args) -> Result<Value> {
     args.set_function_name("assert");
     let condition = args.expect("condition")?;
     let message = args.optional("message", Value::String("Assertion failed".to_string()));
@@ -128,7 +128,7 @@ pub fn stop_assertion_count() {
     });
 }
 
-pub fn is_unit(args: Args) -> Result<Value> {
+pub fn is_unit(mut args: Args) -> Result<Value> {
     args.set_function_name("is_unit");
     let value = args.expect("value")?;
     args.complete()?;
@@ -137,7 +137,7 @@ pub fn is_unit(args: Args) -> Result<Value> {
     Ok(Value::Bool(result))
 }
 
-pub fn str_conversion(args: Args) -> Result<Value> {
+pub fn str_conversion(mut args: Args) -> Result<Value> {
     args.set_function_name("str");
     let value = args.expect("value")?;
     args.complete()?;
@@ -155,7 +155,7 @@ pub fn str_conversion(args: Args) -> Result<Value> {
     Ok(Value::String(string_repr))
 }
 
-pub fn raise(args: Args) -> Result<Value> {
+pub fn raise(mut args: Args) -> Result<Value> {
     args.set_function_name("raise");
     let error_value = args.expect("error")?;
     args.complete()?;

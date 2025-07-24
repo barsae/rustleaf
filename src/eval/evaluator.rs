@@ -33,7 +33,7 @@ impl RustLeafFunction {
 }
 
 impl RustValue for RustLeafFunction {
-    fn call(&self, args: Args) -> anyhow::Result<Value> {
+    fn call(&self, mut args: Args) -> anyhow::Result<Value> {
         // Analyze parameter structure
         let regular_params: Vec<_> = self
             .params
