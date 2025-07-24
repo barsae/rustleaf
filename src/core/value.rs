@@ -43,6 +43,10 @@ pub struct Range {
 }
 
 impl RustValueRef {
+    pub fn borrow(&self) -> std::cell::Ref<Box<dyn RustValue>> {
+        self.0.borrow()
+    }
+    
     pub fn borrow_mut(&self) -> std::cell::RefMut<Box<dyn RustValue>> {
         self.0.borrow_mut()
     }
@@ -89,6 +93,9 @@ pub trait RustValue: fmt::Debug {
     }
     fn call(&self, args: Args) -> Result<Value> {
         Err(anyhow!("Cannot call this type"))
+    }
+    fn op_is(&self, _other: &Value) -> Result<Value> {
+        Err(anyhow!("This type does not support 'is' operations"))
     }
 }
 

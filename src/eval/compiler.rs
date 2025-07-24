@@ -295,6 +295,19 @@ impl Compiler {
                 self.compile_range(start_val, end_val, true)
             }
             
+            // Lambda expressions
+            Expression::Lambda { params, body } => {
+                let compiled_body = match body {
+                    LambdaBody::Expression(expr) => {
+                        self.compile_expression(*expr)?
+                    }
+                    LambdaBody::Block(block) => {
+                        self.compile_block_helper(block)?
+                    }
+                };
+                Ok(Eval::Lambda(params, Box::new(compiled_body)))
+            }
+            
             _ => Err(anyhow::anyhow!("Expression not yet implemented: {:?}", expr)),
         }
     }

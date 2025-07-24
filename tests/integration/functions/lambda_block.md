@@ -1,5 +1,5 @@
 # Program
-Status: 🔴
+Status: 🟢
 
 ```rustleaf
 // #[fail_quietly]
@@ -14,8 +14,202 @@ None
 
 # Result
 ```rust
-Err(
-    "Expression not yet implemented: Lambda { params: [\"x\"], body: Block(Block { statements: [Expression(FunctionCall(Identifier(\"print\"), [Identifier(\"x\")]))], final_expr: Some(Add(Identifier(\"x\"), Literal(Int(1)))) }) }",
+Ok(
+    RustValue(
+        RustValueRef(
+            RefCell {
+                value: RustLeafFunction {
+                    params: [
+                        "x",
+                    ],
+                    body: Block(
+                        [
+                            Call(
+                                Variable(
+                                    "print",
+                                ),
+                                [
+                                    Variable(
+                                        "x",
+                                    ),
+                                ],
+                            ),
+                        ],
+                        Some(
+                            Call(
+                                GetAttr(
+                                    Variable(
+                                        "x",
+                                    ),
+                                    "op_add",
+                                ),
+                                [
+                                    Literal(
+                                        Int(
+                                            1,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                        ),
+                    ),
+                    closure_env: ScopeRef(
+                        RefCell {
+                            value: Scope {
+                                vars: {},
+                                parent: Some(
+                                    ScopeRef(
+                                        RefCell {
+                                            value: Scope {
+                                                vars: {
+                                                    "Null": RustValue(
+                                                        RustValueRef(
+                                                            RefCell {
+                                                                value: TypeConstant {
+                                                                    type_name: "Null",
+                                                                },
+                                                            },
+                                                        ),
+                                                    ),
+                                                    "is_unit": RustValue(
+                                                        RustValueRef(
+                                                            RefCell {
+                                                                value: RustFunction {
+                                                                    name: "is_unit",
+                                                                },
+                                                            },
+                                                        ),
+                                                    ),
+                                                    "List": RustValue(
+                                                        RustValueRef(
+                                                            RefCell {
+                                                                value: TypeConstant {
+                                                                    type_name: "List",
+                                                                },
+                                                            },
+                                                        ),
+                                                    ),
+                                                    "Dict": RustValue(
+                                                        RustValueRef(
+                                                            RefCell {
+                                                                value: TypeConstant {
+                                                                    type_name: "Dict",
+                                                                },
+                                                            },
+                                                        ),
+                                                    ),
+                                                    "String": RustValue(
+                                                        RustValueRef(
+                                                            RefCell {
+                                                                value: TypeConstant {
+                                                                    type_name: "String",
+                                                                },
+                                                            },
+                                                        ),
+                                                    ),
+                                                    "Range": RustValue(
+                                                        RustValueRef(
+                                                            RefCell {
+                                                                value: TypeConstant {
+                                                                    type_name: "Range",
+                                                                },
+                                                            },
+                                                        ),
+                                                    ),
+                                                    "Int": RustValue(
+                                                        RustValueRef(
+                                                            RefCell {
+                                                                value: TypeConstant {
+                                                                    type_name: "Int",
+                                                                },
+                                                            },
+                                                        ),
+                                                    ),
+                                                    "Unit": RustValue(
+                                                        RustValueRef(
+                                                            RefCell {
+                                                                value: TypeConstant {
+                                                                    type_name: "Unit",
+                                                                },
+                                                            },
+                                                        ),
+                                                    ),
+                                                    "assert": RustValue(
+                                                        RustValueRef(
+                                                            RefCell {
+                                                                value: RustFunction {
+                                                                    name: "assert",
+                                                                },
+                                                            },
+                                                        ),
+                                                    ),
+                                                    "str": RustValue(
+                                                        RustValueRef(
+                                                            RefCell {
+                                                                value: RustFunction {
+                                                                    name: "str",
+                                                                },
+                                                            },
+                                                        ),
+                                                    ),
+                                                    "Float": RustValue(
+                                                        RustValueRef(
+                                                            RefCell {
+                                                                value: TypeConstant {
+                                                                    type_name: "Float",
+                                                                },
+                                                            },
+                                                        ),
+                                                    ),
+                                                    "Bool": RustValue(
+                                                        RustValueRef(
+                                                            RefCell {
+                                                                value: TypeConstant {
+                                                                    type_name: "Bool",
+                                                                },
+                                                            },
+                                                        ),
+                                                    ),
+                                                    "Function": RustValue(
+                                                        RustValueRef(
+                                                            RefCell {
+                                                                value: TypeConstant {
+                                                                    type_name: "Function",
+                                                                },
+                                                            },
+                                                        ),
+                                                    ),
+                                                    "raise": RustValue(
+                                                        RustValueRef(
+                                                            RefCell {
+                                                                value: RustFunction {
+                                                                    name: "raise",
+                                                                },
+                                                            },
+                                                        ),
+                                                    ),
+                                                    "print": RustValue(
+                                                        RustValueRef(
+                                                            RefCell {
+                                                                value: RustFunction {
+                                                                    name: "print",
+                                                                },
+                                                            },
+                                                        ),
+                                                    ),
+                                                },
+                                                parent: None,
+                                            },
+                                        },
+                                    ),
+                                ),
+                            },
+                        },
+                    ),
+                },
+            },
+        ),
+    ),
 )
 ```
 
@@ -91,7 +285,47 @@ Ok(
 
 # Eval
 ```rust
-Err(
-    "Expression not yet implemented: Lambda { params: [\"x\"], body: Block(Block { statements: [Expression(FunctionCall(Identifier(\"print\"), [Identifier(\"x\")]))], final_expr: Some(Add(Identifier(\"x\"), Literal(Int(1)))) }) }",
+Ok(
+    Block(
+        [],
+        Some(
+            Lambda(
+                [
+                    "x",
+                ],
+                Block(
+                    [
+                        Call(
+                            Variable(
+                                "print",
+                            ),
+                            [
+                                Variable(
+                                    "x",
+                                ),
+                            ],
+                        ),
+                    ],
+                    Some(
+                        Call(
+                            GetAttr(
+                                Variable(
+                                    "x",
+                                ),
+                                "op_add",
+                            ),
+                            [
+                                Literal(
+                                    Int(
+                                        1,
+                                    ),
+                                ),
+                            ],
+                        ),
+                    ),
+                ),
+            ),
+        ),
+    ),
 )
 ```

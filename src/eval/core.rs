@@ -24,6 +24,8 @@ pub enum Eval {
 
     // Function declaration
     Function(String, Vec<String>, Box<Eval>),
+    // Lambda expression
+    Lambda(Vec<String>, Box<Eval>),
 
     // Control flow
     If(Box<Eval>, Box<Eval>, Option<Box<Eval>>),

@@ -8,6 +8,7 @@ import os
 import re
 from pathlib import Path
 from collections import defaultdict
+from datetime import datetime
 
 def extract_test_status(file_path):
     """Extract the status circle (🟢 or 🔴) from a test file."""
@@ -68,7 +69,10 @@ def generate_test_summary():
         # Extract status
         status = extract_test_status(file_path)
         
-        categories[category].append((test_name, status))
+        # Create relative path for markdown link
+        link_path = str(relative_path)
+        
+        categories[category].append((test_name, status, link_path))
     
     # Sort categories and tests within each category
     sorted_categories = sorted(categories.items())
@@ -76,12 +80,12 @@ def generate_test_summary():
         tests.sort(key=lambda x: x[0])
     
     # Generate summary content
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     summary_lines = [
         "# Test Summary",
         "",
         "Auto-generated test status summary from integration tests.",
-        "",
-        "Legend: 🟢 = Passing, 🔴 = Failing, ❓ = Unknown, ❌ = Error",
+        f"*Generated on: {timestamp}*",
         ""
     ]
     
@@ -92,29 +96,38 @@ def generate_test_summary():
             summary_lines.append(f"## {category.title()} Tests")
         summary_lines.append("")
         
-        for test_name, status in tests:
-            summary_lines.append(f"{test_name}: {status}")
+        for test_name, status, link_path in tests:
+            summary_lines.append(f"- [{test_name}](tests/integration/{link_path}): {status}")
         
         summary_lines.append("")
     
     # Add statistics
     total_tests = sum(len(tests) for _, tests in sorted_categories)
-    passing_tests = sum(1 for _, tests in sorted_categories for _, status in tests if status == '🟢')
-    failing_tests = sum(1 for _, tests in sorted_categories for _, status in tests if status == '🔴')
-    unknown_tests = sum(1 for _, tests in sorted_categories for _, status in tests if status == '❓')
-    error_tests = sum(1 for _, tests in sorted_categories for _, status in tests if status == '❌')
+    passing_tests = sum(1 for _, tests in sorted_categories for _, status, _ in tests if status == '🟢')
+    failing_tests = sum(1 for _, tests in sorted_categories for _, status, _ in tests if status == '🔴')
+    unknown_tests = sum(1 for _, tests in sorted_categories for _, status, _ in tests if status == '❓')
+    error_tests = sum(1 for _, tests in sorted_categories for _, status, _ in tests if status == '❌')
     
-    summary_lines.extend([
+    stats_lines = [
         "## Statistics",
         "",
-        f"Total tests: {total_tests}",
-        f"Passing: {passing_tests} 🟢",
-        f"Failing: {failing_tests} 🔴",
-        f"Unknown: {unknown_tests} ❓",
-        f"Errors: {error_tests} ❌",
+        f"- Total tests: {total_tests}",
+        f"- Passing: {passing_tests} 🟢",
+        f"- Failing: {failing_tests} 🔴",
+    ]
+    
+    # Only include unknown and errors if they are > 0
+    if unknown_tests > 0:
+        stats_lines.append(f"- Unknown: {unknown_tests} ❓")
+    if error_tests > 0:
+        stats_lines.append(f"- Errors: {error_tests} ❌")
+    
+    stats_lines.extend([
         "",
-        f"Pass rate: {passing_tests/total_tests*100:.1f}%" if total_tests > 0 else "Pass rate: N/A"
+        f"**Pass rate: {passing_tests/total_tests*100:.1f}%**" if total_tests > 0 else "**Pass rate: N/A**"
     ])
+    
+    summary_lines.extend(stats_lines)
     
     # Write summary file
     summary_path = project_root / "test-summary.md"

@@ -12,7 +12,7 @@ None
 # Result
 ```rust
 Err(
-    "Undefined variable: raise",
+    "Undefined variable: NetworkError",
 )
 ```
 

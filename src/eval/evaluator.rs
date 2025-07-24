@@ -63,6 +63,50 @@ impl RustValue for RustLeafFunction {
     }
 }
 
+#[derive(Debug, Clone)]
+struct TypeConstant {
+    type_name: String,
+}
+
+impl TypeConstant {
+    fn new(type_name: &str) -> Self {
+        Self {
+            type_name: type_name.to_string(),
+        }
+    }
+}
+
+impl RustValue for TypeConstant {
+    fn call(&self, args: Args) -> anyhow::Result<Value> {
+        Err(anyhow!("Type constants are not callable"))
+    }
+    
+    fn get_attr(&self, name: &str) -> Option<Value> {
+        match name {
+            "name" => Some(Value::String(self.type_name.clone())),
+            _ => None,
+        }
+    }
+    
+    fn op_is(&self, other: &Value) -> anyhow::Result<Value> {
+        // Type checking: check if other value matches this type
+        let matches = match self.type_name.as_str() {
+            "Null" => matches!(other, Value::Null),
+            "Unit" => matches!(other, Value::Unit),
+            "Bool" => matches!(other, Value::Bool(_)),
+            "Int" => matches!(other, Value::Int(_)),
+            "Float" => matches!(other, Value::Float(_)),
+            "String" => matches!(other, Value::String(_)),
+            "List" => matches!(other, Value::List(_)),
+            "Dict" => matches!(other, Value::Dict(_)),
+            "Range" => matches!(other, Value::Range(_)),
+            "Function" => matches!(other, Value::RustValue(_)), // Functions are RustValues
+            _ => false,
+        };
+        Ok(Value::Bool(matches))
+    }
+}
+
 pub struct Evaluator {
     globals: ScopeRef,
     current_env: ScopeRef,
@@ -93,6 +137,24 @@ impl Evaluator {
         self.register_builtin_fn("assert", crate::core::assert);
         self.register_builtin_fn("is_unit", crate::core::is_unit);
         self.register_builtin_fn("str", crate::core::str_conversion);
+        self.register_builtin_fn("raise", crate::core::raise);
+        
+        // Register type constants for `is` operator
+        self.register_type_constants();
+    }
+    
+    fn register_type_constants(&mut self) {
+        // Create type constants as special values
+        self.globals.define("Null".to_string(), Value::from_rust(TypeConstant::new("Null")));
+        self.globals.define("Unit".to_string(), Value::from_rust(TypeConstant::new("Unit")));
+        self.globals.define("Bool".to_string(), Value::from_rust(TypeConstant::new("Bool")));
+        self.globals.define("Int".to_string(), Value::from_rust(TypeConstant::new("Int")));
+        self.globals.define("Float".to_string(), Value::from_rust(TypeConstant::new("Float")));
+        self.globals.define("String".to_string(), Value::from_rust(TypeConstant::new("String")));
+        self.globals.define("List".to_string(), Value::from_rust(TypeConstant::new("List")));
+        self.globals.define("Dict".to_string(), Value::from_rust(TypeConstant::new("Dict")));
+        self.globals.define("Range".to_string(), Value::from_rust(TypeConstant::new("Range")));
+        self.globals.define("Function".to_string(), Value::from_rust(TypeConstant::new("Function")));
     }
 
     fn register_builtin_fn(&mut self, name: &'static str, func: fn(Args) -> anyhow::Result<Value>) {
@@ -175,6 +237,14 @@ impl Evaluator {
                 let function_value = function.into_value();
                 self.current_env.define(name.clone(), function_value);
                 Ok(Value::Unit)
+            }
+            Eval::Lambda(params, body) => {
+                let function = RustLeafFunction {
+                    params: params.clone(),
+                    body: (**body).clone(),
+                    closure_env: self.current_env.clone(),
+                };
+                Ok(function.into_value())
             }
             Eval::Assign(name, expr) => {
                 let value = self.eval(expr)?;
@@ -419,7 +489,19 @@ impl Evaluator {
             Eval::Is(left, right) => {
                 let left_val = self.eval(left)?;
                 let right_val = self.eval(right)?;
-                // Identity comparison - same as == for now, could be object identity later
+                
+                // Check if right side is a RustValue that implements op_is
+                if let Value::RustValue(rust_val_ref) = &right_val {
+                    let rust_val = rust_val_ref.borrow();
+                    match rust_val.op_is(&left_val) {
+                        Ok(result) => return Ok(result),
+                        Err(_) => {
+                            // Fall through to identity comparison if op_is is not supported
+                        }
+                    }
+                }
+                
+                // Fall back to identity comparison
                 Ok(Value::Bool(left_val == right_val))
             }
             
