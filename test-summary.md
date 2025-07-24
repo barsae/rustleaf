@@ -1,7 +1,7 @@
 # Test Summary
 
 Auto-generated test status summary from integration tests.
-*Generated on: 2025-07-24 14:18:38*
+*Generated on: 2025-07-24 14:28:45*
 
 ## Advanced Tests
 
@@ -82,12 +82,7 @@ Auto-generated test status summary from integration tests.
 
 ## Macros Tests
 
-- [macro_annotation](tests/integration/macros/macro_annotation.md): 🟡
-- [macro_definition](tests/integration/macros/macro_definition.md): 🟡
-- [macro_definition_and_usage](tests/integration/macros/macro_definition_and_usage.md): 🟡
-- [macro_multiple_annotations](tests/integration/macros/macro_multiple_annotations.md): 🟡
-- [macro_on_class](tests/integration/macros/macro_on_class.md): 🟡
-- [macro_with_args](tests/integration/macros/macro_with_args.md): 🟡
+- [count](tests/integration/macros/count.md): 🟡
 
 ## Operators Tests
 
@@ -114,9 +109,9 @@ Auto-generated test status summary from integration tests.
 
 ## Statistics
 
-- Total tests: 79
+- Total tests: 74
 - Passing: 73 🟢
 - Failing: 0 🔴
-- No asserts: 6 🟡
+- No asserts: 1 🟡
 
-**Pass rate: 92.4%**
+**Pass rate: 98.6%**
