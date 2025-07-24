@@ -1,8 +1,11 @@
-use std::collections::HashMap;
 use anyhow::Result;
+use std::collections::HashMap;
 
-use crate::core::{Value, RustValue, Args};
-use super::{core::{Eval, ClassMethod}, scope::ScopeRef};
+use super::{
+    core::{ClassMethod, Eval},
+    scope::ScopeRef,
+};
+use crate::core::{Args, RustValue, Value};
 
 /// A class definition - the "type" that can be called as a constructor
 #[derive(Debug)]
@@ -42,12 +45,12 @@ impl Class {
 impl RustValue for Class {
     fn get_attr(&self, name: &str) -> Option<Value> {
         // Allow access to static methods
-        self.find_static_method(name).map(|method| Value::from_rust(
-            StaticMethod {
+        self.find_static_method(name).map(|method| {
+            Value::from_rust(StaticMethod {
                 class_name: self.name.clone(),
                 method: method.clone(),
-            }
-        ))
+            })
+        })
     }
 
     fn set_attr(&mut self, _name: &str, _value: Value) -> Result<(), String> {
@@ -73,13 +76,11 @@ impl RustValue for Class {
             fields.insert(field_name.clone(), value);
         }
 
-        Ok(Value::from_rust(
-            ClassInstance {
-                class_name: self.name.clone(),
-                fields,
-                methods: self.methods.clone(),
-            }
-        ))
+        Ok(Value::from_rust(ClassInstance {
+            class_name: self.name.clone(),
+            fields,
+            methods: self.methods.clone(),
+        }))
     }
 }
 
@@ -117,7 +118,10 @@ impl RustValue for ClassInstance {
     }
 
     fn call(&self, _args: Args) -> Result<Value> {
-        Err(anyhow::anyhow!("'{}' object is not callable", self.class_name))
+        Err(anyhow::anyhow!(
+            "'{}' object is not callable",
+            self.class_name
+        ))
     }
 
     fn is_class_instance(&self) -> bool {
@@ -132,14 +136,14 @@ impl RustValue for ClassInstance {
 /// A bound method - method bound to a specific instance
 #[derive(Debug, Clone)]
 pub struct BoundMethod {
-    pub instance: Value,  // The instance this method is bound to
+    pub instance: Value, // The instance this method is bound to
     pub method: ClassMethod,
-    pub closure_env: ScopeRef,  // Environment where the method can execute
+    pub closure_env: ScopeRef, // Environment where the method can execute
 }
 
 impl RustValue for BoundMethod {
     fn call(&self, args: Args) -> Result<Value> {
-        use super::evaluator::{Evaluator, ControlFlow, ErrorKind};
+        use super::evaluator::{ControlFlow, ErrorKind, Evaluator};
         use anyhow::anyhow;
 
         // Check argument count - method should expect self + provided args
@@ -147,8 +151,12 @@ impl RustValue for BoundMethod {
         let provided_args = args.len() + 1; // +1 for the instance we'll inject
 
         if provided_args != expected_args {
-            return Err(anyhow!("Method '{}' expects {} arguments, got {}",
-                self.method.name, expected_args - 1, args.len()));
+            return Err(anyhow!(
+                "Method '{}' expects {} arguments, got {}",
+                self.method.name,
+                expected_args - 1,
+                args.len()
+            ));
         }
 
         // Create new scope for method execution
@@ -186,7 +194,7 @@ impl RustValue for BoundMethod {
                     crate::core::Value::String(s) => Err(anyhow!("{}", s)),
                     _ => Err(anyhow!("{:?}", value)),
                 }
-            },
+            }
             Err(other) => Err(anyhow!("Invalid control flow in method: {:?}", other)),
         }
     }

@@ -173,7 +173,10 @@ impl Parser {
         } else if self.accept(TokenType::LeftParen) {
             // Grouped expression: (expr)
             let expr = self.parse_expression()?;
-            self.expect(TokenType::RightParen, "Expected ')' after grouped expression")?;
+            self.expect(
+                TokenType::RightParen,
+                "Expected ')' after grouped expression",
+            )?;
             Ok(expr)
         } else {
             Err(anyhow!("Unexpected token: {:?}", self.peek().token_type))
@@ -527,7 +530,10 @@ impl Parser {
                 // Expression part
                 let expr = self.parse_expression()?;
                 parts.push(InterpolationPart::Expression(expr));
-                self.expect(TokenType::InterpolationEnd, "Expected closing '}' in string interpolation")?;
+                self.expect(
+                    TokenType::InterpolationEnd,
+                    "Expected closing '}' in string interpolation",
+                )?;
             } else {
                 break;
             }

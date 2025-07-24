@@ -29,7 +29,7 @@ pub fn run(source: String) -> Result<core::Value> {
                     core::Value::String(s) => anyhow::anyhow!("{}", s),
                     _ => anyhow::anyhow!("{:?}", value),
                 }
-            },
+            }
             eval::ControlFlow::Return(val) => anyhow::anyhow!("Unexpected return: {:?}", val),
             eval::ControlFlow::Break(val) => anyhow::anyhow!("Unexpected break: {:?}", val),
             eval::ControlFlow::Continue => anyhow::anyhow!("Unexpected continue"),

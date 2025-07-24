@@ -2,8 +2,8 @@ use super::Value;
 use crate::core::{Args, RustValue};
 
 use anyhow::{anyhow, Result};
-use std::sync::Mutex;
 use std::cell::RefCell;
+use std::sync::Mutex;
 
 // Global capture for print output during testing
 static PRINT_CAPTURE: Mutex<Option<Vec<String>>> = Mutex::new(None);
@@ -119,9 +119,7 @@ pub fn start_assertion_count() {
 }
 
 pub fn get_assertion_count() -> u32 {
-    ASSERTION_COUNT.with(|count| {
-        count.borrow_mut().take().unwrap_or(0)
-    })
+    ASSERTION_COUNT.with(|count| count.borrow_mut().take().unwrap_or(0))
 }
 
 pub fn stop_assertion_count() {

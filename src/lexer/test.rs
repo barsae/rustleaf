@@ -249,7 +249,7 @@ string""""#;
                 Token::simple(TokenType::And),
                 Token::simple(TokenType::Or),
                 Token::simple(TokenType::Xor),
-                Token::simple(TokenType::NotIn),  // "not in" gets rewritten to NotIn
+                Token::simple(TokenType::NotIn), // "not in" gets rewritten to NotIn
                 Token::simple(TokenType::Is),
                 Token::simple(TokenType::Eof),
             ]

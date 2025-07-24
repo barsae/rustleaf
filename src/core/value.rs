@@ -1,8 +1,8 @@
 use anyhow::{anyhow, Result};
+use indexmap::IndexMap;
 use std::cell::RefCell;
 use std::fmt;
 use std::rc::Rc;
-use indexmap::IndexMap;
 
 use crate::core::Args;
 
@@ -144,7 +144,10 @@ impl Value {
         Value::RustValue(RustValueRef(Rc::new(RefCell::new(Box::new(val)))))
     }
 
-    pub fn bind_method(&self, method_func: fn(&Value, crate::core::Args) -> anyhow::Result<Value>) -> Self {
+    pub fn bind_method(
+        &self,
+        method_func: fn(&Value, crate::core::Args) -> anyhow::Result<Value>,
+    ) -> Self {
         use crate::core::builtin_ops::BoundMethod;
         Value::from_rust(BoundMethod::new(self, method_func))
     }

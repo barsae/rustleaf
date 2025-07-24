@@ -11,7 +11,6 @@ enum TestType {
     Ignore,
 }
 
-
 // Test discovery implementation
 #[proc_macro_attribute]
 pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
@@ -191,7 +190,6 @@ fn discover_rustleaf_files(
 ) -> Result<Vec<(String, String, TestType, String)>, std::io::Error> {
     let mut test_files = Vec::new();
     let test_path = Path::new(test_dir);
-
 
     for entry in fs::read_dir(test_path)? {
         let entry = entry?;

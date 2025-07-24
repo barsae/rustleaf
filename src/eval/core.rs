@@ -29,7 +29,7 @@ pub enum Eval {
 
     // Control flow
     If(Box<Eval>, Box<Eval>, Option<Box<Eval>>),
-    While(Box<Eval>, Box<Eval>), // condition, body
+    While(Box<Eval>, Box<Eval>),       // condition, body
     For(String, Box<Eval>, Box<Eval>), // variable name, iterator, body
     Loop(Box<Eval>),
     Return(Option<Box<Eval>>),
@@ -68,4 +68,3 @@ pub struct ClassMethod {
     pub body: Eval,
     pub is_static: bool,
 }
-

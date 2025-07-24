@@ -650,7 +650,10 @@ impl Lexer {
 
                 current_pos = end_pos + 1; // Skip closing brace
             } else {
-                return Err(anyhow::anyhow!("Unclosed interpolation in string: missing '}}' after '${{' at position {}", actual_start));
+                return Err(anyhow::anyhow!(
+                    "Unclosed interpolation in string: missing '}}' after '${{' at position {}",
+                    actual_start
+                ));
             }
         }
 
@@ -701,7 +704,8 @@ impl Lexer {
             // Check for "not in" pattern
             if i + 1 < tokens.len()
                 && tokens[i].token_type == TokenType::Not
-                && tokens[i + 1].token_type == TokenType::In {
+                && tokens[i + 1].token_type == TokenType::In
+            {
                 // Replace "not in" with "NotIn"
                 result.push(Token::simple(TokenType::NotIn));
                 i += 2; // Skip both tokens
@@ -709,12 +713,12 @@ impl Lexer {
             // Check for "is not" pattern
             else if i + 1 < tokens.len()
                 && tokens[i].token_type == TokenType::Is
-                && tokens[i + 1].token_type == TokenType::Not {
+                && tokens[i + 1].token_type == TokenType::Not
+            {
                 // Replace "is not" with "IsNot"
                 result.push(Token::simple(TokenType::IsNot));
                 i += 2; // Skip both tokens
-            }
-            else {
+            } else {
                 // Copy token as-is
                 result.push(tokens[i].clone());
                 i += 1;

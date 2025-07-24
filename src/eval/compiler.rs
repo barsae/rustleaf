@@ -1,7 +1,7 @@
 /// Compiler from AST to simplified evaluation IR
 use anyhow::Result;
 
-use super::core::{Eval, ClassMethod};
+use super::core::{ClassMethod, Eval};
 use crate::core::*;
 
 pub struct Compiler;
@@ -64,25 +64,40 @@ impl Compiler {
                         let final_value = match op {
                             AssignOp::Assign => compiled_value,
                             AssignOp::AddAssign => {
-                                let get_method = Eval::GetAttr(Box::new(Eval::Variable(name.clone())), "op_add".to_string());
+                                let get_method = Eval::GetAttr(
+                                    Box::new(Eval::Variable(name.clone())),
+                                    "op_add".to_string(),
+                                );
                                 Eval::Call(Box::new(get_method), vec![compiled_value])
-                            },
+                            }
                             AssignOp::SubAssign => {
-                                let get_method = Eval::GetAttr(Box::new(Eval::Variable(name.clone())), "op_sub".to_string());
+                                let get_method = Eval::GetAttr(
+                                    Box::new(Eval::Variable(name.clone())),
+                                    "op_sub".to_string(),
+                                );
                                 Eval::Call(Box::new(get_method), vec![compiled_value])
-                            },
+                            }
                             AssignOp::MulAssign => {
-                                let get_method = Eval::GetAttr(Box::new(Eval::Variable(name.clone())), "op_mul".to_string());
+                                let get_method = Eval::GetAttr(
+                                    Box::new(Eval::Variable(name.clone())),
+                                    "op_mul".to_string(),
+                                );
                                 Eval::Call(Box::new(get_method), vec![compiled_value])
-                            },
+                            }
                             AssignOp::DivAssign => {
-                                let get_method = Eval::GetAttr(Box::new(Eval::Variable(name.clone())), "op_div".to_string());
+                                let get_method = Eval::GetAttr(
+                                    Box::new(Eval::Variable(name.clone())),
+                                    "op_div".to_string(),
+                                );
                                 Eval::Call(Box::new(get_method), vec![compiled_value])
-                            },
+                            }
                             AssignOp::ModAssign => {
-                                let get_method = Eval::GetAttr(Box::new(Eval::Variable(name.clone())), "op_mod".to_string());
+                                let get_method = Eval::GetAttr(
+                                    Box::new(Eval::Variable(name.clone())),
+                                    "op_mod".to_string(),
+                                );
                                 Eval::Call(Box::new(get_method), vec![compiled_value])
-                            },
+                            }
                         };
                         Ok(Eval::Assign(name, Box::new(final_value)))
                     }
@@ -120,20 +135,25 @@ impl Compiler {
                 Ok(Eval::Break(compiled_expr))
             }
             Statement::Continue => Ok(Eval::Continue),
-            Statement::FnDecl { name, params, body, is_pub: _ } => {
+            Statement::FnDecl {
+                name,
+                params,
+                body,
+                is_pub: _,
+            } => {
                 // Extract parameter names
-                let param_names: Vec<String> = params.into_iter()
-                    .map(|p| p.name)
-                    .collect();
+                let param_names: Vec<String> = params.into_iter().map(|p| p.name).collect();
 
                 // Compile the function body
                 let compiled_body = self.compile_block_helper(body)?;
 
                 Ok(Eval::Function(name, param_names, Box::new(compiled_body)))
             }
-            Statement::ClassDecl { name, members, is_pub: _ } => {
-                self.compile_class_decl(name, members)
-            }
+            Statement::ClassDecl {
+                name,
+                members,
+                is_pub: _,
+            } => self.compile_class_decl(name, members),
             _ => Err(anyhow::anyhow!("Statement not yet implemented: {:?}", stmt)),
         }
     }
@@ -152,7 +172,10 @@ impl Compiler {
             Expression::GetItem(obj, key) => {
                 let compiled_obj = self.compile_expression(*obj)?;
                 let compiled_key = self.compile_expression(*key)?;
-                Ok(Eval::GetItem(Box::new(compiled_obj), Box::new(compiled_key)))
+                Ok(Eval::GetItem(
+                    Box::new(compiled_obj),
+                    Box::new(compiled_key),
+                ))
             }
             Expression::FunctionCall(func, args) => {
                 let compiled_func = self.compile_expression(*func)?;
@@ -182,9 +205,7 @@ impl Compiler {
             Expression::Dict(pairs) => {
                 let compiled_pairs: Result<Vec<(Eval, Eval)>> = pairs
                     .into_iter()
-                    .map(|(k, v)| {
-                        Ok((self.compile_expression(k)?, self.compile_expression(v)?))
-                    })
+                    .map(|(k, v)| Ok((self.compile_expression(k)?, self.compile_expression(v)?)))
                     .collect();
                 Ok(Eval::Dict(compiled_pairs?))
             }
@@ -200,7 +221,10 @@ impl Compiler {
                 match block.final_expr {
                     Some(expr) => {
                         let compiled_final_expr = self.compile_expression(*expr)?;
-                        Ok(Eval::Block(eval_statements, Some(Box::new(compiled_final_expr))))
+                        Ok(Eval::Block(
+                            eval_statements,
+                            Some(Box::new(compiled_final_expr)),
+                        ))
                     }
                     None => Ok(Eval::Block(eval_statements, None)),
                 }
@@ -218,29 +242,47 @@ impl Compiler {
             Expression::Le(left, right) => self.compile_method_call_op(*left, *right, "op_le"),
             Expression::Gt(left, right) => self.compile_method_call_op(*left, *right, "op_gt"),
             Expression::Ge(left, right) => self.compile_method_call_op(*left, *right, "op_ge"),
-            Expression::BitAnd(left, right) => self.compile_method_call_op(*left, *right, "op_bitwise_and"),
-            Expression::BitOr(left, right) => self.compile_method_call_op(*left, *right, "op_bitwise_or"),
-            Expression::BitXor(left, right) => self.compile_method_call_op(*left, *right, "op_bitwise_xor"),
-            Expression::LeftShift(left, right) => self.compile_method_call_op(*left, *right, "op_lshift"),
-            Expression::RightShift(left, right) => self.compile_method_call_op(*left, *right, "op_rshift"),
+            Expression::BitAnd(left, right) => {
+                self.compile_method_call_op(*left, *right, "op_bitwise_and")
+            }
+            Expression::BitOr(left, right) => {
+                self.compile_method_call_op(*left, *right, "op_bitwise_or")
+            }
+            Expression::BitXor(left, right) => {
+                self.compile_method_call_op(*left, *right, "op_bitwise_xor")
+            }
+            Expression::LeftShift(left, right) => {
+                self.compile_method_call_op(*left, *right, "op_lshift")
+            }
+            Expression::RightShift(left, right) => {
+                self.compile_method_call_op(*left, *right, "op_rshift")
+            }
 
             // Special cases that remain built-in
             Expression::And(left, right) => {
                 let compiled_left = self.compile_expression(*left)?;
                 let compiled_right = self.compile_expression(*right)?;
-                Ok(Eval::LogicalAnd(Box::new(compiled_left), Box::new(compiled_right)))
+                Ok(Eval::LogicalAnd(
+                    Box::new(compiled_left),
+                    Box::new(compiled_right),
+                ))
             }
             Expression::Or(left, right) => {
                 let compiled_left = self.compile_expression(*left)?;
                 let compiled_right = self.compile_expression(*right)?;
-                Ok(Eval::LogicalOr(Box::new(compiled_left), Box::new(compiled_right)))
+                Ok(Eval::LogicalOr(
+                    Box::new(compiled_left),
+                    Box::new(compiled_right),
+                ))
             }
             Expression::Is(left, right) => {
                 let compiled_left = self.compile_expression(*left)?;
                 let compiled_right = self.compile_expression(*right)?;
                 Ok(Eval::Is(Box::new(compiled_left), Box::new(compiled_right)))
             }
-            Expression::In(left, right) => self.compile_method_call_op_swapped(*left, *right, "op_contains"),
+            Expression::In(left, right) => {
+                self.compile_method_call_op_swapped(*left, *right, "op_contains")
+            }
             Expression::NotIn(left, right) => self.compile_not_in(*left, *right),
             Expression::IsNot(left, right) => self.compile_is_not(*left, *right),
 
@@ -253,14 +295,22 @@ impl Compiler {
                 let compiled_expr = self.compile_expression(*expr)?;
                 Ok(Eval::LogicalNot(Box::new(compiled_expr)))
             }
-            Expression::If { condition, then_expr, else_expr } => {
+            Expression::If {
+                condition,
+                then_expr,
+                else_expr,
+            } => {
                 let compiled_condition = self.compile_expression(*condition)?;
                 let compiled_then = self.compile_block_helper(then_expr)?;
                 let compiled_else = match else_expr {
                     Some(block) => Some(Box::new(self.compile_block_helper(block)?)),
                     None => None,
                 };
-                Ok(Eval::If(Box::new(compiled_condition), Box::new(compiled_then), compiled_else))
+                Ok(Eval::If(
+                    Box::new(compiled_condition),
+                    Box::new(compiled_then),
+                    compiled_else,
+                ))
             }
             Expression::Loop { body } => {
                 let compiled_body = self.compile_block_helper(body)?;
@@ -269,22 +319,34 @@ impl Compiler {
             Expression::While { condition, body } => {
                 let compiled_condition = self.compile_expression(*condition)?;
                 let compiled_body = self.compile_block_helper(body)?;
-                Ok(Eval::While(Box::new(compiled_condition), Box::new(compiled_body)))
+                Ok(Eval::While(
+                    Box::new(compiled_condition),
+                    Box::new(compiled_body),
+                ))
             }
-            Expression::For { pattern, iter, body } => {
+            Expression::For {
+                pattern,
+                iter,
+                body,
+            } => {
                 // For now, only support simple variable patterns
                 match pattern {
                     Pattern::Variable(var_name) => {
                         let compiled_iter = self.compile_expression(*iter)?;
                         let compiled_body = self.compile_block_helper(body)?;
-                        Ok(Eval::For(var_name, Box::new(compiled_iter), Box::new(compiled_body)))
+                        Ok(Eval::For(
+                            var_name,
+                            Box::new(compiled_iter),
+                            Box::new(compiled_body),
+                        ))
                     }
-                    _ => Err(anyhow::anyhow!("Only variable patterns are supported in for loops for now: {:?}", pattern)),
+                    _ => Err(anyhow::anyhow!(
+                        "Only variable patterns are supported in for loops for now: {:?}",
+                        pattern
+                    )),
                 }
             }
-            Expression::InterpolatedString(parts) => {
-                self.compile_interpolated_string(parts)
-            }
+            Expression::InterpolatedString(parts) => self.compile_interpolated_string(parts),
 
             // Range expressions
             Expression::RangeExclusive(start, end) => {
@@ -301,12 +363,8 @@ impl Compiler {
             // Lambda expressions
             Expression::Lambda { params, body } => {
                 let compiled_body = match body {
-                    LambdaBody::Expression(expr) => {
-                        self.compile_expression(*expr)?
-                    }
-                    LambdaBody::Block(block) => {
-                        self.compile_block_helper(block)?
-                    }
+                    LambdaBody::Expression(expr) => self.compile_expression(*expr)?,
+                    LambdaBody::Block(block) => self.compile_block_helper(block)?,
                 };
                 Ok(Eval::Lambda(params, Box::new(compiled_body)))
             }
@@ -317,13 +375,11 @@ impl Compiler {
 
                 // For now, only support simple variable patterns in catch
                 match catch.pattern {
-                    Pattern::Variable(var_name) => {
-                        Ok(Eval::Try(
-                            Box::new(compiled_body),
-                            var_name,
-                            Box::new(compiled_catch_body),
-                        ))
-                    }
+                    Pattern::Variable(var_name) => Ok(Eval::Try(
+                        Box::new(compiled_body),
+                        var_name,
+                        Box::new(compiled_catch_body),
+                    )),
                     _ => Err(anyhow::anyhow!(
                         "Only variable patterns are supported in catch clauses for now: {:?}",
                         catch.pattern
@@ -331,12 +387,20 @@ impl Compiler {
                 }
             }
 
-            _ => Err(anyhow::anyhow!("Expression not yet implemented: {:?}", expr)),
+            _ => Err(anyhow::anyhow!(
+                "Expression not yet implemented: {:?}",
+                expr
+            )),
         }
     }
 
     // Helper to compile binary operations to method calls: a + b => a.op_get_attr("op_add").op_call(b)
-    fn compile_method_call_op(&mut self, left: Expression, right: Expression, method_name: &str) -> Result<Eval> {
+    fn compile_method_call_op(
+        &mut self,
+        left: Expression,
+        right: Expression,
+        method_name: &str,
+    ) -> Result<Eval> {
         let compiled_left = self.compile_expression(left)?;
         let compiled_right = self.compile_expression(right)?;
 
@@ -347,7 +411,12 @@ impl Compiler {
     }
 
     // Helper for operators like 'in' where operands are swapped: "item in container" => container.op_contains(item)
-    fn compile_method_call_op_swapped(&mut self, left: Expression, right: Expression, method_name: &str) -> Result<Eval> {
+    fn compile_method_call_op_swapped(
+        &mut self,
+        left: Expression,
+        right: Expression,
+        method_name: &str,
+    ) -> Result<Eval> {
         let compiled_left = self.compile_expression(left)?;
         let compiled_right = self.compile_expression(right)?;
 
@@ -389,7 +458,10 @@ impl Compiler {
         match block.final_expr {
             Some(expr) => {
                 let compiled_final_expr = self.compile_expression(*expr)?;
-                Ok(Eval::Block(eval_statements, Some(Box::new(compiled_final_expr))))
+                Ok(Eval::Block(
+                    eval_statements,
+                    Some(Box::new(compiled_final_expr)),
+                ))
             }
             None => Ok(Eval::Block(eval_statements, None)),
         }
@@ -429,7 +501,7 @@ impl Compiler {
                     let compiled_expr = self.compile_expression(expr)?;
                     let str_call = Eval::Call(
                         Box::new(Eval::Variable("str".to_string())),
-                        vec![compiled_expr]
+                        vec![compiled_expr],
                     );
                     compiled_parts.push(str_call);
                 }
@@ -458,10 +530,16 @@ impl Compiler {
         // For now, require that both start and end are literal integers
         match (start_eval, end_eval) {
             (Eval::Literal(Value::Int(start)), Eval::Literal(Value::Int(end))) => {
-                let range = crate::core::Range { start, end, inclusive };
+                let range = crate::core::Range {
+                    start,
+                    end,
+                    inclusive,
+                };
                 Ok(Eval::Literal(Value::Range(range)))
             }
-            _ => Err(anyhow::anyhow!("Range expressions currently only support integer literals")),
+            _ => Err(anyhow::anyhow!(
+                "Range expressions currently only support integer literals"
+            )),
         }
     }
 

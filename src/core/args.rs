@@ -1,5 +1,5 @@
-use indexmap::IndexMap;
 use anyhow::Result;
+use indexmap::IndexMap;
 use std::cell::RefCell;
 
 use super::Value;
@@ -50,7 +50,8 @@ impl Args {
         if state.positional_index >= self.positional.len() {
             return Err(anyhow::anyhow!(
                 "{}() missing required argument '{}'",
-                function_name, name
+                function_name,
+                name
             ));
         }
 
@@ -83,7 +84,8 @@ impl Args {
         } else {
             Err(anyhow::anyhow!(
                 "{}() missing required keyword argument '{}'",
-                function_name, name
+                function_name,
+                name
             ))
         }
     }
@@ -125,7 +127,9 @@ impl Args {
         }
 
         // Check for unconsumed keyword arguments
-        let unconsumed_keywords: Vec<&String> = self.keywords.keys()
+        let unconsumed_keywords: Vec<&String> = self
+            .keywords
+            .keys()
             .filter(|k| !state.consumed_keywords.contains(k))
             .collect();
 
@@ -133,8 +137,16 @@ impl Args {
             return Err(anyhow::anyhow!(
                 "{}() got unexpected keyword argument{}: {}",
                 function_name,
-                if unconsumed_keywords.len() == 1 { "" } else { "s" },
-                unconsumed_keywords.into_iter().map(|s| format!("'{}'", s)).collect::<Vec<_>>().join(", ")
+                if unconsumed_keywords.len() == 1 {
+                    ""
+                } else {
+                    "s"
+                },
+                unconsumed_keywords
+                    .into_iter()
+                    .map(|s| format!("'{}'", s))
+                    .collect::<Vec<_>>()
+                    .join(", ")
             ));
         }
 
@@ -188,7 +200,10 @@ mod tests {
         // Should fail when expecting a missing argument
         let result = args.expect("missing");
         assert!(result.is_err());
-        assert!(result.unwrap_err().to_string().contains("test() missing required argument 'missing'"));
+        assert!(result
+            .unwrap_err()
+            .to_string()
+            .contains("test() missing required argument 'missing'"));
     }
 
     #[test]
@@ -202,7 +217,10 @@ mod tests {
         // Should fail when there are leftover arguments
         let result = args.complete();
         assert!(result.is_err());
-        assert!(result.unwrap_err().to_string().contains("test() got 1 unexpected positional argument"));
+        assert!(result
+            .unwrap_err()
+            .to_string()
+            .contains("test() got 1 unexpected positional argument"));
     }
 
     #[test]
@@ -251,7 +269,10 @@ mod tests {
         // Should fail when keyword arguments are not consumed
         let result = args.complete();
         assert!(result.is_err());
-        assert!(result.unwrap_err().to_string().contains("test() got unexpected keyword argument: 'unused'"));
+        assert!(result
+            .unwrap_err()
+            .to_string()
+            .contains("test() got unexpected keyword argument: 'unused'"));
     }
 
     #[test]
@@ -260,7 +281,7 @@ mod tests {
             Value::Int(1),
             Value::Int(2),
             Value::Int(3),
-            Value::Int(4)
+            Value::Int(4),
         ]);
         args.set_function_name("test");
 

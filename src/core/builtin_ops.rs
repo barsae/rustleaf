@@ -1,4 +1,4 @@
-use super::{Value, RustValue};
+use super::{RustValue, Value};
 use crate::core::Args;
 use anyhow::{anyhow, Result};
 
@@ -13,7 +13,7 @@ impl BoundMethod {
     pub fn new(self_value: &Value, method_func: fn(&Value, Args) -> Result<Value>) -> Self {
         Self {
             self_value: self_value.clone(),
-            method_func
+            method_func,
         }
     }
 }
@@ -356,7 +356,11 @@ pub fn op_mod(self_value: &Value, args: Args) -> Result<Value> {
             }
         }
 
-        _ => Err(anyhow!("Cannot compute modulo of {:?} and {:?}", self_value, other)),
+        _ => Err(anyhow!(
+            "Cannot compute modulo of {:?} and {:?}",
+            self_value,
+            other
+        )),
     }
 }
 
@@ -387,7 +391,11 @@ pub fn op_pow(self_value: &Value, args: Args) -> Result<Value> {
         (Value::Float(a), Value::Float(b)) => Ok(Value::Float(a.powf(*b))),
         (Value::Float(a), Value::Int(b)) => Ok(Value::Float(a.powf(*b as f64))),
 
-        _ => Err(anyhow!("Cannot compute power of {:?} and {:?}", self_value, other)),
+        _ => Err(anyhow!(
+            "Cannot compute power of {:?} and {:?}",
+            self_value,
+            other
+        )),
     }
 }
 
@@ -399,7 +407,11 @@ pub fn op_bitwise_and(self_value: &Value, args: Args) -> Result<Value> {
 
     match (self_value, &other) {
         (Value::Int(a), Value::Int(b)) => Ok(Value::Int(a & b)),
-        _ => Err(anyhow!("Bitwise AND requires integers, got {:?} and {:?}", self_value, other)),
+        _ => Err(anyhow!(
+            "Bitwise AND requires integers, got {:?} and {:?}",
+            self_value,
+            other
+        )),
     }
 }
 
@@ -410,7 +422,11 @@ pub fn op_bitwise_or(self_value: &Value, args: Args) -> Result<Value> {
 
     match (self_value, &other) {
         (Value::Int(a), Value::Int(b)) => Ok(Value::Int(a | b)),
-        _ => Err(anyhow!("Bitwise OR requires integers, got {:?} and {:?}", self_value, other)),
+        _ => Err(anyhow!(
+            "Bitwise OR requires integers, got {:?} and {:?}",
+            self_value,
+            other
+        )),
     }
 }
 
@@ -421,7 +437,11 @@ pub fn op_bitwise_xor(self_value: &Value, args: Args) -> Result<Value> {
 
     match (self_value, &other) {
         (Value::Int(a), Value::Int(b)) => Ok(Value::Int(a ^ b)),
-        _ => Err(anyhow!("Bitwise XOR requires integers, got {:?} and {:?}", self_value, other)),
+        _ => Err(anyhow!(
+            "Bitwise XOR requires integers, got {:?} and {:?}",
+            self_value,
+            other
+        )),
     }
 }
 
@@ -431,7 +451,10 @@ pub fn op_bitwise_not(self_value: &Value, args: Args) -> Result<Value> {
 
     match self_value {
         Value::Int(n) => Ok(Value::Int(!n)),
-        _ => Err(anyhow!("Bitwise NOT requires integer, got {:?}", self_value)),
+        _ => Err(anyhow!(
+            "Bitwise NOT requires integer, got {:?}",
+            self_value
+        )),
     }
 }
 
@@ -450,7 +473,11 @@ pub fn op_lshift(self_value: &Value, args: Args) -> Result<Value> {
                 Ok(Value::Int(a << b))
             }
         }
-        _ => Err(anyhow!("Left shift requires integers, got {:?} and {:?}", self_value, other)),
+        _ => Err(anyhow!(
+            "Left shift requires integers, got {:?} and {:?}",
+            self_value,
+            other
+        )),
     }
 }
 
@@ -469,7 +496,11 @@ pub fn op_rshift(self_value: &Value, args: Args) -> Result<Value> {
                 Ok(Value::Int(a >> b))
             }
         }
-        _ => Err(anyhow!("Right shift requires integers, got {:?} and {:?}", self_value, other)),
+        _ => Err(anyhow!(
+            "Right shift requires integers, got {:?} and {:?}",
+            self_value,
+            other
+        )),
     }
 }
 
@@ -484,7 +515,10 @@ pub fn op_contains(self_value: &Value, args: Args) -> Result<Value> {
             // Check if item is a substring
             match &item {
                 Value::String(needle) => Ok(Value::Bool(s.contains(needle))),
-                _ => Err(anyhow!("String contains requires string argument, got {:?}", item)),
+                _ => Err(anyhow!(
+                    "String contains requires string argument, got {:?}",
+                    item
+                )),
             }
         }
         Value::List(list_ref) => {
@@ -505,7 +539,12 @@ pub fn op_contains(self_value: &Value, args: Args) -> Result<Value> {
                 Value::Int(i) => i.to_string(),
                 Value::Float(f) => f.to_string(),
                 Value::Bool(b) => b.to_string(),
-                _ => return Err(anyhow!("Dictionary contains requires string, number, or boolean key, got {:?}", item)),
+                _ => {
+                    return Err(anyhow!(
+                        "Dictionary contains requires string, number, or boolean key, got {:?}",
+                        item
+                    ))
+                }
             };
             Ok(Value::Bool(dict.contains_key(&key_str)))
         }
@@ -520,10 +559,16 @@ pub fn op_contains(self_value: &Value, args: Args) -> Result<Value> {
                     };
                     Ok(Value::Bool(in_range))
                 }
-                _ => Err(anyhow!("Range contains requires integer argument, got {:?}", item)),
+                _ => Err(anyhow!(
+                    "Range contains requires integer argument, got {:?}",
+                    item
+                )),
             }
         }
-        _ => Err(anyhow!("Contains operation not supported for {:?}", self_value)),
+        _ => Err(anyhow!(
+            "Contains operation not supported for {:?}",
+            self_value
+        )),
     }
 }
 
@@ -548,13 +593,20 @@ pub fn op_get_item_list(self_value: &Value, args: Args) -> Result<Value> {
                     if idx < list.len() {
                         Ok(list[idx].clone())
                     } else {
-                        Err(anyhow!("List index {} out of range (length: {})", i, list.len()))
+                        Err(anyhow!(
+                            "List index {} out of range (length: {})",
+                            i,
+                            list.len()
+                        ))
                     }
                 }
                 _ => Err(anyhow!("List index must be integer, got {:?}", index)),
             }
         }
-        _ => Err(anyhow!("op_get_item_list called on non-list: {:?}", self_value)),
+        _ => Err(anyhow!(
+            "op_get_item_list called on non-list: {:?}",
+            self_value
+        )),
     }
 }
 
@@ -580,13 +632,20 @@ pub fn op_set_item_list(self_value: &Value, args: Args) -> Result<Value> {
                         list[idx] = value;
                         Ok(Value::Unit)
                     } else {
-                        Err(anyhow!("List index {} out of range (length: {})", i, list.len()))
+                        Err(anyhow!(
+                            "List index {} out of range (length: {})",
+                            i,
+                            list.len()
+                        ))
                     }
                 }
                 _ => Err(anyhow!("List index must be integer, got {:?}", index)),
             }
         }
-        _ => Err(anyhow!("op_set_item_list called on non-list: {:?}", self_value)),
+        _ => Err(anyhow!(
+            "op_set_item_list called on non-list: {:?}",
+            self_value
+        )),
     }
 }
 
@@ -604,7 +663,12 @@ pub fn op_get_item_dict(self_value: &Value, args: Args) -> Result<Value> {
                 Value::Int(i) => i.to_string(),
                 Value::Float(f) => f.to_string(),
                 Value::Bool(b) => b.to_string(),
-                _ => return Err(anyhow!("Dictionary key must be string, number, or boolean, got {:?}", key)),
+                _ => {
+                    return Err(anyhow!(
+                        "Dictionary key must be string, number, or boolean, got {:?}",
+                        key
+                    ))
+                }
             };
 
             match dict.get(&key_str) {
@@ -612,7 +676,10 @@ pub fn op_get_item_dict(self_value: &Value, args: Args) -> Result<Value> {
                 None => Err(anyhow!("Key '{}' not found in dictionary", key_str)),
             }
         }
-        _ => Err(anyhow!("op_get_item_dict called on non-dict: {:?}", self_value)),
+        _ => Err(anyhow!(
+            "op_get_item_dict called on non-dict: {:?}",
+            self_value
+        )),
     }
 }
 
@@ -630,13 +697,21 @@ pub fn op_set_item_dict(self_value: &Value, args: Args) -> Result<Value> {
                 Value::Int(i) => i.to_string(),
                 Value::Float(f) => f.to_string(),
                 Value::Bool(b) => b.to_string(),
-                _ => return Err(anyhow!("Dictionary key must be string, number, or boolean, got {:?}", key)),
+                _ => {
+                    return Err(anyhow!(
+                        "Dictionary key must be string, number, or boolean, got {:?}",
+                        key
+                    ))
+                }
             };
 
             dict.insert(key_str, value);
             Ok(Value::Unit)
         }
-        _ => Err(anyhow!("op_set_item_dict called on non-dict: {:?}", self_value)),
+        _ => Err(anyhow!(
+            "op_set_item_dict called on non-dict: {:?}",
+            self_value
+        )),
     }
 }
 
@@ -648,7 +723,11 @@ pub fn range_to_list(self_value: &Value, args: Args) -> Result<Value> {
     match self_value {
         Value::Range(range) => {
             let mut values = Vec::new();
-            let end_value = if range.inclusive { range.end + 1 } else { range.end };
+            let end_value = if range.inclusive {
+                range.end + 1
+            } else {
+                range.end
+            };
 
             for i in range.start..end_value {
                 values.push(Value::Int(i));

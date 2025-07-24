@@ -37,10 +37,10 @@ pub enum TokenType {
     // Literals
     Int,
     Float,
-    String,          // "regular strings"
-    RawString,       // r"raw strings"
-    MultilineString, // """multiline strings"""
-    StringPart,      // For interpolation text parts
+    String,             // "regular strings"
+    RawString,          // r"raw strings"
+    MultilineString,    // """multiline strings"""
+    StringPart,         // For interpolation text parts
     InterpolationStart, // ${
     InterpolationEnd,   // }
     True,
@@ -81,8 +81,8 @@ pub enum TokenType {
     Not,
     In,
     Is,
-    NotIn,  // not in
-    IsNot,  // is not
+    NotIn, // not in
+    IsNot, // is not
     Pub,
     Use,
 

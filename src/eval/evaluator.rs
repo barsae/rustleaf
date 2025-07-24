@@ -35,7 +35,11 @@ impl RustValue for RustLeafFunction {
     fn call(&self, args: Args) -> anyhow::Result<Value> {
         // Check argument count first
         if args.len() != self.params.len() {
-            return Err(anyhow!("Function expects {} arguments, got {}", self.params.len(), args.len()));
+            return Err(anyhow!(
+                "Function expects {} arguments, got {}",
+                self.params.len(),
+                args.len()
+            ));
         }
 
         // Create new scope for function execution
@@ -70,7 +74,7 @@ impl RustValue for RustLeafFunction {
                     Value::String(s) => Err(anyhow::anyhow!("{}", s)),
                     _ => Err(anyhow::anyhow!("{:?}", value)),
                 }
-            },
+            }
             Err(other) => Err(anyhow!("Invalid control flow in function: {:?}", other)),
         }
     }
@@ -158,16 +162,46 @@ impl Evaluator {
 
     fn register_type_constants(&mut self) {
         // Create type constants as special values
-        self.globals.define("Null".to_string(), Value::from_rust(TypeConstant::new("Null")));
-        self.globals.define("Unit".to_string(), Value::from_rust(TypeConstant::new("Unit")));
-        self.globals.define("Bool".to_string(), Value::from_rust(TypeConstant::new("Bool")));
-        self.globals.define("Int".to_string(), Value::from_rust(TypeConstant::new("Int")));
-        self.globals.define("Float".to_string(), Value::from_rust(TypeConstant::new("Float")));
-        self.globals.define("String".to_string(), Value::from_rust(TypeConstant::new("String")));
-        self.globals.define("List".to_string(), Value::from_rust(TypeConstant::new("List")));
-        self.globals.define("Dict".to_string(), Value::from_rust(TypeConstant::new("Dict")));
-        self.globals.define("Range".to_string(), Value::from_rust(TypeConstant::new("Range")));
-        self.globals.define("Function".to_string(), Value::from_rust(TypeConstant::new("Function")));
+        self.globals.define(
+            "Null".to_string(),
+            Value::from_rust(TypeConstant::new("Null")),
+        );
+        self.globals.define(
+            "Unit".to_string(),
+            Value::from_rust(TypeConstant::new("Unit")),
+        );
+        self.globals.define(
+            "Bool".to_string(),
+            Value::from_rust(TypeConstant::new("Bool")),
+        );
+        self.globals.define(
+            "Int".to_string(),
+            Value::from_rust(TypeConstant::new("Int")),
+        );
+        self.globals.define(
+            "Float".to_string(),
+            Value::from_rust(TypeConstant::new("Float")),
+        );
+        self.globals.define(
+            "String".to_string(),
+            Value::from_rust(TypeConstant::new("String")),
+        );
+        self.globals.define(
+            "List".to_string(),
+            Value::from_rust(TypeConstant::new("List")),
+        );
+        self.globals.define(
+            "Dict".to_string(),
+            Value::from_rust(TypeConstant::new("Dict")),
+        );
+        self.globals.define(
+            "Range".to_string(),
+            Value::from_rust(TypeConstant::new("Range")),
+        );
+        self.globals.define(
+            "Function".to_string(),
+            Value::from_rust(TypeConstant::new("Function")),
+        );
     }
 
     fn register_builtin_fn(&mut self, name: &'static str, func: fn(Args) -> anyhow::Result<Value>) {
@@ -187,7 +221,7 @@ impl Evaluator {
                 // Execute each statement in the block
                 for stmt in statements {
                     match self.eval(stmt) {
-                        Ok(_) => {},
+                        Ok(_) => {}
                         Err(e) => {
                             // Restore previous scope before propagating error
                             self.current_env = previous_env;
@@ -213,25 +247,28 @@ impl Evaluator {
                 Ok(result)
             }
             Eval::Literal(value) => Ok(value.clone()),
-            Eval::Variable(name) => {
-                self.current_env.get(name)
-                    .ok_or_else(|| ControlFlow::Error(ErrorKind::SystemError(anyhow!("Undefined variable: {}", name))))
-            }
+            Eval::Variable(name) => self.current_env.get(name).ok_or_else(|| {
+                ControlFlow::Error(ErrorKind::SystemError(anyhow!(
+                    "Undefined variable: {}",
+                    name
+                )))
+            }),
             Eval::Call(func_expr, args) => {
                 // Evaluate the function expression
                 let func_value = self.eval(func_expr)?;
 
                 // Evaluate all arguments
-                let arg_values: Result<Vec<Value>, ControlFlow> = args.iter()
-                    .map(|arg| self.eval(arg))
-                    .collect();
+                let arg_values: Result<Vec<Value>, ControlFlow> =
+                    args.iter().map(|arg| self.eval(arg)).collect();
                 let arg_values = arg_values?;
 
                 // Create Args object for function call
                 let args_obj = Args::positional(arg_values);
 
                 // Call the function
-                let result = func_value.call(args_obj).map_err(|e| ControlFlow::Error(ErrorKind::SystemError(e)))?;
+                let result = func_value
+                    .call(args_obj)
+                    .map_err(|e| ControlFlow::Error(ErrorKind::SystemError(e)))?;
 
                 // Check if the result is a Value::Error (from raise() function)
                 if let Value::Error(error_value) = result {
@@ -268,7 +305,8 @@ impl Evaluator {
             }
             Eval::Assign(name, expr) => {
                 let value = self.eval(expr)?;
-                self.current_env.set(name, value)
+                self.current_env
+                    .set(name, value)
                     .map_err(|err| ControlFlow::Error(ErrorKind::SystemError(anyhow!(err))))?;
                 Ok(Value::Unit)
             }
@@ -395,7 +433,8 @@ impl Evaluator {
                         let dict = dict_ref.borrow();
                         for (key, _value) in dict.iter() {
                             // For dictionaries, iterate over keys (like Python)
-                            self.current_env.define(var_name.clone(), Value::String(key.clone()));
+                            self.current_env
+                                .define(var_name.clone(), Value::String(key.clone()));
 
                             // Execute body
                             match self.eval(body) {
@@ -420,7 +459,11 @@ impl Evaluator {
                         }
                     }
                     Value::Range(range) => {
-                        let end_value = if range.inclusive { range.end + 1 } else { range.end };
+                        let end_value = if range.inclusive {
+                            range.end + 1
+                        } else {
+                            range.end
+                        };
                         for i in range.start..end_value {
                             // Set the loop variable
                             self.current_env.define(var_name.clone(), Value::Int(i));
@@ -450,7 +493,10 @@ impl Evaluator {
                     _ => {
                         // Restore scope and return error
                         self.current_env = previous_env;
-                        return Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!("Cannot iterate over value: {:?}", iter_value))));
+                        return Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(
+                            "Cannot iterate over value: {:?}",
+                            iter_value
+                        ))));
                     }
                 }
 
@@ -465,9 +511,7 @@ impl Evaluator {
                 };
                 Err(ControlFlow::Break(value))
             }
-            Eval::Continue => {
-                Err(ControlFlow::Continue)
-            }
+            Eval::Continue => Err(ControlFlow::Continue),
             Eval::Return(expr) => {
                 let value = match expr {
                     Some(e) => self.eval(e)?,
@@ -498,7 +542,11 @@ impl Evaluator {
                 // Fall back to standard attribute access
                 match obj_value.get_attr(attr_name) {
                     Some(value) => Ok(value),
-                    None => Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!("No attribute '{}' on value {:?}", attr_name, obj_value)))),
+                    None => Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(
+                        "No attribute '{}' on value {:?}",
+                        attr_name,
+                        obj_value
+                    )))),
                 }
             }
 
@@ -559,13 +607,17 @@ impl Evaluator {
                     let value_val = self.eval(value_expr)?;
 
                     // Convert key to string
-                    let key_str = match key_val {
-                        Value::String(s) => s,
-                        Value::Int(i) => i.to_string(),
-                        Value::Float(f) => f.to_string(),
-                        Value::Bool(b) => b.to_string(),
-                        _ => return Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!("Dictionary keys must be strings, numbers, or booleans, got {:?}", key_val)))),
-                    };
+                    let key_str =
+                        match key_val {
+                            Value::String(s) => s,
+                            Value::Int(i) => i.to_string(),
+                            Value::Float(f) => f.to_string(),
+                            Value::Bool(b) => b.to_string(),
+                            _ => return Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(
+                                "Dictionary keys must be strings, numbers, or booleans, got {:?}",
+                                key_val
+                            )))),
+                        };
 
                     dict_map.insert(key_str, value_val);
                 }
@@ -579,9 +631,14 @@ impl Evaluator {
                 match obj_value.get_attr("op_get_item") {
                     Some(method) => {
                         let args = Args::positional(vec![index_value]);
-                        method.call(args).map_err(|e| ControlFlow::Error(ErrorKind::SystemError(e)))
+                        method
+                            .call(args)
+                            .map_err(|e| ControlFlow::Error(ErrorKind::SystemError(e)))
                     }
-                    None => Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!("No op_get_item method on value {:?}", obj_value)))),
+                    None => Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(
+                        "No op_get_item method on value {:?}",
+                        obj_value
+                    )))),
                 }
             }
             Eval::SetAttr(obj_expr, attr_name, value_expr) => {
@@ -590,13 +647,15 @@ impl Evaluator {
 
                 // For RustValue types, try calling set_attr directly
                 match obj_value {
-                    Value::RustValue(rv) => {
-                        match rv.borrow_mut().set_attr(attr_name, new_value) {
-                            Ok(_) => Ok(Value::Unit),
-                            Err(err) => Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(err)))),
-                        }
-                    }
-                    _ => Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!("Cannot set attribute '{}' on value {:?}", attr_name, obj_value)))),
+                    Value::RustValue(rv) => match rv.borrow_mut().set_attr(attr_name, new_value) {
+                        Ok(_) => Ok(Value::Unit),
+                        Err(err) => Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(err)))),
+                    },
+                    _ => Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(
+                        "Cannot set attribute '{}' on value {:?}",
+                        attr_name,
+                        obj_value
+                    )))),
                 }
             }
             Eval::SetItem(obj_expr, index_expr, value_expr) => {
@@ -608,10 +667,15 @@ impl Evaluator {
                 match obj_value.get_attr("op_set_item") {
                     Some(method) => {
                         let args = Args::positional(vec![index_value, new_value]);
-                        method.call(args).map_err(|e| ControlFlow::Error(ErrorKind::SystemError(e)))?;
+                        method
+                            .call(args)
+                            .map_err(|e| ControlFlow::Error(ErrorKind::SystemError(e)))?;
                         Ok(Value::Unit)
                     }
-                    None => Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!("No op_set_item method on value {:?}", obj_value)))),
+                    None => Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(
+                        "No op_set_item method on value {:?}",
+                        obj_value
+                    )))),
                 }
             }
             Eval::Try(body, catch_var, catch_body) => {
@@ -637,7 +701,12 @@ impl Evaluator {
                     Err(other_error) => Err(other_error), // System errors and other control flow
                 }
             }
-            Eval::ClassDecl { name, field_names, field_defaults, methods } => {
+            Eval::ClassDecl {
+                name,
+                field_names,
+                field_defaults,
+                methods,
+            } => {
                 use crate::eval::Class;
 
                 // Create the class definition
@@ -656,5 +725,4 @@ impl Evaluator {
             }
         }
     }
-
 }

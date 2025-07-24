@@ -2,8 +2,8 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use indexmap::IndexMap;
 use crate::core::Value;
+use indexmap::IndexMap;
 
 #[derive(Clone, Debug, Default)]
 pub struct ScopeRef(Rc<RefCell<Scope>>);
