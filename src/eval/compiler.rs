@@ -1,7 +1,7 @@
 /// Compiler from AST to simplified evaluation IR
 use anyhow::Result;
 
-use super::core::Eval;
+use super::core::{Eval, ClassMethod};
 use crate::core::*;
 
 pub struct Compiler;
@@ -130,6 +130,9 @@ impl Compiler {
                 let compiled_body = self.compile_block_helper(body)?;
                 
                 Ok(Eval::Function(name, param_names, Box::new(compiled_body)))
+            }
+            Statement::ClassDecl { name, members, is_pub: _ } => {
+                self.compile_class_decl(name, members)
             }
             _ => Err(anyhow::anyhow!("Statement not yet implemented: {:?}", stmt)),
         }
@@ -460,5 +463,51 @@ impl Compiler {
             }
             _ => Err(anyhow::anyhow!("Range expressions currently only support integer literals")),
         }
+    }
+
+    fn compile_class_decl(&mut self, name: String, members: Vec<ClassMember>) -> Result<Eval> {
+        let mut field_names = Vec::new();
+        let mut field_defaults = Vec::new();
+        let mut methods = Vec::new();
+
+        for member in members {
+            match member.kind {
+                ClassMemberKind::Field(default_expr) => {
+                    field_names.push(member.name);
+                    let default = match default_expr {
+                        Some(expr) => Some(self.compile_expression(expr)?),
+                        None => None,
+                    };
+                    field_defaults.push(default);
+                }
+                ClassMemberKind::Method { params, body } => {
+                    let param_names: Vec<String> = params.into_iter().map(|p| p.name).collect();
+                    let compiled_body = self.compile_block_helper(body)?;
+                    methods.push(ClassMethod {
+                        name: member.name,
+                        params: param_names,
+                        body: compiled_body,
+                        is_static: false,
+                    });
+                }
+                ClassMemberKind::StaticMethod { params, body } => {
+                    let param_names: Vec<String> = params.into_iter().map(|p| p.name).collect();
+                    let compiled_body = self.compile_block_helper(body)?;
+                    methods.push(ClassMethod {
+                        name: member.name,
+                        params: param_names,
+                        body: compiled_body,
+                        is_static: true,
+                    });
+                }
+            }
+        }
+
+        Ok(Eval::ClassDecl {
+            name,
+            field_names,
+            field_defaults,
+            methods,
+        })
     }
 }

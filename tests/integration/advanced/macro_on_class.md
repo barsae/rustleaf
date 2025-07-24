@@ -1,9 +1,8 @@
 # Program
-Status: 🔴
+Status: 🟢
 Assertions: 0
 
 ```rustleaf
-// #[fail_quietly]
 #[serializable]
 class User {
     var name;
@@ -16,8 +15,8 @@ None
 
 # Result
 ```rust
-Err(
-    "Statement not yet implemented: ClassDecl { name: \"User\", members: [ClassMember { name: \"name\", kind: Field(None) }, ClassMember { name: \"email\", kind: Field(None) }], is_pub: false }",
+Ok(
+    Unit,
 )
 ```
 
@@ -74,7 +73,23 @@ Ok(
 
 # Eval
 ```rust
-Err(
-    "Statement not yet implemented: ClassDecl { name: \"User\", members: [ClassMember { name: \"name\", kind: Field(None) }, ClassMember { name: \"email\", kind: Field(None) }], is_pub: false }",
+Ok(
+    Block(
+        [
+            ClassDecl {
+                name: "User",
+                field_names: [
+                    "name",
+                    "email",
+                ],
+                field_defaults: [
+                    None,
+                    None,
+                ],
+                methods: [],
+            },
+        ],
+        None,
+    ),
 )
 ```

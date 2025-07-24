@@ -1,18 +1,18 @@
 # Test Summary
 
 Auto-generated test status summary from integration tests.
-*Generated on: 2025-07-24 11:20:30*
+*Generated on: 2025-07-24 11:28:39*
 
 ## Advanced Tests
 
-- [class_simple](tests/integration/advanced/class_simple.md): 🔴
+- [class_simple](tests/integration/advanced/class_simple.md): 🟢
 - [import_simple](tests/integration/advanced/import_simple.md): 🔴
 - [import_wildcard](tests/integration/advanced/import_wildcard.md): 🔴
 - [macro_annotation](tests/integration/advanced/macro_annotation.md): 🟢
 - [macro_definition](tests/integration/advanced/macro_definition.md): 🟢
 - [macro_definition_and_usage](tests/integration/advanced/macro_definition_and_usage.md): 🟢
 - [macro_multiple_annotations](tests/integration/advanced/macro_multiple_annotations.md): 🟢
-- [macro_on_class](tests/integration/advanced/macro_on_class.md): 🔴
+- [macro_on_class](tests/integration/advanced/macro_on_class.md): 🟢
 - [macro_with_args](tests/integration/advanced/macro_with_args.md): 🟢
 - [pipe_expression](tests/integration/advanced/pipe_expression.md): 🔴
 - [raise_number](tests/integration/advanced/raise_number.md): 🟢
@@ -115,7 +115,7 @@ Auto-generated test status summary from integration tests.
 ## Statistics
 
 - Total tests: 85
-- Passing: 74 🟢
-- Failing: 11 🔴
+- Passing: 76 🟢
+- Failing: 9 🔴
 
-**Pass rate: 87.1%**
+**Pass rate: 89.4%**

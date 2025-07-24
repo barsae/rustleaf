@@ -3,12 +3,14 @@ mod compiler;
 mod core;
 mod evaluator;
 mod scope;
+mod class;
 
 // Re-export public API
 pub use compiler::Compiler;
 pub use core::*;
 pub use evaluator::{Evaluator, ControlFlow, EvalResult, ErrorKind};
 pub use scope::Scope;
+pub use class::{Class, ClassInstance, BoundMethod, StaticMethod};
 
 // Convenience function for backward compatibility with tests
 pub fn evaluate(program: crate::core::Program) -> anyhow::Result<crate::core::Value> {

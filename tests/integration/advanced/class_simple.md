@@ -1,12 +1,11 @@
 # Program
-Status: 🔴
+Status: 🟢
 Assertions: 0
 
 ```rustleaf
-// #[fail_quietly]
 class Person {
     var name;
-    
+
     fn greet() {
         print("Hello");
     }
@@ -18,8 +17,8 @@ None
 
 # Result
 ```rust
-Err(
-    "Statement not yet implemented: ClassDecl { name: \"Person\", members: [ClassMember { name: \"name\", kind: Field(None) }, ClassMember { name: \"greet\", kind: Method { params: [], body: Block { statements: [Expression(FunctionCall(Identifier(\"print\"), [Literal(String(\"Hello\"))]))], final_expr: None } } }], is_pub: false }",
+Ok(
+    Unit,
 )
 ```
 
@@ -99,7 +98,44 @@ Ok(
 
 # Eval
 ```rust
-Err(
-    "Statement not yet implemented: ClassDecl { name: \"Person\", members: [ClassMember { name: \"name\", kind: Field(None) }, ClassMember { name: \"greet\", kind: Method { params: [], body: Block { statements: [Expression(FunctionCall(Identifier(\"print\"), [Literal(String(\"Hello\"))]))], final_expr: None } } }], is_pub: false }",
+Ok(
+    Block(
+        [
+            ClassDecl {
+                name: "Person",
+                field_names: [
+                    "name",
+                ],
+                field_defaults: [
+                    None,
+                ],
+                methods: [
+                    ClassMethod {
+                        name: "greet",
+                        params: [],
+                        body: Block(
+                            [
+                                Call(
+                                    Variable(
+                                        "print",
+                                    ),
+                                    [
+                                        Literal(
+                                            String(
+                                                "Hello",
+                                            ),
+                                        ),
+                                    ],
+                                ),
+                            ],
+                            None,
+                        ),
+                        is_static: false,
+                    },
+                ],
+            },
+        ],
+        None,
+    ),
 )
 ```

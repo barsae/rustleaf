@@ -618,6 +618,23 @@ impl Evaluator {
                     Err(other_error) => Err(other_error), // System errors and other control flow
                 }
             }
+            Eval::ClassDecl { name, field_names, field_defaults, methods } => {
+                use crate::eval::Class;
+                
+                // Create the class definition
+                let class = Class::new(
+                    name.clone(),
+                    field_names.clone(),
+                    field_defaults.clone(),
+                    methods.clone(),
+                );
+                
+                // Store the class in the current scope as a callable value
+                let class_value = Value::from_rust(class);
+                self.current_env.define(name.clone(), class_value);
+                
+                Ok(Value::Unit)
+            }
         }
     }
 
