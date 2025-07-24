@@ -1,6 +1,6 @@
 # Program
 Status: 🟢
-Assertions: 1
+Assertions: 0
 
 ```rustleaf
 fn test_return() {

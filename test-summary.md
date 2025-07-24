@@ -1,7 +1,7 @@
 # Test Summary
 
 Auto-generated test status summary from integration tests.
-*Generated on: 2025-07-24 11:13:13*
+*Generated on: 2025-07-24 11:14:40*
 
 ## Advanced Tests
 
@@ -16,7 +16,6 @@ Auto-generated test status summary from integration tests.
 - [macro_with_args](tests/integration/advanced/macro_with_args.md): 🟢
 - [pipe_expression](tests/integration/advanced/pipe_expression.md): 🔴
 - [raise_number](tests/integration/advanced/raise_number.md): 🟢
-- [self_expression](tests/integration/advanced/self_expression.md): 🔴
 - [string_interpolation_complex](tests/integration/advanced/string_interpolation_complex.md): 🟢
 - [string_interpolation_multiple](tests/integration/advanced/string_interpolation_multiple.md): 🟢
 - [string_interpolation_simple](tests/integration/advanced/string_interpolation_simple.md): 🟢
@@ -115,8 +114,8 @@ Auto-generated test status summary from integration tests.
 
 ## Statistics
 
-- Total tests: 86
+- Total tests: 85
 - Passing: 74 🟢
-- Failing: 12 🔴
+- Failing: 11 🔴
 
-**Pass rate: 86.0%**
+**Pass rate: 87.1%**
