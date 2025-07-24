@@ -1,5 +1,5 @@
 # Program
-Status: 🟢
+Status: 🟡
 Assertions: 0
 
 ```rustleaf

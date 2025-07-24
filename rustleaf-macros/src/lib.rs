@@ -79,8 +79,6 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                     let source = extract_rustleaf_code_block(md_content)
                         .expect("Failed to find rustleaf code block in markdown file");
 
-                    // Check for #[fail_quietly] magic string
-                    let fail_quietly = source.contains("#[fail_quietly]");
 
                     // Try lexing
                     let tokens_result = rustleaf::lexer::Lexer::tokenize(&source);
@@ -136,7 +134,12 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                     let circle = if #is_panic_test {
                         if eval_success { "🔴" } else { "🟢" }
                     } else {
-                        if eval_success { "🟢" } else { "🔴" }
+                        if eval_success {
+                            // Yellow circle for passing tests with no assertions
+                            if assertion_count == 0 { "🟡" } else { "🟢" }
+                        } else {
+                            "🔴"
+                        }
                     };
 
                     // Update the markdown file in-place with test results
@@ -146,11 +149,8 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                     );
                     std::fs::write(#full_path, updated_md_content).unwrap();
 
-                    // Control test behavior based on fail_quietly flag
-                    if !fail_quietly {
-                        // Return actual result - let cargo handle expectations
-                        final_result.unwrap();
-                    }
+                    // Return actual result - let cargo handle expectations
+                    final_result.unwrap();
                 };
 
                 // No need for separate panic test handling since we handle it in the main test body now

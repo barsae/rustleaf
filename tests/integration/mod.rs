@@ -2,7 +2,7 @@
 
 use rustleaf_macros::rustleaf_tests;
 
-// Advanced features (classes, imports, macros, etc)
+// Advanced features (classes, imports, etc)
 #[rustleaf_tests("tests/integration/advanced")]
 mod advanced_tests {}
 
@@ -28,6 +28,10 @@ mod function_tests {}
 
 #[rustleaf_tests("tests/integration/import")]
 mod import_tests {}
+
+// Macros
+#[rustleaf_tests("tests/integration/macros")]
+mod macro_tests {}
 
 // Operators
 #[rustleaf_tests("tests/integration/operators")]

@@ -1,16 +1,13 @@
 # Program
-Status: 🟢
+Status: 🟡
 Assertions: 0
 
 ```rustleaf
-#[macro]
-fn log_calls(ast_node) {
-    ast_node
-}
-
-#[log_calls]
-fn target_function() {
-    var x = 42;
+#[first_macro]
+#[second_macro(config: "test")]
+#[third_macro]
+fn decorated_function() {
+    var result = 42;
 }
 ```
 
@@ -30,27 +27,28 @@ Ok(
     [
         Token(Hash),
         Token(LeftBracket),
-        Token(Macro),
+        Token(Ident, "first_macro"),
         Token(RightBracket),
-        Token(Fn),
-        Token(Ident, "log_calls"),
-        Token(LeftParen),
-        Token(Ident, "ast_node"),
-        Token(RightParen),
-        Token(LeftBrace),
-        Token(Ident, "ast_node"),
-        Token(RightBrace),
         Token(Hash),
         Token(LeftBracket),
-        Token(Ident, "log_calls"),
+        Token(Ident, "second_macro"),
+        Token(LeftParen),
+        Token(Ident, "config"),
+        Token(Colon),
+        Token(String, "test"),
+        Token(RightParen),
+        Token(RightBracket),
+        Token(Hash),
+        Token(LeftBracket),
+        Token(Ident, "third_macro"),
         Token(RightBracket),
         Token(Fn),
-        Token(Ident, "target_function"),
+        Token(Ident, "decorated_function"),
         Token(LeftParen),
         Token(RightParen),
         Token(LeftBrace),
         Token(Var),
-        Token(Ident, "x"),
+        Token(Ident, "result"),
         Token(Equal),
         Token(Int, "42"),
         Token(Semicolon),
@@ -66,13 +64,13 @@ Ok(
     Program(
         [
             FnDecl {
-                name: "target_function",
+                name: "decorated_function",
                 params: [],
                 body: Block {
                     statements: [
                         VarDecl {
                             pattern: Variable(
-                                "x",
+                                "result",
                             ),
                             value: Some(
                                 Literal(
@@ -98,12 +96,12 @@ Ok(
     Block(
         [
             Function(
-                "target_function",
+                "decorated_function",
                 [],
                 Block(
                     [
                         Declare(
-                            "x",
+                            "result",
                             Some(
                                 Literal(
                                     Int(

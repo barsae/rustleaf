@@ -1,9 +1,12 @@
 # Program
 Status: 🟢
-Assertions: 0
+Assertions: 3
 
 ```rustleaf
-[1, 2, 3, "hello", true];
+var list = [1, 2, 3, "hello", true];
+assert(list[0] == 1);
+assert(list[3] == "hello");
+assert(list[4] == true);
 ```
 
 # Output
@@ -12,29 +15,7 @@ None
 # Result
 ```rust
 Ok(
-    List(
-        ListRef(
-            RefCell {
-                value: [
-                    Int(
-                        1,
-                    ),
-                    Int(
-                        2,
-                    ),
-                    Int(
-                        3,
-                    ),
-                    String(
-                        "hello",
-                    ),
-                    Bool(
-                        true,
-                    ),
-                ],
-            },
-        ),
-    ),
+    Unit,
 )
 ```
 
@@ -42,6 +23,9 @@ Ok(
 ```rust
 Ok(
     [
+        Token(Var),
+        Token(Ident, "list"),
+        Token(Equal),
         Token(LeftBracket),
         Token(Int, "1"),
         Token(Comma),
@@ -54,6 +38,36 @@ Ok(
         Token(True),
         Token(RightBracket),
         Token(Semicolon),
+        Token(Ident, "assert"),
+        Token(LeftParen),
+        Token(Ident, "list"),
+        Token(LeftBracket),
+        Token(Int, "0"),
+        Token(RightBracket),
+        Token(EqualEqual),
+        Token(Int, "1"),
+        Token(RightParen),
+        Token(Semicolon),
+        Token(Ident, "assert"),
+        Token(LeftParen),
+        Token(Ident, "list"),
+        Token(LeftBracket),
+        Token(Int, "3"),
+        Token(RightBracket),
+        Token(EqualEqual),
+        Token(String, "hello"),
+        Token(RightParen),
+        Token(Semicolon),
+        Token(Ident, "assert"),
+        Token(LeftParen),
+        Token(Ident, "list"),
+        Token(LeftBracket),
+        Token(Int, "4"),
+        Token(RightBracket),
+        Token(EqualEqual),
+        Token(True),
+        Token(RightParen),
+        Token(Semicolon),
         Token(Eof),
     ],
 )
@@ -64,32 +78,115 @@ Ok(
 Ok(
     Program(
         [
+            VarDecl {
+                pattern: Variable(
+                    "list",
+                ),
+                value: Some(
+                    List(
+                        [
+                            Literal(
+                                Int(
+                                    1,
+                                ),
+                            ),
+                            Literal(
+                                Int(
+                                    2,
+                                ),
+                            ),
+                            Literal(
+                                Int(
+                                    3,
+                                ),
+                            ),
+                            Literal(
+                                String(
+                                    "hello",
+                                ),
+                            ),
+                            Literal(
+                                Bool(
+                                    true,
+                                ),
+                            ),
+                        ],
+                    ),
+                ),
+            },
             Expression(
-                List(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
                     [
-                        Literal(
-                            Int(
-                                1,
+                        Eq(
+                            GetItem(
+                                Identifier(
+                                    "list",
+                                ),
+                                Literal(
+                                    Int(
+                                        0,
+                                    ),
+                                ),
+                            ),
+                            Literal(
+                                Int(
+                                    1,
+                                ),
                             ),
                         ),
-                        Literal(
-                            Int(
-                                2,
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            GetItem(
+                                Identifier(
+                                    "list",
+                                ),
+                                Literal(
+                                    Int(
+                                        3,
+                                    ),
+                                ),
+                            ),
+                            Literal(
+                                String(
+                                    "hello",
+                                ),
                             ),
                         ),
-                        Literal(
-                            Int(
-                                3,
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            GetItem(
+                                Identifier(
+                                    "list",
+                                ),
+                                Literal(
+                                    Int(
+                                        4,
+                                    ),
+                                ),
                             ),
-                        ),
-                        Literal(
-                            String(
-                                "hello",
-                            ),
-                        ),
-                        Literal(
-                            Bool(
-                                true,
+                            Literal(
+                                Bool(
+                                    true,
+                                ),
                             ),
                         ),
                     ],
@@ -104,34 +201,127 @@ Ok(
 ```rust
 Ok(
     Block(
-        [],
-        Some(
-            List(
+        [
+            Declare(
+                "list",
+                Some(
+                    List(
+                        [
+                            Literal(
+                                Int(
+                                    1,
+                                ),
+                            ),
+                            Literal(
+                                Int(
+                                    2,
+                                ),
+                            ),
+                            Literal(
+                                Int(
+                                    3,
+                                ),
+                            ),
+                            Literal(
+                                String(
+                                    "hello",
+                                ),
+                            ),
+                            Literal(
+                                Bool(
+                                    true,
+                                ),
+                            ),
+                        ],
+                    ),
+                ),
+            ),
+            Call(
+                Variable(
+                    "assert",
+                ),
                 [
-                    Literal(
-                        Int(
-                            1,
+                    Call(
+                        GetAttr(
+                            GetItem(
+                                Variable(
+                                    "list",
+                                ),
+                                Literal(
+                                    Int(
+                                        0,
+                                    ),
+                                ),
+                            ),
+                            "op_eq",
                         ),
+                        [
+                            Literal(
+                                Int(
+                                    1,
+                                ),
+                            ),
+                        ],
                     ),
-                    Literal(
-                        Int(
-                            2,
+                ],
+            ),
+            Call(
+                Variable(
+                    "assert",
+                ),
+                [
+                    Call(
+                        GetAttr(
+                            GetItem(
+                                Variable(
+                                    "list",
+                                ),
+                                Literal(
+                                    Int(
+                                        3,
+                                    ),
+                                ),
+                            ),
+                            "op_eq",
                         ),
+                        [
+                            Literal(
+                                String(
+                                    "hello",
+                                ),
+                            ),
+                        ],
                     ),
-                    Literal(
-                        Int(
-                            3,
+                ],
+            ),
+        ],
+        Some(
+            Call(
+                Variable(
+                    "assert",
+                ),
+                [
+                    Call(
+                        GetAttr(
+                            GetItem(
+                                Variable(
+                                    "list",
+                                ),
+                                Literal(
+                                    Int(
+                                        4,
+                                    ),
+                                ),
+                            ),
+                            "op_eq",
                         ),
-                    ),
-                    Literal(
-                        String(
-                            "hello",
-                        ),
-                    ),
-                    Literal(
-                        Bool(
-                            true,
-                        ),
+                        [
+                            Literal(
+                                Bool(
+                                    true,
+                                ),
+                            ),
+                        ],
                     ),
                 ],
             ),

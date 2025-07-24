@@ -1,11 +1,15 @@
 # Program
 Status: 🟢
-Assertions: 0
+Assertions: 2
 
 ```rustleaf
 pub fn greet(name) {
-    print("Hello, " + name);
+    return "Hello, " + name;
 }
+
+var result = greet("World");
+assert(result == "Hello, World");
+assert(greet("Alice") == "Hello, Alice");
 ```
 
 # Output
@@ -29,14 +33,37 @@ Ok(
         Token(Ident, "name"),
         Token(RightParen),
         Token(LeftBrace),
-        Token(Ident, "print"),
-        Token(LeftParen),
+        Token(Return),
         Token(String, "Hello, "),
         Token(Plus),
         Token(Ident, "name"),
-        Token(RightParen),
         Token(Semicolon),
         Token(RightBrace),
+        Token(Var),
+        Token(Ident, "result"),
+        Token(Equal),
+        Token(Ident, "greet"),
+        Token(LeftParen),
+        Token(String, "World"),
+        Token(RightParen),
+        Token(Semicolon),
+        Token(Ident, "assert"),
+        Token(LeftParen),
+        Token(Ident, "result"),
+        Token(EqualEqual),
+        Token(String, "Hello, World"),
+        Token(RightParen),
+        Token(Semicolon),
+        Token(Ident, "assert"),
+        Token(LeftParen),
+        Token(Ident, "greet"),
+        Token(LeftParen),
+        Token(String, "Alice"),
+        Token(RightParen),
+        Token(EqualEqual),
+        Token(String, "Hello, Alice"),
+        Token(RightParen),
+        Token(Semicolon),
         Token(Eof),
     ],
 )
@@ -58,23 +85,18 @@ Ok(
                 ],
                 body: Block {
                     statements: [
-                        Expression(
-                            FunctionCall(
-                                Identifier(
-                                    "print",
-                                ),
-                                [
-                                    Add(
-                                        Literal(
-                                            String(
-                                                "Hello, ",
-                                            ),
-                                        ),
-                                        Identifier(
-                                            "name",
+                        Return(
+                            Some(
+                                Add(
+                                    Literal(
+                                        String(
+                                            "Hello, ",
                                         ),
                                     ),
-                                ],
+                                    Identifier(
+                                        "name",
+                                    ),
+                                ),
                             ),
                         ),
                     ],
@@ -82,6 +104,72 @@ Ok(
                 },
                 is_pub: true,
             },
+            VarDecl {
+                pattern: Variable(
+                    "result",
+                ),
+                value: Some(
+                    FunctionCall(
+                        Identifier(
+                            "greet",
+                        ),
+                        [
+                            Literal(
+                                String(
+                                    "World",
+                                ),
+                            ),
+                        ],
+                    ),
+                ),
+            },
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            Identifier(
+                                "result",
+                            ),
+                            Literal(
+                                String(
+                                    "Hello, World",
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            FunctionCall(
+                                Identifier(
+                                    "greet",
+                                ),
+                                [
+                                    Literal(
+                                        String(
+                                            "Alice",
+                                        ),
+                                    ),
+                                ],
+                            ),
+                            Literal(
+                                String(
+                                    "Hello, Alice",
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
         ],
     ),
 )
@@ -99,11 +187,8 @@ Ok(
                 ],
                 Block(
                     [
-                        Call(
-                            Variable(
-                                "print",
-                            ),
-                            [
+                        Return(
+                            Some(
                                 Call(
                                     GetAttr(
                                         Literal(
@@ -119,14 +204,85 @@ Ok(
                                         ),
                                     ],
                                 ),
-                            ],
+                            ),
                         ),
                     ],
                     None,
                 ),
             ),
+            Declare(
+                "result",
+                Some(
+                    Call(
+                        Variable(
+                            "greet",
+                        ),
+                        [
+                            Literal(
+                                String(
+                                    "World",
+                                ),
+                            ),
+                        ],
+                    ),
+                ),
+            ),
+            Call(
+                Variable(
+                    "assert",
+                ),
+                [
+                    Call(
+                        GetAttr(
+                            Variable(
+                                "result",
+                            ),
+                            "op_eq",
+                        ),
+                        [
+                            Literal(
+                                String(
+                                    "Hello, World",
+                                ),
+                            ),
+                        ],
+                    ),
+                ],
+            ),
         ],
-        None,
+        Some(
+            Call(
+                Variable(
+                    "assert",
+                ),
+                [
+                    Call(
+                        GetAttr(
+                            Call(
+                                Variable(
+                                    "greet",
+                                ),
+                                [
+                                    Literal(
+                                        String(
+                                            "Alice",
+                                        ),
+                                    ),
+                                ],
+                            ),
+                            "op_eq",
+                        ),
+                        [
+                            Literal(
+                                String(
+                                    "Hello, Alice",
+                                ),
+                            ),
+                        ],
+                    ),
+                ],
+            ),
+        ),
     ),
 )
 ```

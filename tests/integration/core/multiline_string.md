@@ -1,11 +1,14 @@
 # Program
 Status: 🟢
-Assertions: 0
+Assertions: 3
 
 ```rustleaf
-"""This is a
+var multiline = """This is a
 multiline string
 with multiple lines""";
+assert(multiline != "single line");
+assert("multiline" in multiline);
+assert("This is a" in multiline);
 ```
 
 # Output
@@ -14,9 +17,7 @@ None
 # Result
 ```rust
 Ok(
-    String(
-        "This is a\nmultiline string\nwith multiple lines",
-    ),
+    Unit,
 )
 ```
 
@@ -24,7 +25,31 @@ Ok(
 ```rust
 Ok(
     [
+        Token(Var),
+        Token(Ident, "multiline"),
+        Token(Equal),
         Token(MultilineString, "This is a\nmultiline string\nwith multiple lines"),
+        Token(Semicolon),
+        Token(Ident, "assert"),
+        Token(LeftParen),
+        Token(Ident, "multiline"),
+        Token(BangEqual),
+        Token(String, "single line"),
+        Token(RightParen),
+        Token(Semicolon),
+        Token(Ident, "assert"),
+        Token(LeftParen),
+        Token(String, "multiline"),
+        Token(In),
+        Token(Ident, "multiline"),
+        Token(RightParen),
+        Token(Semicolon),
+        Token(Ident, "assert"),
+        Token(LeftParen),
+        Token(String, "This is a"),
+        Token(In),
+        Token(Ident, "multiline"),
+        Token(RightParen),
         Token(Semicolon),
         Token(Eof),
     ],
@@ -36,11 +61,73 @@ Ok(
 Ok(
     Program(
         [
-            Expression(
-                Literal(
-                    String(
-                        "This is a\nmultiline string\nwith multiple lines",
+            VarDecl {
+                pattern: Variable(
+                    "multiline",
+                ),
+                value: Some(
+                    Literal(
+                        String(
+                            "This is a\nmultiline string\nwith multiple lines",
+                        ),
                     ),
+                ),
+            },
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Ne(
+                            Identifier(
+                                "multiline",
+                            ),
+                            Literal(
+                                String(
+                                    "single line",
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        In(
+                            Literal(
+                                String(
+                                    "multiline",
+                                ),
+                            ),
+                            Identifier(
+                                "multiline",
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        In(
+                            Literal(
+                                String(
+                                    "This is a",
+                                ),
+                            ),
+                            Identifier(
+                                "multiline",
+                            ),
+                        ),
+                    ],
                 ),
             ),
         ],
@@ -52,12 +139,84 @@ Ok(
 ```rust
 Ok(
     Block(
-        [],
-        Some(
-            Literal(
-                String(
-                    "This is a\nmultiline string\nwith multiple lines",
+        [
+            Declare(
+                "multiline",
+                Some(
+                    Literal(
+                        String(
+                            "This is a\nmultiline string\nwith multiple lines",
+                        ),
+                    ),
                 ),
+            ),
+            Call(
+                Variable(
+                    "assert",
+                ),
+                [
+                    Call(
+                        GetAttr(
+                            Variable(
+                                "multiline",
+                            ),
+                            "op_ne",
+                        ),
+                        [
+                            Literal(
+                                String(
+                                    "single line",
+                                ),
+                            ),
+                        ],
+                    ),
+                ],
+            ),
+            Call(
+                Variable(
+                    "assert",
+                ),
+                [
+                    Call(
+                        GetAttr(
+                            Variable(
+                                "multiline",
+                            ),
+                            "op_contains",
+                        ),
+                        [
+                            Literal(
+                                String(
+                                    "multiline",
+                                ),
+                            ),
+                        ],
+                    ),
+                ],
+            ),
+        ],
+        Some(
+            Call(
+                Variable(
+                    "assert",
+                ),
+                [
+                    Call(
+                        GetAttr(
+                            Variable(
+                                "multiline",
+                            ),
+                            "op_contains",
+                        ),
+                        [
+                            Literal(
+                                String(
+                                    "This is a",
+                                ),
+                            ),
+                        ],
+                    ),
+                ],
             ),
         ),
     ),

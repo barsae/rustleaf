@@ -1,10 +1,10 @@
 # Program
-Status: 🟢
+Status: 🟡
 Assertions: 0
 
 ```rustleaf
-#[test]
-var x = 42;
+#[test(arg1: "value", arg2: 42)]
+var x = 100;
 ```
 
 # Output
@@ -24,11 +24,20 @@ Ok(
         Token(Hash),
         Token(LeftBracket),
         Token(Ident, "test"),
+        Token(LeftParen),
+        Token(Ident, "arg1"),
+        Token(Colon),
+        Token(String, "value"),
+        Token(Comma),
+        Token(Ident, "arg2"),
+        Token(Colon),
+        Token(Int, "42"),
+        Token(RightParen),
         Token(RightBracket),
         Token(Var),
         Token(Ident, "x"),
         Token(Equal),
-        Token(Int, "42"),
+        Token(Int, "100"),
         Token(Semicolon),
         Token(Eof),
     ],
@@ -47,7 +56,7 @@ Ok(
                 value: Some(
                     Literal(
                         Int(
-                            42,
+                            100,
                         ),
                     ),
                 ),
@@ -67,7 +76,7 @@ Ok(
                 Some(
                     Literal(
                         Int(
-                            42,
+                            100,
                         ),
                     ),
                 ),

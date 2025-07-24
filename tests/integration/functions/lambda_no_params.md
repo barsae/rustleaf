@@ -1,10 +1,12 @@
 # Program
 Status: 🟢
-Assertions: 0
+Assertions: 2
 
 ```rustleaf
-// #[fail_quietly]
-|| 42;
+var lambda = || 42;
+var result = lambda();
+assert(result == 42);
+assert(is_unit(lambda) == false);  // Lambda should not be unit
 ```
 
 # Output
@@ -13,173 +15,7 @@ None
 # Result
 ```rust
 Ok(
-    RustValue(
-        RustValueRef(
-            RefCell {
-                value: RustLeafFunction {
-                    params: [],
-                    body: Literal(
-                        Int(
-                            42,
-                        ),
-                    ),
-                    closure_env: ScopeRef(
-                        RefCell {
-                            value: Scope {
-                                vars: {},
-                                parent: Some(
-                                    ScopeRef(
-                                        RefCell {
-                                            value: Scope {
-                                                vars: {
-                                                    "print": RustValue(
-                                                        RustValueRef(
-                                                            RefCell {
-                                                                value: RustFunction {
-                                                                    name: "print",
-                                                                },
-                                                            },
-                                                        ),
-                                                    ),
-                                                    "assert": RustValue(
-                                                        RustValueRef(
-                                                            RefCell {
-                                                                value: RustFunction {
-                                                                    name: "assert",
-                                                                },
-                                                            },
-                                                        ),
-                                                    ),
-                                                    "is_unit": RustValue(
-                                                        RustValueRef(
-                                                            RefCell {
-                                                                value: RustFunction {
-                                                                    name: "is_unit",
-                                                                },
-                                                            },
-                                                        ),
-                                                    ),
-                                                    "str": RustValue(
-                                                        RustValueRef(
-                                                            RefCell {
-                                                                value: RustFunction {
-                                                                    name: "str",
-                                                                },
-                                                            },
-                                                        ),
-                                                    ),
-                                                    "raise": RustValue(
-                                                        RustValueRef(
-                                                            RefCell {
-                                                                value: RustFunction {
-                                                                    name: "raise",
-                                                                },
-                                                            },
-                                                        ),
-                                                    ),
-                                                    "Null": RustValue(
-                                                        RustValueRef(
-                                                            RefCell {
-                                                                value: TypeConstant {
-                                                                    type_name: "Null",
-                                                                },
-                                                            },
-                                                        ),
-                                                    ),
-                                                    "Unit": RustValue(
-                                                        RustValueRef(
-                                                            RefCell {
-                                                                value: TypeConstant {
-                                                                    type_name: "Unit",
-                                                                },
-                                                            },
-                                                        ),
-                                                    ),
-                                                    "Bool": RustValue(
-                                                        RustValueRef(
-                                                            RefCell {
-                                                                value: TypeConstant {
-                                                                    type_name: "Bool",
-                                                                },
-                                                            },
-                                                        ),
-                                                    ),
-                                                    "Int": RustValue(
-                                                        RustValueRef(
-                                                            RefCell {
-                                                                value: TypeConstant {
-                                                                    type_name: "Int",
-                                                                },
-                                                            },
-                                                        ),
-                                                    ),
-                                                    "Float": RustValue(
-                                                        RustValueRef(
-                                                            RefCell {
-                                                                value: TypeConstant {
-                                                                    type_name: "Float",
-                                                                },
-                                                            },
-                                                        ),
-                                                    ),
-                                                    "String": RustValue(
-                                                        RustValueRef(
-                                                            RefCell {
-                                                                value: TypeConstant {
-                                                                    type_name: "String",
-                                                                },
-                                                            },
-                                                        ),
-                                                    ),
-                                                    "List": RustValue(
-                                                        RustValueRef(
-                                                            RefCell {
-                                                                value: TypeConstant {
-                                                                    type_name: "List",
-                                                                },
-                                                            },
-                                                        ),
-                                                    ),
-                                                    "Dict": RustValue(
-                                                        RustValueRef(
-                                                            RefCell {
-                                                                value: TypeConstant {
-                                                                    type_name: "Dict",
-                                                                },
-                                                            },
-                                                        ),
-                                                    ),
-                                                    "Range": RustValue(
-                                                        RustValueRef(
-                                                            RefCell {
-                                                                value: TypeConstant {
-                                                                    type_name: "Range",
-                                                                },
-                                                            },
-                                                        ),
-                                                    ),
-                                                    "Function": RustValue(
-                                                        RustValueRef(
-                                                            RefCell {
-                                                                value: TypeConstant {
-                                                                    type_name: "Function",
-                                                                },
-                                                            },
-                                                        ),
-                                                    ),
-                                                },
-                                                parent: None,
-                                            },
-                                        },
-                                    ),
-                                ),
-                            },
-                        },
-                    ),
-                },
-            },
-        ),
-    ),
+    Unit,
 )
 ```
 
@@ -187,9 +23,36 @@ Ok(
 ```rust
 Ok(
     [
+        Token(Var),
+        Token(Ident, "lambda"),
+        Token(Equal),
         Token(Pipe),
         Token(Pipe),
         Token(Int, "42"),
+        Token(Semicolon),
+        Token(Var),
+        Token(Ident, "result"),
+        Token(Equal),
+        Token(Ident, "lambda"),
+        Token(LeftParen),
+        Token(RightParen),
+        Token(Semicolon),
+        Token(Ident, "assert"),
+        Token(LeftParen),
+        Token(Ident, "result"),
+        Token(EqualEqual),
+        Token(Int, "42"),
+        Token(RightParen),
+        Token(Semicolon),
+        Token(Ident, "assert"),
+        Token(LeftParen),
+        Token(Ident, "is_unit"),
+        Token(LeftParen),
+        Token(Ident, "lambda"),
+        Token(RightParen),
+        Token(EqualEqual),
+        Token(False),
+        Token(RightParen),
         Token(Semicolon),
         Token(Eof),
     ],
@@ -201,17 +64,80 @@ Ok(
 Ok(
     Program(
         [
-            Expression(
-                Lambda {
-                    params: [],
-                    body: Expression(
-                        Literal(
-                            Int(
-                                42,
+            VarDecl {
+                pattern: Variable(
+                    "lambda",
+                ),
+                value: Some(
+                    Lambda {
+                        params: [],
+                        body: Expression(
+                            Literal(
+                                Int(
+                                    42,
+                                ),
                             ),
                         ),
+                    },
+                ),
+            },
+            VarDecl {
+                pattern: Variable(
+                    "result",
+                ),
+                value: Some(
+                    FunctionCall(
+                        Identifier(
+                            "lambda",
+                        ),
+                        [],
                     ),
-                },
+                ),
+            },
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            Identifier(
+                                "result",
+                            ),
+                            Literal(
+                                Int(
+                                    42,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            FunctionCall(
+                                Identifier(
+                                    "is_unit",
+                                ),
+                                [
+                                    Identifier(
+                                        "lambda",
+                                    ),
+                                ],
+                            ),
+                            Literal(
+                                Bool(
+                                    false,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
             ),
         ],
     ),
@@ -222,15 +148,83 @@ Ok(
 ```rust
 Ok(
     Block(
-        [],
-        Some(
-            Lambda(
-                [],
-                Literal(
-                    Int(
-                        42,
+        [
+            Declare(
+                "lambda",
+                Some(
+                    Lambda(
+                        [],
+                        Literal(
+                            Int(
+                                42,
+                            ),
+                        ),
                     ),
                 ),
+            ),
+            Declare(
+                "result",
+                Some(
+                    Call(
+                        Variable(
+                            "lambda",
+                        ),
+                        [],
+                    ),
+                ),
+            ),
+            Call(
+                Variable(
+                    "assert",
+                ),
+                [
+                    Call(
+                        GetAttr(
+                            Variable(
+                                "result",
+                            ),
+                            "op_eq",
+                        ),
+                        [
+                            Literal(
+                                Int(
+                                    42,
+                                ),
+                            ),
+                        ],
+                    ),
+                ],
+            ),
+        ],
+        Some(
+            Call(
+                Variable(
+                    "assert",
+                ),
+                [
+                    Call(
+                        GetAttr(
+                            Call(
+                                Variable(
+                                    "is_unit",
+                                ),
+                                [
+                                    Variable(
+                                        "lambda",
+                                    ),
+                                ],
+                            ),
+                            "op_eq",
+                        ),
+                        [
+                            Literal(
+                                Bool(
+                                    false,
+                                ),
+                            ),
+                        ],
+                    ),
+                ],
             ),
         ),
     ),

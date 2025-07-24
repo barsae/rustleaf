@@ -11,26 +11,18 @@ from collections import defaultdict
 from datetime import datetime
 
 def extract_test_status(file_path):
-    """Extract the status circle (🟢 or 🔴) from a test file, with 🟡 for tests with no asserts."""
+    """Extract the status circle from a test file."""
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             content = f.read()
         
-        # Look for "Status: 🟢" or "Status: 🔴"
-        status_match = re.search(r'Status: ([🟢🔴])', content)
+        # Look for "Status: 🟢", "Status: 🔴", or "Status: 🟡"
+        status_match = re.search(r'Status: ([🟢🔴🟡])', content)
         if status_match:
-            status = status_match.group(1)
-            
-            # Check if this is a passing test with no assertions
-            if status == '🟢':
-                assertions_match = re.search(r'Assertions: (\d+)', content)
-                if assertions_match and int(assertions_match.group(1)) == 0:
-                    return '🟡'  # Yellow for no asserts
-            
-            return status
+            return status_match.group(1)
         
-        # Fallback: look for old format "# Program 🟢" or "# Program 🔴"
-        match = re.search(r'# Program ([🟢🔴])', content)
+        # Fallback: look for old format "# Program 🟢", "# Program 🔴", or "# Program 🟡"
+        match = re.search(r'# Program ([🟢🔴🟡])', content)
         if match:
             return match.group(1)
         
@@ -41,6 +33,8 @@ def extract_test_status(file_path):
                 return '🟢'
             elif '🔴' in line:
                 return '🔴'
+            elif '🟡' in line:
+                return '🟡'
                 
         return '❓'  # Unknown status
     except Exception as e:
