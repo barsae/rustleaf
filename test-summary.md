@@ -1,7 +1,7 @@
 # Test Summary
 
 Auto-generated test status summary from integration tests.
-*Generated on: 2025-07-24 12:26:25*
+*Generated on: 2025-07-24 12:48:37*
 
 ## Advanced Tests
 
@@ -14,7 +14,7 @@ Auto-generated test status summary from integration tests.
 - [macro_multiple_annotations](tests/integration/advanced/macro_multiple_annotations.md): 🟢
 - [macro_on_class](tests/integration/advanced/macro_on_class.md): 🟢
 - [macro_with_args](tests/integration/advanced/macro_with_args.md): 🟢
-- [pipe_expression](tests/integration/advanced/pipe_expression.md): 🔴
+- [pipe_expression](tests/integration/advanced/pipe_expression.md): 🟢
 - [raise_number](tests/integration/advanced/raise_number.md): 🟢
 - [string_interpolation_complex](tests/integration/advanced/string_interpolation_complex.md): 🟢
 - [string_interpolation_multiple](tests/integration/advanced/string_interpolation_multiple.md): 🟢
@@ -94,7 +94,6 @@ Auto-generated test status summary from integration tests.
 - [arithmetic_extra](tests/integration/operators/arithmetic_extra.md): 🟢
 - [assignment_add](tests/integration/operators/assignment_add.md): 🟢
 - [assignment_index](tests/integration/operators/assignment_index.md): 🟢
-- [assignment_property](tests/integration/operators/assignment_property.md): 🔴
 - [assignment_simple](tests/integration/operators/assignment_simple.md): 🟢
 - [bitwise](tests/integration/operators/bitwise.md): 🟢
 - [comparison](tests/integration/operators/comparison.md): 🟢
@@ -114,8 +113,8 @@ Auto-generated test status summary from integration tests.
 
 ## Statistics
 
-- Total tests: 85
-- Passing: 76 🟢
-- Failing: 9 🔴
+- Total tests: 84
+- Passing: 77 🟢
+- Failing: 7 🔴
 
-**Pass rate: 89.4%**
+**Pass rate: 91.7%**

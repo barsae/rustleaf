@@ -607,17 +607,18 @@ impl Evaluator {
                     let value_val = self.eval(value_expr)?;
 
                     // Convert key to string
-                    let key_str =
-                        match key_val {
-                            Value::String(s) => s,
-                            Value::Int(i) => i.to_string(),
-                            Value::Float(f) => f.to_string(),
-                            Value::Bool(b) => b.to_string(),
-                            _ => return Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(
+                    let key_str = match key_val {
+                        Value::String(s) => s,
+                        Value::Int(i) => i.to_string(),
+                        Value::Float(f) => f.to_string(),
+                        Value::Bool(b) => b.to_string(),
+                        _ => {
+                            return Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(
                                 "Dictionary keys must be strings, numbers, or booleans, got {:?}",
                                 key_val
-                            )))),
-                        };
+                            ))))
+                        }
+                    };
 
                     dict_map.insert(key_str, value_val);
                 }

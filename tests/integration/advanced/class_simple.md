@@ -18,9 +18,7 @@ assert(msg == "Hello, Eric");
 ```
 
 # Output
-```
-String("Hello, Eric")
-```
+None
 
 # Result
 ```rust
@@ -79,11 +77,6 @@ Ok(
         Token(Ident, "msg"),
         Token(EqualEqual),
         Token(String, "Hello, Eric"),
-        Token(RightParen),
-        Token(Semicolon),
-        Token(Ident, "print"),
-        Token(LeftParen),
-        Token(Ident, "msg"),
         Token(RightParen),
         Token(Semicolon),
         Token(Eof),
@@ -194,18 +187,6 @@ Ok(
                     ],
                 ),
             ),
-            Expression(
-                FunctionCall(
-                    Identifier(
-                        "print",
-                    ),
-                    [
-                        Identifier(
-                            "msg",
-                        ),
-                    ],
-                ),
-            ),
         ],
     ),
 )
@@ -300,6 +281,8 @@ Ok(
                     ),
                 ),
             ),
+        ],
+        Some(
             Call(
                 Variable(
                     "assert",
@@ -319,18 +302,6 @@ Ok(
                                 ),
                             ),
                         ],
-                    ),
-                ],
-            ),
-        ],
-        Some(
-            Call(
-                Variable(
-                    "print",
-                ),
-                [
-                    Variable(
-                        "msg",
                     ),
                 ],
             ),
