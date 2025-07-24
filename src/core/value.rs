@@ -140,7 +140,8 @@ impl Value {
             Value::List(_) => self.get_list_attr(name),
             Value::Dict(_) => self.get_dict_attr(name),
             Value::Range(_) => self.get_range_attr(name),
-            _ => None,
+            Value::Unit => self.get_unit_attr(name),
+            Value::Null => self.get_null_attr(name),
         }
     }
 
@@ -286,6 +287,26 @@ impl Value {
             "op_contains" => Some(self.bind_method(op_contains)),
             "op_eq" => Some(self.bind_method(op_eq)),
             "to_list" => Some(self.bind_method(range_to_list)),
+            _ => None,
+        }
+    }
+
+    fn get_unit_attr(&self, name: &str) -> Option<Value> {
+        use crate::core::builtin_ops::*;
+
+        match name {
+            "op_eq" => Some(self.bind_method(op_eq)),
+            "op_ne" => Some(self.bind_method(op_ne)),
+            _ => None,
+        }
+    }
+
+    fn get_null_attr(&self, name: &str) -> Option<Value> {
+        use crate::core::builtin_ops::*;
+
+        match name {
+            "op_eq" => Some(self.bind_method(op_eq)),
+            "op_ne" => Some(self.bind_method(op_ne)),
             _ => None,
         }
     }

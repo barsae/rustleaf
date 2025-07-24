@@ -29,6 +29,7 @@ test: check-test-dirs
     {{rust_flags}} cargo check
     {{rust_flags}} cargo test
     cargo clippy -- -D warnings
+    just test-summary
 
 # Generate test summary from integration tests
 test-summary:

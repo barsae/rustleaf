@@ -62,7 +62,7 @@ loop_with_continue: 🟢
 loop_with_print: 🟢
 return: 🟢
 simple_if: 🟢
-while_expression: 🔴
+while_expression: 🟢
 while_loop: 🟢
 
 ## Core Tests
@@ -124,9 +124,9 @@ match_expression: 🔴
 ## Statistics
 
 Total tests: 90
-Passing: 68 🟢
-Failing: 22 🔴
+Passing: 69 🟢
+Failing: 21 🔴
 Unknown: 0 ❓
 Errors: 0 ❌
 
-Pass rate: 75.6%
+Pass rate: 76.7%
