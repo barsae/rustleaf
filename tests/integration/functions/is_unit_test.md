@@ -1,5 +1,6 @@
 # Program
 Status: 🟢
+Assertions: 6
 
 ```rustleaf
 // Test is_unit with various values

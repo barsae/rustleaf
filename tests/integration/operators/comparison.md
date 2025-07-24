@@ -1,5 +1,6 @@
 # Program
 Status: 🟢
+Assertions: 10
 
 ```rustleaf
 // Basic comparison tests

@@ -1,5 +1,6 @@
 # Program
 Status: 🟢
+Assertions: 7
 
 ```rustleaf
 // Bitwise operators test

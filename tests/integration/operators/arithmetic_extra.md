@@ -1,5 +1,6 @@
 # Program
 Status: 🟢
+Assertions: 8
 
 ```rustleaf
 // Test modulo operator

@@ -63,7 +63,7 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                     
                     let update_markdown_with_results = |_original_md: &str, source: &str, circle: &str, 
                         output_section: &str, execution_output: &str, lex_output: &str, 
-                        parse_output: &str, eval_output: &str| -> String {
+                        parse_output: &str, eval_output: &str, assertion_count: u32| -> String {
                         // Reconstruct the entire markdown from template
                         let output_display = if output_section == "None" {
                             format!("# Output\n{}", output_section)
@@ -72,8 +72,8 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                         };
                         
                         format!(
-                            "# Program\nStatus: {}\n\n```rustleaf\n{}\n```\n\n{}\n\n# Result\n```rust\n{}\n```\n\n# Lex\n```rust\n{}\n```\n\n# Parse\n```rust\n{}\n```\n\n# Eval\n```rust\n{}\n```",
-                            circle, source, output_display, execution_output, lex_output, parse_output, eval_output
+                            "# Program\nStatus: {}\nAssertions: {}\n\n```rustleaf\n{}\n```\n\n{}\n\n# Result\n```rust\n{}\n```\n\n# Lex\n```rust\n{}\n```\n\n# Parse\n```rust\n{}\n```\n\n# Eval\n```rust\n{}\n```",
+                            circle, assertion_count, source, output_display, execution_output, lex_output, parse_output, eval_output
                         )
                     };
                     
@@ -106,11 +106,13 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                     };
                     
                     // Try evaluation (only if all previous stages succeeded)
-                    let (output_section, execution_output, eval_success, final_result) = match rustleaf::parser::Parser::parse_str(&source) {
+                    let (output_section, execution_output, eval_success, final_result, assertion_count) = match rustleaf::parser::Parser::parse_str(&source) {
                         Ok(ast) => {
                             rustleaf::core::start_print_capture();
+                            rustleaf::core::start_assertion_count();
                             let result = rustleaf::eval::evaluate(ast);
                             let captured_output = rustleaf::core::get_captured_prints();
+                            let assertion_count = rustleaf::core::get_assertion_count();
                             let execution_output = format!("{:#?}", result);
                             
                             let output_section = if captured_output.is_empty() {
@@ -120,11 +122,11 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                             };
                             
                             let eval_success = result.is_ok();
-                            (output_section, execution_output, eval_success, result)
+                            (output_section, execution_output, eval_success, result, assertion_count)
                         }
                         Err(parse_error) => {
                             let error_result = Err(anyhow::Error::msg(format!("Parse error: {}", parse_error)));
-                            ("None".to_string(), "Skipped due to parse error".to_string(), false, error_result)
+                            ("None".to_string(), "Skipped due to parse error".to_string(), false, error_result, 0)
                         }
                     };
                     
@@ -139,7 +141,7 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                     // Update the markdown file in-place with test results
                     let updated_md_content = update_markdown_with_results(
                         md_content, &source, &circle, &output_section, &execution_output, 
-                        &lex_output, &parse_output, &eval_output
+                        &lex_output, &parse_output, &eval_output, assertion_count
                     );
                     std::fs::write(#full_path, updated_md_content).unwrap();
                     

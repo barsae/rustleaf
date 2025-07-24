@@ -1,5 +1,6 @@
 # Program
 Status: 🟢
+Assertions: 0
 
 ```rustleaf
 fn greet(name = "world") { name }

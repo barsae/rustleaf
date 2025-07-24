@@ -1,5 +1,6 @@
 # Program
 Status: 🟢
+Assertions: 9
 
 ```rustleaf
 // Test 'in' operator (op_contains)

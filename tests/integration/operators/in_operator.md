@@ -1,5 +1,6 @@
 # Program
 Status: 🟢
+Assertions: 1
 
 ```rustleaf
 var l = [1, 2, 3];

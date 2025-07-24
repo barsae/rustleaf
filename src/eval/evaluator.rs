@@ -3,11 +3,17 @@ use crate::{core::*, eval::Eval};
 use anyhow::anyhow;
 
 #[derive(Debug)]
+pub enum ErrorKind {
+    SystemError(anyhow::Error),
+    RaisedError(Value),
+}
+
+#[derive(Debug)]
 pub enum ControlFlow {
     Return(Value),
     Break(Value),
     Continue,
-    Error(anyhow::Error),
+    Error(ErrorKind),
 }
 
 pub type EvalResult = Result<Value, ControlFlow>;
@@ -57,7 +63,14 @@ impl RustValue for RustLeafFunction {
         match evaluator.eval(&self.body) {
             Ok(value) => Ok(value),
             Err(ControlFlow::Return(value)) => Ok(value),
-            Err(ControlFlow::Error(err)) => Err(err),
+            Err(ControlFlow::Error(ErrorKind::SystemError(err))) => Err(err),
+            Err(ControlFlow::Error(ErrorKind::RaisedError(value))) => {
+                // Convert raised value to string for error display
+                match value {
+                    Value::String(s) => Err(anyhow::anyhow!("{}", s)),
+                    _ => Err(anyhow::anyhow!("{:?}", value)),
+                }
+            },
             Err(other) => Err(anyhow!("Invalid control flow in function: {:?}", other)),
         }
     }
@@ -202,7 +215,7 @@ impl Evaluator {
             Eval::Literal(value) => Ok(value.clone()),
             Eval::Variable(name) => {
                 self.current_env.get(name)
-                    .ok_or_else(|| ControlFlow::Error(anyhow!("Undefined variable: {}", name)))
+                    .ok_or_else(|| ControlFlow::Error(ErrorKind::SystemError(anyhow!("Undefined variable: {}", name))))
             }
             Eval::Call(func_expr, args) => {
                 // Evaluate the function expression
@@ -218,7 +231,7 @@ impl Evaluator {
                 let args_obj = Args::positional(arg_values);
 
                 // Call the function
-                func_value.call(args_obj).map_err(|e| ControlFlow::Error(anyhow!(e)))
+                func_value.call(args_obj).map_err(|e| ControlFlow::Error(ErrorKind::SystemError(e)))
             }
             Eval::Declare(name, init_expr) => {
                 let value = match init_expr {
@@ -249,7 +262,7 @@ impl Evaluator {
             Eval::Assign(name, expr) => {
                 let value = self.eval(expr)?;
                 self.current_env.set(name, value)
-                    .map_err(|err| ControlFlow::Error(anyhow!(err)))?;
+                    .map_err(|err| ControlFlow::Error(ErrorKind::SystemError(anyhow!(err))))?;
                 Ok(Value::Unit)
             }
             Eval::If(condition, then_expr, else_expr) => {
@@ -430,7 +443,7 @@ impl Evaluator {
                     _ => {
                         // Restore scope and return error
                         self.current_env = previous_env;
-                        return Err(ControlFlow::Error(anyhow!("Cannot iterate over value: {:?}", iter_value)));
+                        return Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!("Cannot iterate over value: {:?}", iter_value))));
                     }
                 }
                 
@@ -459,7 +472,7 @@ impl Evaluator {
                 let obj_value = self.eval(obj_expr)?;
                 match obj_value.get_attr(attr_name) {
                     Some(value) => Ok(value),
-                    None => Err(ControlFlow::Error(anyhow!("No attribute '{}' on value {:?}", attr_name, obj_value))),
+                    None => Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!("No attribute '{}' on value {:?}", attr_name, obj_value)))),
                 }
             }
             
@@ -525,7 +538,7 @@ impl Evaluator {
                         Value::Int(i) => i.to_string(),
                         Value::Float(f) => f.to_string(),
                         Value::Bool(b) => b.to_string(),
-                        _ => return Err(ControlFlow::Error(anyhow!("Dictionary keys must be strings, numbers, or booleans, got {:?}", key_val))),
+                        _ => return Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!("Dictionary keys must be strings, numbers, or booleans, got {:?}", key_val)))),
                     };
                     
                     dict_map.insert(key_str, value_val);
@@ -540,9 +553,9 @@ impl Evaluator {
                 match obj_value.get_attr("op_get_item") {
                     Some(method) => {
                         let args = Args::positional(vec![index_value]);
-                        method.call(args).map_err(ControlFlow::Error)
+                        method.call(args).map_err(|e| ControlFlow::Error(ErrorKind::SystemError(e)))
                     }
-                    None => Err(ControlFlow::Error(anyhow!("No op_get_item method on value {:?}", obj_value))),
+                    None => Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!("No op_get_item method on value {:?}", obj_value)))),
                 }
             }
             Eval::SetAttr(obj_expr, attr_name, value_expr) => {
@@ -554,10 +567,10 @@ impl Evaluator {
                     Value::RustValue(rv) => {
                         match rv.borrow_mut().set_attr(attr_name, new_value) {
                             Ok(_) => Ok(Value::Unit),
-                            Err(err) => Err(ControlFlow::Error(anyhow!(err))),
+                            Err(err) => Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(err)))),
                         }
                     }
-                    _ => Err(ControlFlow::Error(anyhow!("Cannot set attribute '{}' on value {:?}", attr_name, obj_value))),
+                    _ => Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!("Cannot set attribute '{}' on value {:?}", attr_name, obj_value)))),
                 }
             }
             Eval::SetItem(obj_expr, index_expr, value_expr) => {
@@ -569,10 +582,10 @@ impl Evaluator {
                 match obj_value.get_attr("op_set_item") {
                     Some(method) => {
                         let args = Args::positional(vec![index_value, new_value]);
-                        method.call(args).map_err(ControlFlow::Error)?;
+                        method.call(args).map_err(|e| ControlFlow::Error(ErrorKind::SystemError(e)))?;
                         Ok(Value::Unit)
                     }
-                    None => Err(ControlFlow::Error(anyhow!("No op_set_item method on value {:?}", obj_value))),
+                    None => Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!("No op_set_item method on value {:?}", obj_value)))),
                 }
             }
         }

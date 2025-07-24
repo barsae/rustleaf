@@ -1,5 +1,6 @@
 # Program
 Status: 🟢
+Assertions: 0
 
 ```rustleaf
 [1, 2, 3, "hello", true];

@@ -1,5 +1,6 @@
 # Program
 Status: 🟢
+Assertions: 4
 
 ```rustleaf
 // Test 'not' as unary operator

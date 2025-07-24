@@ -7,6 +7,9 @@ use std::sync::Mutex;
 // Global capture for print output during testing
 static PRINT_CAPTURE: Mutex<Option<Vec<String>>> = Mutex::new(None);
 
+// Global capture for assertion counting during testing
+static ASSERTION_COUNT: Mutex<Option<u32>> = Mutex::new(None);
+
 pub struct RustFunction {
     name: &'static str,
     func: fn(Args) -> Result<Value>,
@@ -58,6 +61,13 @@ pub fn assert(args: Args) -> Result<Value> {
     let message = args.optional("message", Value::String("Assertion failed".to_string()));
     args.complete()?;
     
+    // Increment assertion count if capture is enabled
+    if let Ok(mut count) = ASSERTION_COUNT.lock() {
+        if let Some(ref mut counter) = *count {
+            *counter += 1;
+        }
+    }
+    
     // Check if condition is truthy
     let is_truthy = match condition {
         Value::Bool(b) => b,
@@ -98,6 +108,28 @@ pub fn stop_print_capture() {
     }
 }
 
+// Helper functions for assertion counting
+pub fn start_assertion_count() {
+    if let Ok(mut count) = ASSERTION_COUNT.lock() {
+        *count = Some(0);
+    }
+}
+
+pub fn get_assertion_count() -> u32 {
+    if let Ok(mut count) = ASSERTION_COUNT.lock() {
+        if let Some(counter) = count.take() {
+            return counter;
+        }
+    }
+    0
+}
+
+pub fn stop_assertion_count() {
+    if let Ok(mut count) = ASSERTION_COUNT.lock() {
+        *count = None;
+    }
+}
+
 pub fn is_unit(args: Args) -> Result<Value> {
     args.set_function_name("is_unit");
     let value = args.expect("value")?;
@@ -125,12 +157,15 @@ pub fn str_conversion(args: Args) -> Result<Value> {
     Ok(Value::String(string_repr))
 }
 
+// The raise function is special - it needs to be handled by the evaluator directly
+// since it returns ControlFlow::Error(ErrorKind::RaisedError) instead of Result<Value>
 pub fn raise(args: Args) -> Result<Value> {
     args.set_function_name("raise");
     let error_value = args.expect("error")?;
     args.complete()?;
     
-    // Convert the error value to a string representation for the error message
+    // For now, convert to string representation as error message
+    // TODO: Implement proper try-catch with Value preservation
     let error_message = match error_value {
         Value::String(s) => s,
         Value::Null => "null".to_string(),
@@ -138,9 +173,8 @@ pub fn raise(args: Args) -> Result<Value> {
         Value::Bool(b) => b.to_string(),
         Value::Int(i) => i.to_string(),
         Value::Float(f) => f.to_string(),
-        _ => format!("{:?}", error_value), // Fallback to debug representation
+        _ => format!("{:?}", error_value),
     };
     
-    // Return an error that will be converted to ControlFlow::Error by the evaluator
     Err(anyhow!("{}", error_message))
 }

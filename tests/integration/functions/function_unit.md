@@ -1,5 +1,6 @@
 # Program
 Status: 🟢
+Assertions: 2
 
 ```rustleaf
 var z = 0;

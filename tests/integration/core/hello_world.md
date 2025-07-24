@@ -1,5 +1,6 @@
 # Program
 Status: 🟢
+Assertions: 1
 
 ```rustleaf
 assert("hello, world" == "hello, world");

@@ -1,5 +1,6 @@
 # Program
 Status: 🟢
+Assertions: 3
 
 ```rustleaf
 assert(true);

@@ -1,5 +1,6 @@
 # Program
 Status: 🟢
+Assertions: 22
 
 ```rustleaf
 // Comprehensive test of is and is not operators

@@ -1,5 +1,6 @@
 # Program
 Status: 🟢
+Assertions: 2
 
 ```rustleaf
 // Test while loop as expression with proper variable initialization
