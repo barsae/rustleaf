@@ -71,6 +71,12 @@ pub enum Eval {
         module: String,
         items: ImportItems,
     },
+
+    // Match expression
+    Match {
+        expr: Box<Eval>,
+        cases: Vec<EvalMatchCase>,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -85,5 +91,27 @@ pub struct ClassMethod {
 pub enum EvalPattern {
     Variable(String),
     List(Vec<EvalPattern>),
-    // Future: Dict, Rest, etc.
+    ListRest(Vec<EvalPattern>, Option<String>),
+    Dict(Vec<EvalDictPattern>),
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct EvalDictPattern {
+    pub key: String,
+    pub alias: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct EvalMatchCase {
+    pub pattern: EvalMatchPattern,
+    pub guard: Option<Eval>,
+    pub body: Eval,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum EvalMatchPattern {
+    Literal(Value),
+    Variable(String),
+    Wildcard,
+    // Future: structured patterns like List, Dict
 }

@@ -504,6 +504,18 @@ impl Compiler {
                 }
             }
 
+            Expression::Match { expr, cases } => {
+                let compiled_expr = self.compile_expression(*expr)?;
+                let compiled_cases: Result<Vec<super::core::EvalMatchCase>> = cases
+                    .into_iter()
+                    .map(|case| self.compile_match_case(case))
+                    .collect();
+                Ok(Eval::Match {
+                    expr: Box::new(compiled_expr),
+                    cases: compiled_cases?,
+                })
+            }
+
             _ => Err(anyhow::anyhow!(
                 "Expression not yet implemented: {:?}",
                 expr
@@ -711,7 +723,7 @@ impl Compiler {
     }
 
     fn compile_pattern(pattern: Pattern) -> Result<super::core::EvalPattern> {
-        use super::core::EvalPattern;
+        use super::core::{EvalDictPattern, EvalPattern};
 
         match pattern {
             Pattern::Variable(name) => Ok(EvalPattern::Variable(name)),
@@ -720,10 +732,57 @@ impl Compiler {
                     patterns.into_iter().map(Self::compile_pattern).collect();
                 Ok(EvalPattern::List(compiled_patterns?))
             }
+            Pattern::ListRest(patterns, rest_name) => {
+                let compiled_patterns: Result<Vec<EvalPattern>> =
+                    patterns.into_iter().map(Self::compile_pattern).collect();
+                Ok(EvalPattern::ListRest(compiled_patterns?, rest_name))
+            }
+            Pattern::Dict(dict_patterns) => {
+                let compiled_patterns: Vec<EvalDictPattern> = dict_patterns
+                    .into_iter()
+                    .map(|dp| EvalDictPattern {
+                        key: dp.key,
+                        alias: dp.alias,
+                    })
+                    .collect();
+                Ok(EvalPattern::Dict(compiled_patterns))
+            }
             _ => Err(anyhow::anyhow!(
                 "Pattern not yet implemented: {:?}",
                 pattern
             )),
         }
+    }
+
+    fn compile_match_case(
+        &mut self,
+        case: crate::core::MatchCase,
+    ) -> Result<super::core::EvalMatchCase> {
+        use super::core::{EvalMatchCase, EvalMatchPattern};
+
+        let compiled_pattern = match case.pattern {
+            Pattern::Literal(lit) => EvalMatchPattern::Literal(self.compile_literal(lit)),
+            Pattern::Variable(name) => EvalMatchPattern::Variable(name),
+            Pattern::Wildcard => EvalMatchPattern::Wildcard,
+            _ => {
+                return Err(anyhow::anyhow!(
+                    "Complex patterns in match not yet implemented: {:?}",
+                    case.pattern
+                ))
+            }
+        };
+
+        let compiled_guard = match case.guard {
+            Some(guard_expr) => Some(self.compile_expression(guard_expr)?),
+            None => None,
+        };
+
+        let compiled_body = self.compile_block_helper(case.body)?;
+
+        Ok(EvalMatchCase {
+            pattern: compiled_pattern,
+            guard: compiled_guard,
+            body: compiled_body,
+        })
     }
 }

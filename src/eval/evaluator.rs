@@ -859,6 +859,48 @@ impl Evaluator {
 
                 Ok(Value::Unit)
             }
+            Eval::Match { expr, cases } => {
+                let match_value = self.eval(expr)?;
+
+                for case in cases {
+                    // Check if pattern matches
+                    if self.match_pattern_matches(&case.pattern, &match_value)? {
+                        // Check guard if present
+                        if let Some(guard) = &case.guard {
+                            let guard_result = self.eval(guard)?;
+                            if !Self::is_truthy(&guard_result) {
+                                continue; // Guard failed, try next case
+                            }
+                        }
+
+                        // Pattern matches and guard passes (if any), execute body
+                        // Create new scope for pattern variable bindings
+                        let match_scope = self.current_env.child();
+                        let previous_env = std::mem::replace(&mut self.current_env, match_scope);
+
+                        // Bind pattern variables if needed
+                        if let crate::eval::core::EvalMatchPattern::Variable(var_name) =
+                            &case.pattern
+                        {
+                            self.current_env
+                                .define(var_name.clone(), match_value.clone());
+                        }
+
+                        let result = self.eval(&case.body);
+
+                        // Restore previous scope
+                        self.current_env = previous_env;
+
+                        return result;
+                    }
+                }
+
+                // No case matched
+                Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(
+                    "No matching case found in match expression for value: {:?}",
+                    match_value
+                ))))
+            }
         }
     }
 
@@ -1025,6 +1067,110 @@ impl Evaluator {
                     )))),
                 }
             }
+            EvalPattern::ListRest(patterns, rest_name) => {
+                // List destructuring with rest capture: [first, *rest]
+                match value {
+                    Value::List(list_ref) => {
+                        let list = list_ref.borrow();
+
+                        // Must have at least as many elements as fixed patterns
+                        if list.len() < patterns.len() {
+                            return Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(
+                                "Cannot destructure list of length {} with rest pattern expecting at least {} elements",
+                                list.len(),
+                                patterns.len()
+                            ))));
+                        }
+
+                        // Match fixed patterns at the beginning
+                        for (i, pattern) in patterns.iter().enumerate() {
+                            let list_value = &list[i];
+                            self.match_pattern(pattern, list_value)?;
+                        }
+
+                        // Capture the rest as a new list (if rest_name is provided)
+                        if let Some(rest_var) = rest_name {
+                            let rest_values: Vec<Value> = list[patterns.len()..].to_vec();
+                            let rest_list = Value::new_list_with_values(rest_values);
+                            self.current_env.define(rest_var.clone(), rest_list);
+                        }
+
+                        Ok(())
+                    }
+                    _ => Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(
+                        "Cannot destructure non-list value {:?} with list rest pattern",
+                        value
+                    )))),
+                }
+            }
+            EvalPattern::Dict(dict_patterns) => {
+                // Dict destructuring
+                match value {
+                    Value::Dict(dict_ref) => {
+                        let dict = dict_ref.borrow();
+
+                        for dict_pattern in dict_patterns {
+                            // Look up the value in the dict using string key directly
+                            let dict_value = dict.get(&dict_pattern.key).ok_or_else(|| {
+                                ControlFlow::Error(ErrorKind::SystemError(anyhow!(
+                                    "Key '{}' not found in dict during destructuring",
+                                    dict_pattern.key
+                                )))
+                            })?;
+
+                            // Determine the variable name (alias if present, otherwise key)
+                            let var_name = dict_pattern.alias.as_ref().unwrap_or(&dict_pattern.key);
+
+                            // Bind the value to the variable
+                            self.current_env
+                                .define(var_name.clone(), dict_value.clone());
+                        }
+                        Ok(())
+                    }
+                    _ => Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(
+                        "Cannot destructure non-dict value {:?} with dict pattern",
+                        value
+                    )))),
+                }
+            }
+        }
+    }
+
+    // Helper method to check if a match pattern matches a value
+    fn match_pattern_matches(
+        &self,
+        pattern: &crate::eval::core::EvalMatchPattern,
+        value: &Value,
+    ) -> Result<bool, ControlFlow> {
+        use crate::eval::core::EvalMatchPattern;
+
+        match pattern {
+            EvalMatchPattern::Literal(literal) => {
+                // Compare values for equality
+                Ok(literal == value)
+            }
+            EvalMatchPattern::Variable(_) => {
+                // Variables always match (and bind the value)
+                Ok(true)
+            }
+            EvalMatchPattern::Wildcard => {
+                // Wildcard always matches
+                Ok(true)
+            }
+        }
+    }
+
+    // Helper method to check if a value is truthy
+    fn is_truthy(value: &Value) -> bool {
+        match value {
+            Value::Bool(b) => *b,
+            Value::Null => false,
+            Value::Int(i) => *i != 0,
+            Value::Float(f) => *f != 0.0,
+            Value::String(s) => !s.is_empty(),
+            Value::List(list) => !list.borrow().is_empty(),
+            Value::Dict(dict) => !dict.borrow().is_empty(),
+            _ => true, // Other values are truthy
         }
     }
 }

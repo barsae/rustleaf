@@ -1,12 +1,11 @@
 # Program
-Status: 🔴
-Assertions: 0
+Status: 🟢
+Assertions: 2
 
 ```rustleaf
 var [first, *rest] = [1, 2, 3, 4];
 assert(first == 1);
 assert(rest == [2, 3, 4]);
-assert(rest.length() == 3);
 ```
 
 # Output
@@ -14,8 +13,8 @@ None
 
 # Result
 ```rust
-Err(
-    "Pattern not yet implemented: ListRest([Variable(\"first\")], Some(\"rest\"))",
+Ok(
+    Unit,
 )
 ```
 
@@ -59,17 +58,6 @@ Ok(
         Token(Comma),
         Token(Int, "4"),
         Token(RightBracket),
-        Token(RightParen),
-        Token(Semicolon),
-        Token(Ident, "assert"),
-        Token(LeftParen),
-        Token(Ident, "rest"),
-        Token(Dot),
-        Token(Ident, "length"),
-        Token(LeftParen),
-        Token(RightParen),
-        Token(EqualEqual),
-        Token(Int, "3"),
         Token(RightParen),
         Token(Semicolon),
         Token(Eof),
@@ -172,29 +160,6 @@ Ok(
                     ],
                 ),
             ),
-            Expression(
-                FunctionCall(
-                    Identifier(
-                        "assert",
-                    ),
-                    [
-                        Eq(
-                            MethodCall(
-                                Identifier(
-                                    "rest",
-                                ),
-                                "length",
-                                [],
-                            ),
-                            Literal(
-                                Int(
-                                    3,
-                                ),
-                            ),
-                        ),
-                    ],
-                ),
-            ),
         ],
     ),
 )
@@ -202,7 +167,106 @@ Ok(
 
 # Eval
 ```rust
-Err(
-    "Pattern not yet implemented: ListRest([Variable(\"first\")], Some(\"rest\"))",
+Ok(
+    Block(
+        [
+            DeclarePattern(
+                ListRest(
+                    [
+                        Variable(
+                            "first",
+                        ),
+                    ],
+                    Some(
+                        "rest",
+                    ),
+                ),
+                List(
+                    [
+                        Literal(
+                            Int(
+                                1,
+                            ),
+                        ),
+                        Literal(
+                            Int(
+                                2,
+                            ),
+                        ),
+                        Literal(
+                            Int(
+                                3,
+                            ),
+                        ),
+                        Literal(
+                            Int(
+                                4,
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Call(
+                Variable(
+                    "assert",
+                ),
+                [
+                    Call(
+                        GetAttr(
+                            Variable(
+                                "first",
+                            ),
+                            "op_eq",
+                        ),
+                        [
+                            Literal(
+                                Int(
+                                    1,
+                                ),
+                            ),
+                        ],
+                    ),
+                ],
+            ),
+        ],
+        Some(
+            Call(
+                Variable(
+                    "assert",
+                ),
+                [
+                    Call(
+                        GetAttr(
+                            Variable(
+                                "rest",
+                            ),
+                            "op_eq",
+                        ),
+                        [
+                            List(
+                                [
+                                    Literal(
+                                        Int(
+                                            2,
+                                        ),
+                                    ),
+                                    Literal(
+                                        Int(
+                                            3,
+                                        ),
+                                    ),
+                                    Literal(
+                                        Int(
+                                            4,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                        ],
+                    ),
+                ],
+            ),
+        ),
+    ),
 )
 ```

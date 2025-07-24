@@ -1,7 +1,7 @@
 # Test Summary
 
 Auto-generated test status summary from integration tests.
-*Generated on: 2025-07-24 13:29:09*
+*Generated on: 2025-07-24 13:41:48*
 
 ## Advanced Tests
 
@@ -106,16 +106,16 @@ Auto-generated test status summary from integration tests.
 
 ## Patterns Tests
 
-- [dict_pattern](tests/integration/patterns/dict_pattern.md): 🔴
+- [dict_pattern](tests/integration/patterns/dict_pattern.md): 🟢
 - [list_pattern](tests/integration/patterns/list_pattern.md): 🟢
-- [list_rest_pattern](tests/integration/patterns/list_rest_pattern.md): 🔴
-- [match_expression](tests/integration/patterns/match_expression.md): 🔴
+- [list_rest_pattern](tests/integration/patterns/list_rest_pattern.md): 🟢
+- [match_expression](tests/integration/patterns/match_expression.md): 🟢
 
 ## Statistics
 
 - Total tests: 81
-- Passing: 43 🟢
-- Failing: 3 🔴
+- Passing: 46 🟢
+- Failing: 0 🔴
 - No asserts: 35 🟡
 
-**Pass rate: 53.1%**
+**Pass rate: 56.8%**

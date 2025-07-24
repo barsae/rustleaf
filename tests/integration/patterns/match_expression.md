@@ -1,6 +1,6 @@
 # Program
-Status: 🔴
-Assertions: 0
+Status: 🟢
+Assertions: 3
 
 ```rustleaf
 var x = 1;
@@ -51,8 +51,8 @@ None
 
 # Result
 ```rust
-Err(
-    "Expression not yet implemented: Match { expr: Identifier(\"x\"), cases: [MatchCase { pattern: Literal(Int(0)), guard: None, body: Block { statements: [], final_expr: Some(Literal(String(\"zero\"))) } }, MatchCase { pattern: Literal(Int(1)), guard: None, body: Block { statements: [], final_expr: Some(Literal(String(\"one\"))) } }, MatchCase { pattern: Wildcard, guard: None, body: Block { statements: [], final_expr: Some(Literal(String(\"other\"))) } }] }",
+Ok(
+    Unit,
 )
 ```
 
@@ -467,7 +467,294 @@ Ok(
 
 # Eval
 ```rust
-Err(
-    "Expression not yet implemented: Match { expr: Identifier(\"x\"), cases: [MatchCase { pattern: Literal(Int(0)), guard: None, body: Block { statements: [], final_expr: Some(Literal(String(\"zero\"))) } }, MatchCase { pattern: Literal(Int(1)), guard: None, body: Block { statements: [], final_expr: Some(Literal(String(\"one\"))) } }, MatchCase { pattern: Wildcard, guard: None, body: Block { statements: [], final_expr: Some(Literal(String(\"other\"))) } }] }",
+Ok(
+    Block(
+        [
+            Declare(
+                "x",
+                Some(
+                    Literal(
+                        Int(
+                            1,
+                        ),
+                    ),
+                ),
+            ),
+            Declare(
+                "result",
+                Some(
+                    Match {
+                        expr: Variable(
+                            "x",
+                        ),
+                        cases: [
+                            EvalMatchCase {
+                                pattern: Literal(
+                                    Int(
+                                        0,
+                                    ),
+                                ),
+                                guard: None,
+                                body: Block(
+                                    [],
+                                    Some(
+                                        Literal(
+                                            String(
+                                                "zero",
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            },
+                            EvalMatchCase {
+                                pattern: Literal(
+                                    Int(
+                                        1,
+                                    ),
+                                ),
+                                guard: None,
+                                body: Block(
+                                    [],
+                                    Some(
+                                        Literal(
+                                            String(
+                                                "one",
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            },
+                            EvalMatchCase {
+                                pattern: Wildcard,
+                                guard: None,
+                                body: Block(
+                                    [],
+                                    Some(
+                                        Literal(
+                                            String(
+                                                "other",
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            },
+                        ],
+                    },
+                ),
+            ),
+            Call(
+                Variable(
+                    "assert",
+                ),
+                [
+                    Call(
+                        GetAttr(
+                            Variable(
+                                "result",
+                            ),
+                            "op_eq",
+                        ),
+                        [
+                            Literal(
+                                String(
+                                    "one",
+                                ),
+                            ),
+                        ],
+                    ),
+                ],
+            ),
+            Declare(
+                "y",
+                Some(
+                    Literal(
+                        Int(
+                            42,
+                        ),
+                    ),
+                ),
+            ),
+            Declare(
+                "result2",
+                Some(
+                    Match {
+                        expr: Variable(
+                            "y",
+                        ),
+                        cases: [
+                            EvalMatchCase {
+                                pattern: Literal(
+                                    Int(
+                                        0,
+                                    ),
+                                ),
+                                guard: None,
+                                body: Block(
+                                    [],
+                                    Some(
+                                        Literal(
+                                            String(
+                                                "zero",
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            },
+                            EvalMatchCase {
+                                pattern: Literal(
+                                    Int(
+                                        1,
+                                    ),
+                                ),
+                                guard: None,
+                                body: Block(
+                                    [],
+                                    Some(
+                                        Literal(
+                                            String(
+                                                "one",
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            },
+                            EvalMatchCase {
+                                pattern: Wildcard,
+                                guard: None,
+                                body: Block(
+                                    [],
+                                    Some(
+                                        Literal(
+                                            String(
+                                                "other",
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            },
+                        ],
+                    },
+                ),
+            ),
+            Call(
+                Variable(
+                    "assert",
+                ),
+                [
+                    Call(
+                        GetAttr(
+                            Variable(
+                                "result2",
+                            ),
+                            "op_eq",
+                        ),
+                        [
+                            Literal(
+                                String(
+                                    "other",
+                                ),
+                            ),
+                        ],
+                    ),
+                ],
+            ),
+            Declare(
+                "z",
+                Some(
+                    Literal(
+                        Int(
+                            0,
+                        ),
+                    ),
+                ),
+            ),
+            Declare(
+                "result3",
+                Some(
+                    Match {
+                        expr: Variable(
+                            "z",
+                        ),
+                        cases: [
+                            EvalMatchCase {
+                                pattern: Literal(
+                                    Int(
+                                        0,
+                                    ),
+                                ),
+                                guard: None,
+                                body: Block(
+                                    [],
+                                    Some(
+                                        Literal(
+                                            String(
+                                                "zero",
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            },
+                            EvalMatchCase {
+                                pattern: Literal(
+                                    Int(
+                                        1,
+                                    ),
+                                ),
+                                guard: None,
+                                body: Block(
+                                    [],
+                                    Some(
+                                        Literal(
+                                            String(
+                                                "one",
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            },
+                            EvalMatchCase {
+                                pattern: Wildcard,
+                                guard: None,
+                                body: Block(
+                                    [],
+                                    Some(
+                                        Literal(
+                                            String(
+                                                "other",
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            },
+                        ],
+                    },
+                ),
+            ),
+        ],
+        Some(
+            Call(
+                Variable(
+                    "assert",
+                ),
+                [
+                    Call(
+                        GetAttr(
+                            Variable(
+                                "result3",
+                            ),
+                            "op_eq",
+                        ),
+                        [
+                            Literal(
+                                String(
+                                    "zero",
+                                ),
+                            ),
+                        ],
+                    ),
+                ],
+            ),
+        ),
+    ),
 )
 ```
