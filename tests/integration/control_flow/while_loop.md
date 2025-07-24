@@ -1,21 +1,20 @@
 # Program
-Status: 🟡
-Assertions: 0
+Status: 🟢
+Assertions: 2
 
 ```rustleaf
 var x = 0;
+var count = 0;
 while x < 3 {
-    print(x);
+    count = count + 1;
     x = x + 1;
 }
+assert(x == 3);
+assert(count == 3);
 ```
 
 # Output
-```
-Int(0)
-Int(1)
-Int(2)
-```
+None
 
 # Result
 ```rust
@@ -33,15 +32,21 @@ Ok(
         Token(Equal),
         Token(Int, "0"),
         Token(Semicolon),
+        Token(Var),
+        Token(Ident, "count"),
+        Token(Equal),
+        Token(Int, "0"),
+        Token(Semicolon),
         Token(While),
         Token(Ident, "x"),
         Token(Less),
         Token(Int, "3"),
         Token(LeftBrace),
-        Token(Ident, "print"),
-        Token(LeftParen),
-        Token(Ident, "x"),
-        Token(RightParen),
+        Token(Ident, "count"),
+        Token(Equal),
+        Token(Ident, "count"),
+        Token(Plus),
+        Token(Int, "1"),
         Token(Semicolon),
         Token(Ident, "x"),
         Token(Equal),
@@ -50,6 +55,20 @@ Ok(
         Token(Int, "1"),
         Token(Semicolon),
         Token(RightBrace),
+        Token(Ident, "assert"),
+        Token(LeftParen),
+        Token(Ident, "x"),
+        Token(EqualEqual),
+        Token(Int, "3"),
+        Token(RightParen),
+        Token(Semicolon),
+        Token(Ident, "assert"),
+        Token(LeftParen),
+        Token(Ident, "count"),
+        Token(EqualEqual),
+        Token(Int, "3"),
+        Token(RightParen),
+        Token(Semicolon),
         Token(Eof),
     ],
 )
@@ -63,6 +82,18 @@ Ok(
             VarDecl {
                 pattern: Variable(
                     "x",
+                ),
+                value: Some(
+                    Literal(
+                        Int(
+                            0,
+                        ),
+                    ),
+                ),
+            },
+            VarDecl {
+                pattern: Variable(
+                    "count",
                 ),
                 value: Some(
                     Literal(
@@ -86,18 +117,22 @@ Ok(
                     ),
                     body: Block {
                         statements: [
-                            Expression(
-                                FunctionCall(
-                                    Identifier(
-                                        "print",
-                                    ),
-                                    [
-                                        Identifier(
-                                            "x",
-                                        ),
-                                    ],
+                            Assignment {
+                                target: Identifier(
+                                    "count",
                                 ),
-                            ),
+                                op: Assign,
+                                value: Add(
+                                    Identifier(
+                                        "count",
+                                    ),
+                                    Literal(
+                                        Int(
+                                            1,
+                                        ),
+                                    ),
+                                ),
+                            },
                             Assignment {
                                 target: Identifier(
                                     "x",
@@ -119,6 +154,44 @@ Ok(
                     },
                 },
             ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            Identifier(
+                                "x",
+                            ),
+                            Literal(
+                                Int(
+                                    3,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            Identifier(
+                                "count",
+                            ),
+                            Literal(
+                                Int(
+                                    3,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
         ],
     ),
 )
@@ -139,8 +212,16 @@ Ok(
                     ),
                 ),
             ),
-        ],
-        Some(
+            Declare(
+                "count",
+                Some(
+                    Literal(
+                        Int(
+                            0,
+                        ),
+                    ),
+                ),
+            ),
             While(
                 Call(
                     GetAttr(
@@ -159,15 +240,23 @@ Ok(
                 ),
                 Block(
                     [
-                        Call(
-                            Variable(
-                                "print",
-                            ),
-                            [
-                                Variable(
-                                    "x",
+                        Assign(
+                            "count",
+                            Call(
+                                GetAttr(
+                                    Variable(
+                                        "count",
+                                    ),
+                                    "op_add",
                                 ),
-                            ],
+                                [
+                                    Literal(
+                                        Int(
+                                            1,
+                                        ),
+                                    ),
+                                ],
+                            ),
                         ),
                         Assign(
                             "x",
@@ -190,6 +279,52 @@ Ok(
                     ],
                     None,
                 ),
+            ),
+            Call(
+                Variable(
+                    "assert",
+                ),
+                [
+                    Call(
+                        GetAttr(
+                            Variable(
+                                "x",
+                            ),
+                            "op_eq",
+                        ),
+                        [
+                            Literal(
+                                Int(
+                                    3,
+                                ),
+                            ),
+                        ],
+                    ),
+                ],
+            ),
+        ],
+        Some(
+            Call(
+                Variable(
+                    "assert",
+                ),
+                [
+                    Call(
+                        GetAttr(
+                            Variable(
+                                "count",
+                            ),
+                            "op_eq",
+                        ),
+                        [
+                            Literal(
+                                Int(
+                                    3,
+                                ),
+                            ),
+                        ],
+                    ),
+                ],
             ),
         ),
     ),

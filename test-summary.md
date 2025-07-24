@@ -1,7 +1,7 @@
 # Test Summary
 
 Auto-generated test status summary from integration tests.
-*Generated on: 2025-07-24 13:59:09*
+*Generated on: 2025-07-24 14:05:23*
 
 ## Advanced Tests
 
@@ -31,19 +31,18 @@ Auto-generated test status summary from integration tests.
 
 ## Control_Flow Tests
 
-- [break_statement](tests/integration/control_flow/break_statement.md): 🟡
-- [break_statement_empty](tests/integration/control_flow/break_statement_empty.md): 🟡
+- [break_statement](tests/integration/control_flow/break_statement.md): 🟢
+- [break_statement_empty](tests/integration/control_flow/break_statement_empty.md): 🟢
 - [continue_statement](tests/integration/control_flow/continue_statement.md): 🟢
 - [for_expression](tests/integration/control_flow/for_expression.md): 🟢
-- [if_expression](tests/integration/control_flow/if_expression.md): 🟡
+- [if_expression](tests/integration/control_flow/if_expression.md): 🟢
 - [if_with_variable](tests/integration/control_flow/if_with_variable.md): 🟢
-- [loop_expression](tests/integration/control_flow/loop_expression.md): 🟡
-- [loop_with_continue](tests/integration/control_flow/loop_with_continue.md): 🟡
+- [loop_with_continue](tests/integration/control_flow/loop_with_continue.md): 🟢
 - [loop_with_print](tests/integration/control_flow/loop_with_print.md): 🟢
 - [return](tests/integration/control_flow/return.md): 🟢
 - [simple_if](tests/integration/control_flow/simple_if.md): 🟢
 - [while_expression](tests/integration/control_flow/while_expression.md): 🟢
-- [while_loop](tests/integration/control_flow/while_loop.md): 🟡
+- [while_loop](tests/integration/control_flow/while_loop.md): 🟢
 
 ## Core Tests
 
@@ -66,13 +65,13 @@ Auto-generated test status summary from integration tests.
 - [function_body_test](tests/integration/functions/function_body_test.md): 🟢
 - [function_call](tests/integration/functions/function_call.md): 🟢
 - [function_declaration_default_param](tests/integration/functions/function_declaration_default_param.md): 🟡
-- [function_declaration_no_params](tests/integration/functions/function_declaration_no_params.md): 🟡
+- [function_declaration_no_params](tests/integration/functions/function_declaration_no_params.md): 🟢
 - [function_declaration_rest_param](tests/integration/functions/function_declaration_rest_param.md): 🟡
-- [function_declaration_simple](tests/integration/functions/function_declaration_simple.md): 🟡
+- [function_declaration_simple](tests/integration/functions/function_declaration_simple.md): 🟢
 - [function_unit](tests/integration/functions/function_unit.md): 🟢
 - [is_unit_test](tests/integration/functions/is_unit_test.md): 🟢
-- [lambda_block](tests/integration/functions/lambda_block.md): 🟡
-- [lambda_expression](tests/integration/functions/lambda_expression.md): 🟡
+- [lambda_block](tests/integration/functions/lambda_block.md): 🟢
+- [lambda_expression](tests/integration/functions/lambda_expression.md): 🟢
 - [lambda_no_params](tests/integration/functions/lambda_no_params.md): 🟢
 - [lambda_usage](tests/integration/functions/lambda_usage.md): 🟢
 - [pub_function](tests/integration/functions/pub_function.md): 🟢
@@ -115,9 +114,9 @@ Auto-generated test status summary from integration tests.
 
 ## Statistics
 
-- Total tests: 80
-- Passing: 62 🟢
+- Total tests: 79
+- Passing: 71 🟢
 - Failing: 0 🔴
-- No asserts: 18 🟡
+- No asserts: 8 🟡
 
-**Pass rate: 77.5%**
+**Pass rate: 89.9%**

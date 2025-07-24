@@ -1,13 +1,23 @@
 # Program
-Status: 🟡
-Assertions: 0
+Status: 🟢
+Assertions: 4
 
 ```rustleaf
-// #[fail_quietly]
-|x| {
-    print(x);
-    x + 1
+var processor = |x| {
+    var temp = x * 2;
+    temp + 1
 };
+
+var complex_lambda = |y| {
+    var first = y + 10;
+    var second = first * 3;
+    second - 5
+};
+
+assert(processor(5) == 11);
+assert(processor(0) == 1);
+assert(complex_lambda(2) == 31);
+assert(complex_lambda(10) == 55);
 ```
 
 # Output
@@ -16,201 +26,7 @@ None
 # Result
 ```rust
 Ok(
-    RustValue(
-        RustValueRef(
-            RefCell {
-                value: RustLeafFunction {
-                    params: [
-                        "x",
-                    ],
-                    body: Block(
-                        [
-                            Call(
-                                Variable(
-                                    "print",
-                                ),
-                                [
-                                    Variable(
-                                        "x",
-                                    ),
-                                ],
-                            ),
-                        ],
-                        Some(
-                            Call(
-                                GetAttr(
-                                    Variable(
-                                        "x",
-                                    ),
-                                    "op_add",
-                                ),
-                                [
-                                    Literal(
-                                        Int(
-                                            1,
-                                        ),
-                                    ),
-                                ],
-                            ),
-                        ),
-                    ),
-                    closure_env: ScopeRef(
-                        RefCell {
-                            value: Scope {
-                                vars: {},
-                                parent: Some(
-                                    ScopeRef(
-                                        RefCell {
-                                            value: Scope {
-                                                vars: {
-                                                    "print": RustValue(
-                                                        RustValueRef(
-                                                            RefCell {
-                                                                value: RustFunction {
-                                                                    name: "print",
-                                                                },
-                                                            },
-                                                        ),
-                                                    ),
-                                                    "assert": RustValue(
-                                                        RustValueRef(
-                                                            RefCell {
-                                                                value: RustFunction {
-                                                                    name: "assert",
-                                                                },
-                                                            },
-                                                        ),
-                                                    ),
-                                                    "is_unit": RustValue(
-                                                        RustValueRef(
-                                                            RefCell {
-                                                                value: RustFunction {
-                                                                    name: "is_unit",
-                                                                },
-                                                            },
-                                                        ),
-                                                    ),
-                                                    "str": RustValue(
-                                                        RustValueRef(
-                                                            RefCell {
-                                                                value: RustFunction {
-                                                                    name: "str",
-                                                                },
-                                                            },
-                                                        ),
-                                                    ),
-                                                    "raise": RustValue(
-                                                        RustValueRef(
-                                                            RefCell {
-                                                                value: RustFunction {
-                                                                    name: "raise",
-                                                                },
-                                                            },
-                                                        ),
-                                                    ),
-                                                    "Null": RustValue(
-                                                        RustValueRef(
-                                                            RefCell {
-                                                                value: TypeConstant {
-                                                                    type_name: "Null",
-                                                                },
-                                                            },
-                                                        ),
-                                                    ),
-                                                    "Unit": RustValue(
-                                                        RustValueRef(
-                                                            RefCell {
-                                                                value: TypeConstant {
-                                                                    type_name: "Unit",
-                                                                },
-                                                            },
-                                                        ),
-                                                    ),
-                                                    "Bool": RustValue(
-                                                        RustValueRef(
-                                                            RefCell {
-                                                                value: TypeConstant {
-                                                                    type_name: "Bool",
-                                                                },
-                                                            },
-                                                        ),
-                                                    ),
-                                                    "Int": RustValue(
-                                                        RustValueRef(
-                                                            RefCell {
-                                                                value: TypeConstant {
-                                                                    type_name: "Int",
-                                                                },
-                                                            },
-                                                        ),
-                                                    ),
-                                                    "Float": RustValue(
-                                                        RustValueRef(
-                                                            RefCell {
-                                                                value: TypeConstant {
-                                                                    type_name: "Float",
-                                                                },
-                                                            },
-                                                        ),
-                                                    ),
-                                                    "String": RustValue(
-                                                        RustValueRef(
-                                                            RefCell {
-                                                                value: TypeConstant {
-                                                                    type_name: "String",
-                                                                },
-                                                            },
-                                                        ),
-                                                    ),
-                                                    "List": RustValue(
-                                                        RustValueRef(
-                                                            RefCell {
-                                                                value: TypeConstant {
-                                                                    type_name: "List",
-                                                                },
-                                                            },
-                                                        ),
-                                                    ),
-                                                    "Dict": RustValue(
-                                                        RustValueRef(
-                                                            RefCell {
-                                                                value: TypeConstant {
-                                                                    type_name: "Dict",
-                                                                },
-                                                            },
-                                                        ),
-                                                    ),
-                                                    "Range": RustValue(
-                                                        RustValueRef(
-                                                            RefCell {
-                                                                value: TypeConstant {
-                                                                    type_name: "Range",
-                                                                },
-                                                            },
-                                                        ),
-                                                    ),
-                                                    "Function": RustValue(
-                                                        RustValueRef(
-                                                            RefCell {
-                                                                value: TypeConstant {
-                                                                    type_name: "Function",
-                                                                },
-                                                            },
-                                                        ),
-                                                    ),
-                                                },
-                                                parent: None,
-                                            },
-                                        },
-                                    ),
-                                ),
-                            },
-                        },
-                    ),
-                },
-            },
-        ),
-    ),
+    Unit,
 )
 ```
 
@@ -218,19 +34,90 @@ Ok(
 ```rust
 Ok(
     [
+        Token(Var),
+        Token(Ident, "processor"),
+        Token(Equal),
         Token(Pipe),
         Token(Ident, "x"),
         Token(Pipe),
         Token(LeftBrace),
-        Token(Ident, "print"),
-        Token(LeftParen),
+        Token(Var),
+        Token(Ident, "temp"),
+        Token(Equal),
         Token(Ident, "x"),
-        Token(RightParen),
+        Token(Star),
+        Token(Int, "2"),
         Token(Semicolon),
-        Token(Ident, "x"),
+        Token(Ident, "temp"),
         Token(Plus),
         Token(Int, "1"),
         Token(RightBrace),
+        Token(Semicolon),
+        Token(Var),
+        Token(Ident, "complex_lambda"),
+        Token(Equal),
+        Token(Pipe),
+        Token(Ident, "y"),
+        Token(Pipe),
+        Token(LeftBrace),
+        Token(Var),
+        Token(Ident, "first"),
+        Token(Equal),
+        Token(Ident, "y"),
+        Token(Plus),
+        Token(Int, "10"),
+        Token(Semicolon),
+        Token(Var),
+        Token(Ident, "second"),
+        Token(Equal),
+        Token(Ident, "first"),
+        Token(Star),
+        Token(Int, "3"),
+        Token(Semicolon),
+        Token(Ident, "second"),
+        Token(Minus),
+        Token(Int, "5"),
+        Token(RightBrace),
+        Token(Semicolon),
+        Token(Ident, "assert"),
+        Token(LeftParen),
+        Token(Ident, "processor"),
+        Token(LeftParen),
+        Token(Int, "5"),
+        Token(RightParen),
+        Token(EqualEqual),
+        Token(Int, "11"),
+        Token(RightParen),
+        Token(Semicolon),
+        Token(Ident, "assert"),
+        Token(LeftParen),
+        Token(Ident, "processor"),
+        Token(LeftParen),
+        Token(Int, "0"),
+        Token(RightParen),
+        Token(EqualEqual),
+        Token(Int, "1"),
+        Token(RightParen),
+        Token(Semicolon),
+        Token(Ident, "assert"),
+        Token(LeftParen),
+        Token(Ident, "complex_lambda"),
+        Token(LeftParen),
+        Token(Int, "2"),
+        Token(RightParen),
+        Token(EqualEqual),
+        Token(Int, "31"),
+        Token(RightParen),
+        Token(Semicolon),
+        Token(Ident, "assert"),
+        Token(LeftParen),
+        Token(Ident, "complex_lambda"),
+        Token(LeftParen),
+        Token(Int, "10"),
+        Token(RightParen),
+        Token(EqualEqual),
+        Token(Int, "55"),
+        Token(RightParen),
         Token(Semicolon),
         Token(Eof),
     ],
@@ -242,42 +129,228 @@ Ok(
 Ok(
     Program(
         [
-            Expression(
-                Lambda {
-                    params: [
-                        "x",
-                    ],
-                    body: Block(
-                        Block {
-                            statements: [
-                                Expression(
-                                    FunctionCall(
-                                        Identifier(
-                                            "print",
+            VarDecl {
+                pattern: Variable(
+                    "processor",
+                ),
+                value: Some(
+                    Lambda {
+                        params: [
+                            "x",
+                        ],
+                        body: Block(
+                            Block {
+                                statements: [
+                                    VarDecl {
+                                        pattern: Variable(
+                                            "temp",
                                         ),
-                                        [
-                                            Identifier(
-                                                "x",
+                                        value: Some(
+                                            Mul(
+                                                Identifier(
+                                                    "x",
+                                                ),
+                                                Literal(
+                                                    Int(
+                                                        2,
+                                                    ),
+                                                ),
                                             ),
-                                        ],
+                                        ),
+                                    },
+                                ],
+                                final_expr: Some(
+                                    Add(
+                                        Identifier(
+                                            "temp",
+                                        ),
+                                        Literal(
+                                            Int(
+                                                1,
+                                            ),
+                                        ),
                                     ),
                                 ),
-                            ],
-                            final_expr: Some(
-                                Add(
-                                    Identifier(
-                                        "x",
+                            },
+                        ),
+                    },
+                ),
+            },
+            VarDecl {
+                pattern: Variable(
+                    "complex_lambda",
+                ),
+                value: Some(
+                    Lambda {
+                        params: [
+                            "y",
+                        ],
+                        body: Block(
+                            Block {
+                                statements: [
+                                    VarDecl {
+                                        pattern: Variable(
+                                            "first",
+                                        ),
+                                        value: Some(
+                                            Add(
+                                                Identifier(
+                                                    "y",
+                                                ),
+                                                Literal(
+                                                    Int(
+                                                        10,
+                                                    ),
+                                                ),
+                                            ),
+                                        ),
+                                    },
+                                    VarDecl {
+                                        pattern: Variable(
+                                            "second",
+                                        ),
+                                        value: Some(
+                                            Mul(
+                                                Identifier(
+                                                    "first",
+                                                ),
+                                                Literal(
+                                                    Int(
+                                                        3,
+                                                    ),
+                                                ),
+                                            ),
+                                        ),
+                                    },
+                                ],
+                                final_expr: Some(
+                                    Sub(
+                                        Identifier(
+                                            "second",
+                                        ),
+                                        Literal(
+                                            Int(
+                                                5,
+                                            ),
+                                        ),
                                     ),
+                                ),
+                            },
+                        ),
+                    },
+                ),
+            },
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            FunctionCall(
+                                Identifier(
+                                    "processor",
+                                ),
+                                [
                                     Literal(
                                         Int(
-                                            1,
+                                            5,
                                         ),
                                     ),
+                                ],
+                            ),
+                            Literal(
+                                Int(
+                                    11,
                                 ),
                             ),
-                        },
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
                     ),
-                },
+                    [
+                        Eq(
+                            FunctionCall(
+                                Identifier(
+                                    "processor",
+                                ),
+                                [
+                                    Literal(
+                                        Int(
+                                            0,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                            Literal(
+                                Int(
+                                    1,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            FunctionCall(
+                                Identifier(
+                                    "complex_lambda",
+                                ),
+                                [
+                                    Literal(
+                                        Int(
+                                            2,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                            Literal(
+                                Int(
+                                    31,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            FunctionCall(
+                                Identifier(
+                                    "complex_lambda",
+                                ),
+                                [
+                                    Literal(
+                                        Int(
+                                            10,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                            Literal(
+                                Int(
+                                    55,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
             ),
         ],
     ),
@@ -288,43 +361,254 @@ Ok(
 ```rust
 Ok(
     Block(
-        [],
-        Some(
-            Lambda(
-                [
-                    "x",
-                ],
-                Block(
-                    [
-                        Call(
-                            Variable(
-                                "print",
-                            ),
+        [
+            Declare(
+                "processor",
+                Some(
+                    Lambda(
+                        [
+                            "x",
+                        ],
+                        Block(
                             [
-                                Variable(
-                                    "x",
-                                ),
-                            ],
-                        ),
-                    ],
-                    Some(
-                        Call(
-                            GetAttr(
-                                Variable(
-                                    "x",
-                                ),
-                                "op_add",
-                            ),
-                            [
-                                Literal(
-                                    Int(
-                                        1,
+                                Declare(
+                                    "temp",
+                                    Some(
+                                        Call(
+                                            GetAttr(
+                                                Variable(
+                                                    "x",
+                                                ),
+                                                "op_mul",
+                                            ),
+                                            [
+                                                Literal(
+                                                    Int(
+                                                        2,
+                                                    ),
+                                                ),
+                                            ],
+                                        ),
                                     ),
                                 ),
                             ],
+                            Some(
+                                Call(
+                                    GetAttr(
+                                        Variable(
+                                            "temp",
+                                        ),
+                                        "op_add",
+                                    ),
+                                    [
+                                        Literal(
+                                            Int(
+                                                1,
+                                            ),
+                                        ),
+                                    ],
+                                ),
+                            ),
                         ),
                     ),
                 ),
+            ),
+            Declare(
+                "complex_lambda",
+                Some(
+                    Lambda(
+                        [
+                            "y",
+                        ],
+                        Block(
+                            [
+                                Declare(
+                                    "first",
+                                    Some(
+                                        Call(
+                                            GetAttr(
+                                                Variable(
+                                                    "y",
+                                                ),
+                                                "op_add",
+                                            ),
+                                            [
+                                                Literal(
+                                                    Int(
+                                                        10,
+                                                    ),
+                                                ),
+                                            ],
+                                        ),
+                                    ),
+                                ),
+                                Declare(
+                                    "second",
+                                    Some(
+                                        Call(
+                                            GetAttr(
+                                                Variable(
+                                                    "first",
+                                                ),
+                                                "op_mul",
+                                            ),
+                                            [
+                                                Literal(
+                                                    Int(
+                                                        3,
+                                                    ),
+                                                ),
+                                            ],
+                                        ),
+                                    ),
+                                ),
+                            ],
+                            Some(
+                                Call(
+                                    GetAttr(
+                                        Variable(
+                                            "second",
+                                        ),
+                                        "op_sub",
+                                    ),
+                                    [
+                                        Literal(
+                                            Int(
+                                                5,
+                                            ),
+                                        ),
+                                    ],
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+            Call(
+                Variable(
+                    "assert",
+                ),
+                [
+                    Call(
+                        GetAttr(
+                            Call(
+                                Variable(
+                                    "processor",
+                                ),
+                                [
+                                    Literal(
+                                        Int(
+                                            5,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                            "op_eq",
+                        ),
+                        [
+                            Literal(
+                                Int(
+                                    11,
+                                ),
+                            ),
+                        ],
+                    ),
+                ],
+            ),
+            Call(
+                Variable(
+                    "assert",
+                ),
+                [
+                    Call(
+                        GetAttr(
+                            Call(
+                                Variable(
+                                    "processor",
+                                ),
+                                [
+                                    Literal(
+                                        Int(
+                                            0,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                            "op_eq",
+                        ),
+                        [
+                            Literal(
+                                Int(
+                                    1,
+                                ),
+                            ),
+                        ],
+                    ),
+                ],
+            ),
+            Call(
+                Variable(
+                    "assert",
+                ),
+                [
+                    Call(
+                        GetAttr(
+                            Call(
+                                Variable(
+                                    "complex_lambda",
+                                ),
+                                [
+                                    Literal(
+                                        Int(
+                                            2,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                            "op_eq",
+                        ),
+                        [
+                            Literal(
+                                Int(
+                                    31,
+                                ),
+                            ),
+                        ],
+                    ),
+                ],
+            ),
+        ],
+        Some(
+            Call(
+                Variable(
+                    "assert",
+                ),
+                [
+                    Call(
+                        GetAttr(
+                            Call(
+                                Variable(
+                                    "complex_lambda",
+                                ),
+                                [
+                                    Literal(
+                                        Int(
+                                            10,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                            "op_eq",
+                        ),
+                        [
+                            Literal(
+                                Int(
+                                    55,
+                                ),
+                            ),
+                        ],
+                    ),
+                ],
             ),
         ),
     ),
