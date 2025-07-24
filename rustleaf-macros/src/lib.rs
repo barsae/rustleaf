@@ -35,12 +35,12 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                 let test_body = quote! {
                     // Read the markdown file and extract rustleaf code block
                     let md_content = include_str!(#include_path);
-                    
+
                     let extract_rustleaf_code_block = |md_content: &str| -> Option<String> {
                         let lines: Vec<&str> = md_content.lines().collect();
                         let mut in_rustleaf_block = false;
                         let mut code_lines = Vec::new();
-                        
+
                         for line in lines {
                             if line.trim() == "```rustleaf" {
                                 in_rustleaf_block = true;
@@ -53,16 +53,16 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                                 code_lines.push(line);
                             }
                         }
-                        
+
                         if code_lines.is_empty() {
                             None
                         } else {
                             Some(code_lines.join("\n"))
                         }
                     };
-                    
-                    let update_markdown_with_results = |_original_md: &str, source: &str, circle: &str, 
-                        output_section: &str, execution_output: &str, lex_output: &str, 
+
+                    let update_markdown_with_results = |_original_md: &str, source: &str, circle: &str,
+                        output_section: &str, execution_output: &str, lex_output: &str,
                         parse_output: &str, eval_output: &str, assertion_count: u32| -> String {
                         // Reconstruct the entire markdown from template
                         let output_display = if output_section == "None" {
@@ -70,23 +70,23 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                         } else {
                             format!("# Output\n```\n{}\n```", output_section)
                         };
-                        
+
                         format!(
                             "# Program\nStatus: {}\nAssertions: {}\n\n```rustleaf\n{}\n```\n\n{}\n\n# Result\n```rust\n{}\n```\n\n# Lex\n```rust\n{}\n```\n\n# Parse\n```rust\n{}\n```\n\n# Eval\n```rust\n{}\n```",
                             circle, assertion_count, source, output_display, execution_output, lex_output, parse_output, eval_output
                         )
                     };
-                    
+
                     let source = extract_rustleaf_code_block(md_content)
                         .expect("Failed to find rustleaf code block in markdown file");
-                    
+
                     // Check for #[fail_quietly] magic string
                     let fail_quietly = source.contains("#[fail_quietly]");
-                    
+
                     // Try lexing
                     let tokens_result = rustleaf::lexer::Lexer::tokenize(&source);
                     let lex_output = format!("{:#?}", tokens_result);
-                    
+
                     // Try parsing (only if lexing succeeded)
                     let parse_output = match &tokens_result {
                         Ok(_) => {
@@ -95,7 +95,7 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                         }
                         Err(_) => "Skipped due to lex error".to_string(),
                     };
-                    
+
                     // Try compiling to eval IR (only if parsing succeeded)
                     let eval_output = match rustleaf::parser::Parser::parse_str(&source) {
                         Ok(ast) => {
@@ -104,7 +104,7 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                         }
                         Err(_) => "Skipped due to parse error".to_string(),
                     };
-                    
+
                     // Try evaluation (only if all previous stages succeeded)
                     let (output_section, execution_output, eval_success, final_result, assertion_count) = match rustleaf::parser::Parser::parse_str(&source) {
                         Ok(ast) => {
@@ -114,13 +114,13 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                             let captured_output = rustleaf::core::get_captured_prints();
                             let assertion_count = rustleaf::core::get_assertion_count();
                             let execution_output = format!("{:#?}", result);
-                            
+
                             let output_section = if captured_output.is_empty() {
                                 "None".to_string()
                             } else {
                                 captured_output.join("\n")
                             };
-                            
+
                             let eval_success = result.is_ok();
                             (output_section, execution_output, eval_success, result, assertion_count)
                         }
@@ -129,7 +129,7 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                             ("None".to_string(), "Skipped due to parse error".to_string(), false, error_result, 0)
                         }
                     };
-                    
+
                     // For panic tests, success means it should fail (red circle = expected behavior)
                     // For normal tests, success means it should succeed (green circle = expected behavior)
                     let circle = if #is_panic_test {
@@ -137,14 +137,14 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                     } else {
                         if eval_success { "🟢" } else { "🔴" }
                     };
-                    
+
                     // Update the markdown file in-place with test results
                     let updated_md_content = update_markdown_with_results(
-                        md_content, &source, &circle, &output_section, &execution_output, 
+                        md_content, &source, &circle, &output_section, &execution_output,
                         &lex_output, &parse_output, &eval_output, assertion_count
                     );
                     std::fs::write(#full_path, updated_md_content).unwrap();
-                    
+
                     // Control test behavior based on fail_quietly flag
                     if !fail_quietly {
                         // Return actual result - let cargo handle expectations

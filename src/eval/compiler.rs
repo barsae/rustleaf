@@ -15,15 +15,15 @@ impl Compiler {
 
     fn compile_program(&mut self, program: Program) -> Result<Eval> {
         let statements = program.0;
-        
+
         if statements.is_empty() {
             return Ok(Eval::Block(vec![], None));
         }
-        
+
         let last_index = statements.len() - 1;
         let mut eval_statements = Vec::new();
         let mut final_expr = None;
-        
+
         for (i, stmt) in statements.into_iter().enumerate() {
             let is_last = i == last_index;
             match stmt {
@@ -36,7 +36,7 @@ impl Compiler {
                 }
             }
         }
-        
+
         Ok(Eval::Block(eval_statements, final_expr))
     }
 
@@ -125,10 +125,10 @@ impl Compiler {
                 let param_names: Vec<String> = params.into_iter()
                     .map(|p| p.name)
                     .collect();
-                
+
                 // Compile the function body
                 let compiled_body = self.compile_block_helper(body)?;
-                
+
                 Ok(Eval::Function(name, param_names, Box::new(compiled_body)))
             }
             Statement::ClassDecl { name, members, is_pub: _ } => {
@@ -190,12 +190,12 @@ impl Compiler {
             }
             Expression::Block(block) => {
                 let mut eval_statements = Vec::new();
-                
+
                 // Compile all statements
                 for stmt in block.statements {
                     eval_statements.push(self.compile_statement(stmt)?);
                 }
-                
+
                 // Handle final expression
                 match block.final_expr {
                     Some(expr) => {
@@ -223,7 +223,7 @@ impl Compiler {
             Expression::BitXor(left, right) => self.compile_method_call_op(*left, *right, "op_bitwise_xor"),
             Expression::LeftShift(left, right) => self.compile_method_call_op(*left, *right, "op_lshift"),
             Expression::RightShift(left, right) => self.compile_method_call_op(*left, *right, "op_rshift"),
-            
+
             // Special cases that remain built-in
             Expression::And(left, right) => {
                 let compiled_left = self.compile_expression(*left)?;
@@ -243,12 +243,12 @@ impl Compiler {
             Expression::In(left, right) => self.compile_method_call_op_swapped(*left, *right, "op_contains"),
             Expression::NotIn(left, right) => self.compile_not_in(*left, *right),
             Expression::IsNot(left, right) => self.compile_is_not(*left, *right),
-            
+
             // Unary operators - most become method calls
             Expression::Neg(expr) => self.compile_unary_method_call(*expr, "op_neg"),
             Expression::BitNot(expr) => self.compile_unary_method_call(*expr, "op_bitwise_not"),
-            
-            // Special case that remains built-in 
+
+            // Special case that remains built-in
             Expression::Not(expr) => {
                 let compiled_expr = self.compile_expression(*expr)?;
                 Ok(Eval::LogicalNot(Box::new(compiled_expr)))
@@ -285,7 +285,7 @@ impl Compiler {
             Expression::InterpolatedString(parts) => {
                 self.compile_interpolated_string(parts)
             }
-            
+
             // Range expressions
             Expression::RangeExclusive(start, end) => {
                 let start_val = self.compile_expression(*start)?;
@@ -297,7 +297,7 @@ impl Compiler {
                 let end_val = self.compile_expression(*end)?;
                 self.compile_range(start_val, end_val, true)
             }
-            
+
             // Lambda expressions
             Expression::Lambda { params, body } => {
                 let compiled_body = match body {
@@ -310,11 +310,11 @@ impl Compiler {
                 };
                 Ok(Eval::Lambda(params, Box::new(compiled_body)))
             }
-            
+
             Expression::Try { body, catch } => {
                 let compiled_body = self.compile_block_helper(body)?;
                 let compiled_catch_body = self.compile_block_helper(catch.body)?;
-                
+
                 // For now, only support simple variable patterns in catch
                 match catch.pattern {
                     Pattern::Variable(var_name) => {
@@ -330,7 +330,7 @@ impl Compiler {
                     )),
                 }
             }
-            
+
             _ => Err(anyhow::anyhow!("Expression not yet implemented: {:?}", expr)),
         }
     }
@@ -339,31 +339,31 @@ impl Compiler {
     fn compile_method_call_op(&mut self, left: Expression, right: Expression, method_name: &str) -> Result<Eval> {
         let compiled_left = self.compile_expression(left)?;
         let compiled_right = self.compile_expression(right)?;
-        
+
         let get_method = Eval::GetAttr(Box::new(compiled_left), method_name.to_string());
         let call_method = Eval::Call(Box::new(get_method), vec![compiled_right]);
-        
+
         Ok(call_method)
     }
-    
+
     // Helper for operators like 'in' where operands are swapped: "item in container" => container.op_contains(item)
     fn compile_method_call_op_swapped(&mut self, left: Expression, right: Expression, method_name: &str) -> Result<Eval> {
         let compiled_left = self.compile_expression(left)?;
         let compiled_right = self.compile_expression(right)?;
-        
+
         let get_method = Eval::GetAttr(Box::new(compiled_right), method_name.to_string());
         let call_method = Eval::Call(Box::new(get_method), vec![compiled_left]);
-        
+
         Ok(call_method)
     }
-    
+
     // Helper to compile unary operations to method calls: -a => a.op_get_attr("op_neg").op_call()
     fn compile_unary_method_call(&mut self, expr: Expression, method_name: &str) -> Result<Eval> {
         let compiled_expr = self.compile_expression(expr)?;
-        
+
         let get_method = Eval::GetAttr(Box::new(compiled_expr), method_name.to_string());
         let call_method = Eval::Call(Box::new(get_method), vec![]);
-        
+
         Ok(call_method)
     }
 
@@ -379,12 +379,12 @@ impl Compiler {
 
     fn compile_block_helper(&mut self, block: crate::core::Block) -> Result<Eval> {
         let mut eval_statements = Vec::new();
-        
+
         // Compile all statements
         for stmt in block.statements {
             eval_statements.push(self.compile_statement(stmt)?);
         }
-        
+
         // Handle final expression
         match block.final_expr {
             Some(expr) => {
@@ -401,7 +401,7 @@ impl Compiler {
         Ok(Eval::LogicalNot(Box::new(in_expr)))
     }
 
-    // Helper to compile "is not" as !(left is right)  
+    // Helper to compile "is not" as !(left is right)
     fn compile_is_not(&mut self, left: Expression, right: Expression) -> Result<Eval> {
         let compiled_left = self.compile_expression(left)?;
         let compiled_right = self.compile_expression(right)?;
@@ -482,10 +482,10 @@ impl Compiler {
                 }
                 ClassMemberKind::Method { params, body } => {
                     let mut param_names: Vec<String> = params.into_iter().map(|p| p.name).collect();
-                    
+
                     // Desugar: prepend "self" parameter for instance methods
                     param_names.insert(0, "self".to_string());
-                    
+
                     let compiled_body = self.compile_block_helper(body)?;
                     methods.push(ClassMethod {
                         name: member.name,

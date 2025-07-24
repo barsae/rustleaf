@@ -515,7 +515,7 @@ impl Parser {
     fn parse_interpolated_string(&mut self) -> Result<Expression> {
         use crate::core::InterpolationPart;
         let mut parts = Vec::new();
-        
+
         loop {
             if let Some(token) = self.accept_token(TokenType::StringPart) {
                 // Text part
@@ -532,11 +532,11 @@ impl Parser {
                 break;
             }
         }
-        
+
         if parts.is_empty() {
             return Err(anyhow!("Empty interpolated string"));
         }
-        
+
         Ok(Expression::InterpolatedString(parts))
     }
 }

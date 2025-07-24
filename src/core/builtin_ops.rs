@@ -11,9 +11,9 @@ pub struct BoundMethod {
 
 impl BoundMethod {
     pub fn new(self_value: &Value, method_func: fn(&Value, Args) -> Result<Value>) -> Self {
-        Self { 
+        Self {
             self_value: self_value.clone(),
-            method_func 
+            method_func
         }
     }
 }
@@ -29,19 +29,19 @@ pub fn op_add(self_value: &Value, args: Args) -> Result<Value> {
     args.set_function_name("op_add");
     let other = args.expect("other")?;
     args.complete()?;
-    
+
     match (self_value, &other) {
         // Integer arithmetic
         (Value::Int(a), Value::Int(b)) => Ok(Value::Int(a + b)),
-        
+
         // Float arithmetic (includes mixed int/float operations)
         (Value::Int(a), Value::Float(b)) => Ok(Value::Float(*a as f64 + b)),
         (Value::Float(a), Value::Float(b)) => Ok(Value::Float(a + b)),
         (Value::Float(a), Value::Int(b)) => Ok(Value::Float(a + *b as f64)),
-        
+
         // String concatenation
         (Value::String(a), Value::String(b)) => Ok(Value::String(format!("{}{}", a, b))),
-        
+
         _ => Err(anyhow!("Cannot add {:?} to {:?}", other, self_value)),
     }
 }
@@ -50,16 +50,16 @@ pub fn op_sub(self_value: &Value, args: Args) -> Result<Value> {
     args.set_function_name("op_sub");
     let other = args.expect("other")?;
     args.complete()?;
-    
+
     match (self_value, &other) {
         // Integer arithmetic
         (Value::Int(a), Value::Int(b)) => Ok(Value::Int(a - b)),
-        
+
         // Float arithmetic (includes mixed int/float operations)
         (Value::Int(a), Value::Float(b)) => Ok(Value::Float(*a as f64 - b)),
         (Value::Float(a), Value::Float(b)) => Ok(Value::Float(a - b)),
         (Value::Float(a), Value::Int(b)) => Ok(Value::Float(a - *b as f64)),
-        
+
         _ => Err(anyhow!("Cannot subtract {:?} from {:?}", other, self_value)),
     }
 }
@@ -68,16 +68,16 @@ pub fn op_mul(self_value: &Value, args: Args) -> Result<Value> {
     args.set_function_name("op_mul");
     let other = args.expect("other")?;
     args.complete()?;
-    
+
     match (self_value, &other) {
         // Integer arithmetic
         (Value::Int(a), Value::Int(b)) => Ok(Value::Int(a * b)),
-        
+
         // Float arithmetic (includes mixed int/float operations)
         (Value::Int(a), Value::Float(b)) => Ok(Value::Float(*a as f64 * b)),
         (Value::Float(a), Value::Float(b)) => Ok(Value::Float(a * b)),
         (Value::Float(a), Value::Int(b)) => Ok(Value::Float(a * *b as f64)),
-        
+
         _ => Err(anyhow!("Cannot multiply {:?} by {:?}", self_value, other)),
     }
 }
@@ -86,7 +86,7 @@ pub fn op_div(self_value: &Value, args: Args) -> Result<Value> {
     args.set_function_name("op_div");
     let other = args.expect("other")?;
     args.complete()?;
-    
+
     match (self_value, &other) {
         // All division returns float (including int/int)
         (Value::Int(a), Value::Int(b)) => {
@@ -117,7 +117,7 @@ pub fn op_div(self_value: &Value, args: Args) -> Result<Value> {
                 Ok(Value::Float(a / *b as f64))
             }
         }
-        
+
         _ => Err(anyhow!("Cannot divide {:?} by {:?}", self_value, other)),
     }
 }
@@ -125,7 +125,7 @@ pub fn op_div(self_value: &Value, args: Args) -> Result<Value> {
 pub fn op_neg(self_value: &Value, args: Args) -> Result<Value> {
     args.set_function_name("op_neg");
     args.complete()?;
-    
+
     match self_value {
         Value::Int(n) => Ok(Value::Int(-n)),
         Value::Float(f) => Ok(Value::Float(-f)),
@@ -138,7 +138,7 @@ pub fn op_eq(self_value: &Value, args: Args) -> Result<Value> {
     args.set_function_name("op_eq");
     let other = args.expect("other")?;
     args.complete()?;
-    
+
     let result = match (self_value, &other) {
         // Same type comparisons
         (Value::Int(a), Value::Int(b)) => a == b,
@@ -147,21 +147,21 @@ pub fn op_eq(self_value: &Value, args: Args) -> Result<Value> {
         (Value::Bool(a), Value::Bool(b)) => a == b,
         (Value::Null, Value::Null) => true,
         (Value::Unit, Value::Unit) => true,
-        
+
         // Mixed numeric comparisons
         (Value::Int(a), Value::Float(b)) => *a as f64 == *b,
         (Value::Float(a), Value::Int(b)) => *a == *b as f64,
-        
+
         // List comparisons
         (Value::List(a), Value::List(b)) => {
             let list_a = a.borrow();
             let list_b = b.borrow();
-            
+
             // Check length first
             if list_a.len() != list_b.len() {
                 return Ok(Value::Bool(false));
             }
-            
+
             // Compare elements recursively
             for (elem_a, elem_b) in list_a.iter().zip(list_b.iter()) {
                 // Use op_eq recursively for each element
@@ -172,20 +172,20 @@ pub fn op_eq(self_value: &Value, args: Args) -> Result<Value> {
                     _ => unreachable!("op_eq should always return Bool"),
                 }
             }
-            
+
             true
         }
-        
+
         // Dictionary comparisons
         (Value::Dict(a), Value::Dict(b)) => {
             let dict_a = a.borrow();
             let dict_b = b.borrow();
-            
+
             // Check if they have the same number of keys
             if dict_a.len() != dict_b.len() {
                 return Ok(Value::Bool(false));
             }
-            
+
             // Compare each key-value pair
             for (key, value_a) in dict_a.iter() {
                 match dict_b.get(key) {
@@ -201,14 +201,14 @@ pub fn op_eq(self_value: &Value, args: Args) -> Result<Value> {
                     None => return Ok(Value::Bool(false)), // Key not found in dict_b
                 }
             }
-            
+
             true
         }
-        
+
         // Everything else is false
         _ => false,
     };
-    
+
     Ok(Value::Bool(result))
 }
 
@@ -216,7 +216,7 @@ pub fn op_ne(self_value: &Value, args: Args) -> Result<Value> {
     args.set_function_name("op_ne");
     let other = args.expect("other")?;
     args.complete()?;
-    
+
     // Use op_eq and negate the result
     let eq_result = op_eq(self_value, Args::positional(vec![other]))?;
     match eq_result {
@@ -229,22 +229,22 @@ pub fn op_lt(self_value: &Value, args: Args) -> Result<Value> {
     args.set_function_name("op_lt");
     let other = args.expect("other")?;
     args.complete()?;
-    
+
     let result = match (self_value, &other) {
         // Integer comparisons
         (Value::Int(a), Value::Int(b)) => a < b,
-        
+
         // Float comparisons (includes mixed int/float)
         (Value::Int(a), Value::Float(b)) => (*a as f64) < *b,
         (Value::Float(a), Value::Float(b)) => a < b,
         (Value::Float(a), Value::Int(b)) => *a < (*b as f64),
-        
+
         // String comparisons
         (Value::String(a), Value::String(b)) => a < b,
-        
+
         _ => return Err(anyhow!("Cannot compare {:?} < {:?}", self_value, other)),
     };
-    
+
     Ok(Value::Bool(result))
 }
 
@@ -252,22 +252,22 @@ pub fn op_le(self_value: &Value, args: Args) -> Result<Value> {
     args.set_function_name("op_le");
     let other = args.expect("other")?;
     args.complete()?;
-    
+
     let result = match (self_value, &other) {
         // Integer comparisons
         (Value::Int(a), Value::Int(b)) => a <= b,
-        
+
         // Float comparisons (includes mixed int/float)
         (Value::Int(a), Value::Float(b)) => (*a as f64) <= *b,
         (Value::Float(a), Value::Float(b)) => a <= b,
         (Value::Float(a), Value::Int(b)) => *a <= (*b as f64),
-        
+
         // String comparisons
         (Value::String(a), Value::String(b)) => a <= b,
-        
+
         _ => return Err(anyhow!("Cannot compare {:?} <= {:?}", self_value, other)),
     };
-    
+
     Ok(Value::Bool(result))
 }
 
@@ -275,22 +275,22 @@ pub fn op_gt(self_value: &Value, args: Args) -> Result<Value> {
     args.set_function_name("op_gt");
     let other = args.expect("other")?;
     args.complete()?;
-    
+
     let result = match (self_value, &other) {
         // Integer comparisons
         (Value::Int(a), Value::Int(b)) => a > b,
-        
+
         // Float comparisons (includes mixed int/float)
         (Value::Int(a), Value::Float(b)) => (*a as f64) > *b,
         (Value::Float(a), Value::Float(b)) => a > b,
         (Value::Float(a), Value::Int(b)) => *a > (*b as f64),
-        
+
         // String comparisons
         (Value::String(a), Value::String(b)) => a > b,
-        
+
         _ => return Err(anyhow!("Cannot compare {:?} > {:?}", self_value, other)),
     };
-    
+
     Ok(Value::Bool(result))
 }
 
@@ -298,22 +298,22 @@ pub fn op_ge(self_value: &Value, args: Args) -> Result<Value> {
     args.set_function_name("op_ge");
     let other = args.expect("other")?;
     args.complete()?;
-    
+
     let result = match (self_value, &other) {
         // Integer comparisons
         (Value::Int(a), Value::Int(b)) => a >= b,
-        
+
         // Float comparisons (includes mixed int/float)
         (Value::Int(a), Value::Float(b)) => (*a as f64) >= *b,
         (Value::Float(a), Value::Float(b)) => a >= b,
         (Value::Float(a), Value::Int(b)) => *a >= (*b as f64),
-        
+
         // String comparisons
         (Value::String(a), Value::String(b)) => a >= b,
-        
+
         _ => return Err(anyhow!("Cannot compare {:?} >= {:?}", self_value, other)),
     };
-    
+
     Ok(Value::Bool(result))
 }
 
@@ -322,7 +322,7 @@ pub fn op_mod(self_value: &Value, args: Args) -> Result<Value> {
     args.set_function_name("op_mod");
     let other = args.expect("other")?;
     args.complete()?;
-    
+
     match (self_value, &other) {
         // Integer modulo
         (Value::Int(a), Value::Int(b)) => {
@@ -332,7 +332,7 @@ pub fn op_mod(self_value: &Value, args: Args) -> Result<Value> {
                 Ok(Value::Int(a % b))
             }
         }
-        
+
         // Float modulo (includes mixed int/float operations)
         (Value::Int(a), Value::Float(b)) => {
             if *b == 0.0 {
@@ -355,7 +355,7 @@ pub fn op_mod(self_value: &Value, args: Args) -> Result<Value> {
                 Ok(Value::Float(a % (*b as f64)))
             }
         }
-        
+
         _ => Err(anyhow!("Cannot compute modulo of {:?} and {:?}", self_value, other)),
     }
 }
@@ -364,7 +364,7 @@ pub fn op_pow(self_value: &Value, args: Args) -> Result<Value> {
     args.set_function_name("op_pow");
     let other = args.expect("other")?;
     args.complete()?;
-    
+
     match (self_value, &other) {
         // Integer power - return int if exponent is non-negative, float otherwise
         (Value::Int(a), Value::Int(b)) => {
@@ -381,12 +381,12 @@ pub fn op_pow(self_value: &Value, args: Args) -> Result<Value> {
                 Ok(Value::Float((*a as f64).powf(*b as f64)))
             }
         }
-        
+
         // Float power (includes mixed int/float operations)
         (Value::Int(a), Value::Float(b)) => Ok(Value::Float((*a as f64).powf(*b))),
         (Value::Float(a), Value::Float(b)) => Ok(Value::Float(a.powf(*b))),
         (Value::Float(a), Value::Int(b)) => Ok(Value::Float(a.powf(*b as f64))),
-        
+
         _ => Err(anyhow!("Cannot compute power of {:?} and {:?}", self_value, other)),
     }
 }
@@ -396,7 +396,7 @@ pub fn op_bitwise_and(self_value: &Value, args: Args) -> Result<Value> {
     args.set_function_name("op_bitwise_and");
     let other = args.expect("other")?;
     args.complete()?;
-    
+
     match (self_value, &other) {
         (Value::Int(a), Value::Int(b)) => Ok(Value::Int(a & b)),
         _ => Err(anyhow!("Bitwise AND requires integers, got {:?} and {:?}", self_value, other)),
@@ -407,7 +407,7 @@ pub fn op_bitwise_or(self_value: &Value, args: Args) -> Result<Value> {
     args.set_function_name("op_bitwise_or");
     let other = args.expect("other")?;
     args.complete()?;
-    
+
     match (self_value, &other) {
         (Value::Int(a), Value::Int(b)) => Ok(Value::Int(a | b)),
         _ => Err(anyhow!("Bitwise OR requires integers, got {:?} and {:?}", self_value, other)),
@@ -418,7 +418,7 @@ pub fn op_bitwise_xor(self_value: &Value, args: Args) -> Result<Value> {
     args.set_function_name("op_bitwise_xor");
     let other = args.expect("other")?;
     args.complete()?;
-    
+
     match (self_value, &other) {
         (Value::Int(a), Value::Int(b)) => Ok(Value::Int(a ^ b)),
         _ => Err(anyhow!("Bitwise XOR requires integers, got {:?} and {:?}", self_value, other)),
@@ -428,7 +428,7 @@ pub fn op_bitwise_xor(self_value: &Value, args: Args) -> Result<Value> {
 pub fn op_bitwise_not(self_value: &Value, args: Args) -> Result<Value> {
     args.set_function_name("op_bitwise_not");
     args.complete()?;
-    
+
     match self_value {
         Value::Int(n) => Ok(Value::Int(!n)),
         _ => Err(anyhow!("Bitwise NOT requires integer, got {:?}", self_value)),
@@ -439,7 +439,7 @@ pub fn op_lshift(self_value: &Value, args: Args) -> Result<Value> {
     args.set_function_name("op_lshift");
     let other = args.expect("other")?;
     args.complete()?;
-    
+
     match (self_value, &other) {
         (Value::Int(a), Value::Int(b)) => {
             if *b < 0 {
@@ -458,7 +458,7 @@ pub fn op_rshift(self_value: &Value, args: Args) -> Result<Value> {
     args.set_function_name("op_rshift");
     let other = args.expect("other")?;
     args.complete()?;
-    
+
     match (self_value, &other) {
         (Value::Int(a), Value::Int(b)) => {
             if *b < 0 {
@@ -478,7 +478,7 @@ pub fn op_contains(self_value: &Value, args: Args) -> Result<Value> {
     args.set_function_name("op_contains");
     let item = args.expect("item")?;
     args.complete()?;
-    
+
     match self_value {
         Value::String(s) => {
             // Check if item is a substring
@@ -532,7 +532,7 @@ pub fn op_get_item_list(self_value: &Value, args: Args) -> Result<Value> {
     args.set_function_name("op_get_item");
     let index = args.expect("index")?;
     args.complete()?;
-    
+
     match self_value {
         Value::List(list_ref) => {
             let list = list_ref.borrow();
@@ -544,7 +544,7 @@ pub fn op_get_item_list(self_value: &Value, args: Args) -> Result<Value> {
                     } else {
                         *i as usize
                     };
-                    
+
                     if idx < list.len() {
                         Ok(list[idx].clone())
                     } else {
@@ -563,7 +563,7 @@ pub fn op_set_item_list(self_value: &Value, args: Args) -> Result<Value> {
     let index = args.expect("index")?;
     let value = args.expect("value")?;
     args.complete()?;
-    
+
     match self_value {
         Value::List(list_ref) => {
             let mut list = list_ref.borrow_mut();
@@ -575,7 +575,7 @@ pub fn op_set_item_list(self_value: &Value, args: Args) -> Result<Value> {
                     } else {
                         *i as usize
                     };
-                    
+
                     if idx < list.len() {
                         list[idx] = value;
                         Ok(Value::Unit)
@@ -595,7 +595,7 @@ pub fn op_get_item_dict(self_value: &Value, args: Args) -> Result<Value> {
     args.set_function_name("op_get_item");
     let key = args.expect("key")?;
     args.complete()?;
-    
+
     match self_value {
         Value::Dict(dict_ref) => {
             let dict = dict_ref.borrow();
@@ -606,7 +606,7 @@ pub fn op_get_item_dict(self_value: &Value, args: Args) -> Result<Value> {
                 Value::Bool(b) => b.to_string(),
                 _ => return Err(anyhow!("Dictionary key must be string, number, or boolean, got {:?}", key)),
             };
-            
+
             match dict.get(&key_str) {
                 Some(value) => Ok(value.clone()),
                 None => Err(anyhow!("Key '{}' not found in dictionary", key_str)),
@@ -621,7 +621,7 @@ pub fn op_set_item_dict(self_value: &Value, args: Args) -> Result<Value> {
     let key = args.expect("key")?;
     let value = args.expect("value")?;
     args.complete()?;
-    
+
     match self_value {
         Value::Dict(dict_ref) => {
             let mut dict = dict_ref.borrow_mut();
@@ -632,7 +632,7 @@ pub fn op_set_item_dict(self_value: &Value, args: Args) -> Result<Value> {
                 Value::Bool(b) => b.to_string(),
                 _ => return Err(anyhow!("Dictionary key must be string, number, or boolean, got {:?}", key)),
             };
-            
+
             dict.insert(key_str, value);
             Ok(Value::Unit)
         }
@@ -644,16 +644,16 @@ pub fn op_set_item_dict(self_value: &Value, args: Args) -> Result<Value> {
 pub fn range_to_list(self_value: &Value, args: Args) -> Result<Value> {
     args.set_function_name("to_list");
     args.complete()?;
-    
+
     match self_value {
         Value::Range(range) => {
             let mut values = Vec::new();
             let end_value = if range.inclusive { range.end + 1 } else { range.end };
-            
+
             for i in range.start..end_value {
                 values.push(Value::Int(i));
             }
-            
+
             Ok(Value::new_list_with_values(values))
         }
         _ => Err(anyhow!("to_list called on non-range: {:?}", self_value)),

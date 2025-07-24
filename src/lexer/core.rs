@@ -520,10 +520,10 @@ impl Lexer {
         }
 
         self.tokens.push(Token::simple(TokenType::Eof));
-        
+
         // Phase 2: Expand interpolated strings
         let expanded_tokens = self.expand_string_interpolation(self.tokens.clone())?;
-        
+
         // Phase 3: Rewrite token pairs (not in, is not)
         let rewritten_tokens = self.rewrite_token_pairs(expanded_tokens)?;
         Ok(rewritten_tokens)
@@ -594,7 +594,7 @@ impl Lexer {
 
     fn expand_string_interpolation(&self, tokens: Vec<Token>) -> Result<Vec<Token>> {
         let mut result = Vec::new();
-        
+
         for token in tokens {
             if token.token_type == TokenType::String && self.contains_interpolation(&token) {
                 result.extend(self.expand_interpolated_string(token)?);
@@ -602,7 +602,7 @@ impl Lexer {
                 result.push(token);
             }
         }
-        
+
         Ok(result)
     }
 
@@ -618,48 +618,48 @@ impl Lexer {
         let text = token.text.as_ref().unwrap();
         let mut result = Vec::new();
         let mut current_pos = 0;
-        
+
         while let Some(start_pos) = text[current_pos..].find("${") {
             let actual_start = current_pos + start_pos;
-            
+
             // Add text part before interpolation (if any)
             if actual_start > current_pos {
                 let text_part = &text[current_pos..actual_start];
                 result.push(Token::with_text(TokenType::StringPart, text_part));
             }
-            
+
             // Find the matching closing brace
             let expr_start = actual_start + 2; // Skip ${
             if let Some(end_pos) = self.find_matching_brace(text, expr_start) {
                 // Add interpolation start marker
                 result.push(Token::simple(TokenType::InterpolationStart));
-                
+
                 // Extract and tokenize the expression
                 let expr_text = &text[expr_start..end_pos];
                 let expr_tokens = Self::tokenize(expr_text)?;
-                
+
                 // Add expression tokens (excluding EOF)
                 for expr_token in expr_tokens {
                     if expr_token.token_type != TokenType::Eof {
                         result.push(expr_token);
                     }
                 }
-                
+
                 // Add interpolation end marker
                 result.push(Token::simple(TokenType::InterpolationEnd));
-                
+
                 current_pos = end_pos + 1; // Skip closing brace
             } else {
                 return Err(anyhow::anyhow!("Unclosed interpolation in string: missing '}}' after '${{' at position {}", actual_start));
             }
         }
-        
+
         // Add remaining text (if any)
         if current_pos < text.len() {
             let remaining = &text[current_pos..];
             result.push(Token::with_text(TokenType::StringPart, remaining));
         }
-        
+
         Ok(result)
     }
 
@@ -668,13 +668,13 @@ impl Lexer {
         let mut brace_count = 1;
         let mut in_string = false;
         let mut escape_next = false;
-        
+
         for (i, &ch) in chars.iter().enumerate().skip(start) {
             if escape_next {
                 escape_next = false;
                 continue;
             }
-            
+
             match ch {
                 '\\' if in_string => escape_next = true,
                 '"' => in_string = !in_string,
@@ -688,7 +688,7 @@ impl Lexer {
                 _ => {}
             }
         }
-        
+
         None // No matching brace found
     }
 
@@ -699,16 +699,16 @@ impl Lexer {
 
         while i < tokens.len() {
             // Check for "not in" pattern
-            if i + 1 < tokens.len() 
-                && tokens[i].token_type == TokenType::Not 
+            if i + 1 < tokens.len()
+                && tokens[i].token_type == TokenType::Not
                 && tokens[i + 1].token_type == TokenType::In {
                 // Replace "not in" with "NotIn"
                 result.push(Token::simple(TokenType::NotIn));
                 i += 2; // Skip both tokens
             }
-            // Check for "is not" pattern  
-            else if i + 1 < tokens.len() 
-                && tokens[i].token_type == TokenType::Is 
+            // Check for "is not" pattern
+            else if i + 1 < tokens.len()
+                && tokens[i].token_type == TokenType::Is
                 && tokens[i + 1].token_type == TokenType::Not {
                 // Replace "is not" with "IsNot"
                 result.push(Token::simple(TokenType::IsNot));

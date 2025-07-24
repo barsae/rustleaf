@@ -41,7 +41,7 @@ pub enum TokenType {
     RawString,       // r"raw strings"
     MultilineString, // """multiline strings"""
     StringPart,      // For interpolation text parts
-    InterpolationStart, // ${ 
+    InterpolationStart, // ${
     InterpolationEnd,   // }
     True,
     False,

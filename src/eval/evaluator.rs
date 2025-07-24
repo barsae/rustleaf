@@ -37,28 +37,28 @@ impl RustValue for RustLeafFunction {
         if args.len() != self.params.len() {
             return Err(anyhow!("Function expects {} arguments, got {}", self.params.len(), args.len()));
         }
-        
+
         // Create new scope for function execution
         let function_scope = self.closure_env.child();
-        
+
         // Set function name for better error messages
         args.set_function_name("user function");
-        
+
         // Bind parameters to arguments using fluent API
         for param in &self.params {
             let arg_value = args.expect(param)?;
             function_scope.define(param.clone(), arg_value);
         }
-        
+
         // Validate all args consumed
         args.complete()?;
-        
+
         // Create evaluator with function scope - use same globals as parent
         let mut evaluator = Evaluator {
             globals: self.closure_env.clone(), // Use closure environment as globals for now
             current_env: function_scope,
         };
-        
+
         // Evaluate function body
         match evaluator.eval(&self.body) {
             Ok(value) => Ok(value),
@@ -93,14 +93,14 @@ impl RustValue for TypeConstant {
     fn call(&self, args: Args) -> anyhow::Result<Value> {
         Err(anyhow!("Type constants are not callable"))
     }
-    
+
     fn get_attr(&self, name: &str) -> Option<Value> {
         match name {
             "name" => Some(Value::String(self.type_name.clone())),
             _ => None,
         }
     }
-    
+
     fn op_is(&self, other: &Value) -> anyhow::Result<Value> {
         // Type checking: check if other value matches this type
         let matches = match self.type_name.as_str() {
@@ -151,11 +151,11 @@ impl Evaluator {
         self.register_builtin_fn("is_unit", crate::core::is_unit);
         self.register_builtin_fn("str", crate::core::str_conversion);
         self.register_builtin_fn("raise", crate::core::raise);
-        
+
         // Register type constants for `is` operator
         self.register_type_constants();
     }
-    
+
     fn register_type_constants(&mut self) {
         // Create type constants as special values
         self.globals.define("Null".to_string(), Value::from_rust(TypeConstant::new("Null")));
@@ -181,7 +181,7 @@ impl Evaluator {
                 // Create a new scope for the block
                 let block_scope = self.current_env.child();
                 let previous_env = std::mem::replace(&mut self.current_env, block_scope);
-                
+
                 let mut result = Value::Unit;
 
                 // Execute each statement in the block
@@ -232,12 +232,12 @@ impl Evaluator {
 
                 // Call the function
                 let result = func_value.call(args_obj).map_err(|e| ControlFlow::Error(ErrorKind::SystemError(e)))?;
-                
+
                 // Check if the result is a Value::Error (from raise() function)
                 if let Value::Error(error_value) = result {
                     return Err(ControlFlow::Error(ErrorKind::RaisedError(*error_value)));
                 }
-                
+
                 Ok(result)
             }
             Eval::Declare(name, init_expr) => {
@@ -274,14 +274,14 @@ impl Evaluator {
             }
             Eval::If(condition, then_expr, else_expr) => {
                 let condition_val = self.eval(condition)?;
-                
+
                 // Check if condition is truthy
                 let is_truthy = match condition_val {
                     Value::Bool(b) => b,
                     Value::Unit => false,
                     _ => true, // All other values are truthy (like Python/JavaScript)
                 };
-                
+
                 if is_truthy {
                     self.eval(then_expr)
                 } else {
@@ -317,19 +317,19 @@ impl Evaluator {
                 loop {
                     // Evaluate condition
                     let condition_val = self.eval(condition)?;
-                    
+
                     // Check if condition is truthy
                     let is_truthy = match condition_val {
                         Value::Bool(b) => b,
                         Value::Unit => false,
                         _ => true, // All other values are truthy (like Python/JavaScript)
                     };
-                    
+
                     if !is_truthy {
                         // Condition is false, exit loop
                         return Ok(Value::Unit);
                     }
-                    
+
                     // Execute body
                     match self.eval(body) {
                         Ok(_) => {
@@ -354,13 +354,13 @@ impl Evaluator {
             Eval::For(var_name, iter_expr, body) => {
                 // Evaluate the iterator expression
                 let iter_value = self.eval(iter_expr)?;
-                
+
                 // Create a new scope for the loop variable
                 let loop_scope = self.current_env.child();
                 let previous_env = std::mem::replace(&mut self.current_env, loop_scope);
-                
+
                 let mut result = Value::Unit;
-                
+
                 // Iterate based on the collection type
                 match iter_value {
                     Value::List(list_ref) => {
@@ -368,7 +368,7 @@ impl Evaluator {
                         for item in list.iter() {
                             // Set the loop variable
                             self.current_env.define(var_name.clone(), item.clone());
-                            
+
                             // Execute body
                             match self.eval(body) {
                                 Ok(_) => {
@@ -396,7 +396,7 @@ impl Evaluator {
                         for (key, _value) in dict.iter() {
                             // For dictionaries, iterate over keys (like Python)
                             self.current_env.define(var_name.clone(), Value::String(key.clone()));
-                            
+
                             // Execute body
                             match self.eval(body) {
                                 Ok(_) => {
@@ -424,7 +424,7 @@ impl Evaluator {
                         for i in range.start..end_value {
                             // Set the loop variable
                             self.current_env.define(var_name.clone(), Value::Int(i));
-                            
+
                             // Execute body
                             match self.eval(body) {
                                 Ok(_) => {
@@ -453,7 +453,7 @@ impl Evaluator {
                         return Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!("Cannot iterate over value: {:?}", iter_value))));
                     }
                 }
-                
+
                 // Restore the previous scope
                 self.current_env = previous_env;
                 Ok(result)
@@ -477,7 +477,7 @@ impl Evaluator {
             }
             Eval::GetAttr(obj_expr, attr_name) => {
                 let obj_value = self.eval(obj_expr)?;
-                
+
                 // Special handling for class instance method access
                 if let Value::RustValue(rust_val_ref) = &obj_value {
                     let rust_val = rust_val_ref.borrow();
@@ -494,14 +494,14 @@ impl Evaluator {
                         }
                     }
                 }
-                
+
                 // Fall back to standard attribute access
                 match obj_value.get_attr(attr_name) {
                     Some(value) => Ok(value),
                     None => Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!("No attribute '{}' on value {:?}", attr_name, obj_value)))),
                 }
             }
-            
+
             // Built-in operations that don't use method dispatch
             Eval::LogicalAnd(left, right) => {
                 let left_val = self.eval(left)?;
@@ -528,7 +528,7 @@ impl Evaluator {
             Eval::Is(left, right) => {
                 let left_val = self.eval(left)?;
                 let right_val = self.eval(right)?;
-                
+
                 // Check if right side is a RustValue that implements op_is
                 if let Value::RustValue(rust_val_ref) = &right_val {
                     let rust_val = rust_val_ref.borrow();
@@ -539,11 +539,11 @@ impl Evaluator {
                         }
                     }
                 }
-                
+
                 // Fall back to identity comparison
                 Ok(Value::Bool(left_val == right_val))
             }
-            
+
             // Collections
             Eval::List(elements) => {
                 let mut list_values = Vec::new();
@@ -557,7 +557,7 @@ impl Evaluator {
                 for (key_expr, value_expr) in pairs {
                     let key_val = self.eval(key_expr)?;
                     let value_val = self.eval(value_expr)?;
-                    
+
                     // Convert key to string
                     let key_str = match key_val {
                         Value::String(s) => s,
@@ -566,7 +566,7 @@ impl Evaluator {
                         Value::Bool(b) => b.to_string(),
                         _ => return Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!("Dictionary keys must be strings, numbers, or booleans, got {:?}", key_val)))),
                     };
-                    
+
                     dict_map.insert(key_str, value_val);
                 }
                 Ok(Value::new_dict_with_map(dict_map))
@@ -574,7 +574,7 @@ impl Evaluator {
             Eval::GetItem(obj_expr, index_expr) => {
                 let obj_value = self.eval(obj_expr)?;
                 let index_value = self.eval(index_expr)?;
-                
+
                 // Use operator method system: a[b] → a.op_get_attr("op_get_item").op_call(b)
                 match obj_value.get_attr("op_get_item") {
                     Some(method) => {
@@ -587,7 +587,7 @@ impl Evaluator {
             Eval::SetAttr(obj_expr, attr_name, value_expr) => {
                 let obj_value = self.eval(obj_expr)?;
                 let new_value = self.eval(value_expr)?;
-                
+
                 // For RustValue types, try calling set_attr directly
                 match obj_value {
                     Value::RustValue(rv) => {
@@ -603,7 +603,7 @@ impl Evaluator {
                 let obj_value = self.eval(obj_expr)?;
                 let index_value = self.eval(index_expr)?;
                 let new_value = self.eval(value_expr)?;
-                
+
                 // Use operator method system: a[b] = c → a.op_get_attr("op_set_item").op_call(b, c)
                 match obj_value.get_attr("op_set_item") {
                     Some(method) => {
@@ -622,16 +622,16 @@ impl Evaluator {
                         // Create new scope for catch block
                         let catch_scope = self.current_env.child();
                         let previous_env = std::mem::replace(&mut self.current_env, catch_scope);
-                        
+
                         // Bind the error value to the catch variable
                         self.current_env.define(catch_var.clone(), error_value);
-                        
+
                         // Execute catch body
                         let result = self.eval(catch_body);
-                        
+
                         // Restore previous scope
                         self.current_env = previous_env;
-                        
+
                         result
                     }
                     Err(other_error) => Err(other_error), // System errors and other control flow
@@ -639,7 +639,7 @@ impl Evaluator {
             }
             Eval::ClassDecl { name, field_names, field_defaults, methods } => {
                 use crate::eval::Class;
-                
+
                 // Create the class definition
                 let class = Class::new(
                     name.clone(),
@@ -647,11 +647,11 @@ impl Evaluator {
                     field_defaults.clone(),
                     methods.clone(),
                 );
-                
+
                 // Store the class in the current scope as a callable value
                 let class_value = Value::from_rust(class);
                 self.current_env.define(name.clone(), class_value);
-                
+
                 Ok(Value::Unit)
             }
         }

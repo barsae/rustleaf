@@ -17,7 +17,7 @@ pub fn run(source: String) -> Result<core::Value> {
 
     // Compilation to evaluation IR
     let eval_ir = eval::Compiler::compile(ast)?;
-    
+
     // Evaluation
     let mut evaluator = eval::Evaluator::new();
     evaluator.eval(&eval_ir).map_err(|control_flow| {

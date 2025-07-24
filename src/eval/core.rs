@@ -45,7 +45,7 @@ pub enum Eval {
 
     // Block - with optional terminal expression
     Block(Vec<Eval>, Option<Box<Eval>>),
-    
+
     // Built-in operations that don't use method dispatch
     LogicalAnd(Box<Eval>, Box<Eval>),
     LogicalOr(Box<Eval>, Box<Eval>),

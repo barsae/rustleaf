@@ -13,7 +13,7 @@ impl ListRef {
     pub fn borrow(&self) -> std::cell::Ref<Vec<Value>> {
         self.0.borrow()
     }
-    
+
     pub fn borrow_mut(&self) -> std::cell::RefMut<Vec<Value>> {
         self.0.borrow_mut()
     }
@@ -26,7 +26,7 @@ impl DictRef {
     pub fn borrow(&self) -> std::cell::Ref<IndexMap<String, Value>> {
         self.0.borrow()
     }
-    
+
     pub fn borrow_mut(&self) -> std::cell::RefMut<IndexMap<String, Value>> {
         self.0.borrow_mut()
     }
@@ -46,7 +46,7 @@ impl RustValueRef {
     pub fn borrow(&self) -> std::cell::Ref<Box<dyn RustValue>> {
         self.0.borrow()
     }
-    
+
     pub fn borrow_mut(&self) -> std::cell::RefMut<Box<dyn RustValue>> {
         self.0.borrow_mut()
     }
@@ -99,12 +99,12 @@ pub trait RustValue: fmt::Debug {
     fn op_is(&self, _other: &Value) -> Result<Value> {
         Err(anyhow!("This type does not support 'is' operations"))
     }
-    
+
     /// Returns true if this is a class instance (for method resolution)
     fn is_class_instance(&self) -> bool {
         false
     }
-    
+
     /// Get method by name for class instances (returns None for non-class-instances)
     fn get_class_method(&self, _name: &str) -> Option<crate::eval::ClassMethod> {
         None
