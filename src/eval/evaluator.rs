@@ -1,6 +1,7 @@
 use super::scope::ScopeRef;
 use crate::{core::*, eval::Eval};
 use anyhow::anyhow;
+use std::path::{Path, PathBuf};
 
 #[derive(Debug)]
 pub enum ErrorKind {
@@ -61,6 +62,7 @@ impl RustValue for RustLeafFunction {
         let mut evaluator = Evaluator {
             globals: self.closure_env.clone(), // Use closure environment as globals for now
             current_env: function_scope,
+            current_dir: std::env::current_dir().unwrap_or_else(|_| PathBuf::from(".")),
         };
 
         // Evaluate function body
@@ -127,6 +129,7 @@ impl RustValue for TypeConstant {
 pub struct Evaluator {
     pub globals: ScopeRef,
     pub current_env: ScopeRef,
+    pub current_dir: PathBuf,
 }
 
 impl Default for Evaluator {
@@ -142,6 +145,21 @@ impl Evaluator {
         let mut evaluator = Evaluator {
             globals: globals.clone(),
             current_env: globals,
+            current_dir: std::env::current_dir().unwrap_or_else(|_| PathBuf::from(".")),
+        };
+
+        // Register built-in functions
+        evaluator.register_builtins();
+        evaluator
+    }
+
+    pub fn new_with_dir(current_dir: PathBuf) -> Self {
+        let globals = ScopeRef::new();
+
+        let mut evaluator = Evaluator {
+            globals: globals.clone(),
+            current_env: globals,
+            current_dir,
         };
 
         // Register built-in functions
@@ -782,6 +800,60 @@ impl Evaluator {
 
                 Ok(Value::Unit)
             }
+            Eval::Import { module, items } => {
+                // Load and evaluate the module
+                let module_scope = self.load_module(module)?;
+
+                // Built-in names to exclude from imports
+                let builtin_names: std::collections::HashSet<&str> = [
+                    "print", "assert", "is_unit", "str", "raise", "Null", "Unit", "Bool", "Int",
+                    "Float", "String", "List", "Dict", "Range", "Function",
+                ]
+                .iter()
+                .cloned()
+                .collect();
+
+                // Import items into current scope (ignoring pub visibility for now)
+                match items {
+                    ImportItems::All => {
+                        // Import all non-builtin items from the module
+                        for (name, value) in module_scope.iter() {
+                            if !builtin_names.contains(name.as_str()) {
+                                self.current_env.define(name, value);
+                            }
+                        }
+                    }
+                    ImportItems::Specific(import_items) => {
+                        for import_item in import_items {
+                            let item_name = &import_item.name;
+                            let alias = import_item.alias.as_ref().unwrap_or(item_name);
+
+                            match module_scope.get(item_name) {
+                                Some(value) => {
+                                    self.current_env.define(alias.clone(), value);
+                                }
+                                None => {
+                                    // For debugging, let's see what's actually in the module scope (excluding built-ins)
+                                    let available_items: Vec<_> = module_scope
+                                        .iter()
+                                        .into_iter()
+                                        .filter(|(k, _)| !builtin_names.contains(k.as_str()))
+                                        .map(|(k, _)| k)
+                                        .collect();
+                                    return Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(
+                                        "Module '{}' does not have item '{}'. Available items: {:?}",
+                                        module,
+                                        item_name,
+                                        available_items
+                                    ))));
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Ok(Value::Unit)
+            }
         }
     }
 
@@ -820,5 +892,90 @@ impl Evaluator {
                 let _ = close_method.call(args);
             }
         }
+    }
+
+    /// Load and evaluate a module, returning its scope
+    fn load_module(&self, module_name: &str) -> Result<ScopeRef, ControlFlow> {
+        // Resolve module path
+        let module_path = self.resolve_module_path(module_name)?;
+
+        // Read module file
+        let module_content = std::fs::read_to_string(&module_path).map_err(|e| {
+            ControlFlow::Error(ErrorKind::SystemError(anyhow!(
+                "Failed to read module '{}' at path '{}': {}",
+                module_name,
+                module_path.display(),
+                e
+            )))
+        })?;
+
+        // Parse module content
+        let tokens = crate::lexer::Lexer::tokenize(&module_content).map_err(|e| {
+            ControlFlow::Error(ErrorKind::SystemError(anyhow!(
+                "Failed to tokenize module '{}': {}",
+                module_name,
+                e
+            )))
+        })?;
+
+        let ast = crate::parser::Parser::parse(tokens).map_err(|e| {
+            ControlFlow::Error(ErrorKind::SystemError(anyhow!(
+                "Failed to parse module '{}': {}",
+                module_name,
+                e
+            )))
+        })?;
+
+        // Compile to eval IR
+        let eval_ir = crate::eval::Compiler::compile(ast).map_err(|e| {
+            ControlFlow::Error(ErrorKind::SystemError(anyhow!(
+                "Failed to compile module '{}': {}",
+                module_name,
+                e
+            )))
+        })?;
+
+        // Create new evaluator for module with correct current_dir
+        let module_dir = module_path.parent().unwrap_or(Path::new(".")).to_path_buf();
+        let mut module_evaluator = Evaluator::new_with_dir(module_dir);
+
+        // Evaluate the module - handle module-level definitions specially
+        match eval_ir {
+            Eval::Block(statements, final_expr) => {
+                // For modules, evaluate statements directly in the module scope (not in a child scope)
+                for stmt in &statements {
+                    module_evaluator.eval(stmt)?;
+                }
+                // Evaluate final expression if present
+                if let Some(final_expr) = &final_expr {
+                    module_evaluator.eval(final_expr)?;
+                }
+            }
+            _ => {
+                // For non-block evaluation, evaluate normally
+                module_evaluator.eval(&eval_ir)?;
+            }
+        }
+
+        // Return the module's current scope (which includes both built-ins and module items)
+        // We'll filter out built-ins at import time instead
+        Ok(module_evaluator.current_env)
+    }
+
+    /// Resolve module path based on current directory and module name
+    fn resolve_module_path(&self, module_name: &str) -> Result<PathBuf, ControlFlow> {
+        // For now, implement simple relative path resolution
+        // Convert module::submodule to module/submodule.rustleaf
+        let relative_path = module_name.replace("::", "/") + ".rustleaf";
+        let full_path = self.current_dir.join(relative_path);
+
+        if !full_path.exists() {
+            return Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(
+                "Module file not found: {}",
+                full_path.display()
+            ))));
+        }
+
+        Ok(full_path)
     }
 }

@@ -1,13 +1,11 @@
 # Test Summary
 
 Auto-generated test status summary from integration tests.
-*Generated on: 2025-07-24 13:06:33*
+*Generated on: 2025-07-24 13:21:05*
 
 ## Advanced Tests
 
 - [class_simple](tests/integration/advanced/class_simple.md): 🟢
-- [import_simple](tests/integration/advanced/import_simple.md): 🔴
-- [import_wildcard](tests/integration/advanced/import_wildcard.md): 🔴
 - [macro_annotation](tests/integration/advanced/macro_annotation.md): 🟡
 - [macro_definition](tests/integration/advanced/macro_definition.md): 🟡
 - [macro_definition_and_usage](tests/integration/advanced/macro_definition_and_usage.md): 🟡
@@ -88,6 +86,10 @@ Auto-generated test status summary from integration tests.
 - [lambda_usage](tests/integration/functions/lambda_usage.md): 🟢
 - [pub_function](tests/integration/functions/pub_function.md): 🟡
 
+## Import Tests
+
+- [import_simple](tests/integration/import/import_simple.md): 🟢
+
 ## Operators Tests
 
 - [arithmetic](tests/integration/operators/arithmetic.md): 🟢
@@ -113,9 +115,9 @@ Auto-generated test status summary from integration tests.
 
 ## Statistics
 
-- Total tests: 84
-- Passing: 42 🟢
-- Failing: 6 🔴
+- Total tests: 83
+- Passing: 43 🟢
+- Failing: 4 🔴
 - No asserts: 36 🟡
 
-**Pass rate: 50.0%**
+**Pass rate: 51.8%**

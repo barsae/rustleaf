@@ -1,5 +1,5 @@
 /// Core evaluation types - simplified AST for execution
-use crate::core::Value;
+use crate::core::{ImportItems, Value};
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Eval {
@@ -61,6 +61,12 @@ pub enum Eval {
         field_names: Vec<String>,
         field_defaults: Vec<Option<Eval>>,
         methods: Vec<ClassMethod>,
+    },
+
+    // Module import
+    Import {
+        module: String,
+        items: ImportItems,
     },
 }
 

@@ -64,6 +64,11 @@ impl Scope {
             Err(format!("Undefined variable: {}", name))
         }
     }
+
+    /// Iterate over all variables in this scope (not parent scopes)
+    pub fn iter(&self) -> impl Iterator<Item = (String, Value)> + '_ {
+        self.vars.iter().map(|(k, v)| (k.clone(), v.clone()))
+    }
 }
 
 impl ScopeRef {
@@ -90,5 +95,10 @@ impl ScopeRef {
     /// Set a variable value, checking parent scopes if needed
     pub fn set(&self, name: &str, value: Value) -> Result<(), String> {
         self.0.borrow_mut().set(name, value)
+    }
+
+    /// Iterate over all variables in this scope (not parent scopes)
+    pub fn iter(&self) -> Vec<(String, Value)> {
+        self.0.borrow().iter().collect()
     }
 }

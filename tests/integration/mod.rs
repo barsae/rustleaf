@@ -26,6 +26,9 @@ mod core_tests {}
 #[rustleaf_tests("tests/integration/functions")]
 mod function_tests {}
 
+#[rustleaf_tests("tests/integration/import")]
+mod import_tests {}
+
 // Operators
 #[rustleaf_tests("tests/integration/operators")]
 mod operator_tests {}

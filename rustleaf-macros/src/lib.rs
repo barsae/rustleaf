@@ -109,7 +109,9 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                         Ok(ast) => {
                             rustleaf::core::start_print_capture();
                             rustleaf::core::start_assertion_count();
-                            let result = rustleaf::eval::evaluate(ast);
+                            // Get the directory of the test file for module imports
+                            let test_file_dir = std::path::Path::new(#full_path).parent().map(|p| p.to_path_buf());
+                            let result = rustleaf::eval::evaluate_with_dir(ast, test_file_dir);
                             let captured_output = rustleaf::core::get_captured_prints();
                             let assertion_count = rustleaf::core::get_assertion_count();
                             let execution_output = format!("{:#?}", result);

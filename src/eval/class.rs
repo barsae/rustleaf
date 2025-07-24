@@ -181,6 +181,7 @@ impl RustValue for BoundMethod {
         let mut evaluator = Evaluator {
             globals: self.closure_env.clone(),
             current_env: method_scope,
+            current_dir: std::env::current_dir().unwrap_or_else(|_| std::path::PathBuf::from(".")),
         };
 
         // Evaluate method body

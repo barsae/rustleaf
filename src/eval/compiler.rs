@@ -195,6 +195,10 @@ impl Compiler {
                 members,
                 is_pub: _,
             } => self.compile_class_decl(name, members),
+            Statement::Import(import_spec) => Ok(Eval::Import {
+                module: import_spec.module,
+                items: import_spec.items,
+            }),
             _ => Err(anyhow::anyhow!("Statement not yet implemented: {:?}", stmt)),
         }
     }
