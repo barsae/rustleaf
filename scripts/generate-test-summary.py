@@ -11,15 +11,23 @@ from collections import defaultdict
 from datetime import datetime
 
 def extract_test_status(file_path):
-    """Extract the status circle (🟢 or 🔴) from a test file."""
+    """Extract the status circle (🟢 or 🔴) from a test file, with 🟡 for tests with no asserts."""
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             content = f.read()
         
         # Look for "Status: 🟢" or "Status: 🔴"
-        match = re.search(r'Status: ([🟢🔴])', content)
-        if match:
-            return match.group(1)
+        status_match = re.search(r'Status: ([🟢🔴])', content)
+        if status_match:
+            status = status_match.group(1)
+            
+            # Check if this is a passing test with no assertions
+            if status == '🟢':
+                assertions_match = re.search(r'Assertions: (\d+)', content)
+                if assertions_match and int(assertions_match.group(1)) == 0:
+                    return '🟡'  # Yellow for no asserts
+            
+            return status
         
         # Fallback: look for old format "# Program 🟢" or "# Program 🔴"
         match = re.search(r'# Program ([🟢🔴])', content)
@@ -105,6 +113,7 @@ def generate_test_summary():
     total_tests = sum(len(tests) for _, tests in sorted_categories)
     passing_tests = sum(1 for _, tests in sorted_categories for _, status, _ in tests if status == '🟢')
     failing_tests = sum(1 for _, tests in sorted_categories for _, status, _ in tests if status == '🔴')
+    no_assert_tests = sum(1 for _, tests in sorted_categories for _, status, _ in tests if status == '🟡')
     unknown_tests = sum(1 for _, tests in sorted_categories for _, status, _ in tests if status == '❓')
     error_tests = sum(1 for _, tests in sorted_categories for _, status, _ in tests if status == '❌')
     
@@ -116,7 +125,9 @@ def generate_test_summary():
         f"- Failing: {failing_tests} 🔴",
     ]
     
-    # Only include unknown and errors if they are > 0
+    # Only include no-assert, unknown and errors if they are > 0
+    if no_assert_tests > 0:
+        stats_lines.append(f"- No asserts: {no_assert_tests} 🟡")
     if unknown_tests > 0:
         stats_lines.append(f"- Unknown: {unknown_tests} ❓")
     if error_tests > 0:
