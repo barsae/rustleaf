@@ -103,10 +103,51 @@ impl Compiler {
                     }
                     LValue::GetAttr(obj, attr) => {
                         let compiled_obj = self.compile_expression(*obj)?;
+
+                        // Handle compound assignment operators for attributes
+                        let final_value = match op {
+                            AssignOp::Assign => compiled_value,
+                            AssignOp::AddAssign => {
+                                let get_attr =
+                                    Eval::GetAttr(Box::new(compiled_obj.clone()), attr.clone());
+                                let get_method =
+                                    Eval::GetAttr(Box::new(get_attr), "op_add".to_string());
+                                Eval::Call(Box::new(get_method), vec![compiled_value])
+                            }
+                            AssignOp::SubAssign => {
+                                let get_attr =
+                                    Eval::GetAttr(Box::new(compiled_obj.clone()), attr.clone());
+                                let get_method =
+                                    Eval::GetAttr(Box::new(get_attr), "op_sub".to_string());
+                                Eval::Call(Box::new(get_method), vec![compiled_value])
+                            }
+                            AssignOp::MulAssign => {
+                                let get_attr =
+                                    Eval::GetAttr(Box::new(compiled_obj.clone()), attr.clone());
+                                let get_method =
+                                    Eval::GetAttr(Box::new(get_attr), "op_mul".to_string());
+                                Eval::Call(Box::new(get_method), vec![compiled_value])
+                            }
+                            AssignOp::DivAssign => {
+                                let get_attr =
+                                    Eval::GetAttr(Box::new(compiled_obj.clone()), attr.clone());
+                                let get_method =
+                                    Eval::GetAttr(Box::new(get_attr), "op_div".to_string());
+                                Eval::Call(Box::new(get_method), vec![compiled_value])
+                            }
+                            AssignOp::ModAssign => {
+                                let get_attr =
+                                    Eval::GetAttr(Box::new(compiled_obj.clone()), attr.clone());
+                                let get_method =
+                                    Eval::GetAttr(Box::new(get_attr), "op_mod".to_string());
+                                Eval::Call(Box::new(get_method), vec![compiled_value])
+                            }
+                        };
+
                         Ok(Eval::SetAttr(
                             Box::new(compiled_obj),
                             attr,
-                            Box::new(compiled_value),
+                            Box::new(final_value),
                         ))
                     }
                     LValue::GetItem(obj, key) => {
@@ -385,6 +426,18 @@ impl Compiler {
                         catch.pattern
                     )),
                 }
+            }
+
+            Expression::With { resources, body } => {
+                // Compile resources as (name, value) pairs
+                let mut compiled_resources = Vec::new();
+                for resource in resources {
+                    let compiled_value = self.compile_expression(resource.value)?;
+                    compiled_resources.push((resource.name, compiled_value));
+                }
+
+                let compiled_body = self.compile_block_helper(body)?;
+                Ok(Eval::With(compiled_resources, Box::new(compiled_body)))
             }
 
             // Pipe operator: expr1 : expr2

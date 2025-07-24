@@ -498,6 +498,18 @@ impl Parser {
             .text
             .ok_or_else(|| anyhow!("Class name token missing text"))?;
 
+        // Handle optional constructor parameters: class Name() or class Name(params)
+        if self.accept(TokenType::LeftParen) {
+            // Skip constructor parameters for now - just consume until )
+            while !self.check(TokenType::RightParen) && !self.is_at_end() {
+                self.advance(); // Skip parameters
+            }
+            self.expect(
+                TokenType::RightParen,
+                "Expected ')' after class constructor parameters",
+            )?;
+        }
+
         self.expect(TokenType::LeftBrace, "Expected '{' after class name")?;
 
         let mut members = Vec::new();

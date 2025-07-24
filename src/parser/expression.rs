@@ -411,10 +411,19 @@ impl Parser {
                 .text
                 .ok_or_else(|| anyhow!("Identifier token missing text"))?;
 
-            self.expect(TokenType::Equal, "Expected '=' after resource name")?;
-            let value = self.parse_expression()?;
-
-            resources.push(WithResource { name, value });
+            // Check for two syntax forms:
+            // 1. with name = expr { ... } (original spec syntax)
+            // 2. with variable { ... } (simplified syntax for existing variables)
+            if self.accept(TokenType::Equal) {
+                // Original syntax: with name = expr
+                let value = self.parse_expression()?;
+                resources.push(WithResource { name, value });
+            } else {
+                // Simplified syntax: with variable
+                // Treat as: with name = name (use existing variable as resource)
+                let value = Expression::Identifier(name.clone());
+                resources.push(WithResource { name, value });
+            }
 
             if !self.accept(TokenType::Comma) {
                 break;

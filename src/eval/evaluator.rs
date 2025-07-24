@@ -702,6 +702,64 @@ impl Evaluator {
                     Err(other_error) => Err(other_error), // System errors and other control flow
                 }
             }
+            Eval::With(resources, body) => {
+                // Create new scope for with block
+                let with_scope = self.current_env.child();
+                let previous_env = std::mem::replace(&mut self.current_env, with_scope);
+
+                let mut resource_values = Vec::new();
+
+                // Evaluate and bind resources, call op_open on each
+                for (name, resource_expr) in resources {
+                    match self.eval(resource_expr) {
+                        Ok(resource_value) => {
+                            // Bind resource to scope
+                            self.current_env
+                                .define(name.clone(), resource_value.clone());
+
+                            // Call op_open() if it exists - use the same logic as GetAttr evaluation
+                            let open_method =
+                                self.get_method_from_value(&resource_value, "op_open");
+                            if let Some(open_method) = open_method {
+                                // Bound methods already have self bound, so call with no arguments
+                                let args = Args::positional(vec![]);
+                                if let Err(e) = open_method.call(args) {
+                                    // If op_open fails, cleanup already opened resources and propagate error
+                                    self.cleanup_resources(&resource_values);
+                                    self.current_env = previous_env;
+                                    return Err(ControlFlow::Error(ErrorKind::SystemError(e)));
+                                }
+                            }
+
+                            resource_values.push((name.clone(), resource_value));
+                        }
+                        Err(e) => {
+                            // If resource evaluation fails, cleanup already opened resources and propagate error
+                            self.cleanup_resources(&resource_values);
+                            self.current_env = previous_env;
+                            return Err(e);
+                        }
+                    }
+                }
+
+                // Execute the body
+                let result = match self.eval(body) {
+                    Ok(val) => val,
+                    Err(e) => {
+                        // Cleanup on error
+                        self.cleanup_resources(&resource_values);
+                        self.current_env = previous_env;
+                        return Err(e);
+                    }
+                };
+
+                // Cleanup resources (call op_close in reverse order)
+                self.cleanup_resources(&resource_values);
+
+                // Restore previous scope
+                self.current_env = previous_env;
+                Ok(result)
+            }
             Eval::ClassDecl {
                 name,
                 field_names,
@@ -723,6 +781,43 @@ impl Evaluator {
                 self.current_env.define(name.clone(), class_value);
 
                 Ok(Value::Unit)
+            }
+        }
+    }
+
+    /// Helper method to get a method from a value, using the same logic as GetAttr evaluation
+    fn get_method_from_value(&self, obj_value: &Value, attr_name: &str) -> Option<Value> {
+        // Special handling for class instance method access
+        if let Value::RustValue(rust_val_ref) = obj_value {
+            let rust_val = rust_val_ref.borrow();
+            if rust_val.is_class_instance() {
+                // Check if this is a method access
+                if let Some(method) = rust_val.get_class_method(attr_name) {
+                    // Create BoundMethod with current evaluator context
+                    let bound_method = crate::eval::BoundMethod {
+                        instance: obj_value.clone(),
+                        method,
+                        closure_env: self.globals.clone(),
+                    };
+                    return Some(Value::from_rust(bound_method));
+                }
+            }
+        }
+
+        // Fall back to standard attribute access
+        obj_value.get_attr(attr_name)
+    }
+
+    /// Helper method to cleanup resources by calling op_close() in reverse order
+    fn cleanup_resources(&self, resources: &[(String, Value)]) {
+        // Cleanup in reverse order
+        for (_name, resource_value) in resources.iter().rev() {
+            let close_method = self.get_method_from_value(resource_value, "op_close");
+            if let Some(close_method) = close_method {
+                // Bound methods already have self bound, so call with no arguments
+                let args = Args::positional(vec![]);
+                // Ignore errors during cleanup - we don't want cleanup errors to mask the original error
+                let _ = close_method.call(args);
             }
         }
     }

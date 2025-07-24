@@ -39,6 +39,9 @@ pub enum Eval {
     // Error handling
     Try(Box<Eval>, String, Box<Eval>), // body, catch_var, catch_body
 
+    // Resource management
+    With(Vec<(String, Eval)>, Box<Eval>), // resources as (name, value) pairs, body
+
     // Collections
     List(Vec<Eval>),
     Dict(Vec<(Eval, Eval)>),
