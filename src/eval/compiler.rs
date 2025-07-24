@@ -308,6 +308,26 @@ impl Compiler {
                 Ok(Eval::Lambda(params, Box::new(compiled_body)))
             }
             
+            Expression::Try { body, catch } => {
+                let compiled_body = self.compile_block_helper(body)?;
+                let compiled_catch_body = self.compile_block_helper(catch.body)?;
+                
+                // For now, only support simple variable patterns in catch
+                match catch.pattern {
+                    Pattern::Variable(var_name) => {
+                        Ok(Eval::Try(
+                            Box::new(compiled_body),
+                            var_name,
+                            Box::new(compiled_catch_body),
+                        ))
+                    }
+                    _ => Err(anyhow::anyhow!(
+                        "Only variable patterns are supported in catch clauses for now: {:?}",
+                        catch.pattern
+                    )),
+                }
+            }
+            
             _ => Err(anyhow::anyhow!("Expression not yet implemented: {:?}", expr)),
         }
     }

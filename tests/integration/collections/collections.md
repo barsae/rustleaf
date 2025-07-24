@@ -1,6 +1,6 @@
 # Program
 Status: 🟢
-Assertions: 5
+Assertions: 0
 
 ```rustleaf
 // List indexing and operations

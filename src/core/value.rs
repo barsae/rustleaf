@@ -64,6 +64,7 @@ pub enum Value {
     Dict(DictRef),
     Range(Range),
     RustValue(RustValueRef),
+    Error(Box<Value>), // Special value that represents a raised error
 }
 
 impl PartialEq for Value {
@@ -79,6 +80,7 @@ impl PartialEq for Value {
             (Value::Dict(a), Value::Dict(b)) => Rc::ptr_eq(&a.0, &b.0),
             (Value::Range(a), Value::Range(b)) => a == b,
             (Value::RustValue(a), Value::RustValue(b)) => Rc::ptr_eq(&a.0, &b.0),
+            (Value::Error(a), Value::Error(b)) => a == b,
             _ => false,
         }
     }
@@ -149,6 +151,7 @@ impl Value {
             Value::Range(_) => self.get_range_attr(name),
             Value::Unit => self.get_unit_attr(name),
             Value::Null => self.get_null_attr(name),
+            Value::Error(_) => None, // Error values don't have attributes
         }
     }
 

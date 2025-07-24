@@ -1,10 +1,15 @@
 # Program
-Status: 🔴
-Assertions: 0
+Status: 🟢
+Assertions: 1
 
 ```rustleaf
-// #[fail_quietly]
-raise(42);
+var i;
+try {
+    raise(42);
+} catch e {
+    i = e;
+}
+assert(i == 42);
 ```
 
 # Output
@@ -12,8 +17,8 @@ None
 
 # Result
 ```rust
-Err(
-    "42",
+Ok(
+    Unit,
 )
 ```
 
@@ -21,8 +26,29 @@ Err(
 ```rust
 Ok(
     [
+        Token(Var),
+        Token(Ident, "i"),
+        Token(Semicolon),
+        Token(Try),
+        Token(LeftBrace),
         Token(Ident, "raise"),
         Token(LeftParen),
+        Token(Int, "42"),
+        Token(RightParen),
+        Token(Semicolon),
+        Token(RightBrace),
+        Token(Catch),
+        Token(Ident, "e"),
+        Token(LeftBrace),
+        Token(Ident, "i"),
+        Token(Equal),
+        Token(Ident, "e"),
+        Token(Semicolon),
+        Token(RightBrace),
+        Token(Ident, "assert"),
+        Token(LeftParen),
+        Token(Ident, "i"),
+        Token(EqualEqual),
         Token(Int, "42"),
         Token(RightParen),
         Token(Semicolon),
@@ -36,15 +62,68 @@ Ok(
 Ok(
     Program(
         [
+            VarDecl {
+                pattern: Variable(
+                    "i",
+                ),
+                value: None,
+            },
+            Expression(
+                Try {
+                    body: Block {
+                        statements: [
+                            Expression(
+                                FunctionCall(
+                                    Identifier(
+                                        "raise",
+                                    ),
+                                    [
+                                        Literal(
+                                            Int(
+                                                42,
+                                            ),
+                                        ),
+                                    ],
+                                ),
+                            ),
+                        ],
+                        final_expr: None,
+                    },
+                    catch: CatchClause {
+                        pattern: Variable(
+                            "e",
+                        ),
+                        body: Block {
+                            statements: [
+                                Assignment {
+                                    target: Identifier(
+                                        "i",
+                                    ),
+                                    op: Assign,
+                                    value: Identifier(
+                                        "e",
+                                    ),
+                                },
+                            ],
+                            final_expr: None,
+                        },
+                    },
+                },
+            ),
             Expression(
                 FunctionCall(
                     Identifier(
-                        "raise",
+                        "assert",
                     ),
                     [
-                        Literal(
-                            Int(
-                                42,
+                        Eq(
+                            Identifier(
+                                "i",
+                            ),
+                            Literal(
+                                Int(
+                                    42,
+                                ),
                             ),
                         ),
                     ],
@@ -59,17 +138,63 @@ Ok(
 ```rust
 Ok(
     Block(
-        [],
+        [
+            Declare(
+                "i",
+                None,
+            ),
+            Try(
+                Block(
+                    [
+                        Call(
+                            Variable(
+                                "raise",
+                            ),
+                            [
+                                Literal(
+                                    Int(
+                                        42,
+                                    ),
+                                ),
+                            ],
+                        ),
+                    ],
+                    None,
+                ),
+                "e",
+                Block(
+                    [
+                        Assign(
+                            "i",
+                            Variable(
+                                "e",
+                            ),
+                        ),
+                    ],
+                    None,
+                ),
+            ),
+        ],
         Some(
             Call(
                 Variable(
-                    "raise",
+                    "assert",
                 ),
                 [
-                    Literal(
-                        Int(
-                            42,
+                    Call(
+                        GetAttr(
+                            Variable(
+                                "i",
+                            ),
+                            "op_eq",
                         ),
+                        [
+                            Literal(
+                                Int(
+                                    42,
+                                ),
+                            ),
+                        ],
                     ),
                 ],
             ),

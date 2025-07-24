@@ -157,24 +157,11 @@ pub fn str_conversion(args: Args) -> Result<Value> {
     Ok(Value::String(string_repr))
 }
 
-// The raise function is special - it needs to be handled by the evaluator directly
-// since it returns ControlFlow::Error(ErrorKind::RaisedError) instead of Result<Value>
 pub fn raise(args: Args) -> Result<Value> {
     args.set_function_name("raise");
     let error_value = args.expect("error")?;
     args.complete()?;
     
-    // For now, convert to string representation as error message
-    // TODO: Implement proper try-catch with Value preservation
-    let error_message = match error_value {
-        Value::String(s) => s,
-        Value::Null => "null".to_string(),
-        Value::Unit => "unit".to_string(), 
-        Value::Bool(b) => b.to_string(),
-        Value::Int(i) => i.to_string(),
-        Value::Float(f) => f.to_string(),
-        _ => format!("{:?}", error_value),
-    };
-    
-    Err(anyhow!("{}", error_message))
+    // Return a special Error value that the evaluator will detect
+    Ok(Value::Error(Box::new(error_value)))
 }

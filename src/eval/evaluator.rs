@@ -231,7 +231,14 @@ impl Evaluator {
                 let args_obj = Args::positional(arg_values);
 
                 // Call the function
-                func_value.call(args_obj).map_err(|e| ControlFlow::Error(ErrorKind::SystemError(e)))
+                let result = func_value.call(args_obj).map_err(|e| ControlFlow::Error(ErrorKind::SystemError(e)))?;
+                
+                // Check if the result is a Value::Error (from raise() function)
+                if let Value::Error(error_value) = result {
+                    return Err(ControlFlow::Error(ErrorKind::RaisedError(*error_value)));
+                }
+                
+                Ok(result)
             }
             Eval::Declare(name, init_expr) => {
                 let value = match init_expr {
@@ -586,6 +593,29 @@ impl Evaluator {
                         Ok(Value::Unit)
                     }
                     None => Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!("No op_set_item method on value {:?}", obj_value)))),
+                }
+            }
+            Eval::Try(body, catch_var, catch_body) => {
+                // Execute the try body
+                match self.eval(body) {
+                    Ok(value) => Ok(value),
+                    Err(ControlFlow::Error(ErrorKind::RaisedError(error_value))) => {
+                        // Create new scope for catch block
+                        let catch_scope = self.current_env.child();
+                        let previous_env = std::mem::replace(&mut self.current_env, catch_scope);
+                        
+                        // Bind the error value to the catch variable
+                        self.current_env.define(catch_var.clone(), error_value);
+                        
+                        // Execute catch body
+                        let result = self.eval(catch_body);
+                        
+                        // Restore previous scope
+                        self.current_env = previous_env;
+                        
+                        result
+                    }
+                    Err(other_error) => Err(other_error), // System errors and other control flow
                 }
             }
         }

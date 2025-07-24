@@ -1,6 +1,6 @@
 # Program
 Status: 🟢
-Assertions: 0
+Assertions: 6
 
 ```rustleaf
 loop {

@@ -17,7 +17,7 @@ None
 # Result
 ```rust
 Err(
-    "Expression not yet implemented: Try { body: Block { statements: [], final_expr: Some(FunctionCall(Identifier(\"risky_operation\"), [])) }, catch: CatchClause { pattern: Variable(\"e\"), body: Block { statements: [], final_expr: Some(Literal(String(\"error occurred\"))) } } }",
+    "Undefined variable: risky_operation",
 )
 ```
 
@@ -83,7 +83,35 @@ Ok(
 
 # Eval
 ```rust
-Err(
-    "Expression not yet implemented: Try { body: Block { statements: [], final_expr: Some(FunctionCall(Identifier(\"risky_operation\"), [])) }, catch: CatchClause { pattern: Variable(\"e\"), body: Block { statements: [], final_expr: Some(Literal(String(\"error occurred\"))) } } }",
+Ok(
+    Block(
+        [],
+        Some(
+            Try(
+                Block(
+                    [],
+                    Some(
+                        Call(
+                            Variable(
+                                "risky_operation",
+                            ),
+                            [],
+                        ),
+                    ),
+                ),
+                "e",
+                Block(
+                    [],
+                    Some(
+                        Literal(
+                            String(
+                                "error occurred",
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        ),
+    ),
 )
 ```

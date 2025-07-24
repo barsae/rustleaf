@@ -36,6 +36,9 @@ pub enum Eval {
     Break(Option<Box<Eval>>),
     Continue,
 
+    // Error handling
+    Try(Box<Eval>, String, Box<Eval>), // body, catch_var, catch_body
+
     // Collections
     List(Vec<Eval>),
     Dict(Vec<(Eval, Eval)>),

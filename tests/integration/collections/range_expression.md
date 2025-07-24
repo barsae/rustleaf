@@ -1,6 +1,6 @@
 # Program
 Status: 🟢
-Assertions: 0
+Assertions: 4
 
 ```rustleaf
 // Test using ranges in for loops and expressions
