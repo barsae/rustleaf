@@ -1,33 +1,16 @@
 # Test Summary
 
 Auto-generated test status summary from integration tests.
-*Generated on: 2025-07-24 14:28:45*
-
-## Advanced Tests
-
-- [class_simple](tests/integration/advanced/class_simple.md): 🟢
-- [pipe_expression](tests/integration/advanced/pipe_expression.md): 🟢
-- [raise_number](tests/integration/advanced/raise_number.md): 🟢
-- [string_interpolation_complex](tests/integration/advanced/string_interpolation_complex.md): 🟢
-- [string_interpolation_multiple](tests/integration/advanced/string_interpolation_multiple.md): 🟢
-- [string_interpolation_simple](tests/integration/advanced/string_interpolation_simple.md): 🟢
-- [with_expression](tests/integration/advanced/with_expression.md): 🟢
+*Generated on: 2025-07-24 14:42:26*
 
 ## Assert Tests
 
 - [assert](tests/integration/assert/assert.md): 🟢
 - [assert_failure_panic](tests/integration/assert/assert_failure_panic.md): 🟢
 
-## Collections Tests
+## Classes Tests
 
-- [collections](tests/integration/collections/collections.md): 🟢
-- [dict_literal_empty](tests/integration/collections/dict_literal_empty.md): 🟢
-- [dict_literal_simple](tests/integration/collections/dict_literal_simple.md): 🟢
-- [empty_list](tests/integration/collections/empty_list.md): 🟢
-- [list_literal](tests/integration/collections/list_literal.md): 🟢
-- [range_exclusive](tests/integration/collections/range_exclusive.md): 🟢
-- [range_expression](tests/integration/collections/range_expression.md): 🟢
-- [range_inclusive](tests/integration/collections/range_inclusive.md): 🟢
+- [class_simple](tests/integration/classes/class_simple.md): 🟢
 
 ## Control_Flow Tests
 
@@ -39,10 +22,12 @@ Auto-generated test status summary from integration tests.
 - [if_with_variable](tests/integration/control_flow/if_with_variable.md): 🟢
 - [loop_with_continue](tests/integration/control_flow/loop_with_continue.md): 🟢
 - [loop_with_print](tests/integration/control_flow/loop_with_print.md): 🟢
+- [raise_number](tests/integration/control_flow/raise_number.md): 🟢
 - [return](tests/integration/control_flow/return.md): 🟢
 - [simple_if](tests/integration/control_flow/simple_if.md): 🟢
 - [while_expression](tests/integration/control_flow/while_expression.md): 🟢
 - [while_loop](tests/integration/control_flow/while_loop.md): 🟢
+- [with_expression](tests/integration/control_flow/with_expression.md): 🟢
 
 ## Core Tests
 
@@ -59,6 +44,12 @@ Auto-generated test status summary from integration tests.
 - [var_declaration_no_init](tests/integration/core/var_declaration_no_init.md): 🟢
 - [variable](tests/integration/core/variable.md): 🟢
 
+## Dict Tests
+
+- [dict_literal_empty](tests/integration/dict/dict_literal_empty.md): 🟢
+- [dict_literal_simple](tests/integration/dict/dict_literal_simple.md): 🟢
+- [mixed_keys](tests/integration/dict/mixed_keys.md): 🟢
+
 ## Functions Tests
 
 - [function_body](tests/integration/functions/function_body.md): 🟢
@@ -70,15 +61,24 @@ Auto-generated test status summary from integration tests.
 - [function_declaration_simple](tests/integration/functions/function_declaration_simple.md): 🟢
 - [function_unit](tests/integration/functions/function_unit.md): 🟢
 - [is_unit_test](tests/integration/functions/is_unit_test.md): 🟢
-- [lambda_block](tests/integration/functions/lambda_block.md): 🟢
-- [lambda_expression](tests/integration/functions/lambda_expression.md): 🟢
-- [lambda_no_params](tests/integration/functions/lambda_no_params.md): 🟢
-- [lambda_usage](tests/integration/functions/lambda_usage.md): 🟢
 - [pub_function](tests/integration/functions/pub_function.md): 🟢
 
 ## Import Tests
 
 - [import_simple](tests/integration/import/import_simple.md): 🟢
+
+## Lambdas Tests
+
+- [lambda_block](tests/integration/lambdas/lambda_block.md): 🟢
+- [lambda_expression](tests/integration/lambdas/lambda_expression.md): 🟢
+- [lambda_no_params](tests/integration/lambdas/lambda_no_params.md): 🟢
+- [lambda_usage](tests/integration/lambdas/lambda_usage.md): 🟢
+
+## List Tests
+
+- [empty_list](tests/integration/list/empty_list.md): 🟢
+- [indexing](tests/integration/list/indexing.md): 🟢
+- [list_literal](tests/integration/list/list_literal.md): 🟢
 
 ## Macros Tests
 
@@ -97,6 +97,7 @@ Auto-generated test status summary from integration tests.
 - [in_operator](tests/integration/operators/in_operator.md): 🟢
 - [is_comprehensive](tests/integration/operators/is_comprehensive.md): 🟢
 - [not_operator](tests/integration/operators/not_operator.md): 🟢
+- [pipe_expression](tests/integration/operators/pipe_expression.md): 🟢
 - [unary_expression](tests/integration/operators/unary_expression.md): 🟢
 - [unary_operations](tests/integration/operators/unary_operations.md): 🟢
 
@@ -107,11 +108,23 @@ Auto-generated test status summary from integration tests.
 - [list_rest_pattern](tests/integration/patterns/list_rest_pattern.md): 🟢
 - [match_expression](tests/integration/patterns/match_expression.md): 🟢
 
+## Range Tests
+
+- [range_exclusive](tests/integration/range/range_exclusive.md): 🟢
+- [range_expression](tests/integration/range/range_expression.md): 🟢
+- [range_inclusive](tests/integration/range/range_inclusive.md): 🟢
+
+## Strings Tests
+
+- [string_interpolation_complex](tests/integration/strings/string_interpolation_complex.md): 🟢
+- [string_interpolation_multiple](tests/integration/strings/string_interpolation_multiple.md): 🟢
+- [string_interpolation_simple](tests/integration/strings/string_interpolation_simple.md): 🟢
+
 ## Statistics
 
-- Total tests: 74
-- Passing: 73 🟢
+- Total tests: 75
+- Passing: 74 🟢
 - Failing: 0 🔴
 - No asserts: 1 🟡
 
-**Pass rate: 98.6%**
+**Pass rate: 98.7%**
