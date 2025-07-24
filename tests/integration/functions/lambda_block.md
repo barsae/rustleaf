@@ -63,38 +63,20 @@ Ok(
                                         RefCell {
                                             value: Scope {
                                                 vars: {
-                                                    "Bool": RustValue(
+                                                    "print": RustValue(
                                                         RustValueRef(
                                                             RefCell {
-                                                                value: TypeConstant {
-                                                                    type_name: "Bool",
+                                                                value: RustFunction {
+                                                                    name: "print",
                                                                 },
                                                             },
                                                         ),
                                                     ),
-                                                    "Range": RustValue(
+                                                    "assert": RustValue(
                                                         RustValueRef(
                                                             RefCell {
-                                                                value: TypeConstant {
-                                                                    type_name: "Range",
-                                                                },
-                                                            },
-                                                        ),
-                                                    ),
-                                                    "Function": RustValue(
-                                                        RustValueRef(
-                                                            RefCell {
-                                                                value: TypeConstant {
-                                                                    type_name: "Function",
-                                                                },
-                                                            },
-                                                        ),
-                                                    ),
-                                                    "List": RustValue(
-                                                        RustValueRef(
-                                                            RefCell {
-                                                                value: TypeConstant {
-                                                                    type_name: "List",
+                                                                value: RustFunction {
+                                                                    name: "assert",
                                                                 },
                                                             },
                                                         ),
@@ -108,60 +90,6 @@ Ok(
                                                             },
                                                         ),
                                                     ),
-                                                    "Int": RustValue(
-                                                        RustValueRef(
-                                                            RefCell {
-                                                                value: TypeConstant {
-                                                                    type_name: "Int",
-                                                                },
-                                                            },
-                                                        ),
-                                                    ),
-                                                    "String": RustValue(
-                                                        RustValueRef(
-                                                            RefCell {
-                                                                value: TypeConstant {
-                                                                    type_name: "String",
-                                                                },
-                                                            },
-                                                        ),
-                                                    ),
-                                                    "Float": RustValue(
-                                                        RustValueRef(
-                                                            RefCell {
-                                                                value: TypeConstant {
-                                                                    type_name: "Float",
-                                                                },
-                                                            },
-                                                        ),
-                                                    ),
-                                                    "Dict": RustValue(
-                                                        RustValueRef(
-                                                            RefCell {
-                                                                value: TypeConstant {
-                                                                    type_name: "Dict",
-                                                                },
-                                                            },
-                                                        ),
-                                                    ),
-                                                    "raise": RustValue(
-                                                        RustValueRef(
-                                                            RefCell {
-                                                                value: RustFunction {
-                                                                    name: "raise",
-                                                                },
-                                                            },
-                                                        ),
-                                                    ),
-                                                    "print": RustValue(
-                                                        RustValueRef(
-                                                            RefCell {
-                                                                value: RustFunction {
-                                                                    name: "print",
-                                                                },
-                                                            },
-                                                        ),
-                                                    ),
                                                     "str": RustValue(
                                                         RustValueRef(
                                                             RefCell {
@@ -171,11 +99,11 @@ Ok(
                                                             },
                                                         ),
                                                     ),
-                                                    "assert": RustValue(
+                                                    "raise": RustValue(
                                                         RustValueRef(
                                                             RefCell {
                                                                 value: RustFunction {
-                                                                    name: "assert",
+                                                                    name: "raise",
                                                                 },
                                                             },
                                                         ),
@@ -194,6 +122,78 @@ Ok(
                                                             RefCell {
                                                                 value: TypeConstant {
                                                                     type_name: "Unit",
+                                                                },
+                                                            },
+                                                        ),
+                                                    ),
+                                                    "Bool": RustValue(
+                                                        RustValueRef(
+                                                            RefCell {
+                                                                value: TypeConstant {
+                                                                    type_name: "Bool",
+                                                                },
+                                                            },
+                                                        ),
+                                                    ),
+                                                    "Int": RustValue(
+                                                        RustValueRef(
+                                                            RefCell {
+                                                                value: TypeConstant {
+                                                                    type_name: "Int",
+                                                                },
+                                                            },
+                                                        ),
+                                                    ),
+                                                    "Float": RustValue(
+                                                        RustValueRef(
+                                                            RefCell {
+                                                                value: TypeConstant {
+                                                                    type_name: "Float",
+                                                                },
+                                                            },
+                                                        ),
+                                                    ),
+                                                    "String": RustValue(
+                                                        RustValueRef(
+                                                            RefCell {
+                                                                value: TypeConstant {
+                                                                    type_name: "String",
+                                                                },
+                                                            },
+                                                        ),
+                                                    ),
+                                                    "List": RustValue(
+                                                        RustValueRef(
+                                                            RefCell {
+                                                                value: TypeConstant {
+                                                                    type_name: "List",
+                                                                },
+                                                            },
+                                                        ),
+                                                    ),
+                                                    "Dict": RustValue(
+                                                        RustValueRef(
+                                                            RefCell {
+                                                                value: TypeConstant {
+                                                                    type_name: "Dict",
+                                                                },
+                                                            },
+                                                        ),
+                                                    ),
+                                                    "Range": RustValue(
+                                                        RustValueRef(
+                                                            RefCell {
+                                                                value: TypeConstant {
+                                                                    type_name: "Range",
+                                                                },
+                                                            },
+                                                        ),
+                                                    ),
+                                                    "Function": RustValue(
+                                                        RustValueRef(
+                                                            RefCell {
+                                                                value: TypeConstant {
+                                                                    type_name: "Function",
                                                                 },
                                                             },
                                                         ),

@@ -1,8 +1,8 @@
 /// Scope for variable scoping in RustLeaf
 use std::cell::RefCell;
-use std::collections::HashMap;
 use std::rc::Rc;
 
+use indexmap::IndexMap;
 use crate::core::Value;
 
 #[derive(Clone, Debug, Default)]
@@ -10,7 +10,7 @@ pub struct ScopeRef(Rc<RefCell<Scope>>);
 
 #[derive(Debug, Clone)]
 pub struct Scope {
-    vars: HashMap<String, Value>,
+    vars: IndexMap<String, Value>,
     parent: Option<ScopeRef>,
 }
 
@@ -24,7 +24,7 @@ impl Scope {
     /// Create a new global scope
     pub fn new() -> Self {
         Scope {
-            vars: HashMap::new(),
+            vars: IndexMap::new(),
             parent: None,
         }
     }
@@ -32,7 +32,7 @@ impl Scope {
     /// Create a new scope with a parent
     pub fn with_parent(parent: ScopeRef) -> Self {
         Scope {
-            vars: HashMap::new(),
+            vars: IndexMap::new(),
             parent: Some(parent),
         }
     }
