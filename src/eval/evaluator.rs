@@ -121,8 +121,8 @@ impl RustValue for TypeConstant {
 }
 
 pub struct Evaluator {
-    globals: ScopeRef,
-    current_env: ScopeRef,
+    pub globals: ScopeRef,
+    pub current_env: ScopeRef,
 }
 
 impl Default for Evaluator {
@@ -477,6 +477,25 @@ impl Evaluator {
             }
             Eval::GetAttr(obj_expr, attr_name) => {
                 let obj_value = self.eval(obj_expr)?;
+                
+                // Special handling for class instance method access
+                if let Value::RustValue(rust_val_ref) = &obj_value {
+                    let rust_val = rust_val_ref.borrow();
+                    if rust_val.is_class_instance() {
+                        // Check if this is a method access
+                        if let Some(method) = rust_val.get_class_method(attr_name) {
+                            // Create BoundMethod with current evaluator context
+                            let bound_method = crate::eval::BoundMethod {
+                                instance: obj_value.clone(),
+                                method,
+                                closure_env: self.globals.clone(),
+                            };
+                            return Ok(Value::from_rust(bound_method));
+                        }
+                    }
+                }
+                
+                // Fall back to standard attribute access
                 match obj_value.get_attr(attr_name) {
                     Some(value) => Ok(value),
                     None => Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!("No attribute '{}' on value {:?}", attr_name, obj_value)))),

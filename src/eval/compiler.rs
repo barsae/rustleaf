@@ -481,7 +481,11 @@ impl Compiler {
                     field_defaults.push(default);
                 }
                 ClassMemberKind::Method { params, body } => {
-                    let param_names: Vec<String> = params.into_iter().map(|p| p.name).collect();
+                    let mut param_names: Vec<String> = params.into_iter().map(|p| p.name).collect();
+                    
+                    // Desugar: prepend "self" parameter for instance methods
+                    param_names.insert(0, "self".to_string());
+                    
                     let compiled_body = self.compile_block_helper(body)?;
                     methods.push(ClassMethod {
                         name: member.name,

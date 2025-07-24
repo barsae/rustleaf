@@ -99,6 +99,16 @@ pub trait RustValue: fmt::Debug {
     fn op_is(&self, _other: &Value) -> Result<Value> {
         Err(anyhow!("This type does not support 'is' operations"))
     }
+    
+    /// Returns true if this is a class instance (for method resolution)
+    fn is_class_instance(&self) -> bool {
+        false
+    }
+    
+    /// Get method by name for class instances (returns None for non-class-instances)
+    fn get_class_method(&self, _name: &str) -> Option<crate::eval::ClassMethod> {
+        None
+    }
 }
 
 impl Value {

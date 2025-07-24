@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use anyhow::Result;
 
 use crate::core::{Value, RustValue, Args};
-use super::core::{Eval, ClassMethod};
+use super::{core::{Eval, ClassMethod}, scope::ScopeRef};
 
 /// A class definition - the "type" that can be called as a constructor
 #[derive(Debug)]
@@ -105,13 +105,9 @@ impl RustValue for ClassInstance {
             return Some(field_value.clone());
         }
 
-        // Then check for methods
-        self.find_method(name).map(|method| Value::from_rust(
-            BoundMethod {
-                instance_class: self.class_name.clone(),
-                method: method.clone(),
-            }
-        ))
+        // Method access is now handled by the evaluator in GetAttr
+        // so we don't create BoundMethod here
+        None
     }
 
     fn set_attr(&mut self, name: &str, value: Value) -> Result<(), String> {
@@ -123,20 +119,76 @@ impl RustValue for ClassInstance {
     fn call(&self, _args: Args) -> Result<Value> {
         Err(anyhow::anyhow!("'{}' object is not callable", self.class_name))
     }
+    
+    fn is_class_instance(&self) -> bool {
+        true
+    }
+    
+    fn get_class_method(&self, name: &str) -> Option<super::core::ClassMethod> {
+        self.find_method(name).cloned()
+    }
 }
 
 /// A bound method - method bound to a specific instance
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct BoundMethod {
-    pub instance_class: String,
+    pub instance: Value,  // The instance this method is bound to
     pub method: ClassMethod,
+    pub closure_env: ScopeRef,  // Environment where the method can execute
 }
 
 impl RustValue for BoundMethod {
-    fn call(&self, _args: Args) -> Result<Value> {
-        // This will need to be implemented by the evaluator
-        // as it needs to execute the method body with 'self' bound
-        Err(anyhow::anyhow!("Bound method call not yet implemented"))
+    fn call(&self, args: Args) -> Result<Value> {
+        use super::evaluator::{Evaluator, ControlFlow, ErrorKind};
+        use anyhow::anyhow;
+        
+        // Check argument count - method should expect self + provided args
+        let expected_args = self.method.params.len(); // This includes 'self' now
+        let provided_args = args.len() + 1; // +1 for the instance we'll inject
+        
+        if provided_args != expected_args {
+            return Err(anyhow!("Method '{}' expects {} arguments, got {}", 
+                self.method.name, expected_args - 1, args.len()));
+        }
+        
+        // Create new scope for method execution
+        let method_scope = self.closure_env.child();
+        
+        // Set function name for better error messages
+        args.set_function_name(&format!("method {}", self.method.name));
+        
+        // Bind 'self' parameter to the bound instance
+        method_scope.define("self".to_string(), self.instance.clone());
+        
+        // Bind remaining parameters to provided arguments using the fluent API
+        for param_name in self.method.params.iter().skip(1) {
+            let arg_value = args.expect(param_name)?;
+            method_scope.define(param_name.clone(), arg_value);
+        }
+        
+        // Validate all args consumed
+        args.complete()?;
+        
+        // Create evaluator with method scope
+        let mut evaluator = Evaluator {
+            globals: self.closure_env.clone(),
+            current_env: method_scope,
+        };
+        
+        // Evaluate method body
+        match evaluator.eval(&self.method.body) {
+            Ok(value) => Ok(value),
+            Err(ControlFlow::Return(value)) => Ok(value),
+            Err(ControlFlow::Error(ErrorKind::SystemError(err))) => Err(err),
+            Err(ControlFlow::Error(ErrorKind::RaisedError(value))) => {
+                // Convert raised value to string for error display
+                match value {
+                    crate::core::Value::String(s) => Err(anyhow!("{}", s)),
+                    _ => Err(anyhow!("{:?}", value)),
+                }
+            },
+            Err(other) => Err(anyhow!("Invalid control flow in method: {:?}", other)),
+        }
     }
 }
 

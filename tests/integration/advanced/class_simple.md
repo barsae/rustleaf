@@ -1,19 +1,26 @@
 # Program
 Status: 🟢
-Assertions: 0
+Assertions: 1
 
 ```rustleaf
-class Person {
+class Greeter {
     var name;
 
     fn greet() {
-        print("Hello");
+        "Hello, ${self.name}"
     }
 }
+
+var greeter = Greeter();
+greeter.name = "Eric";
+var msg = greeter.greet();
+assert(msg == "Hello, Eric");
 ```
 
 # Output
-None
+```
+String("Hello, Eric")
+```
 
 # Result
 ```rust
@@ -27,7 +34,7 @@ Ok(
 Ok(
     [
         Token(Class),
-        Token(Ident, "Person"),
+        Token(Ident, "Greeter"),
         Token(LeftBrace),
         Token(Var),
         Token(Ident, "name"),
@@ -37,13 +44,48 @@ Ok(
         Token(LeftParen),
         Token(RightParen),
         Token(LeftBrace),
-        Token(Ident, "print"),
+        Token(StringPart, "Hello, "),
+        Token(InterpolationStart),
+        Token(Ident, "self"),
+        Token(Dot),
+        Token(Ident, "name"),
+        Token(InterpolationEnd),
+        Token(RightBrace),
+        Token(RightBrace),
+        Token(Var),
+        Token(Ident, "greeter"),
+        Token(Equal),
+        Token(Ident, "Greeter"),
         Token(LeftParen),
-        Token(String, "Hello"),
         Token(RightParen),
         Token(Semicolon),
-        Token(RightBrace),
-        Token(RightBrace),
+        Token(Ident, "greeter"),
+        Token(Dot),
+        Token(Ident, "name"),
+        Token(Equal),
+        Token(String, "Eric"),
+        Token(Semicolon),
+        Token(Var),
+        Token(Ident, "msg"),
+        Token(Equal),
+        Token(Ident, "greeter"),
+        Token(Dot),
+        Token(Ident, "greet"),
+        Token(LeftParen),
+        Token(RightParen),
+        Token(Semicolon),
+        Token(Ident, "assert"),
+        Token(LeftParen),
+        Token(Ident, "msg"),
+        Token(EqualEqual),
+        Token(String, "Hello, Eric"),
+        Token(RightParen),
+        Token(Semicolon),
+        Token(Ident, "print"),
+        Token(LeftParen),
+        Token(Ident, "msg"),
+        Token(RightParen),
+        Token(Semicolon),
         Token(Eof),
     ],
 )
@@ -55,7 +97,7 @@ Ok(
     Program(
         [
             ClassDecl {
-                name: "Person",
+                name: "Greeter",
                 members: [
                     ClassMember {
                         name: "name",
@@ -68,29 +110,102 @@ Ok(
                         kind: Method {
                             params: [],
                             body: Block {
-                                statements: [
-                                    Expression(
-                                        FunctionCall(
-                                            Identifier(
-                                                "print",
+                                statements: [],
+                                final_expr: Some(
+                                    InterpolatedString(
+                                        [
+                                            Text(
+                                                "Hello, ",
                                             ),
-                                            [
-                                                Literal(
-                                                    String(
-                                                        "Hello",
+                                            Expression(
+                                                GetAttr(
+                                                    Identifier(
+                                                        "self",
                                                     ),
+                                                    "name",
                                                 ),
-                                            ],
-                                        ),
+                                            ),
+                                        ],
                                     ),
-                                ],
-                                final_expr: None,
+                                ),
                             },
                         },
                     },
                 ],
                 is_pub: false,
             },
+            VarDecl {
+                pattern: Variable(
+                    "greeter",
+                ),
+                value: Some(
+                    FunctionCall(
+                        Identifier(
+                            "Greeter",
+                        ),
+                        [],
+                    ),
+                ),
+            },
+            Assignment {
+                target: GetAttr(
+                    Identifier(
+                        "greeter",
+                    ),
+                    "name",
+                ),
+                op: Assign,
+                value: Literal(
+                    String(
+                        "Eric",
+                    ),
+                ),
+            },
+            VarDecl {
+                pattern: Variable(
+                    "msg",
+                ),
+                value: Some(
+                    MethodCall(
+                        Identifier(
+                            "greeter",
+                        ),
+                        "greet",
+                        [],
+                    ),
+                ),
+            },
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            Identifier(
+                                "msg",
+                            ),
+                            Literal(
+                                String(
+                                    "Hello, Eric",
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "print",
+                    ),
+                    [
+                        Identifier(
+                            "msg",
+                        ),
+                    ],
+                ),
+            ),
         ],
     ),
 )
@@ -102,7 +217,7 @@ Ok(
     Block(
         [
             ClassDecl {
-                name: "Person",
+                name: "Greeter",
                 field_names: [
                     "name",
                 ],
@@ -112,30 +227,114 @@ Ok(
                 methods: [
                     ClassMethod {
                         name: "greet",
-                        params: [],
+                        params: [
+                            "self",
+                        ],
                         body: Block(
-                            [
+                            [],
+                            Some(
                                 Call(
-                                    Variable(
-                                        "print",
-                                    ),
-                                    [
+                                    GetAttr(
                                         Literal(
                                             String(
-                                                "Hello",
+                                                "Hello, ",
                                             ),
+                                        ),
+                                        "op_add",
+                                    ),
+                                    [
+                                        Call(
+                                            Variable(
+                                                "str",
+                                            ),
+                                            [
+                                                GetAttr(
+                                                    Variable(
+                                                        "self",
+                                                    ),
+                                                    "name",
+                                                ),
+                                            ],
                                         ),
                                     ],
                                 ),
-                            ],
-                            None,
+                            ),
                         ),
                         is_static: false,
                     },
                 ],
             },
+            Declare(
+                "greeter",
+                Some(
+                    Call(
+                        Variable(
+                            "Greeter",
+                        ),
+                        [],
+                    ),
+                ),
+            ),
+            SetAttr(
+                Variable(
+                    "greeter",
+                ),
+                "name",
+                Literal(
+                    String(
+                        "Eric",
+                    ),
+                ),
+            ),
+            Declare(
+                "msg",
+                Some(
+                    Call(
+                        GetAttr(
+                            Variable(
+                                "greeter",
+                            ),
+                            "greet",
+                        ),
+                        [],
+                    ),
+                ),
+            ),
+            Call(
+                Variable(
+                    "assert",
+                ),
+                [
+                    Call(
+                        GetAttr(
+                            Variable(
+                                "msg",
+                            ),
+                            "op_eq",
+                        ),
+                        [
+                            Literal(
+                                String(
+                                    "Hello, Eric",
+                                ),
+                            ),
+                        ],
+                    ),
+                ],
+            ),
         ],
-        None,
+        Some(
+            Call(
+                Variable(
+                    "print",
+                ),
+                [
+                    Variable(
+                        "msg",
+                    ),
+                ],
+            ),
+        ),
     ),
 )
 ```
