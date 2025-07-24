@@ -44,16 +44,28 @@ impl Compiler {
         match stmt {
             Statement::Expression(expr) => self.compile_expression(expr),
             Statement::VarDecl { pattern, value } => {
-                // For now, only handle simple variable patterns
                 match pattern {
                     Pattern::Variable(name) => {
+                        // Simple variable declaration
                         let init = match value {
                             Some(expr) => Some(Box::new(self.compile_expression(expr)?)),
                             None => None,
                         };
                         Ok(Eval::Declare(name, init))
                     }
-                    _ => Err(anyhow::anyhow!("Complex patterns not yet implemented")),
+                    _ => {
+                        // Pattern-based declaration
+                        let eval_pattern = Self::compile_pattern(pattern)?;
+                        let init_expr = match value {
+                            Some(expr) => self.compile_expression(expr)?,
+                            None => {
+                                return Err(anyhow::anyhow!(
+                                    "Pattern declarations require an initializer"
+                                ))
+                            }
+                        };
+                        Ok(Eval::DeclarePattern(eval_pattern, Box::new(init_expr)))
+                    }
                 }
             }
             Statement::Assignment { target, op, value } => {
@@ -696,5 +708,22 @@ impl Compiler {
             field_defaults,
             methods,
         })
+    }
+
+    fn compile_pattern(pattern: Pattern) -> Result<super::core::EvalPattern> {
+        use super::core::EvalPattern;
+
+        match pattern {
+            Pattern::Variable(name) => Ok(EvalPattern::Variable(name)),
+            Pattern::List(patterns) => {
+                let compiled_patterns: Result<Vec<EvalPattern>> =
+                    patterns.into_iter().map(Self::compile_pattern).collect();
+                Ok(EvalPattern::List(compiled_patterns?))
+            }
+            _ => Err(anyhow::anyhow!(
+                "Pattern not yet implemented: {:?}",
+                pattern
+            )),
+        }
     }
 }

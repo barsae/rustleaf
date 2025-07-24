@@ -22,6 +22,9 @@ pub enum Eval {
     // Variable declaration
     Declare(String, Option<Box<Eval>>),
 
+    // Pattern-based declaration
+    DeclarePattern(EvalPattern, Box<Eval>),
+
     // Function declaration
     Function(String, Vec<String>, Box<Eval>),
     // Lambda expression
@@ -76,4 +79,11 @@ pub struct ClassMethod {
     pub params: Vec<String>,
     pub body: Eval,
     pub is_static: bool,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum EvalPattern {
+    Variable(String),
+    List(Vec<EvalPattern>),
+    // Future: Dict, Rest, etc.
 }

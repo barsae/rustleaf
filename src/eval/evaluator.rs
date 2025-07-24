@@ -303,6 +303,11 @@ impl Evaluator {
                 self.current_env.define(name.clone(), value);
                 Ok(Value::Unit)
             }
+            Eval::DeclarePattern(pattern, init_expr) => {
+                let value = self.eval(init_expr)?;
+                self.match_pattern(pattern, &value)?;
+                Ok(Value::Unit)
+            }
             Eval::Function(name, params, body) => {
                 let function = RustLeafFunction {
                     params: params.clone(),
@@ -977,5 +982,49 @@ impl Evaluator {
         }
 
         Ok(full_path)
+    }
+
+    /// Pattern matching helper - binds variables from patterns
+    fn match_pattern(
+        &mut self,
+        pattern: &crate::eval::core::EvalPattern,
+        value: &Value,
+    ) -> Result<(), ControlFlow> {
+        use crate::eval::core::EvalPattern;
+
+        match pattern {
+            EvalPattern::Variable(name) => {
+                // Simple variable binding
+                self.current_env.define(name.clone(), value.clone());
+                Ok(())
+            }
+            EvalPattern::List(patterns) => {
+                // List destructuring
+                match value {
+                    Value::List(list_ref) => {
+                        let list = list_ref.borrow();
+
+                        if list.len() != patterns.len() {
+                            return Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(
+                                "Cannot destructure list of length {} into pattern with {} elements",
+                                list.len(),
+                                patterns.len()
+                            ))));
+                        }
+
+                        // Recursively match each pattern with corresponding list element
+                        for (pattern, list_value) in patterns.iter().zip(list.iter()) {
+                            self.match_pattern(pattern, list_value)?;
+                        }
+
+                        Ok(())
+                    }
+                    _ => Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(
+                        "Cannot destructure non-list value {:?} with list pattern",
+                        value
+                    )))),
+                }
+            }
+        }
     }
 }

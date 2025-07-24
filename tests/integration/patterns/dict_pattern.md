@@ -3,8 +3,10 @@ Status: 🔴
 Assertions: 0
 
 ```rustleaf
-// #[fail_quietly]
+var user = {"name": "Alice", "age": 30};
 var {name, age: user_age} = user;
+assert(name == "Alice");
+assert(user_age == 30);
 ```
 
 # Output
@@ -13,7 +15,7 @@ None
 # Result
 ```rust
 Err(
-    "Complex patterns not yet implemented",
+    "Pattern not yet implemented: Dict([DictPattern { key: \"name\", alias: None }, DictPattern { key: \"age\", alias: Some(\"user_age\") }])",
 )
 ```
 
@@ -21,6 +23,19 @@ Err(
 ```rust
 Ok(
     [
+        Token(Var),
+        Token(Ident, "user"),
+        Token(Equal),
+        Token(LeftBrace),
+        Token(String, "name"),
+        Token(Colon),
+        Token(String, "Alice"),
+        Token(Comma),
+        Token(String, "age"),
+        Token(Colon),
+        Token(Int, "30"),
+        Token(RightBrace),
+        Token(Semicolon),
         Token(Var),
         Token(LeftBrace),
         Token(Ident, "name"),
@@ -32,6 +47,20 @@ Ok(
         Token(Equal),
         Token(Ident, "user"),
         Token(Semicolon),
+        Token(Ident, "assert"),
+        Token(LeftParen),
+        Token(Ident, "name"),
+        Token(EqualEqual),
+        Token(String, "Alice"),
+        Token(RightParen),
+        Token(Semicolon),
+        Token(Ident, "assert"),
+        Token(LeftParen),
+        Token(Ident, "user_age"),
+        Token(EqualEqual),
+        Token(Int, "30"),
+        Token(RightParen),
+        Token(Semicolon),
         Token(Eof),
     ],
 )
@@ -42,6 +71,41 @@ Ok(
 Ok(
     Program(
         [
+            VarDecl {
+                pattern: Variable(
+                    "user",
+                ),
+                value: Some(
+                    Dict(
+                        [
+                            (
+                                Literal(
+                                    String(
+                                        "name",
+                                    ),
+                                ),
+                                Literal(
+                                    String(
+                                        "Alice",
+                                    ),
+                                ),
+                            ),
+                            (
+                                Literal(
+                                    String(
+                                        "age",
+                                    ),
+                                ),
+                                Literal(
+                                    Int(
+                                        30,
+                                    ),
+                                ),
+                            ),
+                        ],
+                    ),
+                ),
+            },
             VarDecl {
                 pattern: Dict(
                     [
@@ -63,6 +127,44 @@ Ok(
                     ),
                 ),
             },
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            Identifier(
+                                "name",
+                            ),
+                            Literal(
+                                String(
+                                    "Alice",
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            Identifier(
+                                "user_age",
+                            ),
+                            Literal(
+                                Int(
+                                    30,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
         ],
     ),
 )
@@ -71,6 +173,6 @@ Ok(
 # Eval
 ```rust
 Err(
-    "Complex patterns not yet implemented",
+    "Pattern not yet implemented: Dict([DictPattern { key: \"name\", alias: None }, DictPattern { key: \"age\", alias: Some(\"user_age\") }])",
 )
 ```

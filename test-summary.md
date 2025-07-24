@@ -1,7 +1,7 @@
 # Test Summary
 
 Auto-generated test status summary from integration tests.
-*Generated on: 2025-07-24 13:21:05*
+*Generated on: 2025-07-24 13:29:09*
 
 ## Advanced Tests
 
@@ -27,8 +27,6 @@ Auto-generated test status summary from integration tests.
 ## Collections Tests
 
 - [collections](tests/integration/collections/collections.md): 🟢
-- [collections_expressions_old](tests/integration/collections/collections_expressions_old.md): 🟡
-- [collections_old](tests/integration/collections/collections_old.md): 🟢
 - [dict_literal_empty](tests/integration/collections/dict_literal_empty.md): 🟡
 - [dict_literal_simple](tests/integration/collections/dict_literal_simple.md): 🟡
 - [dict_literal_trailing_comma](tests/integration/collections/dict_literal_trailing_comma.md): 🟡
@@ -109,15 +107,15 @@ Auto-generated test status summary from integration tests.
 ## Patterns Tests
 
 - [dict_pattern](tests/integration/patterns/dict_pattern.md): 🔴
-- [list_pattern](tests/integration/patterns/list_pattern.md): 🔴
+- [list_pattern](tests/integration/patterns/list_pattern.md): 🟢
 - [list_rest_pattern](tests/integration/patterns/list_rest_pattern.md): 🔴
 - [match_expression](tests/integration/patterns/match_expression.md): 🔴
 
 ## Statistics
 
-- Total tests: 83
+- Total tests: 81
 - Passing: 43 🟢
-- Failing: 4 🔴
-- No asserts: 36 🟡
+- Failing: 3 🔴
+- No asserts: 35 🟡
 
-**Pass rate: 51.8%**
+**Pass rate: 53.1%**
