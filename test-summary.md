@@ -1,18 +1,24 @@
 # Test Summary
 
 Auto-generated test status summary from integration tests.
-*Generated on: 2025-07-24 14:46:09*
 
-## Assert Tests
+<details>
+<summary>Assert Tests        : 2 🟢</summary>
 
 - [assert](tests/integration/assert/assert.md): 🟢
 - [assert_failure_panic](tests/integration/assert/assert_failure_panic.md): 🟢
 
-## Classes Tests
+</details>
+
+<details>
+<summary>Classes Tests       : 1 🟢</summary>
 
 - [class_simple](tests/integration/classes/class_simple.md): 🟢
 
-## Control_Flow Tests
+</details>
+
+<details>
+<summary>Control_Flow Tests  : 14 🟢</summary>
 
 - [break_statement](tests/integration/control_flow/break_statement.md): 🟢
 - [break_statement_empty](tests/integration/control_flow/break_statement_empty.md): 🟢
@@ -29,7 +35,10 @@ Auto-generated test status summary from integration tests.
 - [while_loop](tests/integration/control_flow/while_loop.md): 🟢
 - [with_expression](tests/integration/control_flow/with_expression.md): 🟢
 
-## Core Tests
+</details>
+
+<details>
+<summary>Core Tests          : 12 🟢</summary>
 
 - [block_expression](tests/integration/core/block_expression.md): 🟢
 - [block_scoping](tests/integration/core/block_scoping.md): 🟢
@@ -44,13 +53,19 @@ Auto-generated test status summary from integration tests.
 - [var_declaration_no_init](tests/integration/core/var_declaration_no_init.md): 🟢
 - [variable](tests/integration/core/variable.md): 🟢
 
-## Dict Tests
+</details>
+
+<details>
+<summary>Dict Tests          : 3 🟢</summary>
 
 - [dict_literal_empty](tests/integration/dict/dict_literal_empty.md): 🟢
 - [dict_literal_simple](tests/integration/dict/dict_literal_simple.md): 🟢
 - [mixed_keys](tests/integration/dict/mixed_keys.md): 🟢
 
-## Functions Tests
+</details>
+
+<details>
+<summary>Functions Tests     : 10 🟢</summary>
 
 - [function_body](tests/integration/functions/function_body.md): 🟢
 - [function_body_test](tests/integration/functions/function_body_test.md): 🟢
@@ -63,28 +78,43 @@ Auto-generated test status summary from integration tests.
 - [is_unit_test](tests/integration/functions/is_unit_test.md): 🟢
 - [pub_function](tests/integration/functions/pub_function.md): 🟢
 
-## Import Tests
+</details>
+
+<details>
+<summary>Import Tests        : 1 🟢</summary>
 
 - [import_simple](tests/integration/import/import_simple.md): 🟢
 
-## Lambdas Tests
+</details>
+
+<details>
+<summary>Lambdas Tests       : 4 🟢</summary>
 
 - [lambda_block](tests/integration/lambdas/lambda_block.md): 🟢
 - [lambda_expression](tests/integration/lambdas/lambda_expression.md): 🟢
 - [lambda_no_params](tests/integration/lambdas/lambda_no_params.md): 🟢
 - [lambda_usage](tests/integration/lambdas/lambda_usage.md): 🟢
 
-## List Tests
+</details>
+
+<details>
+<summary>List Tests          : 3 🟢</summary>
 
 - [empty_list](tests/integration/list/empty_list.md): 🟢
 - [indexing](tests/integration/list/indexing.md): 🟢
 - [list_literal](tests/integration/list/list_literal.md): 🟢
 
-## Macros Tests
+</details>
+
+<details>
+<summary>Macros Tests        : 1 🟡</summary>
 
 - [count](tests/integration/macros/count.md): 🟡
 
-## Operators Tests
+</details>
+
+<details>
+<summary>Operators Tests     : 14 🟢</summary>
 
 - [arithmetic](tests/integration/operators/arithmetic.md): 🟢
 - [arithmetic_extra](tests/integration/operators/arithmetic_extra.md): 🟢
@@ -101,24 +131,35 @@ Auto-generated test status summary from integration tests.
 - [unary_expression](tests/integration/operators/unary_expression.md): 🟢
 - [unary_operations](tests/integration/operators/unary_operations.md): 🟢
 
-## Patterns Tests
+</details>
+
+<details>
+<summary>Patterns Tests      : 4 🟢</summary>
 
 - [dict_pattern](tests/integration/patterns/dict_pattern.md): 🟢
 - [list_pattern](tests/integration/patterns/list_pattern.md): 🟢
 - [list_rest_pattern](tests/integration/patterns/list_rest_pattern.md): 🟢
 - [match_expression](tests/integration/patterns/match_expression.md): 🟢
 
-## Range Tests
+</details>
+
+<details>
+<summary>Range Tests         : 3 🟢</summary>
 
 - [range_exclusive](tests/integration/range/range_exclusive.md): 🟢
 - [range_expression](tests/integration/range/range_expression.md): 🟢
 - [range_inclusive](tests/integration/range/range_inclusive.md): 🟢
 
-## Strings Tests
+</details>
+
+<details>
+<summary>Strings Tests       : 3 🟢</summary>
 
 - [string_interpolation_complex](tests/integration/strings/string_interpolation_complex.md): 🟢
 - [string_interpolation_multiple](tests/integration/strings/string_interpolation_multiple.md): 🟢
 - [string_interpolation_simple](tests/integration/strings/string_interpolation_simple.md): 🟢
+
+</details>
 
 ## Statistics
 

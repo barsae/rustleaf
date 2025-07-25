@@ -8,7 +8,6 @@ import os
 import re
 from pathlib import Path
 from collections import defaultdict
-from datetime import datetime
 
 def extract_test_status(file_path):
     """Extract the status circle from a test file."""
@@ -36,10 +35,9 @@ def extract_test_status(file_path):
             elif '🟡' in line:
                 return '🟡'
                 
-        return '❓'  # Unknown status
+        raise ValueError(f"No status found in {file_path}")
     except Exception as e:
-        print(f"Error reading {file_path}: {e}")
-        return '❌'  # Error status
+        raise RuntimeError(f"Error reading {file_path}: {e}") from e
 
 def generate_test_summary():
     """Generate the test summary."""
@@ -82,25 +80,45 @@ def generate_test_summary():
         tests.sort(key=lambda x: x[0])
     
     # Generate summary content
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     summary_lines = [
         "# Test Summary",
         "",
         "Auto-generated test status summary from integration tests.",
-        f"*Generated on: {timestamp}*",
         ""
     ]
     
     for category, tests in sorted_categories:
         if category == "root":
-            summary_lines.append("## Root Tests")
+            section_title = "Root Tests"
         else:
-            summary_lines.append(f"## {category.title()} Tests")
+            section_title = f"{category.title()} Tests"
+        
+        # Count statuses for this category
+        category_passing = sum(1 for _, status, _ in tests if status == '🟢')
+        category_failing = sum(1 for _, status, _ in tests if status == '🔴')
+        category_no_assert = sum(1 for _, status, _ in tests if status == '🟡')
+        category_total = len(tests)
+        
+        # Build summary
+        summary_parts = []
+        if category_passing > 0:
+            summary_parts.append(f"{category_passing} 🟢")
+        if category_failing > 0:
+            summary_parts.append(f"{category_failing} 🔴")
+        if category_no_assert > 0:
+            summary_parts.append(f"{category_no_assert} 🟡")
+        
+        summary_text = " ".join(summary_parts) if summary_parts else f"{category_total} tests"
+        
+        summary_lines.append(f"<details>")
+        summary_lines.append(f"<summary>{section_title}: {summary_text}</summary>")
         summary_lines.append("")
         
         for test_name, status, link_path in tests:
             summary_lines.append(f"- [{test_name}](tests/integration/{link_path}): {status}")
         
+        summary_lines.append("")
+        summary_lines.append("</details>")
         summary_lines.append("")
     
     # Add statistics
@@ -108,8 +126,6 @@ def generate_test_summary():
     passing_tests = sum(1 for _, tests in sorted_categories for _, status, _ in tests if status == '🟢')
     failing_tests = sum(1 for _, tests in sorted_categories for _, status, _ in tests if status == '🔴')
     no_assert_tests = sum(1 for _, tests in sorted_categories for _, status, _ in tests if status == '🟡')
-    unknown_tests = sum(1 for _, tests in sorted_categories for _, status, _ in tests if status == '❓')
-    error_tests = sum(1 for _, tests in sorted_categories for _, status, _ in tests if status == '❌')
     
     stats_lines = [
         "## Statistics",
@@ -119,13 +135,9 @@ def generate_test_summary():
         f"- Failing: {failing_tests} 🔴",
     ]
     
-    # Only include no-assert, unknown and errors if they are > 0
+    # Only include no-assert if they are > 0
     if no_assert_tests > 0:
         stats_lines.append(f"- No asserts: {no_assert_tests} 🟡")
-    if unknown_tests > 0:
-        stats_lines.append(f"- Unknown: {unknown_tests} ❓")
-    if error_tests > 0:
-        stats_lines.append(f"- Errors: {error_tests} ❌")
     
     stats_lines.extend([
         "",
