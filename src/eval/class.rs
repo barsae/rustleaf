@@ -69,15 +69,6 @@ impl RustValue for Class {
             "Class constructor must be handled by evaluator to evaluate default field values"
         ))
     }
-
-    fn as_class_constructor(&self) -> Option<crate::core::ClassConstructorData> {
-        Some((
-            self.name.clone(),
-            self.field_names.clone(),
-            self.field_defaults.clone(),
-            self.methods.clone(),
-        ))
-    }
 }
 
 /// A class instance - holds field values and provides method access

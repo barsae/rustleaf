@@ -6,14 +6,6 @@ use std::rc::Rc;
 
 use crate::core::Args;
 
-/// Type alias for class constructor data to avoid clippy complexity warning
-pub type ClassConstructorData = (
-    String,
-    Vec<String>,
-    Vec<Option<crate::eval::Eval>>,
-    Vec<crate::eval::ClassMethod>,
-);
-
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ListRef(Rc<RefCell<Vec<Value>>>);
 
@@ -54,6 +46,19 @@ impl ClassInstanceRef {
 }
 
 #[derive(Clone, Debug)]
+pub struct ClassRef(Rc<RefCell<crate::eval::Class>>);
+
+impl ClassRef {
+    pub fn borrow(&self) -> std::cell::Ref<crate::eval::Class> {
+        self.0.borrow()
+    }
+
+    pub fn borrow_mut(&self) -> std::cell::RefMut<crate::eval::Class> {
+        self.0.borrow_mut()
+    }
+}
+
+#[derive(Clone, Debug)]
 pub struct RustValueRef(Rc<RefCell<Box<dyn RustValue>>>);
 
 #[derive(Clone, Debug, PartialEq)]
@@ -83,10 +88,11 @@ pub enum Value {
     String(String),
     List(ListRef),
     Dict(DictRef),
+    Class(ClassRef),
     ClassInstance(ClassInstanceRef),
     Range(Range),
     RustValue(RustValueRef),
-    Error(Box<Value>), // Special value that represents a raised error
+    Raised(Box<Value>),
 }
 
 impl PartialEq for Value {
@@ -100,10 +106,11 @@ impl PartialEq for Value {
             (Value::String(a), Value::String(b)) => a == b,
             (Value::List(a), Value::List(b)) => Rc::ptr_eq(&a.0, &b.0),
             (Value::Dict(a), Value::Dict(b)) => Rc::ptr_eq(&a.0, &b.0),
+            (Value::Class(a), Value::Class(b)) => Rc::ptr_eq(&a.0, &b.0),
             (Value::ClassInstance(a), Value::ClassInstance(b)) => Rc::ptr_eq(&a.0, &b.0),
             (Value::Range(a), Value::Range(b)) => a == b,
             (Value::RustValue(a), Value::RustValue(b)) => Rc::ptr_eq(&a.0, &b.0),
-            (Value::Error(a), Value::Error(b)) => a == b,
+            (Value::Raised(a), Value::Raised(b)) => a == b,
             _ => false,
         }
     }
@@ -124,16 +131,6 @@ pub trait RustValue: fmt::Debug {
 
     fn op_is(&self, _other: &Value) -> Result<Value> {
         Err(anyhow!("This type does not support 'is' operations"))
-    }
-
-    /// Get method by name for class instances (returns None for non-class-instances)
-    fn get_class_method(&self, _name: &str) -> Option<crate::eval::ClassMethod> {
-        None
-    }
-
-    /// Check if this is a class constructor and return class data for instantiation
-    fn as_class_constructor(&self) -> Option<ClassConstructorData> {
-        None
     }
 }
 
@@ -164,6 +161,10 @@ impl Value {
 
     pub fn new_class_instance(instance: crate::eval::ClassInstance) -> Self {
         Value::ClassInstance(ClassInstanceRef(Rc::new(RefCell::new(instance))))
+    }
+
+    pub fn new_class(class: crate::eval::Class) -> Self {
+        Value::Class(ClassRef(Rc::new(RefCell::new(class))))
     }
 
     pub fn rust_value(val: Box<dyn RustValue>) -> Self {
@@ -212,10 +213,11 @@ impl Value {
             Value::Bool(_) => self.get_bool_attr(name),
             Value::List(_) => self.get_list_attr(name),
             Value::Dict(_) => self.get_dict_attr(name),
+            Value::Class(_) => None, // Classes don't have attributes, they're only callable
             Value::Range(_) => self.get_range_attr(name),
             Value::Unit => self.get_unit_attr(name),
             Value::Null => self.get_null_attr(name),
-            Value::Error(_) => None, // Error values don't have attributes
+            Value::Raised(_) => None, // Error values don't have attributes
         }
     }
 
@@ -234,6 +236,13 @@ impl Value {
     pub fn call(&self, args: Args) -> Result<Value> {
         match self {
             Value::RustValue(rv) => rv.0.borrow().call(args),
+            Value::Class(_) => {
+                // Class constructor calls should be handled by the evaluator
+                // This method shouldn't be called directly for classes
+                Err(anyhow!(
+                    "Class constructor calls must be handled by evaluator"
+                ))
+            }
             _ => Err(anyhow!("Value is not callable: {:?}", self)),
         }
     }

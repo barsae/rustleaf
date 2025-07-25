@@ -327,16 +327,9 @@ impl Evaluator {
                 let func_value = self.eval(func_expr)?;
 
                 // Special handling for class constructors
-                if let Value::RustValue(rust_value_ref) = &func_value {
-                    let rust_value = rust_value_ref.borrow();
-                    if let Some((name, field_names, field_defaults, methods)) =
-                        rust_value.as_class_constructor()
-                    {
-                        drop(rust_value); // Release borrow
-                        let class_data =
-                            crate::eval::Class::new(name, field_names, field_defaults, methods);
-                        return self.handle_class_constructor(&class_data, args);
-                    }
+                if let Value::Class(class_ref) = &func_value {
+                    let class = class_ref.borrow();
+                    return self.handle_class_constructor(&class, args);
                 }
 
                 // Evaluate all arguments
@@ -353,7 +346,7 @@ impl Evaluator {
                     .map_err(|e| ControlFlow::Error(ErrorKind::SystemError(e)))?;
 
                 // Check if the result is a Value::Error (from raise() function)
-                if let Value::Error(error_value) = result {
+                if let Value::Raised(error_value) = result {
                     return Err(ControlFlow::Error(ErrorKind::RaisedError(*error_value)));
                 }
 
@@ -843,7 +836,7 @@ impl Evaluator {
                 );
 
                 // Store the class in the current scope as a callable value
-                let class_value = Value::from_rust(class);
+                let class_value = Value::new_class(class);
                 self.current_env.define(name.clone(), class_value);
 
                 Ok(Value::Unit)

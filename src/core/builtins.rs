@@ -161,5 +161,5 @@ pub fn raise(mut args: Args) -> Result<Value> {
     args.complete()?;
 
     // Return a special Error value that the evaluator will detect
-    Ok(Value::Error(Box::new(error_value)))
+    Ok(Value::Raised(Box::new(error_value)))
 }
