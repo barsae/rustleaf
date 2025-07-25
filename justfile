@@ -26,11 +26,16 @@ check-test-dirs:
 
 # Run check, test, and clippy with warnings as errors
 test: check-test-dirs
+    #!/bin/bash
     {{rust_flags}} cargo check
-    {{rust_flags}} cargo test
-    cargo clippy -- -D warnings
+    if ! {{rust_flags}} cargo test; then
+        just test-summary
+        exit 1
+    fi
     just test-summary
+    cargo clippy -- -D warnings
     cargo fmt
+    
 
 # Generate test summary from integration tests
 test-summary:

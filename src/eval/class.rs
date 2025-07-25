@@ -63,24 +63,20 @@ impl RustValue for Class {
             return Err(anyhow::anyhow!("Class constructor takes no arguments"));
         }
 
-        // Create new instance with default field values
-        let mut fields = HashMap::new();
-        for (i, field_name) in self.field_names.iter().enumerate() {
-            let value = if let Some(_default) = &self.field_defaults[i] {
-                // For now, we'll need to evaluate defaults when creating the instance
-                // This is a simplification - we'd need access to the evaluator
-                Value::Null // TODO: evaluate default expressions
-            } else {
-                Value::Null
-            };
-            fields.insert(field_name.clone(), value);
-        }
+        // We need access to an evaluator to evaluate default expressions
+        // For now, return an error suggesting this needs to be handled by the evaluator
+        Err(anyhow::anyhow!(
+            "Class constructor must be handled by evaluator to evaluate default field values"
+        ))
+    }
 
-        Ok(Value::from_rust(ClassInstance {
-            class_name: self.name.clone(),
-            fields,
-            methods: self.methods.clone(),
-        }))
+    fn as_class_constructor(&self) -> Option<crate::core::ClassConstructorData> {
+        Some((
+            self.name.clone(),
+            self.field_names.clone(),
+            self.field_defaults.clone(),
+            self.methods.clone(),
+        ))
     }
 }
 

@@ -6,6 +6,14 @@ use std::rc::Rc;
 
 use crate::core::Args;
 
+/// Type alias for class constructor data to avoid clippy complexity warning
+pub type ClassConstructorData = (
+    String,
+    Vec<String>,
+    Vec<Option<crate::eval::Eval>>,
+    Vec<crate::eval::ClassMethod>,
+);
+
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ListRef(Rc<RefCell<Vec<Value>>>);
 
@@ -107,6 +115,11 @@ pub trait RustValue: fmt::Debug {
 
     /// Get method by name for class instances (returns None for non-class-instances)
     fn get_class_method(&self, _name: &str) -> Option<crate::eval::ClassMethod> {
+        None
+    }
+
+    /// Check if this is a class constructor and return class data for instantiation
+    fn as_class_constructor(&self) -> Option<ClassConstructorData> {
         None
     }
 }

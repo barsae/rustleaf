@@ -326,6 +326,19 @@ impl Evaluator {
                 // Evaluate the function expression
                 let func_value = self.eval(func_expr)?;
 
+                // Special handling for class constructors
+                if let Value::RustValue(rust_value_ref) = &func_value {
+                    let rust_value = rust_value_ref.borrow();
+                    if let Some((name, field_names, field_defaults, methods)) =
+                        rust_value.as_class_constructor()
+                    {
+                        drop(rust_value); // Release borrow
+                        let class_data =
+                            crate::eval::Class::new(name, field_names, field_defaults, methods);
+                        return self.handle_class_constructor(&class_data, args);
+                    }
+                }
+
                 // Evaluate all arguments
                 let arg_values: Result<Vec<Value>, ControlFlow> =
                     args.iter().map(|arg| self.eval(arg)).collect();
@@ -982,6 +995,40 @@ impl Evaluator {
 
         // Fall back to standard attribute access
         obj_value.get_attr(attr_name)
+    }
+
+    /// Handle class constructor calls by evaluating default field expressions
+    fn handle_class_constructor(
+        &mut self,
+        class: &crate::eval::Class,
+        args: &[crate::eval::Eval],
+    ) -> EvalResult {
+        use std::collections::HashMap;
+
+        // Constructor call - create new instance
+        if !args.is_empty() {
+            return Err(ControlFlow::Error(ErrorKind::SystemError(anyhow::anyhow!(
+                "Class constructor takes no arguments"
+            ))));
+        }
+
+        // Create new instance with properly evaluated default field values
+        let mut fields = HashMap::new();
+        for (i, field_name) in class.field_names.iter().enumerate() {
+            let value = if let Some(default_expr) = &class.field_defaults[i] {
+                // Evaluate the default expression
+                self.eval(default_expr)?
+            } else {
+                Value::Null
+            };
+            fields.insert(field_name.clone(), value);
+        }
+
+        Ok(Value::from_rust(crate::eval::ClassInstance {
+            class_name: class.name.clone(),
+            fields,
+            methods: class.methods.clone(),
+        }))
     }
 
     /// Helper method to cleanup resources by calling op_close() in reverse order

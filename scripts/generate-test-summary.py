@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Generate test-summary.md from integration test files.
+Generate test-summary.html from integration test files.
 Scans all .md files in tests/integration/ and extracts their status circles.
 """
 
@@ -39,6 +39,113 @@ def extract_test_status(file_path):
     except Exception as e:
         raise RuntimeError(f"Error reading {file_path}: {e}") from e
 
+def generate_html_template():
+    """Generate the HTML template with CSS."""
+    return '''<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Summary</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            line-height: 1.6;
+            background-color: #0d1117;
+            color: #f0f6fc;
+        }
+        h1 {
+            color: #58a6ff;
+            border-bottom: 1px solid #30363d;
+            padding-bottom: 10px;
+            font-weight: 700;
+            font-size: 2em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .main-title {
+            flex: 1;
+        }
+        .main-summary {
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+            color: #8b949e;
+            font-size: 0.6em;
+            font-weight: normal;
+        }
+        h2 {
+            color: #f0f6fc;
+            margin-top: 30px;
+        }
+        details {
+            margin: 10px 0;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 10px;
+            background-color: #161b22;
+        }
+        summary {
+            font-weight: 600;
+            cursor: pointer;
+            padding: 5px;
+            color: #58a6ff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+        summary::before {
+            content: '▶';
+            margin-right: 8px;
+            transition: transform 0.2s ease;
+        }
+        details[open] summary::before {
+            transform: rotate(90deg);
+        }
+        summary:hover {
+            background-color: #21262d;
+        }
+        .section-title {
+            flex: 1;
+        }
+        .section-summary {
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #8b949e;
+            text-align: right;
+        }
+        ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        li {
+            margin: 5px 0;
+        }
+        a {
+            color: #58a6ff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .stats {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        .pass-rate {
+            font-size: 1.1em;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>'''
+
 def generate_test_summary():
     """Generate the test summary."""
     project_root = Path(__file__).parent.parent
@@ -69,7 +176,7 @@ def generate_test_summary():
         # Extract status
         status = extract_test_status(file_path)
         
-        # Create relative path for markdown link
+        # Create relative path for HTML link
         link_path = str(relative_path)
         
         categories[category].append((test_name, status, link_path))
@@ -79,27 +186,48 @@ def generate_test_summary():
     for category, tests in sorted_categories:
         tests.sort(key=lambda x: x[0])
     
-    # Generate summary content
-    summary_lines = [
-        "# Test Summary",
-        "",
-        "Auto-generated test status summary from integration tests.",
-        ""
-    ]
+    # Calculate overall statistics
+    total_tests = sum(len(tests) for _, tests in sorted_categories)
+    passing_tests = sum(1 for _, tests in sorted_categories for _, status, _ in tests if status == '🟢')
+    failing_tests = sum(1 for _, tests in sorted_categories for _, status, _ in tests if status == '🔴')
+    no_assert_tests = sum(1 for _, tests in sorted_categories for _, status, _ in tests if status == '🟡')
     
+    # Build overall summary for header
+    header_summary_parts = []
+    if passing_tests > 0:
+        header_summary_parts.append(f"{passing_tests} 🟢")
+    if failing_tests > 0:
+        header_summary_parts.append(f"{failing_tests} 🔴")
+    if no_assert_tests > 0:
+        header_summary_parts.append(f"{no_assert_tests} 🟡")
+    
+    header_summary = " ".join(header_summary_parts)
+    
+    # Start building HTML
+    html_content = generate_html_template()
+    
+    # Add header with summary
+    html_content += f'''
+    <h1>
+        <span class="main-title">Test Summary</span>
+        <span class="main-summary">{header_summary}</span>
+    </h1>
+
+'''
+    
+    # Add collapsible sections
     for category, tests in sorted_categories:
         if category == "root":
-            section_title = "Root Tests"
+            section_title = "Root"
         else:
-            section_title = f"{category.title()} Tests"
+            section_title = category.replace('_', ' ').title()
         
         # Count statuses for this category
         category_passing = sum(1 for _, status, _ in tests if status == '🟢')
         category_failing = sum(1 for _, status, _ in tests if status == '🔴')
         category_no_assert = sum(1 for _, status, _ in tests if status == '🟡')
-        category_total = len(tests)
         
-        # Build summary
+        # Build category summary (omit zeros)
         summary_parts = []
         if category_passing > 0:
             summary_parts.append(f"{category_passing} 🟢")
@@ -108,48 +236,35 @@ def generate_test_summary():
         if category_no_assert > 0:
             summary_parts.append(f"{category_no_assert} 🟡")
         
-        summary_text = " ".join(summary_parts) if summary_parts else f"{category_total} tests"
+        summary_text = " ".join(summary_parts)
         
-        summary_lines.append(f"<details>")
-        summary_lines.append(f"<summary>{section_title}: {summary_text}</summary>")
-        summary_lines.append("")
+        html_content += f'''    <details>
+        <summary>
+            <span class="section-title">{section_title}</span>
+            <span class="section-summary">{summary_text}</span>
+        </summary>
+        <ul>
+'''
         
         for test_name, status, link_path in tests:
-            summary_lines.append(f"- [{test_name}](tests/integration/{link_path}): {status}")
+            # Create absolute path for VSCode URL
+            absolute_path = project_root / "tests" / "integration" / link_path
+            vscode_url = f"vscode://file/{absolute_path}"
+            html_content += f'            <li><a href="{vscode_url}">{test_name}</a>: {status}</li>\n'
         
-        summary_lines.append("")
-        summary_lines.append("</details>")
-        summary_lines.append("")
+        html_content += '''        </ul>
+    </details>
+
+'''
     
-    # Add statistics
-    total_tests = sum(len(tests) for _, tests in sorted_categories)
-    passing_tests = sum(1 for _, tests in sorted_categories for _, status, _ in tests if status == '🟢')
-    failing_tests = sum(1 for _, tests in sorted_categories for _, status, _ in tests if status == '🔴')
-    no_assert_tests = sum(1 for _, tests in sorted_categories for _, status, _ in tests if status == '🟡')
-    
-    stats_lines = [
-        "## Statistics",
-        "",
-        f"- Total tests: {total_tests}",
-        f"- Passing: {passing_tests} 🟢",
-        f"- Failing: {failing_tests} 🔴",
-    ]
-    
-    # Only include no-assert if they are > 0
-    if no_assert_tests > 0:
-        stats_lines.append(f"- No asserts: {no_assert_tests} 🟡")
-    
-    stats_lines.extend([
-        "",
-        f"**Pass rate: {passing_tests/total_tests*100:.1f}%**" if total_tests > 0 else "**Pass rate: N/A**"
-    ])
-    
-    summary_lines.extend(stats_lines)
+    # Close HTML
+    html_content += '''</body>
+</html>'''
     
     # Write summary file
-    summary_path = project_root / "test-summary.md"
+    summary_path = project_root / "test-summary.html"
     with open(summary_path, 'w', encoding='utf-8') as f:
-        f.write('\n'.join(summary_lines))
+        f.write(html_content)
     
     print(f"Generated test summary: {summary_path}")
     print(f"Total: {total_tests}, Passing: {passing_tests}, Failing: {failing_tests}")
