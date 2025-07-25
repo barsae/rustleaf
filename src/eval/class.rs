@@ -81,7 +81,7 @@ impl RustValue for Class {
 }
 
 /// A class instance - holds field values and provides method access
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct ClassInstance {
     pub class_name: String,
     pub fields: HashMap<String, Value>,
@@ -92,40 +92,6 @@ impl ClassInstance {
     /// Find a method by name
     pub fn find_method(&self, name: &str) -> Option<&ClassMethod> {
         self.methods.iter().find(|m| m.name == name && !m.is_static)
-    }
-}
-
-impl RustValue for ClassInstance {
-    fn get_attr(&self, name: &str) -> Option<Value> {
-        // First check for fields
-        if let Some(field_value) = self.fields.get(name) {
-            return Some(field_value.clone());
-        }
-
-        // Method access is now handled by the evaluator in GetAttr
-        // so we don't create BoundMethod here
-        None
-    }
-
-    fn set_attr(&mut self, name: &str, value: Value) -> Result<(), String> {
-        // Allow setting fields (for now, allow setting any field)
-        self.fields.insert(name.to_string(), value);
-        Ok(())
-    }
-
-    fn call(&self, _args: Args) -> Result<Value> {
-        Err(anyhow::anyhow!(
-            "'{}' object is not callable",
-            self.class_name
-        ))
-    }
-
-    fn is_class_instance(&self) -> bool {
-        true
-    }
-
-    fn get_class_method(&self, name: &str) -> Option<super::core::ClassMethod> {
-        self.find_method(name).cloned()
     }
 }
 

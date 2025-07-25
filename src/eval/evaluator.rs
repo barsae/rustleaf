@@ -615,25 +615,7 @@ impl Evaluator {
             Eval::GetAttr(obj_expr, attr_name) => {
                 let obj_value = self.eval(obj_expr)?;
 
-                // Special handling for class instance method access
-                if let Value::RustValue(rust_val_ref) = &obj_value {
-                    let rust_val = rust_val_ref.borrow();
-                    if rust_val.is_class_instance() {
-                        // Check if this is a method access
-                        if let Some(method) = rust_val.get_class_method(attr_name) {
-                            // Create BoundMethod with current evaluator context
-                            let bound_method = crate::eval::BoundMethod {
-                                instance: obj_value.clone(),
-                                method,
-                                closure_env: self.globals.clone(),
-                            };
-                            return Ok(Value::from_rust(bound_method));
-                        }
-                    }
-                }
-
-                // Fall back to standard attribute access
-                match obj_value.get_attr(attr_name) {
+                match obj_value.get_attr(attr_name, self) {
                     Some(value) => Ok(value),
                     None => Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(
                         "No attribute '{}' on value {:?}",
@@ -722,7 +704,7 @@ impl Evaluator {
                 let index_value = self.eval(index_expr)?;
 
                 // Use operator method system: a[b] → a.op_get_attr("op_get_item").op_call(b)
-                match obj_value.get_attr("op_get_item") {
+                match obj_value.get_attr("op_get_item", self) {
                     Some(method) => {
                         let args = Args::positional(vec![index_value]);
                         method
@@ -739,17 +721,9 @@ impl Evaluator {
                 let obj_value = self.eval(obj_expr)?;
                 let new_value = self.eval(value_expr)?;
 
-                // For RustValue types, try calling set_attr directly
-                match obj_value {
-                    Value::RustValue(rv) => match rv.borrow_mut().set_attr(attr_name, new_value) {
-                        Ok(_) => Ok(Value::Unit),
-                        Err(err) => Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(err)))),
-                    },
-                    _ => Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(
-                        "Cannot set attribute '{}' on value {:?}",
-                        attr_name,
-                        obj_value
-                    )))),
+                match obj_value.set_attr(attr_name, new_value) {
+                    Ok(_) => Ok(Value::Unit),
+                    Err(err) => Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(err)))),
                 }
             }
             Eval::SetItem(obj_expr, index_expr, value_expr) => {
@@ -758,7 +732,7 @@ impl Evaluator {
                 let new_value = self.eval(value_expr)?;
 
                 // Use operator method system: a[b] = c → a.op_get_attr("op_set_item").op_call(b, c)
-                match obj_value.get_attr("op_set_item") {
+                match obj_value.get_attr("op_set_item", self) {
                     Some(method) => {
                         let args = Args::positional(vec![index_value, new_value]);
                         method
@@ -974,27 +948,9 @@ impl Evaluator {
         }
     }
 
-    /// Helper method to get a method from a value, using the same logic as GetAttr evaluation
-    fn get_method_from_value(&self, obj_value: &Value, attr_name: &str) -> Option<Value> {
-        // Special handling for class instance method access
-        if let Value::RustValue(rust_val_ref) = obj_value {
-            let rust_val = rust_val_ref.borrow();
-            if rust_val.is_class_instance() {
-                // Check if this is a method access
-                if let Some(method) = rust_val.get_class_method(attr_name) {
-                    // Create BoundMethod with current evaluator context
-                    let bound_method = crate::eval::BoundMethod {
-                        instance: obj_value.clone(),
-                        method,
-                        closure_env: self.globals.clone(),
-                    };
-                    return Some(Value::from_rust(bound_method));
-                }
-            }
-        }
-
-        // Fall back to standard attribute access
-        obj_value.get_attr(attr_name)
+    /// Helper method to get a method from a value
+    fn get_method_from_value(&mut self, obj_value: &Value, attr_name: &str) -> Option<Value> {
+        obj_value.get_attr(attr_name, self)
     }
 
     /// Handle class constructor calls by evaluating default field expressions
@@ -1024,7 +980,7 @@ impl Evaluator {
             fields.insert(field_name.clone(), value);
         }
 
-        Ok(Value::from_rust(crate::eval::ClassInstance {
+        Ok(Value::new_class_instance(crate::eval::ClassInstance {
             class_name: class.name.clone(),
             fields,
             methods: class.methods.clone(),
@@ -1032,7 +988,7 @@ impl Evaluator {
     }
 
     /// Helper method to cleanup resources by calling op_close() in reverse order
-    fn cleanup_resources(&self, resources: &[(String, Value)]) {
+    fn cleanup_resources(&mut self, resources: &[(String, Value)]) {
         // Cleanup in reverse order
         for (_name, resource_value) in resources.iter().rev() {
             let close_method = self.get_method_from_value(resource_value, "op_close");

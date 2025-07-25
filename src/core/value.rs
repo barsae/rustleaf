@@ -41,6 +41,19 @@ impl DictRef {
 }
 
 #[derive(Clone, Debug)]
+pub struct ClassInstanceRef(Rc<RefCell<crate::eval::ClassInstance>>);
+
+impl ClassInstanceRef {
+    pub fn borrow(&self) -> std::cell::Ref<crate::eval::ClassInstance> {
+        self.0.borrow()
+    }
+
+    pub fn borrow_mut(&self) -> std::cell::RefMut<crate::eval::ClassInstance> {
+        self.0.borrow_mut()
+    }
+}
+
+#[derive(Clone, Debug)]
 pub struct RustValueRef(Rc<RefCell<Box<dyn RustValue>>>);
 
 #[derive(Clone, Debug, PartialEq)]
@@ -70,6 +83,7 @@ pub enum Value {
     String(String),
     List(ListRef),
     Dict(DictRef),
+    ClassInstance(ClassInstanceRef),
     Range(Range),
     RustValue(RustValueRef),
     Error(Box<Value>), // Special value that represents a raised error
@@ -86,6 +100,7 @@ impl PartialEq for Value {
             (Value::String(a), Value::String(b)) => a == b,
             (Value::List(a), Value::List(b)) => Rc::ptr_eq(&a.0, &b.0),
             (Value::Dict(a), Value::Dict(b)) => Rc::ptr_eq(&a.0, &b.0),
+            (Value::ClassInstance(a), Value::ClassInstance(b)) => Rc::ptr_eq(&a.0, &b.0),
             (Value::Range(a), Value::Range(b)) => a == b,
             (Value::RustValue(a), Value::RustValue(b)) => Rc::ptr_eq(&a.0, &b.0),
             (Value::Error(a), Value::Error(b)) => a == b,
@@ -98,12 +113,15 @@ pub trait RustValue: fmt::Debug {
     fn get_attr(&self, _name: &str) -> Option<Value> {
         None
     }
+
     fn set_attr(&mut self, _name: &str, _value: Value) -> Result<(), String> {
         Err("Cannot set attributes on this type".to_string())
     }
+
     fn call(&self, args: Args) -> Result<Value> {
         Err(anyhow!("Cannot call this type"))
     }
+
     fn op_is(&self, _other: &Value) -> Result<Value> {
         Err(anyhow!("This type does not support 'is' operations"))
     }
@@ -149,6 +167,10 @@ impl Value {
         Value::Dict(DictRef(Rc::new(RefCell::new(map))))
     }
 
+    pub fn new_class_instance(instance: crate::eval::ClassInstance) -> Self {
+        Value::ClassInstance(ClassInstanceRef(Rc::new(RefCell::new(instance))))
+    }
+
     pub fn rust_value(val: Box<dyn RustValue>) -> Self {
         Value::RustValue(RustValueRef(Rc::new(RefCell::new(val))))
     }
@@ -165,9 +187,30 @@ impl Value {
         Value::from_rust(BoundMethod::new(self, method_func))
     }
 
-    pub fn get_attr(&self, name: &str) -> Option<Value> {
+    pub fn get_attr(&self, name: &str, eval: &mut crate::eval::Evaluator) -> Option<Value> {
         match self {
             Value::RustValue(rv) => rv.0.borrow().get_attr(name),
+            Value::ClassInstance(ci) => {
+                let borrowed = ci.borrow();
+
+                // First check for fields
+                if let Some(field_value) = borrowed.fields.get(name) {
+                    return Some(field_value.clone());
+                }
+
+                // Check for methods
+                if let Some(method) = borrowed.find_method(name) {
+                    // Create BoundMethod with the ClassInstanceRef (not a clone)
+                    let bound_method = crate::eval::BoundMethod {
+                        instance: self.clone(), // Clone the Value::ClassInstance, which shares the Rc
+                        method: method.clone(),
+                        closure_env: eval.globals.clone(),
+                    };
+                    return Some(Value::from_rust(bound_method));
+                }
+
+                None
+            }
             Value::Int(_) => self.get_int_attr(name),
             Value::Float(_) => self.get_float_attr(name),
             Value::String(_) => self.get_string_attr(name),
@@ -178,6 +221,18 @@ impl Value {
             Value::Unit => self.get_unit_attr(name),
             Value::Null => self.get_null_attr(name),
             Value::Error(_) => None, // Error values don't have attributes
+        }
+    }
+
+    pub fn set_attr(&self, name: &str, value: Value) -> Result<(), String> {
+        match self {
+            Value::RustValue(rv) => rv.0.borrow_mut().set_attr(name, value),
+            Value::ClassInstance(ci) => {
+                // Allow setting fields on class instances
+                ci.borrow_mut().fields.insert(name.to_string(), value);
+                Ok(())
+            }
+            _ => Err("Cannot set attributes on this type".to_string()),
         }
     }
 
