@@ -147,7 +147,7 @@ impl TypeConstant {
 }
 
 impl RustValue for TypeConstant {
-    fn call(&self, args: Args) -> anyhow::Result<Value> {
+    fn call(&self, _args: Args) -> anyhow::Result<Value> {
         Err(anyhow!("Type constants are not callable"))
     }
 
@@ -785,8 +785,7 @@ impl Evaluator {
                                 .define(name.clone(), resource_value.clone());
 
                             // Call op_open() if it exists - use the same logic as GetAttr evaluation
-                            let open_method =
-                                self.get_method_from_value(&resource_value, "op_open");
+                            let open_method = resource_value.get_attr("op_open", self);
                             if let Some(open_method) = open_method {
                                 // Bound methods already have self bound, so call with no arguments
                                 let args = Args::positional(vec![]);
@@ -948,11 +947,6 @@ impl Evaluator {
         }
     }
 
-    /// Helper method to get a method from a value
-    fn get_method_from_value(&mut self, obj_value: &Value, attr_name: &str) -> Option<Value> {
-        obj_value.get_attr(attr_name, self)
-    }
-
     /// Handle class constructor calls by evaluating default field expressions
     fn handle_class_constructor(
         &mut self,
@@ -991,7 +985,7 @@ impl Evaluator {
     fn cleanup_resources(&mut self, resources: &[(String, Value)]) {
         // Cleanup in reverse order
         for (_name, resource_value) in resources.iter().rev() {
-            let close_method = self.get_method_from_value(resource_value, "op_close");
+            let close_method = resource_value.get_attr("op_close", self);
             if let Some(close_method) = close_method {
                 // Bound methods already have self bound, so call with no arguments
                 let args = Args::positional(vec![]);

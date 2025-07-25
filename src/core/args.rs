@@ -51,7 +51,7 @@ impl Args {
     }
 
     /// Get an optional positional argument with a default value
-    pub fn optional(&mut self, name: &str, default: Value) -> Value {
+    pub fn optional(&mut self, _name: &str, default: Value) -> Value {
         if self.positional_index >= self.positional.len() {
             default
         } else {

@@ -1,7 +1,3 @@
-// TODO: remove these after sufficient implementation is done
-#![allow(dead_code)]
-#![allow(unused_variables)]
-
 /// RustLeaf interpreter library
 pub mod core;
 pub mod eval;

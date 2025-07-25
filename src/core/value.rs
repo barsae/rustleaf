@@ -118,17 +118,12 @@ pub trait RustValue: fmt::Debug {
         Err("Cannot set attributes on this type".to_string())
     }
 
-    fn call(&self, args: Args) -> Result<Value> {
+    fn call(&self, _args: Args) -> Result<Value> {
         Err(anyhow!("Cannot call this type"))
     }
 
     fn op_is(&self, _other: &Value) -> Result<Value> {
         Err(anyhow!("This type does not support 'is' operations"))
-    }
-
-    /// Returns true if this is a class instance (for method resolution)
-    fn is_class_instance(&self) -> bool {
-        false
     }
 
     /// Get method by name for class instances (returns None for non-class-instances)
