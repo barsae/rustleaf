@@ -3,6 +3,7 @@ mod args;
 mod ast;
 mod builtin_ops;
 mod builtins;
+mod iter;
 mod macros;
 mod value;
 
@@ -11,5 +12,6 @@ pub use args::*;
 pub use ast::*;
 pub use builtin_ops::*;
 pub use builtins::*;
+pub use iter::*;
 pub use macros::*;
 pub use value::*;

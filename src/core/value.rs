@@ -126,11 +126,19 @@ pub trait RustValue: fmt::Debug {
     }
 
     fn call(&self, _args: Args) -> Result<Value> {
-        Err(anyhow!("Cannot call this type"))
+        Err(anyhow!("This type is not callable"))
     }
 
     fn op_is(&self, _other: &Value) -> Result<Value> {
         Err(anyhow!("This type does not support 'is' operations"))
+    }
+
+    fn op_iter(&self) -> Result<Value> {
+        Err(anyhow!("This type is not iterable"))
+    }
+
+    fn op_next(&mut self) -> Result<Option<Value>> {
+        Err(anyhow!("This type is not an iterator"))
     }
 }
 
@@ -249,6 +257,23 @@ impl Value {
                 ))
             }
             _ => Err(anyhow!("Value is not callable: {:?}", self)),
+        }
+    }
+
+    pub fn op_iter(&self) -> Result<Value> {
+        match self {
+            Value::List(list) => Ok(Value::from_rust(crate::core::ListIter::new(list.clone()))),
+            Value::Dict(dict) => Ok(Value::from_rust(crate::core::DictIter::new(dict.clone()))),
+            Value::Range(range) => Ok(Value::from_rust(crate::core::RangeIter::new(range.clone()))),
+            Value::RustValue(rv) => rv.0.borrow().op_iter(),
+            _ => Err(anyhow!("Value is not iterable: {:?}", self)),
+        }
+    }
+
+    pub fn op_next(&mut self) -> Result<Option<Value>> {
+        match self {
+            Value::RustValue(rv) => rv.0.borrow_mut().op_next(),
+            _ => Err(anyhow!("Value is not an iterator: {:?}", self)),
         }
     }
 

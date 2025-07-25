@@ -212,24 +212,22 @@ impl Evaluator {
                     }
                 }
             }
-            Eval::Loop(body) => {
-                loop {
-                    match self.eval(body) {
-                        Ok(_) => {
-                            continue;
-                        }
-                        Err(ControlFlow::Break(value)) => {
-                            return Ok(value);
-                        }
-                        Err(ControlFlow::Continue) => {
-                            continue;
-                        }
-                        Err(other) => {
-                            return Err(other);
-                        }
+            Eval::Loop(body) => loop {
+                match self.eval(body) {
+                    Ok(_) => {
+                        continue;
+                    }
+                    Err(ControlFlow::Break(value)) => {
+                        return Ok(value);
+                    }
+                    Err(ControlFlow::Continue) => {
+                        continue;
+                    }
+                    Err(other) => {
+                        return Err(other);
                     }
                 }
-            }
+            },
             Eval::While(condition, body) => {
                 loop {
                     // Evaluate condition
@@ -977,15 +975,9 @@ impl Evaluator {
         use crate::eval::core::EvalMatchPattern;
 
         match pattern {
-            EvalMatchPattern::Literal(literal) => {
-                Ok(literal == value)
-            }
-            EvalMatchPattern::Variable(_) => {
-                Ok(true)
-            }
-            EvalMatchPattern::Wildcard => {
-                Ok(true)
-            }
+            EvalMatchPattern::Literal(literal) => Ok(literal == value),
+            EvalMatchPattern::Variable(_) => Ok(true),
+            EvalMatchPattern::Wildcard => Ok(true),
         }
     }
 }
