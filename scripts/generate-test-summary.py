@@ -6,6 +6,7 @@ Scans all .md files in tests/integration/ and extracts their status circles.
 
 import os
 import re
+from datetime import datetime
 from pathlib import Path
 from collections import defaultdict
 
@@ -75,6 +76,14 @@ def generate_html_template():
             color: #8b949e;
             font-size: 0.6em;
             font-weight: normal;
+        }
+        .timestamp {
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+            color: #6e7681;
+            font-size: 0.85em;
+            font-weight: normal;
+            margin-top: 10px;
+            text-align: center;
         }
         h2 {
             color: #f0f6fc;
@@ -203,15 +212,19 @@ def generate_test_summary():
     
     header_summary = " ".join(header_summary_parts)
     
+    # Get current timestamp
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    
     # Start building HTML
     html_content = generate_html_template()
     
-    # Add header with summary
+    # Add header with summary and timestamp
     html_content += f'''
     <h1>
         <span class="main-title">Test Summary</span>
         <span class="main-summary">{header_summary}</span>
     </h1>
+    <div class="timestamp">{timestamp}</div>
 
 '''
     
