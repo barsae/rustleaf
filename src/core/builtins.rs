@@ -71,14 +71,7 @@ pub fn assert(mut args: Args) -> Result<Value> {
         }
     });
 
-    // Check if condition is truthy
-    let is_truthy = match condition {
-        Value::Bool(b) => b,
-        Value::Unit | Value::Null => false,
-        _ => true, // All other values are truthy
-    };
-
-    if !is_truthy {
+    if !condition.is_truthy() {
         let message_str = match message {
             Value::String(s) => s,
             other => format!("{:?}", other),

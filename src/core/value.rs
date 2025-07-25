@@ -135,11 +135,16 @@ pub trait RustValue: fmt::Debug {
 }
 
 impl Value {
-    pub fn is_truthy(&self) -> Option<bool> {
+    pub fn is_truthy(&self) -> bool {
         match self {
-            Value::Null => Some(false),
-            Value::Bool(b) => Some(*b),
-            _ => None,
+            Value::Bool(b) => *b,
+            Value::Null | Value::Unit => false,
+            Value::Int(i) => *i != 0,
+            Value::Float(f) => *f != 0.0,
+            Value::String(s) => !s.is_empty(),
+            Value::List(list) => !list.borrow().is_empty(),
+            Value::Dict(dict) => !dict.borrow().is_empty(),
+            _ => true, // Other values (Range, RustValue, Class, ClassInstance) are truthy
         }
     }
 

@@ -1,4 +1,4 @@
-use super::scope::ScopeRef;
+use super::{scope::ScopeRef, Params, RustLeafFunction, TypeConstant};
 use crate::{core::*, eval::Eval};
 use anyhow::anyhow;
 use std::path::{Path, PathBuf};
@@ -19,164 +19,6 @@ pub enum ControlFlow {
 
 pub type EvalResult = Result<Value, ControlFlow>;
 
-#[derive(Debug, Clone)]
-struct RustLeafFunction {
-    params: Vec<(String, Option<Value>, ParameterKind)>, // (name, default_value, kind)
-    body: Eval,
-    closure_env: ScopeRef, // Capture the environment where function was defined
-}
-
-impl RustLeafFunction {
-    fn into_value(self) -> Value {
-        Value::from_rust(self)
-    }
-}
-
-impl RustValue for RustLeafFunction {
-    fn call(&self, mut args: Args) -> anyhow::Result<Value> {
-        // Analyze parameter structure
-        let regular_params: Vec<_> = self
-            .params
-            .iter()
-            .filter(|(_, _, kind)| matches!(kind, ParameterKind::Regular))
-            .collect();
-        let rest_param = self
-            .params
-            .iter()
-            .find(|(_, _, kind)| matches!(kind, ParameterKind::Rest));
-
-        // Count required parameters (regular params without defaults)
-        let required_params = regular_params
-            .iter()
-            .filter(|(_, default, _)| default.is_none())
-            .count();
-        let max_regular_params = regular_params.len();
-
-        // Check argument count - with rest params, we accept unlimited args
-        if rest_param.is_some() {
-            // With rest param: need at least required regular params
-            if args.len() < required_params {
-                return Err(anyhow!(
-                    "Function expects at least {} arguments, got {}",
-                    required_params,
-                    args.len()
-                ));
-            }
-        } else {
-            // Without rest param: standard validation
-            if args.len() < required_params || args.len() > max_regular_params {
-                return Err(anyhow!(
-                    "Function expects {} to {} arguments, got {}",
-                    required_params,
-                    max_regular_params,
-                    args.len()
-                ));
-            }
-        }
-
-        // Create new scope for function execution
-        let function_scope = self.closure_env.child();
-
-        // Set function name for better error messages
-        args.set_function_name("user function");
-
-        // Bind regular parameters to arguments using fluent API
-        for (param_name, default_value, kind) in &self.params {
-            match kind {
-                ParameterKind::Regular => {
-                    let arg_value = if let Some(default) = default_value {
-                        // Parameter has default - use optional with default
-                        args.optional(param_name, default.clone())
-                    } else {
-                        // Required parameter
-                        args.expect(param_name)?
-                    };
-                    function_scope.define(param_name.clone(), arg_value);
-                }
-                ParameterKind::Rest => {
-                    // Collect remaining arguments into a list
-                    let rest_args = args.rest();
-                    let list_value = Value::new_list_with_values(rest_args);
-                    function_scope.define(param_name.clone(), list_value);
-                }
-                ParameterKind::Keyword => {
-                    // TODO: Implement keyword parameters later
-                    return Err(anyhow!("Keyword parameters not yet implemented"));
-                }
-            }
-        }
-
-        // Validate all args consumed
-        args.complete()?;
-
-        // Create evaluator with function scope - use same globals as parent
-        let mut evaluator = Evaluator {
-            globals: self.closure_env.clone(), // Use closure environment as globals for now
-            current_env: function_scope,
-            current_dir: std::env::current_dir().unwrap_or_else(|_| PathBuf::from(".")),
-        };
-
-        // Evaluate function body
-        match evaluator.eval(&self.body) {
-            Ok(value) => Ok(value),
-            Err(ControlFlow::Return(value)) => Ok(value),
-            Err(ControlFlow::Error(ErrorKind::SystemError(err))) => Err(err),
-            Err(ControlFlow::Error(ErrorKind::RaisedError(value))) => {
-                // Convert raised value to string for error display
-                match value {
-                    Value::String(s) => Err(anyhow::anyhow!("{}", s)),
-                    _ => Err(anyhow::anyhow!("{:?}", value)),
-                }
-            }
-            Err(other) => Err(anyhow!("Invalid control flow in function: {:?}", other)),
-        }
-    }
-}
-
-#[derive(Debug, Clone)]
-struct TypeConstant {
-    type_name: String,
-}
-
-impl TypeConstant {
-    fn new(type_name: &str) -> Self {
-        Self {
-            type_name: type_name.to_string(),
-        }
-    }
-}
-
-impl RustValue for TypeConstant {
-    fn call(&self, _args: Args) -> anyhow::Result<Value> {
-        Err(anyhow!("Type constants are not callable"))
-    }
-
-    fn get_attr(&self, name: &str) -> Option<Value> {
-        match name {
-            "name" => Some(Value::String(self.type_name.clone())),
-            _ => None,
-        }
-    }
-
-    fn op_is(&self, other: &Value) -> anyhow::Result<Value> {
-        // Type checking: check if other value matches this type
-        let matches = match self.type_name.as_str() {
-            "Null" => matches!(other, Value::Null),
-            "Unit" => matches!(other, Value::Unit),
-            "Bool" => matches!(other, Value::Bool(_)),
-            "Int" => matches!(other, Value::Int(_)),
-            "Float" => matches!(other, Value::Float(_)),
-            "String" => matches!(other, Value::String(_)),
-            "List" => matches!(other, Value::List(_)),
-            "Dict" => matches!(other, Value::Dict(_)),
-            "Range" => matches!(other, Value::Range(_)),
-            "Function" => matches!(other, Value::RustValue(_)), // Functions are RustValues
-            _ => false,
-        };
-        Ok(Value::Bool(matches))
-    }
-}
-
 pub struct Evaluator {
     pub globals: ScopeRef,
     pub current_env: ScopeRef,
@@ -191,17 +33,7 @@ impl Default for Evaluator {
 
 impl Evaluator {
     pub fn new() -> Self {
-        let globals = ScopeRef::new();
-
-        let mut evaluator = Evaluator {
-            globals: globals.clone(),
-            current_env: globals,
-            current_dir: std::env::current_dir().unwrap_or_else(|_| PathBuf::from(".")),
-        };
-
-        // Register built-in functions
-        evaluator.register_builtins();
-        evaluator
+        Self::new_with_dir(std::env::current_dir().unwrap_or_else(|_| PathBuf::from(".")))
     }
 
     pub fn new_with_dir(current_dir: PathBuf) -> Self {
@@ -213,7 +45,6 @@ impl Evaluator {
             current_dir,
         };
 
-        // Register built-in functions
         evaluator.register_builtins();
         evaluator
     }
@@ -231,51 +62,31 @@ impl Evaluator {
 
     fn register_type_constants(&mut self) {
         // Create type constants as special values
-        self.globals.define(
-            "Null".to_string(),
-            Value::from_rust(TypeConstant::new("Null")),
-        );
-        self.globals.define(
-            "Unit".to_string(),
-            Value::from_rust(TypeConstant::new("Unit")),
-        );
-        self.globals.define(
-            "Bool".to_string(),
-            Value::from_rust(TypeConstant::new("Bool")),
-        );
-        self.globals.define(
-            "Int".to_string(),
-            Value::from_rust(TypeConstant::new("Int")),
-        );
-        self.globals.define(
-            "Float".to_string(),
-            Value::from_rust(TypeConstant::new("Float")),
-        );
-        self.globals.define(
-            "String".to_string(),
-            Value::from_rust(TypeConstant::new("String")),
-        );
-        self.globals.define(
-            "List".to_string(),
-            Value::from_rust(TypeConstant::new("List")),
-        );
-        self.globals.define(
-            "Dict".to_string(),
-            Value::from_rust(TypeConstant::new("Dict")),
-        );
-        self.globals.define(
-            "Range".to_string(),
-            Value::from_rust(TypeConstant::new("Range")),
-        );
-        self.globals.define(
-            "Function".to_string(),
-            Value::from_rust(TypeConstant::new("Function")),
-        );
+        self.globals
+            .define("Null", Value::from_rust(TypeConstant::new("Null")));
+        self.globals
+            .define("Unit", Value::from_rust(TypeConstant::new("Unit")));
+        self.globals
+            .define("Bool", Value::from_rust(TypeConstant::new("Bool")));
+        self.globals
+            .define("Int", Value::from_rust(TypeConstant::new("Int")));
+        self.globals
+            .define("Float", Value::from_rust(TypeConstant::new("Float")));
+        self.globals
+            .define("String", Value::from_rust(TypeConstant::new("String")));
+        self.globals
+            .define("List", Value::from_rust(TypeConstant::new("List")));
+        self.globals
+            .define("Dict", Value::from_rust(TypeConstant::new("Dict")));
+        self.globals
+            .define("Range", Value::from_rust(TypeConstant::new("Range")));
+        self.globals
+            .define("Function", Value::from_rust(TypeConstant::new("Function")));
     }
 
     fn register_builtin_fn(&mut self, name: &'static str, func: fn(Args) -> anyhow::Result<Value>) {
         let rust_fn = Value::from_rust(RustFunction::new(name, func));
-        self.globals.define(name.to_string(), rust_fn);
+        self.globals.define(name, rust_fn);
     }
 
     pub fn eval(&mut self, eval: &Eval) -> EvalResult {
@@ -357,7 +168,7 @@ impl Evaluator {
                     Some(expr) => self.eval(expr)?,
                     None => Value::Unit,
                 };
-                self.current_env.define(name.clone(), value);
+                self.current_env.define(name, value);
                 Ok(Value::Unit)
             }
             Eval::DeclarePattern(pattern, init_expr) => {
@@ -366,27 +177,20 @@ impl Evaluator {
                 Ok(Value::Unit)
             }
             Eval::Function(name, params, body) => {
-                let function = RustLeafFunction {
-                    params: params.clone(),
-                    body: (**body).clone(),
-                    closure_env: self.current_env.clone(),
-                };
+                let function = RustLeafFunction::new(
+                    Params::from_vec(params.clone()),
+                    (**body).clone(),
+                    self.current_env.clone(),
+                );
                 let function_value = function.into_value();
-                self.current_env.define(name.clone(), function_value);
+                self.current_env.define(name, function_value);
                 Ok(Value::Unit)
             }
             Eval::Lambda(params, body) => {
-                // Convert Vec<String> to Vec<(String, Option<Value>, ParameterKind)> - lambdas don't have defaults or rest
-                let param_data: Vec<(String, Option<Value>, ParameterKind)> = params
-                    .iter()
-                    .map(|name| (name.clone(), None, ParameterKind::Regular))
-                    .collect();
+                let param_data = Params::from_names(params);
 
-                let function = RustLeafFunction {
-                    params: param_data,
-                    body: (**body).clone(),
-                    closure_env: self.current_env.clone(),
-                };
+                let function =
+                    RustLeafFunction::new(param_data, (**body).clone(), self.current_env.clone());
                 Ok(function.into_value())
             }
             Eval::Assign(name, expr) => {
@@ -399,14 +203,7 @@ impl Evaluator {
             Eval::If(condition, then_expr, else_expr) => {
                 let condition_val = self.eval(condition)?;
 
-                // Check if condition is truthy
-                let is_truthy = match condition_val {
-                    Value::Bool(b) => b,
-                    Value::Unit => false,
-                    _ => true, // All other values are truthy (like Python/JavaScript)
-                };
-
-                if is_truthy {
+                if condition_val.is_truthy() {
                     self.eval(then_expr)
                 } else {
                     match else_expr {
@@ -419,19 +216,15 @@ impl Evaluator {
                 loop {
                     match self.eval(body) {
                         Ok(_) => {
-                            // Normal completion, continue looping
                             continue;
                         }
                         Err(ControlFlow::Break(value)) => {
-                            // Break out of loop with value
                             return Ok(value);
                         }
                         Err(ControlFlow::Continue) => {
-                            // Continue to next iteration
                             continue;
                         }
                         Err(other) => {
-                            // Propagate other control flow (Return, Error)
                             return Err(other);
                         }
                     }
@@ -442,14 +235,7 @@ impl Evaluator {
                     // Evaluate condition
                     let condition_val = self.eval(condition)?;
 
-                    // Check if condition is truthy
-                    let is_truthy = match condition_val {
-                        Value::Bool(b) => b,
-                        Value::Unit => false,
-                        _ => true, // All other values are truthy (like Python/JavaScript)
-                    };
-
-                    if !is_truthy {
+                    if !condition_val.is_truthy() {
                         // Condition is false, exit loop
                         return Ok(Value::Unit);
                     }
@@ -622,7 +408,7 @@ impl Evaluator {
             Eval::LogicalAnd(left, right) => {
                 let left_val = self.eval(left)?;
                 // Short-circuit evaluation
-                if !left_val.is_truthy().unwrap_or(true) {
+                if !left_val.is_truthy() {
                     Ok(left_val)
                 } else {
                     self.eval(right)
@@ -631,7 +417,7 @@ impl Evaluator {
             Eval::LogicalOr(left, right) => {
                 let left_val = self.eval(left)?;
                 // Short-circuit evaluation
-                if left_val.is_truthy().unwrap_or(true) {
+                if left_val.is_truthy() {
                     Ok(left_val)
                 } else {
                     self.eval(right)
@@ -639,7 +425,7 @@ impl Evaluator {
             }
             Eval::LogicalNot(expr) => {
                 let val = self.eval(expr)?;
-                Ok(Value::Bool(!val.is_truthy().unwrap_or(true)))
+                Ok(Value::Bool(!val.is_truthy()))
             }
             Eval::Is(left, right) => {
                 let left_val = self.eval(left)?;
@@ -904,7 +690,7 @@ impl Evaluator {
                         // Check guard if present
                         if let Some(guard) = &case.guard {
                             let guard_result = self.eval(guard)?;
-                            if !Self::is_truthy(&guard_result) {
+                            if !guard_result.is_truthy() {
                                 continue; // Guard failed, try next case
                             }
                         }
@@ -1183,7 +969,6 @@ impl Evaluator {
         }
     }
 
-    // Helper method to check if a match pattern matches a value
     fn match_pattern_matches(
         &self,
         pattern: &crate::eval::core::EvalMatchPattern,
@@ -1193,31 +978,14 @@ impl Evaluator {
 
         match pattern {
             EvalMatchPattern::Literal(literal) => {
-                // Compare values for equality
                 Ok(literal == value)
             }
             EvalMatchPattern::Variable(_) => {
-                // Variables always match (and bind the value)
                 Ok(true)
             }
             EvalMatchPattern::Wildcard => {
-                // Wildcard always matches
                 Ok(true)
             }
-        }
-    }
-
-    // Helper method to check if a value is truthy
-    fn is_truthy(value: &Value) -> bool {
-        match value {
-            Value::Bool(b) => *b,
-            Value::Null => false,
-            Value::Int(i) => *i != 0,
-            Value::Float(f) => *f != 0.0,
-            Value::String(s) => !s.is_empty(),
-            Value::List(list) => !list.borrow().is_empty(),
-            Value::Dict(dict) => !dict.borrow().is_empty(),
-            _ => true, // Other values are truthy
         }
     }
 }

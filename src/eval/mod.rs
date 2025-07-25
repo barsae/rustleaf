@@ -3,14 +3,20 @@ mod class;
 mod compiler;
 mod core;
 mod evaluator;
+mod function;
+mod params;
 mod scope;
+mod type_constant;
 
 // Re-export public API
 pub use class::{BoundMethod, Class, ClassInstance, StaticMethod};
 pub use compiler::Compiler;
 pub use core::*;
 pub use evaluator::{ControlFlow, ErrorKind, EvalResult, Evaluator};
+pub use function::RustLeafFunction;
+pub use params::Params;
 pub use scope::Scope;
+pub use type_constant::TypeConstant;
 
 // Convenience function for backward compatibility with tests
 pub fn evaluate(program: crate::core::Program) -> anyhow::Result<crate::core::Value> {

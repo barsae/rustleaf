@@ -38,8 +38,8 @@ impl Scope {
     }
 
     /// Define a new variable in this scope
-    pub fn define(&mut self, name: String, value: Value) {
-        self.vars.insert(name, value);
+    pub fn define(&mut self, name: impl Into<String>, value: impl Into<Value>) {
+        self.vars.insert(name.into(), value.into());
     }
 
     /// Get a variable value, checking parent scopes if needed
@@ -83,7 +83,7 @@ impl ScopeRef {
     }
 
     /// Define a new variable in this scope
-    pub fn define(&self, name: String, value: Value) {
+    pub fn define(&self, name: impl Into<String>, value: impl Into<Value>) {
         self.0.borrow_mut().define(name, value);
     }
 
