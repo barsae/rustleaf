@@ -140,6 +140,10 @@ pub trait RustValue: fmt::Debug {
     fn op_next(&mut self) -> Result<Option<Value>> {
         Err(anyhow!("This type is not an iterator"))
     }
+
+    fn eval(&self, _evaluator: &mut crate::eval::Evaluator) -> Result<crate::eval::EvalResult> {
+        Err(anyhow!("This type cannot be evaluated"))
+    }
 }
 
 impl Value {

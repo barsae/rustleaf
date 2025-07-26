@@ -674,6 +674,41 @@ impl Evaluator {
                     match_value
                 ))))
             }
+            Eval::Macro { macro_fn, target, args } => {
+                // Evaluate the macro function
+                let macro_function = self.eval(macro_fn)?;
+
+                // Evaluate macro arguments
+                let mut macro_args = Vec::new();
+                
+                // First argument is always the target Eval node wrapped as a RustValue
+                macro_args.push(Value::from_rust(EvalNode::new((**target).clone())));
+                
+                // Add any additional macro arguments
+                for arg in args {
+                    macro_args.push(self.eval(arg)?);
+                }
+
+                // Call the macro function
+                let args_obj = Args::positional(macro_args);
+                let transformed_node = macro_function
+                    .call(args_obj)
+                    .map_err(|e| ControlFlow::Error(ErrorKind::SystemError(e)))?;
+
+                // Extract and evaluate the transformed Eval node from the result
+                if let Value::RustValue(rust_val_ref) = transformed_node {
+                    let rust_val = rust_val_ref.borrow();
+                    match rust_val.eval(self) {
+                        Ok(result) => return result,
+                        Err(e) => return Err(ControlFlow::Error(ErrorKind::SystemError(e))),
+                    }
+                }
+
+                Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(
+                    "Macro function must return an EvalNode, got {:?}",
+                    transformed_node
+                ))))
+            }
         }
     }
 
