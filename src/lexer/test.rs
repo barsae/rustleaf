@@ -119,23 +119,25 @@ mod tests {
             tokens,
             vec![
                 Token::with_text(TokenType::String, "hello"),
-                Token::with_text(TokenType::String, "world\\n"),
-                Token::with_text(TokenType::RawString, "raw\\string"),
+                Token::with_text(TokenType::String, "world\n"), // \n should become actual newline
+                Token::with_text(TokenType::RawString, "raw\\string"), // raw strings keep backslashes
                 Token::simple(TokenType::Eof),
             ]
         );
     }
 
     #[test]
-    fn test_multiline_strings() {
-        let source = r#""""multi
-line""""#;
+    fn test_escape_sequences() {
+        let source = r#""line1\nline2" "tab\there" "quote\"test" "unicode\u{1F604}""#;
         let tokens = Lexer::tokenize(source).unwrap();
 
         assert_eq!(
             tokens,
             vec![
-                Token::with_text(TokenType::MultilineString, "multi\nline"),
+                Token::with_text(TokenType::String, "line1\nline2"),
+                Token::with_text(TokenType::String, "tab\there"),
+                Token::with_text(TokenType::String, "quote\"test"),
+                Token::with_text(TokenType::String, "unicode😄"),
                 Token::simple(TokenType::Eof),
             ]
         );
@@ -143,8 +145,7 @@ line""""#;
 
     #[test]
     fn test_all_string_types() {
-        let source = r#""regular" r"raw" """multiline
-string""""#;
+        let source = r#""regular" r"raw""#;
         let tokens = Lexer::tokenize(source).unwrap();
 
         assert_eq!(
@@ -152,7 +153,21 @@ string""""#;
             vec![
                 Token::with_text(TokenType::String, "regular"),
                 Token::with_text(TokenType::RawString, "raw"),
-                Token::with_text(TokenType::MultilineString, "multiline\nstring"),
+                Token::simple(TokenType::Eof),
+            ]
+        );
+    }
+
+    #[test]
+    fn test_raw_string_multiline() {
+        let source = r#"r"hello
+world""#;
+        let tokens = Lexer::tokenize(source).unwrap();
+
+        assert_eq!(
+            tokens,
+            vec![
+                Token::with_text(TokenType::RawString, "hello\nworld"),
                 Token::simple(TokenType::Eof),
             ]
         );

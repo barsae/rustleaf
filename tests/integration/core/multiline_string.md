@@ -3,9 +3,9 @@ Status: 🟢
 Assertions: 3
 
 ```rustleaf
-var multiline = """This is a
+var multiline = "This is a
 multiline string
-with multiple lines""";
+with multiple lines";
 assert(multiline != "single line");
 assert("multiline" in multiline);
 assert("This is a" in multiline);
@@ -28,7 +28,7 @@ Ok(
         Token(Var),
         Token(Ident, "multiline"),
         Token(Equal),
-        Token(MultilineString, "This is a\nmultiline string\nwith multiple lines"),
+        Token(String, "This is a\nmultiline string\nwith multiple lines"),
         Token(Semicolon),
         Token(Ident, "assert"),
         Token(LeftParen),

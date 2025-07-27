@@ -42,6 +42,21 @@ impl Compiler {
 
     fn compile_statement(&mut self, stmt: Statement) -> Result<Eval> {
         match stmt {
+            Statement::Macro {
+                name,
+                args: _,
+                statement,
+            } => {
+                // Compile the wrapped statement normally first
+                let target_eval = self.compile_statement(*statement)?;
+
+                // Create an Eval::Macro node that will call the macro function
+                Ok(Eval::Macro {
+                    macro_fn: Box::new(Eval::Variable(name)),
+                    target: Box::new(target_eval),
+                    args: Vec::new(), // For now, ignore macro arguments
+                })
+            }
             Statement::Expression(expr) => self.compile_expression(expr),
             Statement::VarDecl { pattern, value } => {
                 match pattern {
@@ -217,7 +232,6 @@ impl Compiler {
                 module: import_spec.module,
                 items: import_spec.items,
             }),
-            _ => Err(anyhow::anyhow!("Statement not yet implemented: {:?}", stmt)),
         }
     }
 

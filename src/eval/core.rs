@@ -84,9 +84,9 @@ pub enum Eval {
 
     // Macro application - transforms an Eval node using a macro function
     Macro {
-        macro_fn: Box<Eval>,  // The macro function to call
-        target: Box<Eval>,     // The Eval node to transform
-        args: Vec<Eval>,       // Macro arguments
+        macro_fn: Box<Eval>, // The macro function to call
+        target: Box<Eval>,   // The Eval node to transform
+        args: Vec<Eval>,     // Macro arguments
     },
 }
 

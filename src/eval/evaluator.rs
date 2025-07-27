@@ -1,4 +1,4 @@
-use super::{scope::ScopeRef, Params, RustLeafFunction, TypeConstant};
+use super::{scope::ScopeRef, EvalTypeConstant, Params, RustLeafFunction, TypeConstant};
 use crate::{core::*, eval::Eval};
 use anyhow::anyhow;
 use std::path::{Path, PathBuf};
@@ -53,8 +53,11 @@ impl Evaluator {
         self.register_builtin_fn("print", print);
         self.register_builtin_fn("assert", crate::core::assert);
         self.register_builtin_fn("is_unit", crate::core::is_unit);
-        self.register_builtin_fn("str", crate::core::str_conversion);
+        self.register_builtin_fn("str", crate::core::str);
         self.register_builtin_fn("raise", crate::core::raise);
+        self.register_builtin_fn("parse", crate::core::parse_builtin);
+        self.register_builtin_fn("macro", crate::core::macro_identity_builtin);
+        self.register_builtin_fn("join", crate::core::join_builtin);
 
         // Register type constants for `is` operator
         self.register_type_constants();
@@ -82,6 +85,10 @@ impl Evaluator {
             .define("Range", Value::from_rust(TypeConstant::new("Range")));
         self.globals
             .define("Function", Value::from_rust(TypeConstant::new("Function")));
+
+        // Add Eval type constant for macro system
+        self.globals
+            .define("Eval", Value::from_rust(EvalTypeConstant::new()));
     }
 
     fn register_builtin_fn(&mut self, name: &'static str, func: fn(Args) -> anyhow::Result<Value>) {
@@ -674,16 +681,20 @@ impl Evaluator {
                     match_value
                 ))))
             }
-            Eval::Macro { macro_fn, target, args } => {
+            Eval::Macro {
+                macro_fn,
+                target,
+                args,
+            } => {
                 // Evaluate the macro function
                 let macro_function = self.eval(macro_fn)?;
 
                 // Evaluate macro arguments
                 let mut macro_args = Vec::new();
-                
+
                 // First argument is always the target Eval node wrapped as a RustValue
                 macro_args.push(Value::from_rust(EvalNode::new((**target).clone())));
-                
+
                 // Add any additional macro arguments
                 for arg in args {
                     macro_args.push(self.eval(arg)?);

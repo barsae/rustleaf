@@ -39,7 +39,6 @@ pub enum TokenType {
     Float,
     String,             // "regular strings"
     RawString,          // r"raw strings"
-    MultilineString,    // """multiline strings"""
     StringPart,         // For interpolation text parts
     InterpolationStart, // ${
     InterpolationEnd,   // }

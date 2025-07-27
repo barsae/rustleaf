@@ -134,13 +134,6 @@ impl Parser {
                 .ok_or_else(|| anyhow!("String token missing text"))?
                 .clone();
             Ok(Expression::Literal(LiteralValue::String(text)))
-        } else if let Some(token) = self.accept_token(TokenType::MultilineString) {
-            let text = token
-                .text
-                .as_ref()
-                .ok_or_else(|| anyhow!("Multiline string token missing text"))?
-                .clone();
-            Ok(Expression::Literal(LiteralValue::String(text)))
         } else if let Some(token) = self.accept_token(TokenType::Ident) {
             let text = token
                 .text
@@ -237,15 +230,6 @@ impl Parser {
                     .clone();
                 self.advance();
                 Ok(LiteralValue::RawString(text))
-            }
-            TokenType::MultilineString => {
-                let text = token
-                    .text
-                    .as_ref()
-                    .ok_or_else(|| anyhow!("MultilineString token missing text"))?
-                    .clone();
-                self.advance();
-                Ok(LiteralValue::String(text))
             }
             _ => Err(anyhow!(
                 "Expected literal value, found {:?}",

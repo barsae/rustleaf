@@ -95,14 +95,41 @@ Ok(
                     ),
                 ),
             },
-            FnDecl {
-                name: "test",
-                params: [],
-                body: Block {
-                    statements: [],
-                    final_expr: None,
+            Macro {
+                name: "macro",
+                args: [],
+                statement: FnDecl {
+                    name: "count",
+                    params: [
+                        Parameter {
+                            name: "ast",
+                            default: None,
+                            kind: Regular,
+                        },
+                    ],
+                    body: Block {
+                        statements: [],
+                        final_expr: Some(
+                            Identifier(
+                                "ast",
+                            ),
+                        ),
+                    },
+                    is_pub: false,
                 },
-                is_pub: false,
+            },
+            Macro {
+                name: "count",
+                args: [],
+                statement: FnDecl {
+                    name: "test",
+                    params: [],
+                    body: Block {
+                        statements: [],
+                        final_expr: None,
+                    },
+                    is_pub: false,
+                },
             },
             Expression(
                 FunctionCall(
@@ -148,14 +175,44 @@ Ok(
                     ),
                 ),
             ),
-            Function(
-                "test",
-                [],
-                Block(
-                    [],
-                    None,
+            Macro {
+                macro_fn: Variable(
+                    "macro",
                 ),
-            ),
+                target: Function(
+                    "count",
+                    [
+                        (
+                            "ast",
+                            None,
+                            Regular,
+                        ),
+                    ],
+                    Block(
+                        [],
+                        Some(
+                            Variable(
+                                "ast",
+                            ),
+                        ),
+                    ),
+                ),
+                args: [],
+            },
+            Macro {
+                macro_fn: Variable(
+                    "count",
+                ),
+                target: Function(
+                    "test",
+                    [],
+                    Block(
+                        [],
+                        None,
+                    ),
+                ),
+                args: [],
+            },
             Call(
                 Variable(
                     "test",

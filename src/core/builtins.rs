@@ -43,7 +43,12 @@ pub fn print(mut args: Args) -> Result<Value> {
     let arg = args.expect("arg")?;
     args.complete()?;
 
-    let output = format!("{:?}", arg);
+    // Use str() conversion for consistent string representation
+    let str_result = str(Args::new(vec![arg], Default::default()))?;
+    let output = match str_result {
+        Value::String(s) => s,
+        _ => unreachable!("str() should always return a string"),
+    };
 
     // If capture is enabled, store the output instead of printing
     if let Ok(mut capture) = PRINT_CAPTURE.lock() {
@@ -130,7 +135,7 @@ pub fn is_unit(mut args: Args) -> Result<Value> {
     Ok(Value::Bool(result))
 }
 
-pub fn str_conversion(mut args: Args) -> Result<Value> {
+pub fn str(mut args: Args) -> Result<Value> {
     args.set_function_name("str");
     let value = args.expect("value")?;
     args.complete()?;
@@ -142,7 +147,11 @@ pub fn str_conversion(mut args: Args) -> Result<Value> {
         Value::Int(i) => i.to_string(),
         Value::Float(f) => f.to_string(),
         Value::String(s) => s.clone(),
-        _ => format!("{:?}", value), // Fallback to debug representation
+        Value::RustValue(rust_val_ref) => {
+            let rust_val = rust_val_ref.borrow();
+            rust_val.str()
+        }
+        _ => format!("{:?}", value), // Fallback to debug representation for other types
     };
 
     Ok(Value::String(string_repr))
@@ -155,4 +164,62 @@ pub fn raise(mut args: Args) -> Result<Value> {
 
     // Return a special Error value that the evaluator will detect
     Ok(Value::Raised(Box::new(error_value)))
+}
+
+pub fn parse_builtin(mut args: Args) -> Result<Value> {
+    args.set_function_name("parse");
+    let template_result = args.expect("template")?;
+    args.complete()?;
+
+    let code_string = match template_result {
+        Value::String(s) => s,
+        _ => return Err(anyhow!("parse() expects a string")),
+    };
+
+    // Use existing lexer/parser/compiler infrastructure
+    let tokens = crate::lexer::Lexer::tokenize(&code_string)
+        .map_err(|e| anyhow!("Failed to tokenize: {}:\n{}", e, code_string))?;
+    let ast = crate::parser::Parser::parse(tokens)
+        .map_err(|e| anyhow!("Failed to parse: {}:\n{}", e, code_string))?;
+    let eval_ir = crate::eval::Compiler::compile(ast)
+        .map_err(|e| anyhow!("Failed to compile: {}:\n{}", e, code_string))?;
+
+    // Return as EvalNode
+    Ok(Value::from_rust(crate::core::EvalNode::new(eval_ir)))
+}
+
+pub fn macro_identity_builtin(mut args: Args) -> Result<Value> {
+    args.set_function_name("macro");
+    let eval_node = args.expect("eval_node")?;
+    args.complete()?;
+
+    // Identity macro: just return the input node unchanged
+    Ok(eval_node)
+}
+
+pub fn join_builtin(mut args: Args) -> Result<Value> {
+    args.set_function_name("join");
+    let list = args.expect("list")?;
+    let separator = args.expect("separator")?;
+    args.complete()?;
+
+    let sep_str = match separator {
+        Value::String(s) => s,
+        _ => return Err(anyhow!("join() separator must be a string")),
+    };
+
+    match list {
+        Value::List(list_ref) => {
+            let list_data = list_ref.borrow();
+            let string_parts: Vec<String> = list_data
+                .iter()
+                .map(|item| match item {
+                    Value::String(s) => s.clone(),
+                    other => format!("{:?}", other), // Convert other types to string representation
+                })
+                .collect();
+            Ok(Value::String(string_parts.join(&sep_str)))
+        }
+        _ => Err(anyhow!("join() expects a list as first argument")),
+    }
 }

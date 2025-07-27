@@ -8,6 +8,8 @@ Don't say "you're right" or statements like that to indicate that you understand
 
 The specifications live at `./specs/*.md`. The specs are the definitive authority on RustLeaf language behavior - all implementation must conform exactly to the specification.
 
+RULE **CRITICAL**: Using `Any` for downcasting is forbidden. Ask for help instead.
+
 ## Development and Testing
 
 `just test` is your primary command for building, testing, linting, etc. It performs a check, a build, runs all integration tests, and clippy. It will make you treat warnings as errors, which you should fix.

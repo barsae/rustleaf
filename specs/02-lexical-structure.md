@@ -27,8 +27,6 @@ RustLeaf source text may contain any valid Unicode code point (U+0000 through U+
 
 **String and Comment Contents:**
 - May contain any Unicode code point except:
-  - Unescaped line terminators in regular strings
-  - The specific terminating sequence in multi-line strings (`"""`)
   - Invalid UTF-8 sequences
 
 **Identifiers:**
@@ -389,15 +387,8 @@ String literals represent sequences of Unicode characters.
 
 **Regular String Literals:**
 - Enclosed in double quotes: `"..."`
-- Cannot contain unescaped line terminators
+- Can span multiple lines with line terminators preserved as part of the string
 - Support escape sequences and interpolation
-
-**Triple-Quoted String Literals:**
-- Enclosed in triple double quotes: `"""..."""`
-- Can span multiple lines
-- Line terminators are preserved as part of the string
-- No escape sequences except `\"""` for literal triple quotes
-- No interpolation
 
 **Escape Sequences (regular strings only):**
 ```
@@ -423,18 +414,13 @@ String literals represent sequences of Unicode characters.
 // Regular strings
 "Hello, world!"
 "Line 1\nLine 2"
+"This is a
+multi-line string
+with preserved formatting"
 "Unicode: \u{1F604}"  // 😄
 "Path: C:\\Users\\Name"
 "Interpolation: ${2 + 2} equals 4"
 "\${not interpolated}"
-
-// Triple-quoted strings
-"""This is a
-multi-line string
-with preserved formatting"""
-
-"""No \n escape sequences"""
-"""Include \""" by escaping"""
 
 // Errors:
 // "Unterminated

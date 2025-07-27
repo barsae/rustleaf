@@ -137,6 +137,10 @@ pub trait RustValue: fmt::Debug {
         Err(anyhow!("This type is not iterable"))
     }
 
+    fn str(&self) -> String {
+        format!("{:?}", self) // Default to debug representation
+    }
+
     fn op_next(&mut self) -> Result<Option<Value>> {
         Err(anyhow!("This type is not an iterator"))
     }

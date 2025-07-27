@@ -88,17 +88,16 @@ impl Lexer {
             },
             // === STRING LITERALS ===
             LexerRule {
-                pattern: Regex::new(r#"^"([^"\\]|\\.)*""#).unwrap(),
-                token_type: |s| Token::with_text(TokenType::String, &s[1..s.len() - 1]),
+                pattern: Regex::new(r#"^"([^"\\]|\\.|[\r\n])*""#).unwrap(),
+                token_type: |s| {
+                    let content = &s[1..s.len() - 1];
+                    let unescaped = Self::process_escape_sequences(content);
+                    Token::with_text(TokenType::String, &unescaped)
+                },
                 ignore: false,
             },
             LexerRule {
-                pattern: Regex::new(r#"^"""([^"]*|"[^"]*|""[^"])*""""#).unwrap(),
-                token_type: |s| Token::with_text(TokenType::MultilineString, &s[3..s.len() - 3]),
-                ignore: false,
-            },
-            LexerRule {
-                pattern: Regex::new(r#"^r"([^"\r\n])*""#).unwrap(),
+                pattern: Regex::new(r#"^r"([^"])*""#).unwrap(),
                 token_type: |s| Token::with_text(TokenType::RawString, &s[2..s.len() - 1]),
                 ignore: false,
             },
@@ -693,6 +692,70 @@ impl Lexer {
         }
 
         None // No matching brace found
+    }
+
+    /// Process escape sequences in string literals
+    fn process_escape_sequences(content: &str) -> String {
+        let mut result = String::new();
+        let mut chars = content.chars();
+
+        while let Some(ch) = chars.next() {
+            if ch == '\\' {
+                if let Some(escaped) = chars.next() {
+                    match escaped {
+                        'n' => result.push('\n'),
+                        'r' => result.push('\r'),
+                        't' => result.push('\t'),
+                        '\\' => result.push('\\'),
+                        '"' => result.push('"'),
+                        '\'' => result.push('\''),
+                        '$' => result.push('$'),
+                        '{' => result.push('{'),
+                        '}' => result.push('}'),
+                        'u' => {
+                            // Handle \u{XXXXXX} Unicode escape sequences
+                            if chars.next() == Some('{') {
+                                let mut hex_digits = String::new();
+                                while let Some(hex_char) = chars.next() {
+                                    if hex_char == '}' {
+                                        break;
+                                    }
+                                    hex_digits.push(hex_char);
+                                }
+
+                                if let Ok(code_point) = u32::from_str_radix(&hex_digits, 16) {
+                                    if let Some(unicode_char) = char::from_u32(code_point) {
+                                        result.push(unicode_char);
+                                    } else {
+                                        // Invalid Unicode code point, keep literal
+                                        result.push_str(&format!("\\u{{{}}}", hex_digits));
+                                    }
+                                } else {
+                                    // Invalid hex, keep literal
+                                    result.push_str(&format!("\\u{{{}}}", hex_digits));
+                                }
+                            } else {
+                                // Missing {, treat as literal
+                                result.push('\\');
+                                result.push('u');
+                            }
+                        }
+                        _ => {
+                            // Unknown escape sequence, keep literal
+                            result.push('\\');
+                            result.push(escaped);
+                        }
+                    }
+                } else {
+                    // Backslash at end of string
+                    result.push('\\');
+                }
+            } else {
+                result.push(ch);
+            }
+        }
+
+        result
     }
 
     /// Phase 3: Rewrite token pairs like "not in" -> NotIn and "is not" -> IsNot
