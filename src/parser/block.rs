@@ -22,6 +22,19 @@ impl Parser {
             final_expr = Some(Box::new(expr));
         }
 
+        // Check if the last statement is an expression that should be the final expression
+        // This implements Rust-like "last-expression-is-value" semantics
+        if final_expr.is_none() && !statements.is_empty() {
+            if let Some(Statement::Expression(Expression::If { .. } | Expression::Match { .. })) =
+                statements.last()
+            {
+                // Remove from statements and make it the final expression
+                if let Some(Statement::Expression(expr)) = statements.pop() {
+                    final_expr = Some(Box::new(expr));
+                }
+            }
+        }
+
         self.expect(TokenType::RightBrace, "Expected '}' after block")?;
         Ok(Block {
             statements,

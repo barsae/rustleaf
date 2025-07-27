@@ -239,47 +239,45 @@ Ok(
                         "range",
                     ),
                     body: Block {
-                        statements: [
-                            Expression(
-                                If {
-                                    condition: Eq(
-                                        Mod(
-                                            Identifier(
-                                                "x",
-                                            ),
-                                            Literal(
-                                                Int(
-                                                    2,
-                                                ),
-                                            ),
+                        statements: [],
+                        final_expr: Some(
+                            If {
+                                condition: Eq(
+                                    Mod(
+                                        Identifier(
+                                            "x",
                                         ),
                                         Literal(
                                             Int(
-                                                0,
+                                                2,
                                             ),
                                         ),
                                     ),
-                                    then_expr: Block {
-                                        statements: [
-                                            Assignment {
-                                                target: Identifier(
-                                                    "even_count",
+                                    Literal(
+                                        Int(
+                                            0,
+                                        ),
+                                    ),
+                                ),
+                                then_expr: Block {
+                                    statements: [
+                                        Assignment {
+                                            target: Identifier(
+                                                "even_count",
+                                            ),
+                                            op: AddAssign,
+                                            value: Literal(
+                                                Int(
+                                                    1,
                                                 ),
-                                                op: AddAssign,
-                                                value: Literal(
-                                                    Int(
-                                                        1,
-                                                    ),
-                                                ),
-                                            },
-                                        ],
-                                        final_expr: None,
-                                    },
-                                    else_expr: None,
+                                            ),
+                                        },
+                                    ],
+                                    final_expr: None,
                                 },
-                            ),
-                        ],
-                        final_expr: None,
+                                else_expr: None,
+                            },
+                        ),
                     },
                 },
             ),
@@ -466,7 +464,8 @@ Ok(
                     "range",
                 ),
                 Block(
-                    [
+                    [],
+                    Some(
                         If(
                             Call(
                                 GetAttr(
@@ -520,8 +519,7 @@ Ok(
                             ),
                             None,
                         ),
-                    ],
-                    None,
+                    ),
                 ),
             ),
             Call(

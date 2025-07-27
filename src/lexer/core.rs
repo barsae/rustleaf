@@ -716,7 +716,7 @@ impl Lexer {
                             // Handle \u{XXXXXX} Unicode escape sequences
                             if chars.next() == Some('{') {
                                 let mut hex_digits = String::new();
-                                while let Some(hex_char) = chars.next() {
+                                for hex_char in chars.by_ref() {
                                     if hex_char == '}' {
                                         break;
                                     }

@@ -3,13 +3,10 @@ use crate::core::{Args, RustValue};
 
 use anyhow::{anyhow, Result};
 use std::cell::RefCell;
-use std::sync::Mutex;
 
-// Global capture for print output during testing
-static PRINT_CAPTURE: Mutex<Option<Vec<String>>> = Mutex::new(None);
-
-// Thread-local capture for assertion counting during testing
+// Thread-local capture for print output and assertion counting during testing
 thread_local! {
+    static PRINT_CAPTURE: RefCell<Option<Vec<String>>> = const { RefCell::new(None) };
     static ASSERTION_COUNT: RefCell<Option<u32>> = const { RefCell::new(None) };
 }
 
@@ -51,15 +48,15 @@ pub fn print(mut args: Args) -> Result<Value> {
     };
 
     // If capture is enabled, store the output instead of printing
-    if let Ok(mut capture) = PRINT_CAPTURE.lock() {
-        if let Some(ref mut captured) = *capture {
-            captured.push(output);
-            return Ok(Value::Unit);
+    PRINT_CAPTURE.with(|capture| {
+        if let Some(ref mut captured) = *capture.borrow_mut() {
+            captured.push(output.clone());
+        } else {
+            // Normal behavior: print to stdout
+            println!("{}", output);
         }
-    }
+    });
 
-    // Normal behavior: print to stdout
-    println!("{}", output);
     Ok(Value::Unit)
 }
 
@@ -89,24 +86,21 @@ pub fn assert(mut args: Args) -> Result<Value> {
 
 // Helper functions for test capture
 pub fn start_print_capture() {
-    if let Ok(mut capture) = PRINT_CAPTURE.lock() {
-        *capture = Some(Vec::new());
-    }
+    PRINT_CAPTURE.with(|capture| {
+        *capture.borrow_mut() = Some(Vec::new());
+    });
 }
 
 pub fn get_captured_prints() -> Vec<String> {
-    if let Ok(mut capture) = PRINT_CAPTURE.lock() {
-        if let Some(captured) = capture.take() {
-            return captured;
-        }
-    }
-    Vec::new()
+    PRINT_CAPTURE.with(|capture| {
+        capture.borrow_mut().take().unwrap_or_default()
+    })
 }
 
 pub fn stop_print_capture() {
-    if let Ok(mut capture) = PRINT_CAPTURE.lock() {
-        *capture = None;
-    }
+    PRINT_CAPTURE.with(|capture| {
+        *capture.borrow_mut() = None;
+    });
 }
 
 // Helper functions for assertion counting

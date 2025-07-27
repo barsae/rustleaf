@@ -11,125 +11,32 @@ impl EvalNode {
     pub fn new(node: Eval) -> Self {
         Self { node }
     }
-}
 
-impl RustValue for EvalNode {
-    fn get_attr(&self, name: &str) -> Option<crate::core::Value> {
-        use crate::core::Value;
-
-        // Special attribute to report the node type for type checking
-        if name == "node_type" {
-            let type_name = match &self.node {
-                Eval::Function(_, _, _) => "Function",
-                Eval::ClassDecl { .. } => "Class",
-                Eval::Variable(_) => "Variable",
-                Eval::Call(_, _) => "Call",
-                Eval::Block(_, _) => "Block",
-                Eval::Literal(_) => "Literal",
-                Eval::If(_, _, _) => "If",
-                Eval::Loop(_) => "Loop",
-                Eval::While(_, _) => "While",
-                Eval::For(_, _, _) => "For",
-                Eval::Return(_) => "Return",
-                Eval::Break(_) => "Break",
-                Eval::Continue => "Continue",
-                Eval::Try(_, _, _) => "Try",
-                Eval::With(_, _) => "With",
-                Eval::Import { .. } => "Import",
-                Eval::Match { .. } => "Match",
-                _ => "Unknown",
-            };
-            return Some(Value::String(type_name.to_string()));
-        }
+    pub fn pretty_print(&self, indent: usize) -> String {
+        let indent_str = "    ".repeat(indent);
 
         match &self.node {
-            Eval::Function(fn_name, params, body) => {
-                match name {
-                    "name" => Some(Value::String(fn_name.clone())),
-                    "params" => {
-                        // Convert params Vec to RustLeaf list
-                        let param_names: Vec<Value> = params
-                            .iter()
-                            .map(|(name, _, _)| Value::String(name.clone()))
-                            .collect();
-                        Some(Value::new_list_with_values(param_names))
-                    }
-                    "body" => Some(Value::from_rust(EvalNode::new(body.as_ref().clone()))),
-                    _ => None,
+            Eval::Block(statements, final_expr) => {
+                let inner_indent_str = "    ".repeat(indent + 1);
+                let mut parts = Vec::new();
+
+                for stmt in statements {
+                    parts.push(format!("{}{};", inner_indent_str, EvalNode::new(stmt.clone()).pretty_print(indent + 1)));
+                }
+                if let Some(expr) = final_expr {
+                    parts.push(format!(
+                        "{}{}",
+                        inner_indent_str,
+                        EvalNode::new(expr.as_ref().clone()).pretty_print(indent + 1)
+                    ));
+                }
+
+                if parts.is_empty() {
+                    "{}".to_string()
+                } else {
+                    format!("{{\n{}\n{}}}", parts.join("\n"), indent_str)
                 }
             }
-            Eval::ClassDecl {
-                name: class_name,
-                field_names,
-                field_defaults,
-                methods: _,
-            } => {
-                match name {
-                    "name" => Some(Value::String(class_name.clone())),
-                    "field_names" => {
-                        let names: Vec<Value> = field_names
-                            .iter()
-                            .map(|name| Value::String(name.clone()))
-                            .collect();
-                        Some(Value::new_list_with_values(names))
-                    }
-                    "field_defaults" => {
-                        let defaults: Vec<Value> = field_defaults
-                            .iter()
-                            .map(|opt_eval| match opt_eval {
-                                Some(eval) => Value::from_rust(EvalNode::new(eval.clone())),
-                                None => Value::Null,
-                            })
-                            .collect();
-                        Some(Value::new_list_with_values(defaults))
-                    }
-                    "methods" => {
-                        // TODO: Convert methods to appropriate format
-                        Some(Value::new_list())
-                    }
-                    _ => None,
-                }
-            }
-            Eval::Variable(var_name) => match name {
-                "name" => Some(Value::String(var_name.clone())),
-                _ => None,
-            },
-            Eval::Call(func, args) => match name {
-                "func" => Some(Value::from_rust(EvalNode::new(func.as_ref().clone()))),
-                "args" => {
-                    let arg_nodes: Vec<Value> = args
-                        .iter()
-                        .map(|arg| Value::from_rust(EvalNode::new(arg.clone())))
-                        .collect();
-                    Some(Value::new_list_with_values(arg_nodes))
-                }
-                _ => None,
-            },
-            Eval::Block(statements, final_expr) => match name {
-                "statements" => {
-                    let stmt_nodes: Vec<Value> = statements
-                        .iter()
-                        .map(|stmt| Value::from_rust(EvalNode::new(stmt.clone())))
-                        .collect();
-                    Some(Value::new_list_with_values(stmt_nodes))
-                }
-                "final_expr" => match final_expr {
-                    Some(expr) => Some(Value::from_rust(EvalNode::new(expr.as_ref().clone()))),
-                    None => Some(Value::Null),
-                },
-                _ => None,
-            },
-            // Add other Eval variants as needed
-            _ => None,
-        }
-    }
-
-    fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
-        Ok(evaluator.eval(&self.node))
-    }
-
-    fn str(&self) -> String {
-        match &self.node {
             Eval::Function(name, params, body) => {
                 let param_list = params
                     .iter()
@@ -140,9 +47,10 @@ impl RustValue for EvalNode {
                     "fn {}({}) {}",
                     name,
                     param_list,
-                    EvalNode::new(body.as_ref().clone()).str()
+                    EvalNode::new(body.as_ref().clone()).pretty_print(indent)
                 )
             }
+            Eval::Variable(name) => name.clone(),
             Eval::ClassDecl {
                 name,
                 field_names,
@@ -162,7 +70,6 @@ impl RustValue for EvalNode {
                     .join(", ");
                 format!("class {}({})", name, fields)
             }
-            Eval::Variable(name) => name.clone(),
             Eval::Call(func, args) => {
                 let func_str = EvalNode::new(func.as_ref().clone()).str();
                 let args_str = args
@@ -171,23 +78,6 @@ impl RustValue for EvalNode {
                     .collect::<Vec<_>>()
                     .join(", ");
                 format!("{}({})", func_str, args_str)
-            }
-            Eval::Block(statements, final_expr) => {
-                let mut parts = Vec::new();
-                for stmt in statements {
-                    parts.push(format!("    {}", EvalNode::new(stmt.clone()).str()));
-                }
-                if let Some(expr) = final_expr {
-                    parts.push(format!(
-                        "    {}",
-                        EvalNode::new(expr.as_ref().clone()).str()
-                    ));
-                }
-                if parts.is_empty() {
-                    "{}".to_string()
-                } else {
-                    format!("{{\n{}\n}}", parts.join(";\n"))
-                }
             }
             Eval::Literal(value) => {
                 use crate::core::Value;
@@ -383,5 +273,125 @@ impl RustValue for EvalNode {
                 format!("var {:?} = {}", pattern, value_str)
             }
         }
+    }
+}
+
+impl RustValue for EvalNode {
+    fn get_attr(&self, name: &str) -> Option<crate::core::Value> {
+        use crate::core::Value;
+
+        // Special attribute to report the node type for type checking
+        if name == "node_type" {
+            let type_name = match &self.node {
+                Eval::Function(_, _, _) => "Function",
+                Eval::ClassDecl { .. } => "Class",
+                Eval::Variable(_) => "Variable",
+                Eval::Call(_, _) => "Call",
+                Eval::Block(_, _) => "Block",
+                Eval::Literal(_) => "Literal",
+                Eval::If(_, _, _) => "If",
+                Eval::Loop(_) => "Loop",
+                Eval::While(_, _) => "While",
+                Eval::For(_, _, _) => "For",
+                Eval::Return(_) => "Return",
+                Eval::Break(_) => "Break",
+                Eval::Continue => "Continue",
+                Eval::Try(_, _, _) => "Try",
+                Eval::With(_, _) => "With",
+                Eval::Import { .. } => "Import",
+                Eval::Match { .. } => "Match",
+                _ => "Unknown",
+            };
+            return Some(Value::String(type_name.to_string()));
+        }
+
+        match &self.node {
+            Eval::Function(fn_name, params, body) => {
+                match name {
+                    "name" => Some(Value::String(fn_name.clone())),
+                    "params" => {
+                        // Convert params Vec to RustLeaf list
+                        let param_names: Vec<Value> = params
+                            .iter()
+                            .map(|(name, _, _)| Value::String(name.clone()))
+                            .collect();
+                        Some(Value::new_list_with_values(param_names))
+                    }
+                    "body" => Some(Value::from_rust(EvalNode::new(body.as_ref().clone()))),
+                    _ => None,
+                }
+            }
+            Eval::ClassDecl {
+                name: class_name,
+                field_names,
+                field_defaults,
+                methods: _,
+            } => {
+                match name {
+                    "name" => Some(Value::String(class_name.clone())),
+                    "field_names" => {
+                        let names: Vec<Value> = field_names
+                            .iter()
+                            .map(|name| Value::String(name.clone()))
+                            .collect();
+                        Some(Value::new_list_with_values(names))
+                    }
+                    "field_defaults" => {
+                        let defaults: Vec<Value> = field_defaults
+                            .iter()
+                            .map(|opt_eval| match opt_eval {
+                                Some(eval) => Value::from_rust(EvalNode::new(eval.clone())),
+                                None => Value::Null,
+                            })
+                            .collect();
+                        Some(Value::new_list_with_values(defaults))
+                    }
+                    "methods" => {
+                        // TODO: Convert methods to appropriate format
+                        Some(Value::new_list())
+                    }
+                    _ => None,
+                }
+            }
+            Eval::Variable(var_name) => match name {
+                "name" => Some(Value::String(var_name.clone())),
+                _ => None,
+            },
+            Eval::Call(func, args) => match name {
+                "func" => Some(Value::from_rust(EvalNode::new(func.as_ref().clone()))),
+                "args" => {
+                    let arg_nodes: Vec<Value> = args
+                        .iter()
+                        .map(|arg| Value::from_rust(EvalNode::new(arg.clone())))
+                        .collect();
+                    Some(Value::new_list_with_values(arg_nodes))
+                }
+                _ => None,
+            },
+            Eval::Block(statements, final_expr) => match name {
+                "statements" => {
+                    let stmt_nodes: Vec<Value> = statements
+                        .iter()
+                        .map(|stmt| Value::from_rust(EvalNode::new(stmt.clone())))
+                        .collect();
+                    Some(Value::new_list_with_values(stmt_nodes))
+                }
+                "final_expr" => match final_expr {
+                    Some(expr) => Some(Value::from_rust(EvalNode::new(expr.as_ref().clone()))),
+                    None => Some(Value::Null),
+                },
+                _ => None,
+            },
+            // Add other Eval variants as needed
+            _ => None,
+        }
+    }
+
+    fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
+        Ok(evaluator.eval(&self.node))
+    }
+
+    fn str(&self) -> String {
+        self.pretty_print(0)
     }
 }
