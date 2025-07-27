@@ -163,7 +163,7 @@ Ok(
 # Eval
 ```rust
 Ok(
-    Block(
+    Program(
         [
             Declare(
                 "greeting",
@@ -229,8 +229,6 @@ Ok(
                     ),
                 ],
             ),
-        ],
-        Some(
             Call(
                 Variable(
                     "assert",
@@ -265,7 +263,7 @@ Ok(
                     ),
                 ],
             ),
-        ),
+        ],
     ),
 )
 ```

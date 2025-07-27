@@ -360,7 +360,7 @@ Ok(
 # Eval
 ```rust
 Ok(
-    Block(
+    Program(
         [
             Declare(
                 "processor",
@@ -577,8 +577,6 @@ Ok(
                     ),
                 ],
             ),
-        ],
-        Some(
             Call(
                 Variable(
                     "assert",
@@ -610,7 +608,7 @@ Ok(
                     ),
                 ],
             ),
-        ),
+        ],
     ),
 )
 ```

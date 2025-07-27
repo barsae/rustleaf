@@ -168,7 +168,7 @@ Ok(
 # Eval
 ```rust
 Ok(
-    Block(
+    Program(
         [
             DeclarePattern(
                 ListRest(
@@ -228,8 +228,6 @@ Ok(
                     ),
                 ],
             ),
-        ],
-        Some(
             Call(
                 Variable(
                     "assert",
@@ -266,7 +264,7 @@ Ok(
                     ),
                 ],
             ),
-        ),
+        ],
     ),
 )
 ```

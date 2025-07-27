@@ -195,7 +195,7 @@ Ok(
 # Eval
 ```rust
 Ok(
-    Block(
+    Program(
         [
             ClassDecl {
                 name: "Greeter",
@@ -281,8 +281,6 @@ Ok(
                     ),
                 ),
             ),
-        ],
-        Some(
             Call(
                 Variable(
                     "assert",
@@ -305,7 +303,7 @@ Ok(
                     ),
                 ],
             ),
-        ),
+        ],
     ),
 )
 ```

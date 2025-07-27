@@ -447,7 +447,7 @@ Ok(
 # Eval
 ```rust
 Ok(
-    Block(
+    Program(
         [
             Declare(
                 "add_one",
@@ -707,8 +707,6 @@ Ok(
                     ),
                 ),
             ),
-        ],
-        Some(
             Call(
                 Variable(
                     "assert",
@@ -740,7 +738,7 @@ Ok(
                     ),
                 ],
             ),
-        ),
+        ],
     ),
 )
 ```

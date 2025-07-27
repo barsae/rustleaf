@@ -102,7 +102,7 @@ Ok(
 # Eval
 ```rust
 Ok(
-    Block(
+    Program(
         [
             Declare(
                 "l",
@@ -128,8 +128,6 @@ Ok(
                     ),
                 ),
             ),
-        ],
-        Some(
             Call(
                 Variable(
                     "assert",
@@ -152,7 +150,7 @@ Ok(
                     ),
                 ],
             ),
-        ),
+        ],
     ),
 )
 ```

@@ -168,7 +168,7 @@ Ok(
 # Eval
 ```rust
 Ok(
-    Block(
+    Program(
         [
             Macro {
                 macro_fn: Variable(
@@ -225,8 +225,6 @@ Ok(
                     ),
                 ),
             ),
-        ],
-        Some(
             Call(
                 Variable(
                     "assert",
@@ -254,7 +252,7 @@ Ok(
                     ),
                 ],
             ),
-        ),
+        ],
     ),
 )
 ```

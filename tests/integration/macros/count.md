@@ -163,7 +163,7 @@ Ok(
 # Eval
 ```rust
 Ok(
-    Block(
+    Program(
         [
             Declare(
                 "counter",
@@ -225,15 +225,13 @@ Ok(
                 ),
                 [],
             ),
-        ],
-        Some(
             Call(
                 Variable(
                     "test",
                 ),
                 [],
             ),
-        ),
+        ],
     ),
 )
 ```

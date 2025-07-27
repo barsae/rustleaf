@@ -98,6 +98,13 @@ impl Evaluator {
 
     pub fn eval(&mut self, eval: &Eval) -> EvalResult {
         match eval {
+            Eval::Program(statements) => {
+                // Execute statements in current scope (no new scope created)
+                for stmt in statements {
+                    self.eval(stmt)?;
+                }
+                Ok(Value::Unit)
+            }
             Eval::Block(statements, final_expr) => {
                 // Create a new scope for the block
                 let block_scope = self.current_env.child();
@@ -818,6 +825,12 @@ impl Evaluator {
 
         // Evaluate the module - handle module-level definitions specially
         match eval_ir {
+            Eval::Program(statements) => {
+                // For modules, evaluate statements directly in the module scope
+                for stmt in &statements {
+                    module_evaluator.eval(stmt)?;
+                }
+            }
             Eval::Block(statements, final_expr) => {
                 // For modules, evaluate statements directly in the module scope (not in a child scope)
                 for stmt in &statements {
@@ -829,7 +842,7 @@ impl Evaluator {
                 }
             }
             _ => {
-                // For non-block evaluation, evaluate normally
+                // For non-program/block evaluation, evaluate normally
                 module_evaluator.eval(&eval_ir)?;
             }
         }

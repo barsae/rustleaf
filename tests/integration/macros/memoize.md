@@ -19,7 +19,7 @@ fn memoize(eval_node) {
 
         fn cached(${param_list}) {
             var args_key = str(${param_list});
-            if cache.has(args_key) {
+            if args_key in cache {
                 cache[args_key]
             } else {
                 var result = original(${param_list});
@@ -54,7 +54,7 @@ None
 # Result
 ```rust
 Err(
-    "Undefined variable: fibonacci",
+    "No attribute 'has' on value Dict(DictRef(RefCell { value: {} }))",
 )
 ```
 
@@ -579,7 +579,7 @@ Ok(
 # Eval
 ```rust
 Ok(
-    Block(
+    Program(
         [
             Macro {
                 macro_fn: Variable(
@@ -1094,8 +1094,6 @@ Ok(
                     ),
                 ],
             ),
-        ],
-        Some(
             Call(
                 Variable(
                     "assert",
@@ -1123,7 +1121,7 @@ Ok(
                     ),
                 ],
             ),
-        ),
+        ],
     ),
 )
 ```

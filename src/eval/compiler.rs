@@ -17,27 +17,15 @@ impl Compiler {
         let statements = program.0;
 
         if statements.is_empty() {
-            return Ok(Eval::Block(vec![], None));
+            return Ok(Eval::Program(vec![]));
         }
 
-        let last_index = statements.len() - 1;
-        let mut eval_statements = Vec::new();
-        let mut final_expr = None;
+        let eval_statements: Result<Vec<_>> = statements
+            .into_iter()
+            .map(|stmt| self.compile_statement(stmt))
+            .collect();
 
-        for (i, stmt) in statements.into_iter().enumerate() {
-            let is_last = i == last_index;
-            match stmt {
-                Statement::Expression(expr) if is_last => {
-                    // Last statement is an expression - make it the final expression
-                    final_expr = Some(Box::new(self.compile_expression(expr)?));
-                }
-                _ => {
-                    eval_statements.push(self.compile_statement(stmt)?);
-                }
-            }
-        }
-
-        Ok(Eval::Block(eval_statements, final_expr))
+        Ok(Eval::Program(eval_statements?))
     }
 
     fn compile_statement(&mut self, stmt: Statement) -> Result<Eval> {

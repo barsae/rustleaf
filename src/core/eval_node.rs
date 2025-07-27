@@ -16,6 +16,18 @@ impl EvalNode {
         let indent_str = "    ".repeat(indent);
 
         match &self.node {
+            Eval::Program(statements) => {
+                if statements.is_empty() {
+                    return "".to_string();
+                }
+                
+                let parts: Vec<String> = statements
+                    .iter()
+                    .map(|stmt| format!("{}{};", indent_str, EvalNode::new(stmt.clone()).pretty_print(indent)))
+                    .collect();
+                
+                parts.join("\n")
+            }
             Eval::Block(statements, final_expr) => {
                 let inner_indent_str = "    ".repeat(indent + 1);
                 let mut parts = Vec::new();
@@ -287,6 +299,7 @@ impl RustValue for EvalNode {
                 Eval::ClassDecl { .. } => "Class",
                 Eval::Variable(_) => "Variable",
                 Eval::Call(_, _) => "Call",
+                Eval::Program(_) => "Program",
                 Eval::Block(_, _) => "Block",
                 Eval::Literal(_) => "Literal",
                 Eval::If(_, _, _) => "If",
@@ -365,6 +378,16 @@ impl RustValue for EvalNode {
                         .map(|arg| Value::from_rust(EvalNode::new(arg.clone())))
                         .collect();
                     Some(Value::new_list_with_values(arg_nodes))
+                }
+                _ => None,
+            },
+            Eval::Program(statements) => match name {
+                "statements" => {
+                    let stmt_nodes: Vec<Value> = statements
+                        .iter()
+                        .map(|stmt| Value::from_rust(EvalNode::new(stmt.clone())))
+                        .collect();
+                    Some(Value::new_list_with_values(stmt_nodes))
                 }
                 _ => None,
             },

@@ -53,7 +53,10 @@ pub enum Eval {
     List(Vec<Eval>),
     Dict(Vec<(Eval, Eval)>),
 
-    // Block - with optional terminal expression
+    // Program - sequence of statements at the same scope level (no scope boundary)
+    Program(Vec<Eval>),
+
+    // Block - with optional terminal expression (creates new scope)
     Block(Vec<Eval>, Option<Box<Eval>>),
 
     // Built-in operations that don't use method dispatch

@@ -3,18 +3,14 @@ Status: 🟡
 Assertions: 0
 
 ```rustleaf
-var e = parse("{ var a = 1; var b = 2; }");
+var e = parse("var a = 1; var b = 2;");
 print(e);
 ```
 
 # Output
 ```
-{
-    {
-        var a = 1;
-        var b = 2;
-    }
-}
+var a = 1;
+var b = 2;
 ```
 
 # Result
@@ -33,7 +29,7 @@ Ok(
         Token(Equal),
         Token(Ident, "parse"),
         Token(LeftParen),
-        Token(String, "{ var a = 1; var b = 2; }"),
+        Token(String, "var a = 1; var b = 2;"),
         Token(RightParen),
         Token(Semicolon),
         Token(Ident, "print"),
@@ -63,7 +59,7 @@ Ok(
                         [
                             Literal(
                                 String(
-                                    "{ var a = 1; var b = 2; }",
+                                    "var a = 1; var b = 2;",
                                 ),
                             ),
                         ],
@@ -90,7 +86,7 @@ Ok(
 # Eval
 ```rust
 Ok(
-    Block(
+    Program(
         [
             Declare(
                 "e",
@@ -102,15 +98,13 @@ Ok(
                         [
                             Literal(
                                 String(
-                                    "{ var a = 1; var b = 2; }",
+                                    "var a = 1; var b = 2;",
                                 ),
                             ),
                         ],
                     ),
                 ),
             ),
-        ],
-        Some(
             Call(
                 Variable(
                     "print",
@@ -121,7 +115,7 @@ Ok(
                     ),
                 ],
             ),
-        ),
+        ],
     ),
 )
 ```
