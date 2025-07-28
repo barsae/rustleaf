@@ -1,6 +1,6 @@
 # Program
-Status: 🔴
-Assertions: 1
+Status: 🟢
+Assertions: 12
 
 ```rustleaf
 // Test inclusive ranges (1..=10 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
@@ -31,8 +31,8 @@ None
 
 # Result
 ```rust
-Err(
-    "Assertion failed: Assertion failed",
+Ok(
+    Unit,
 )
 ```
 
@@ -481,7 +481,7 @@ Ok(
                                     EvalLiteral {
                                         value: Range(
                                             Range {
-                                                start: 0,
+                                                start: 1,
                                                 end: 10,
                                                 inclusive: true,
                                             },

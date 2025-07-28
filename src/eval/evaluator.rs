@@ -226,7 +226,7 @@ impl Evaluator {
 
     /// Pattern matching helper - binds variables from patterns
     #[allow(dead_code)]
-    fn match_pattern(
+    pub fn match_pattern(
         &mut self,
         pattern: &crate::eval::core::EvalPattern,
         value: &Value,

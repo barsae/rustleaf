@@ -1,6 +1,6 @@
 # Program
-Status: 🔴
-Assertions: 1
+Status: 🟢
+Assertions: 4
 
 ```rustleaf
 // Test using ranges in for loops and expressions
@@ -31,8 +31,8 @@ None
 
 # Result
 ```rust
-Err(
-    "Assertion failed: Assertion failed",
+Ok(
+    Unit,
 )
 ```
 
@@ -392,8 +392,8 @@ Ok(
                                 EvalLiteral {
                                     value: Range(
                                         Range {
-                                            start: 0,
-                                            end: 10,
+                                            start: 1,
+                                            end: 5,
                                             inclusive: false,
                                         },
                                     ),
@@ -640,8 +640,8 @@ Ok(
                                     EvalLiteral {
                                         value: Range(
                                             Range {
-                                                start: 0,
-                                                end: 10,
+                                                start: 3,
+                                                end: 6,
                                                 inclusive: false,
                                             },
                                         ),

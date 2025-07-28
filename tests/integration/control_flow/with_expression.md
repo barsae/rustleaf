@@ -1,6 +1,6 @@
 # Program
-Status: 🔴
-Assertions: 1
+Status: 🟢
+Assertions: 2
 
 ```rustleaf
 class File() {
@@ -33,8 +33,8 @@ None
 
 # Result
 ```rust
-Err(
-    "Assertion failed: opened should be 1",
+Ok(
+    Unit,
 )
 ```
 

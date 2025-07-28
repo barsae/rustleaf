@@ -58,8 +58,8 @@ impl Compiler {
                     }
                     _ => {
                         // Pattern-based declaration
-                        let _eval_pattern = Self::compile_pattern(pattern)?;
-                        let _init_expr = match value {
+                        let eval_pattern = Self::compile_pattern(pattern)?;
+                        let init_expr = match value {
                             Some(expr) => self.compile_expression(expr)?,
                             None => {
                                 return Err(anyhow::anyhow!(
@@ -67,8 +67,7 @@ impl Compiler {
                                 ))
                             }
                         };
-                        // TODO: Add declare_pattern constructor or handle pattern declarations differently
-                        return Err(anyhow::anyhow!("Pattern declarations not yet supported in new Eval system"))
+                        Ok(Eval::declare_pattern(eval_pattern, init_expr))
                     }
                 }
             }
@@ -420,14 +419,10 @@ impl Compiler {
 
             // Range expressions
             Expression::RangeExclusive(start, end) => {
-                let start_val = self.compile_expression(*start)?;
-                let end_val = self.compile_expression(*end)?;
-                self.compile_range(start_val, end_val, false)
+                self.compile_range_expression(*start, *end, false)
             }
             Expression::RangeInclusive(start, end) => {
-                let start_val = self.compile_expression(*start)?;
-                let end_val = self.compile_expression(*end)?;
-                self.compile_range(start_val, end_val, true)
+                self.compile_range_expression(*start, *end, true)
             }
 
             // Lambda expressions
@@ -443,20 +438,11 @@ impl Compiler {
             }
 
             Expression::Try { body, catch } => {
-                let _compiled_body = self.compile_block_helper(body)?;
-                let _compiled_catch_body = self.compile_block_helper(catch.body)?;
-
-                // For now, only support simple variable patterns in catch
-                match catch.pattern {
-                    Pattern::Variable(_var_name) => {
-                        // TODO: Add try_expr constructor
-                        return Err(anyhow::anyhow!("Try expressions not yet supported in new Eval system"));
-                    }
-                    _ => Err(anyhow::anyhow!(
-                        "Only variable patterns are supported in catch clauses for now: {:?}",
-                        catch.pattern
-                    )),
-                }
+                let compiled_body = self.compile_block_helper(body)?;
+                let compiled_catch_body = self.compile_block_helper(catch.body)?;
+                let catch_pattern = Self::compile_pattern(catch.pattern)?;
+                
+                Ok(Eval::try_expr(compiled_body, catch_pattern, compiled_catch_body))
             }
 
             Expression::With { resources, body } => {
@@ -673,32 +659,25 @@ impl Compiler {
         }
     }
 
-    // Helper to compile range expressions - for now, only support integer literals
-    fn compile_range(&mut self, _start_eval: Eval, _end_eval: Eval, inclusive: bool) -> Result<Eval> {
-        // For now, require that both start and end are literal integers
-        // Note: This needs to be updated once pattern matching is fixed
-        // For now, we'll assume we can extract the values somehow
+    // Helper to compile range expressions - handle at Expression level to avoid downcasting
+    fn compile_range_expression(&mut self, start_expr: Expression, end_expr: Expression, inclusive: bool) -> Result<Eval> {
+        // Extract literal integers directly from expressions
+        let start_val = match start_expr {
+            Expression::Literal(LiteralValue::Int(i)) => i,
+            _ => return Err(anyhow::anyhow!("Range start must be an integer literal")),
+        };
+        
+        let end_val = match end_expr {
+            Expression::Literal(LiteralValue::Int(i)) => i,
+            _ => return Err(anyhow::anyhow!("Range end must be an integer literal")),
+        };
+        
         let range = crate::core::Range {
-            start: 0, // TODO: extract from start_eval
-            end: 10,  // TODO: extract from end_eval
+            start: start_val,
+            end: end_val,
             inclusive,
         };
         Ok(Eval::literal(Value::Range(range)))
-        
-        // This is the intended logic once pattern matching works:
-        // match (start_eval, end_eval) {
-        //     (Eval::Literal(Value::Int(start)), Eval::Literal(Value::Int(end))) => {
-        //         let range = crate::core::Range {
-        //             start,
-        //             end,
-        //             inclusive,
-        //         };
-        //         Ok(Eval::literal(Value::Range(range)))
-        //     }
-        //     _ => Err(anyhow::anyhow!(
-        //         "Range expressions currently only support integer literals"
-        //     )),
-        // }
     }
 
     fn compile_class_decl(&mut self, name: String, members: Vec<ClassMember>) -> Result<Eval> {

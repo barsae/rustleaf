@@ -1,6 +1,6 @@
 # Program
-Status: 🔴
-Assertions: 0
+Status: 🟢
+Assertions: 2
 
 ```rustleaf
 var user = {"name": "Alice", "age": 30};
@@ -14,8 +14,8 @@ None
 
 # Result
 ```rust
-Err(
-    "Pattern declarations not yet supported in new Eval system",
+Ok(
+    Unit,
 )
 ```
 
@@ -172,7 +172,150 @@ Ok(
 
 # Eval
 ```rust
-Err(
-    "Pattern declarations not yet supported in new Eval system",
+Ok(
+    Eval(
+        EvalRef(
+            EvalProgram {
+                statements: [
+                    EvalRef(
+                        EvalDeclare {
+                            name: "user",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalDict {
+                                        pairs: [
+                                            (
+                                                EvalRef(
+                                                    EvalLiteral {
+                                                        value: String(
+                                                            "name",
+                                                        ),
+                                                    },
+                                                ),
+                                                EvalRef(
+                                                    EvalLiteral {
+                                                        value: String(
+                                                            "Alice",
+                                                        ),
+                                                    },
+                                                ),
+                                            ),
+                                            (
+                                                EvalRef(
+                                                    EvalLiteral {
+                                                        value: String(
+                                                            "age",
+                                                        ),
+                                                    },
+                                                ),
+                                                EvalRef(
+                                                    EvalLiteral {
+                                                        value: Int(
+                                                            30,
+                                                        ),
+                                                    },
+                                                ),
+                                            ),
+                                        ],
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                    EvalRef(
+                        EvalDeclarePattern {
+                            pattern: Dict(
+                                [
+                                    EvalDictPattern {
+                                        key: "name",
+                                        alias: None,
+                                    },
+                                    EvalDictPattern {
+                                        key: "age",
+                                        alias: Some(
+                                            "user_age",
+                                        ),
+                                    },
+                                ],
+                            ),
+                            init_expr: EvalRef(
+                                EvalVariable {
+                                    name: "user",
+                                },
+                            ),
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "name",
+                                                    },
+                                                ),
+                                                attr_name: "op_eq",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: String(
+                                                        "Alice",
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "user_age",
+                                                    },
+                                                ),
+                                                attr_name: "op_eq",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        30,
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                ],
+            },
+        ),
+    ),
 )
 ```

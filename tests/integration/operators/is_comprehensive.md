@@ -1217,7 +1217,7 @@ Ok(
                                     EvalLiteral {
                                         value: Range(
                                             Range {
-                                                start: 0,
+                                                start: 1,
                                                 end: 10,
                                                 inclusive: false,
                                             },

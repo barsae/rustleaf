@@ -1,7 +1,7 @@
 /// Individual evaluation structs implementing RustValue trait
 /// This replaces the large Eval enum with modular, extensible structs
 
-use crate::core::{RustValue, Value};
+use crate::core::{RustValue, Value, Args};
 use crate::eval::{EvalResult, Evaluator, ControlFlow, ErrorKind};
 use anyhow::anyhow;
 use std::rc::Rc;
@@ -1012,6 +1012,16 @@ impl RustValue for EvalWith {
                 }
             };
             
+            // Call op_open method if it exists
+            let open_method = resource_value.get_attr("op_open", evaluator);
+            if let Some(open_method) = open_method {
+                let args = Args::positional(vec![]);
+                if let Err(e) = open_method.call(args) {
+                    evaluator.cleanup_resources(&resources);
+                    return Ok(Err(ControlFlow::Error(ErrorKind::SystemError(e))));
+                }
+            }
+            
             // Define the resource in current scope
             evaluator.current_env.define(resource_name.clone(), resource_value.clone());
             resources.push((resource_name.clone(), resource_value));
@@ -1028,5 +1038,65 @@ impl RustValue for EvalWith {
     
     fn str(&self) -> String {
         format!("With({} resources)", self.data.resources.len())
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct EvalDeclarePattern {
+    pub pattern: crate::eval::core::EvalPattern,
+    pub init_expr: EvalRef,
+}
+
+impl RustValue for EvalDeclarePattern {
+    fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
+        // Evaluate the initialization expression
+        let init_value = match self.init_expr.eval(evaluator)? {
+            Ok(val) => val,
+            Err(e) => return Ok(Err(e)),
+        };
+        
+        // Bind the pattern to the value
+        match evaluator.match_pattern(&self.pattern, &init_value) {
+            Ok(_) => Ok(Ok(Value::Unit)),
+            Err(e) => Ok(Err(e)),
+        }
+    }
+    
+    fn str(&self) -> String {
+        format!("DeclarePattern({:?})", self.pattern)
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct EvalTry {
+    pub body: EvalRef,
+    pub catch_pattern: crate::eval::core::EvalPattern,
+    pub catch_body: EvalRef,
+}
+
+impl RustValue for EvalTry {
+    fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
+        // Try to execute the main body
+        match self.body.eval(evaluator)? {
+            Ok(value) => Ok(Ok(value)),
+            Err(ControlFlow::Error(ErrorKind::RaisedError(error_value))) => {
+                // Bind the error to the catch pattern and execute catch body
+                match evaluator.match_pattern(&self.catch_pattern, &error_value) {
+                    Ok(_) => {
+                        // Execute catch body
+                        self.catch_body.eval(evaluator)
+                    }
+                    Err(e) => Ok(Err(e)),
+                }
+            }
+            Err(other_control_flow) => {
+                // Other control flow (return, break, continue) should propagate
+                Ok(Err(other_control_flow))
+            }
+        }
+    }
+    
+    fn str(&self) -> String {
+        format!("Try(catch: {:?})", self.catch_pattern)
     }
 }

@@ -156,6 +156,14 @@ impl Eval {
     pub fn with_expr(data: WithData) -> Self {
         Self::new(crate::eval::EvalWith { data })
     }
+    
+    pub fn declare_pattern(pattern: EvalPattern, init_expr: Eval) -> Self {
+        Self::new(crate::eval::EvalDeclarePattern { pattern, init_expr: init_expr.0 })
+    }
+    
+    pub fn try_expr(body: Eval, catch_pattern: EvalPattern, catch_body: Eval) -> Self {
+        Self::new(crate::eval::EvalTry { body: body.0, catch_pattern, catch_body: catch_body.0 })
+    }
 }
 
 impl PartialEq for Eval {

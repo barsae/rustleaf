@@ -1,6 +1,6 @@
 # Program
-Status: 🔴
-Assertions: 0
+Status: 🟢
+Assertions: 1
 
 ```rustleaf
 var i;
@@ -17,8 +17,8 @@ None
 
 # Result
 ```rust
-Err(
-    "Try expressions not yet supported in new Eval system",
+Ok(
+    Unit,
 )
 ```
 
@@ -136,7 +136,103 @@ Ok(
 
 # Eval
 ```rust
-Err(
-    "Try expressions not yet supported in new Eval system",
+Ok(
+    Eval(
+        EvalRef(
+            EvalProgram {
+                statements: [
+                    EvalRef(
+                        EvalDeclare {
+                            name: "i",
+                            init_expr: None,
+                        },
+                    ),
+                    EvalRef(
+                        EvalTry {
+                            body: EvalRef(
+                                EvalBlock {
+                                    statements: [
+                                        EvalRef(
+                                            EvalCall {
+                                                func_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "raise",
+                                                    },
+                                                ),
+                                                args: [
+                                                    EvalRef(
+                                                        EvalLiteral {
+                                                            value: Int(
+                                                                42,
+                                                            ),
+                                                        },
+                                                    ),
+                                                ],
+                                            },
+                                        ),
+                                    ],
+                                    final_expr: None,
+                                },
+                            ),
+                            catch_pattern: Variable(
+                                "e",
+                            ),
+                            catch_body: EvalRef(
+                                EvalBlock {
+                                    statements: [
+                                        EvalRef(
+                                            EvalAssign {
+                                                name: "i",
+                                                expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "e",
+                                                    },
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                    final_expr: None,
+                                },
+                            ),
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "i",
+                                                    },
+                                                ),
+                                                attr_name: "op_eq",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        42,
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                ],
+            },
+        ),
+    ),
 )
 ```
