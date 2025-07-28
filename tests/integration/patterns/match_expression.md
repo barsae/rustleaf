@@ -470,423 +470,527 @@ Ok(
 Ok(
     Eval(
         EvalRef(
-            EvalProgram {
-                statements: [
-                    EvalRef(
-                        EvalDeclare {
-                            name: "x",
-                            init_expr: Some(
-                                EvalRef(
-                                    EvalLiteral {
-                                        value: Int(
-                                            1,
-                                        ),
-                                    },
-                                ),
-                            ),
-                        },
-                    ),
-                    EvalRef(
-                        EvalDeclare {
-                            name: "result",
-                            init_expr: Some(
-                                EvalRef(
-                                    EvalMatch {
-                                        data: MatchData {
-                                            expr: Eval(
-                                                EvalRef(
-                                                    EvalVariable {
-                                                        name: "x",
-                                                    },
-                                                ),
-                                            ),
-                                            cases: [
-                                                EvalMatchCase {
-                                                    pattern: Literal(
-                                                        Int(
-                                                            0,
-                                                        ),
-                                                    ),
-                                                    guard: None,
-                                                    body: Eval(
-                                                        EvalRef(
-                                                            EvalBlock {
-                                                                statements: [],
-                                                                final_expr: Some(
-                                                                    EvalRef(
-                                                                        EvalLiteral {
-                                                                            value: String(
-                                                                                "zero",
-                                                                            ),
-                                                                        },
-                                                                    ),
-                                                                ),
-                                                            },
-                                                        ),
+            RefCell {
+                value: EvalProgram {
+                    statements: [
+                        EvalRef(
+                            RefCell {
+                                value: EvalDeclare {
+                                    name: "x",
+                                    init_expr: Some(
+                                        EvalRef(
+                                            RefCell {
+                                                value: EvalLiteral {
+                                                    value: Int(
+                                                        1,
                                                     ),
                                                 },
-                                                EvalMatchCase {
-                                                    pattern: Literal(
-                                                        Int(
-                                                            1,
-                                                        ),
-                                                    ),
-                                                    guard: None,
-                                                    body: Eval(
-                                                        EvalRef(
-                                                            EvalBlock {
-                                                                statements: [],
-                                                                final_expr: Some(
-                                                                    EvalRef(
-                                                                        EvalLiteral {
-                                                                            value: String(
-                                                                                "one",
-                                                                            ),
-                                                                        },
-                                                                    ),
-                                                                ),
-                                                            },
-                                                        ),
-                                                    ),
-                                                },
-                                                EvalMatchCase {
-                                                    pattern: Wildcard,
-                                                    guard: None,
-                                                    body: Eval(
-                                                        EvalRef(
-                                                            EvalBlock {
-                                                                statements: [],
-                                                                final_expr: Some(
-                                                                    EvalRef(
-                                                                        EvalLiteral {
-                                                                            value: String(
-                                                                                "other",
-                                                                            ),
-                                                                        },
-                                                                    ),
-                                                                ),
-                                                            },
-                                                        ),
-                                                    ),
-                                                },
-                                            ],
-                                        },
-                                    },
-                                ),
-                            ),
-                        },
-                    ),
-                    EvalRef(
-                        EvalCall {
-                            func_expr: EvalRef(
-                                EvalVariable {
-                                    name: "assert",
-                                },
-                            ),
-                            args: [
-                                EvalRef(
-                                    EvalCall {
-                                        func_expr: EvalRef(
-                                            EvalGetAttr {
-                                                obj_expr: EvalRef(
-                                                    EvalVariable {
-                                                        name: "result",
-                                                    },
-                                                ),
-                                                attr_name: "op_eq",
                                             },
                                         ),
-                                        args: [
-                                            EvalRef(
-                                                EvalLiteral {
-                                                    value: String(
-                                                        "one",
-                                                    ),
-                                                },
-                                            ),
-                                        ],
-                                    },
-                                ),
-                            ],
-                        },
-                    ),
-                    EvalRef(
-                        EvalDeclare {
-                            name: "y",
-                            init_expr: Some(
-                                EvalRef(
-                                    EvalLiteral {
-                                        value: Int(
-                                            42,
-                                        ),
-                                    },
-                                ),
-                            ),
-                        },
-                    ),
-                    EvalRef(
-                        EvalDeclare {
-                            name: "result2",
-                            init_expr: Some(
-                                EvalRef(
-                                    EvalMatch {
-                                        data: MatchData {
-                                            expr: Eval(
-                                                EvalRef(
-                                                    EvalVariable {
-                                                        name: "y",
-                                                    },
-                                                ),
-                                            ),
-                                            cases: [
-                                                EvalMatchCase {
-                                                    pattern: Literal(
-                                                        Int(
-                                                            0,
-                                                        ),
-                                                    ),
-                                                    guard: None,
-                                                    body: Eval(
-                                                        EvalRef(
-                                                            EvalBlock {
-                                                                statements: [],
-                                                                final_expr: Some(
-                                                                    EvalRef(
-                                                                        EvalLiteral {
-                                                                            value: String(
-                                                                                "zero",
-                                                                            ),
-                                                                        },
-                                                                    ),
-                                                                ),
-                                                            },
-                                                        ),
-                                                    ),
-                                                },
-                                                EvalMatchCase {
-                                                    pattern: Literal(
-                                                        Int(
-                                                            1,
-                                                        ),
-                                                    ),
-                                                    guard: None,
-                                                    body: Eval(
-                                                        EvalRef(
-                                                            EvalBlock {
-                                                                statements: [],
-                                                                final_expr: Some(
-                                                                    EvalRef(
-                                                                        EvalLiteral {
-                                                                            value: String(
-                                                                                "one",
-                                                                            ),
-                                                                        },
-                                                                    ),
-                                                                ),
-                                                            },
-                                                        ),
-                                                    ),
-                                                },
-                                                EvalMatchCase {
-                                                    pattern: Wildcard,
-                                                    guard: None,
-                                                    body: Eval(
-                                                        EvalRef(
-                                                            EvalBlock {
-                                                                statements: [],
-                                                                final_expr: Some(
-                                                                    EvalRef(
-                                                                        EvalLiteral {
-                                                                            value: String(
-                                                                                "other",
-                                                                            ),
-                                                                        },
-                                                                    ),
-                                                                ),
-                                                            },
-                                                        ),
-                                                    ),
-                                                },
-                                            ],
-                                        },
-                                    },
-                                ),
-                            ),
-                        },
-                    ),
-                    EvalRef(
-                        EvalCall {
-                            func_expr: EvalRef(
-                                EvalVariable {
-                                    name: "assert",
+                                    ),
                                 },
-                            ),
-                            args: [
-                                EvalRef(
-                                    EvalCall {
-                                        func_expr: EvalRef(
-                                            EvalGetAttr {
-                                                obj_expr: EvalRef(
-                                                    EvalVariable {
-                                                        name: "result2",
+                            },
+                        ),
+                        EvalRef(
+                            RefCell {
+                                value: EvalDeclare {
+                                    name: "result",
+                                    init_expr: Some(
+                                        EvalRef(
+                                            RefCell {
+                                                value: EvalMatch {
+                                                    data: MatchData {
+                                                        expr: Eval(
+                                                            EvalRef(
+                                                                RefCell {
+                                                                    value: EvalVariable {
+                                                                        name: "x",
+                                                                    },
+                                                                },
+                                                            ),
+                                                        ),
+                                                        cases: [
+                                                            EvalMatchCase {
+                                                                pattern: Literal(
+                                                                    Int(
+                                                                        0,
+                                                                    ),
+                                                                ),
+                                                                guard: None,
+                                                                body: Eval(
+                                                                    EvalRef(
+                                                                        RefCell {
+                                                                            value: EvalBlock {
+                                                                                statements: [],
+                                                                                final_expr: Some(
+                                                                                    EvalRef(
+                                                                                        RefCell {
+                                                                                            value: EvalLiteral {
+                                                                                                value: String(
+                                                                                                    "zero",
+                                                                                                ),
+                                                                                            },
+                                                                                        },
+                                                                                    ),
+                                                                                ),
+                                                                            },
+                                                                        },
+                                                                    ),
+                                                                ),
+                                                            },
+                                                            EvalMatchCase {
+                                                                pattern: Literal(
+                                                                    Int(
+                                                                        1,
+                                                                    ),
+                                                                ),
+                                                                guard: None,
+                                                                body: Eval(
+                                                                    EvalRef(
+                                                                        RefCell {
+                                                                            value: EvalBlock {
+                                                                                statements: [],
+                                                                                final_expr: Some(
+                                                                                    EvalRef(
+                                                                                        RefCell {
+                                                                                            value: EvalLiteral {
+                                                                                                value: String(
+                                                                                                    "one",
+                                                                                                ),
+                                                                                            },
+                                                                                        },
+                                                                                    ),
+                                                                                ),
+                                                                            },
+                                                                        },
+                                                                    ),
+                                                                ),
+                                                            },
+                                                            EvalMatchCase {
+                                                                pattern: Wildcard,
+                                                                guard: None,
+                                                                body: Eval(
+                                                                    EvalRef(
+                                                                        RefCell {
+                                                                            value: EvalBlock {
+                                                                                statements: [],
+                                                                                final_expr: Some(
+                                                                                    EvalRef(
+                                                                                        RefCell {
+                                                                                            value: EvalLiteral {
+                                                                                                value: String(
+                                                                                                    "other",
+                                                                                                ),
+                                                                                            },
+                                                                                        },
+                                                                                    ),
+                                                                                ),
+                                                                            },
+                                                                        },
+                                                                    ),
+                                                                ),
+                                                            },
+                                                        ],
                                                     },
-                                                ),
-                                                attr_name: "op_eq",
+                                                },
                                             },
                                         ),
-                                        args: [
-                                            EvalRef(
-                                                EvalLiteral {
-                                                    value: String(
-                                                        "other",
-                                                    ),
-                                                },
-                                            ),
-                                        ],
-                                    },
-                                ),
-                            ],
-                        },
-                    ),
-                    EvalRef(
-                        EvalDeclare {
-                            name: "z",
-                            init_expr: Some(
-                                EvalRef(
-                                    EvalLiteral {
-                                        value: Int(
-                                            0,
-                                        ),
-                                    },
-                                ),
-                            ),
-                        },
-                    ),
-                    EvalRef(
-                        EvalDeclare {
-                            name: "result3",
-                            init_expr: Some(
-                                EvalRef(
-                                    EvalMatch {
-                                        data: MatchData {
-                                            expr: Eval(
-                                                EvalRef(
-                                                    EvalVariable {
-                                                        name: "z",
-                                                    },
-                                                ),
-                                            ),
-                                            cases: [
-                                                EvalMatchCase {
-                                                    pattern: Literal(
-                                                        Int(
-                                                            0,
-                                                        ),
-                                                    ),
-                                                    guard: None,
-                                                    body: Eval(
-                                                        EvalRef(
-                                                            EvalBlock {
-                                                                statements: [],
-                                                                final_expr: Some(
-                                                                    EvalRef(
-                                                                        EvalLiteral {
-                                                                            value: String(
-                                                                                "zero",
-                                                                            ),
-                                                                        },
-                                                                    ),
-                                                                ),
-                                                            },
-                                                        ),
-                                                    ),
-                                                },
-                                                EvalMatchCase {
-                                                    pattern: Literal(
-                                                        Int(
-                                                            1,
-                                                        ),
-                                                    ),
-                                                    guard: None,
-                                                    body: Eval(
-                                                        EvalRef(
-                                                            EvalBlock {
-                                                                statements: [],
-                                                                final_expr: Some(
-                                                                    EvalRef(
-                                                                        EvalLiteral {
-                                                                            value: String(
-                                                                                "one",
-                                                                            ),
-                                                                        },
-                                                                    ),
-                                                                ),
-                                                            },
-                                                        ),
-                                                    ),
-                                                },
-                                                EvalMatchCase {
-                                                    pattern: Wildcard,
-                                                    guard: None,
-                                                    body: Eval(
-                                                        EvalRef(
-                                                            EvalBlock {
-                                                                statements: [],
-                                                                final_expr: Some(
-                                                                    EvalRef(
-                                                                        EvalLiteral {
-                                                                            value: String(
-                                                                                "other",
-                                                                            ),
-                                                                        },
-                                                                    ),
-                                                                ),
-                                                            },
-                                                        ),
-                                                    ),
-                                                },
-                                            ],
-                                        },
-                                    },
-                                ),
-                            ),
-                        },
-                    ),
-                    EvalRef(
-                        EvalCall {
-                            func_expr: EvalRef(
-                                EvalVariable {
-                                    name: "assert",
+                                    ),
                                 },
-                            ),
-                            args: [
-                                EvalRef(
-                                    EvalCall {
-                                        func_expr: EvalRef(
-                                            EvalGetAttr {
-                                                obj_expr: EvalRef(
-                                                    EvalVariable {
-                                                        name: "result3",
-                                                    },
-                                                ),
-                                                attr_name: "op_eq",
+                            },
+                        ),
+                        EvalRef(
+                            RefCell {
+                                value: EvalCall {
+                                    func_expr: EvalRef(
+                                        RefCell {
+                                            value: EvalVariable {
+                                                name: "assert",
+                                            },
+                                        },
+                                    ),
+                                    args: [
+                                        EvalRef(
+                                            RefCell {
+                                                value: EvalCall {
+                                                    func_expr: EvalRef(
+                                                        RefCell {
+                                                            value: EvalGetAttr {
+                                                                obj_expr: EvalRef(
+                                                                    RefCell {
+                                                                        value: EvalVariable {
+                                                                            name: "result",
+                                                                        },
+                                                                    },
+                                                                ),
+                                                                attr_name: "op_eq",
+                                                            },
+                                                        },
+                                                    ),
+                                                    args: [
+                                                        EvalRef(
+                                                            RefCell {
+                                                                value: EvalLiteral {
+                                                                    value: String(
+                                                                        "one",
+                                                                    ),
+                                                                },
+                                                            },
+                                                        ),
+                                                    ],
+                                                },
                                             },
                                         ),
-                                        args: [
-                                            EvalRef(
-                                                EvalLiteral {
-                                                    value: String(
-                                                        "zero",
+                                    ],
+                                },
+                            },
+                        ),
+                        EvalRef(
+                            RefCell {
+                                value: EvalDeclare {
+                                    name: "y",
+                                    init_expr: Some(
+                                        EvalRef(
+                                            RefCell {
+                                                value: EvalLiteral {
+                                                    value: Int(
+                                                        42,
                                                     ),
                                                 },
-                                            ),
-                                        ],
-                                    },
-                                ),
-                            ],
-                        },
-                    ),
-                ],
+                                            },
+                                        ),
+                                    ),
+                                },
+                            },
+                        ),
+                        EvalRef(
+                            RefCell {
+                                value: EvalDeclare {
+                                    name: "result2",
+                                    init_expr: Some(
+                                        EvalRef(
+                                            RefCell {
+                                                value: EvalMatch {
+                                                    data: MatchData {
+                                                        expr: Eval(
+                                                            EvalRef(
+                                                                RefCell {
+                                                                    value: EvalVariable {
+                                                                        name: "y",
+                                                                    },
+                                                                },
+                                                            ),
+                                                        ),
+                                                        cases: [
+                                                            EvalMatchCase {
+                                                                pattern: Literal(
+                                                                    Int(
+                                                                        0,
+                                                                    ),
+                                                                ),
+                                                                guard: None,
+                                                                body: Eval(
+                                                                    EvalRef(
+                                                                        RefCell {
+                                                                            value: EvalBlock {
+                                                                                statements: [],
+                                                                                final_expr: Some(
+                                                                                    EvalRef(
+                                                                                        RefCell {
+                                                                                            value: EvalLiteral {
+                                                                                                value: String(
+                                                                                                    "zero",
+                                                                                                ),
+                                                                                            },
+                                                                                        },
+                                                                                    ),
+                                                                                ),
+                                                                            },
+                                                                        },
+                                                                    ),
+                                                                ),
+                                                            },
+                                                            EvalMatchCase {
+                                                                pattern: Literal(
+                                                                    Int(
+                                                                        1,
+                                                                    ),
+                                                                ),
+                                                                guard: None,
+                                                                body: Eval(
+                                                                    EvalRef(
+                                                                        RefCell {
+                                                                            value: EvalBlock {
+                                                                                statements: [],
+                                                                                final_expr: Some(
+                                                                                    EvalRef(
+                                                                                        RefCell {
+                                                                                            value: EvalLiteral {
+                                                                                                value: String(
+                                                                                                    "one",
+                                                                                                ),
+                                                                                            },
+                                                                                        },
+                                                                                    ),
+                                                                                ),
+                                                                            },
+                                                                        },
+                                                                    ),
+                                                                ),
+                                                            },
+                                                            EvalMatchCase {
+                                                                pattern: Wildcard,
+                                                                guard: None,
+                                                                body: Eval(
+                                                                    EvalRef(
+                                                                        RefCell {
+                                                                            value: EvalBlock {
+                                                                                statements: [],
+                                                                                final_expr: Some(
+                                                                                    EvalRef(
+                                                                                        RefCell {
+                                                                                            value: EvalLiteral {
+                                                                                                value: String(
+                                                                                                    "other",
+                                                                                                ),
+                                                                                            },
+                                                                                        },
+                                                                                    ),
+                                                                                ),
+                                                                            },
+                                                                        },
+                                                                    ),
+                                                                ),
+                                                            },
+                                                        ],
+                                                    },
+                                                },
+                                            },
+                                        ),
+                                    ),
+                                },
+                            },
+                        ),
+                        EvalRef(
+                            RefCell {
+                                value: EvalCall {
+                                    func_expr: EvalRef(
+                                        RefCell {
+                                            value: EvalVariable {
+                                                name: "assert",
+                                            },
+                                        },
+                                    ),
+                                    args: [
+                                        EvalRef(
+                                            RefCell {
+                                                value: EvalCall {
+                                                    func_expr: EvalRef(
+                                                        RefCell {
+                                                            value: EvalGetAttr {
+                                                                obj_expr: EvalRef(
+                                                                    RefCell {
+                                                                        value: EvalVariable {
+                                                                            name: "result2",
+                                                                        },
+                                                                    },
+                                                                ),
+                                                                attr_name: "op_eq",
+                                                            },
+                                                        },
+                                                    ),
+                                                    args: [
+                                                        EvalRef(
+                                                            RefCell {
+                                                                value: EvalLiteral {
+                                                                    value: String(
+                                                                        "other",
+                                                                    ),
+                                                                },
+                                                            },
+                                                        ),
+                                                    ],
+                                                },
+                                            },
+                                        ),
+                                    ],
+                                },
+                            },
+                        ),
+                        EvalRef(
+                            RefCell {
+                                value: EvalDeclare {
+                                    name: "z",
+                                    init_expr: Some(
+                                        EvalRef(
+                                            RefCell {
+                                                value: EvalLiteral {
+                                                    value: Int(
+                                                        0,
+                                                    ),
+                                                },
+                                            },
+                                        ),
+                                    ),
+                                },
+                            },
+                        ),
+                        EvalRef(
+                            RefCell {
+                                value: EvalDeclare {
+                                    name: "result3",
+                                    init_expr: Some(
+                                        EvalRef(
+                                            RefCell {
+                                                value: EvalMatch {
+                                                    data: MatchData {
+                                                        expr: Eval(
+                                                            EvalRef(
+                                                                RefCell {
+                                                                    value: EvalVariable {
+                                                                        name: "z",
+                                                                    },
+                                                                },
+                                                            ),
+                                                        ),
+                                                        cases: [
+                                                            EvalMatchCase {
+                                                                pattern: Literal(
+                                                                    Int(
+                                                                        0,
+                                                                    ),
+                                                                ),
+                                                                guard: None,
+                                                                body: Eval(
+                                                                    EvalRef(
+                                                                        RefCell {
+                                                                            value: EvalBlock {
+                                                                                statements: [],
+                                                                                final_expr: Some(
+                                                                                    EvalRef(
+                                                                                        RefCell {
+                                                                                            value: EvalLiteral {
+                                                                                                value: String(
+                                                                                                    "zero",
+                                                                                                ),
+                                                                                            },
+                                                                                        },
+                                                                                    ),
+                                                                                ),
+                                                                            },
+                                                                        },
+                                                                    ),
+                                                                ),
+                                                            },
+                                                            EvalMatchCase {
+                                                                pattern: Literal(
+                                                                    Int(
+                                                                        1,
+                                                                    ),
+                                                                ),
+                                                                guard: None,
+                                                                body: Eval(
+                                                                    EvalRef(
+                                                                        RefCell {
+                                                                            value: EvalBlock {
+                                                                                statements: [],
+                                                                                final_expr: Some(
+                                                                                    EvalRef(
+                                                                                        RefCell {
+                                                                                            value: EvalLiteral {
+                                                                                                value: String(
+                                                                                                    "one",
+                                                                                                ),
+                                                                                            },
+                                                                                        },
+                                                                                    ),
+                                                                                ),
+                                                                            },
+                                                                        },
+                                                                    ),
+                                                                ),
+                                                            },
+                                                            EvalMatchCase {
+                                                                pattern: Wildcard,
+                                                                guard: None,
+                                                                body: Eval(
+                                                                    EvalRef(
+                                                                        RefCell {
+                                                                            value: EvalBlock {
+                                                                                statements: [],
+                                                                                final_expr: Some(
+                                                                                    EvalRef(
+                                                                                        RefCell {
+                                                                                            value: EvalLiteral {
+                                                                                                value: String(
+                                                                                                    "other",
+                                                                                                ),
+                                                                                            },
+                                                                                        },
+                                                                                    ),
+                                                                                ),
+                                                                            },
+                                                                        },
+                                                                    ),
+                                                                ),
+                                                            },
+                                                        ],
+                                                    },
+                                                },
+                                            },
+                                        ),
+                                    ),
+                                },
+                            },
+                        ),
+                        EvalRef(
+                            RefCell {
+                                value: EvalCall {
+                                    func_expr: EvalRef(
+                                        RefCell {
+                                            value: EvalVariable {
+                                                name: "assert",
+                                            },
+                                        },
+                                    ),
+                                    args: [
+                                        EvalRef(
+                                            RefCell {
+                                                value: EvalCall {
+                                                    func_expr: EvalRef(
+                                                        RefCell {
+                                                            value: EvalGetAttr {
+                                                                obj_expr: EvalRef(
+                                                                    RefCell {
+                                                                        value: EvalVariable {
+                                                                            name: "result3",
+                                                                        },
+                                                                    },
+                                                                ),
+                                                                attr_name: "op_eq",
+                                                            },
+                                                        },
+                                                    ),
+                                                    args: [
+                                                        EvalRef(
+                                                            RefCell {
+                                                                value: EvalLiteral {
+                                                                    value: String(
+                                                                        "zero",
+                                                                    ),
+                                                                },
+                                                            },
+                                                        ),
+                                                    ],
+                                                },
+                                            },
+                                        ),
+                                    ],
+                                },
+                            },
+                        ),
+                    ],
+                },
             },
         ),
     ),

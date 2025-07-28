@@ -82,53 +82,71 @@ Ok(
 Ok(
     Eval(
         EvalRef(
-            EvalProgram {
-                statements: [
-                    EvalRef(
-                        EvalDeclare {
-                            name: "empty",
-                            init_expr: Some(
-                                EvalRef(
-                                    EvalList {
-                                        elements: [],
-                                    },
-                                ),
-                            ),
-                        },
-                    ),
-                    EvalRef(
-                        EvalCall {
-                            func_expr: EvalRef(
-                                EvalVariable {
-                                    name: "assert",
-                                },
-                            ),
-                            args: [
-                                EvalRef(
-                                    EvalCall {
-                                        func_expr: EvalRef(
-                                            EvalGetAttr {
-                                                obj_expr: EvalRef(
-                                                    EvalVariable {
-                                                        name: "empty",
-                                                    },
-                                                ),
-                                                attr_name: "op_eq",
-                                            },
-                                        ),
-                                        args: [
-                                            EvalRef(
-                                                EvalList {
+            RefCell {
+                value: EvalProgram {
+                    statements: [
+                        EvalRef(
+                            RefCell {
+                                value: EvalDeclare {
+                                    name: "empty",
+                                    init_expr: Some(
+                                        EvalRef(
+                                            RefCell {
+                                                value: EvalList {
                                                     elements: [],
                                                 },
-                                            ),
-                                        ],
-                                    },
-                                ),
-                            ],
-                        },
-                    ),
-                ],
+                                            },
+                                        ),
+                                    ),
+                                },
+                            },
+                        ),
+                        EvalRef(
+                            RefCell {
+                                value: EvalCall {
+                                    func_expr: EvalRef(
+                                        RefCell {
+                                            value: EvalVariable {
+                                                name: "assert",
+                                            },
+                                        },
+                                    ),
+                                    args: [
+                                        EvalRef(
+                                            RefCell {
+                                                value: EvalCall {
+                                                    func_expr: EvalRef(
+                                                        RefCell {
+                                                            value: EvalGetAttr {
+                                                                obj_expr: EvalRef(
+                                                                    RefCell {
+                                                                        value: EvalVariable {
+                                                                            name: "empty",
+                                                                        },
+                                                                    },
+                                                                ),
+                                                                attr_name: "op_eq",
+                                                            },
+                                                        },
+                                                    ),
+                                                    args: [
+                                                        EvalRef(
+                                                            RefCell {
+                                                                value: EvalList {
+                                                                    elements: [],
+                                                                },
+                                                            },
+                                                        ),
+                                                    ],
+                                                },
+                                            },
+                                        ),
+                                    ],
+                                },
+                            },
+                        ),
+                    ],
+                },
             },
         ),
     ),

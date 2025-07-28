@@ -362,385 +362,509 @@ Ok(
 Ok(
     Eval(
         EvalRef(
-            EvalProgram {
-                statements: [
-                    EvalRef(
-                        EvalDeclare {
-                            name: "processor",
-                            init_expr: Some(
-                                EvalRef(
-                                    EvalLambda {
-                                        data: LambdaData {
-                                            params: [
-                                                "x",
-                                            ],
-                                            body: Eval(
-                                                EvalRef(
-                                                    EvalBlock {
-                                                        statements: [
+            RefCell {
+                value: EvalProgram {
+                    statements: [
+                        EvalRef(
+                            RefCell {
+                                value: EvalDeclare {
+                                    name: "processor",
+                                    init_expr: Some(
+                                        EvalRef(
+                                            RefCell {
+                                                value: EvalLambda {
+                                                    data: LambdaData {
+                                                        params: [
+                                                            "x",
+                                                        ],
+                                                        body: Eval(
                                                             EvalRef(
-                                                                EvalDeclare {
-                                                                    name: "temp",
-                                                                    init_expr: Some(
-                                                                        EvalRef(
-                                                                            EvalCall {
-                                                                                func_expr: EvalRef(
-                                                                                    EvalGetAttr {
-                                                                                        obj_expr: EvalRef(
-                                                                                            EvalVariable {
-                                                                                                name: "x",
+                                                                RefCell {
+                                                                    value: EvalBlock {
+                                                                        statements: [
+                                                                            EvalRef(
+                                                                                RefCell {
+                                                                                    value: EvalDeclare {
+                                                                                        name: "temp",
+                                                                                        init_expr: Some(
+                                                                                            EvalRef(
+                                                                                                RefCell {
+                                                                                                    value: EvalCall {
+                                                                                                        func_expr: EvalRef(
+                                                                                                            RefCell {
+                                                                                                                value: EvalGetAttr {
+                                                                                                                    obj_expr: EvalRef(
+                                                                                                                        RefCell {
+                                                                                                                            value: EvalVariable {
+                                                                                                                                name: "x",
+                                                                                                                            },
+                                                                                                                        },
+                                                                                                                    ),
+                                                                                                                    attr_name: "op_mul",
+                                                                                                                },
+                                                                                                            },
+                                                                                                        ),
+                                                                                                        args: [
+                                                                                                            EvalRef(
+                                                                                                                RefCell {
+                                                                                                                    value: EvalLiteral {
+                                                                                                                        value: Int(
+                                                                                                                            2,
+                                                                                                                        ),
+                                                                                                                    },
+                                                                                                                },
+                                                                                                            ),
+                                                                                                        ],
+                                                                                                    },
+                                                                                                },
+                                                                                            ),
+                                                                                        ),
+                                                                                    },
+                                                                                },
+                                                                            ),
+                                                                        ],
+                                                                        final_expr: Some(
+                                                                            EvalRef(
+                                                                                RefCell {
+                                                                                    value: EvalCall {
+                                                                                        func_expr: EvalRef(
+                                                                                            RefCell {
+                                                                                                value: EvalGetAttr {
+                                                                                                    obj_expr: EvalRef(
+                                                                                                        RefCell {
+                                                                                                            value: EvalVariable {
+                                                                                                                name: "temp",
+                                                                                                            },
+                                                                                                        },
+                                                                                                    ),
+                                                                                                    attr_name: "op_add",
+                                                                                                },
                                                                                             },
                                                                                         ),
-                                                                                        attr_name: "op_mul",
+                                                                                        args: [
+                                                                                            EvalRef(
+                                                                                                RefCell {
+                                                                                                    value: EvalLiteral {
+                                                                                                        value: Int(
+                                                                                                            1,
+                                                                                                        ),
+                                                                                                    },
+                                                                                                },
+                                                                                            ),
+                                                                                        ],
+                                                                                    },
+                                                                                },
+                                                                            ),
+                                                                        ),
+                                                                    },
+                                                                },
+                                                            ),
+                                                        ),
+                                                    },
+                                                },
+                                            },
+                                        ),
+                                    ),
+                                },
+                            },
+                        ),
+                        EvalRef(
+                            RefCell {
+                                value: EvalDeclare {
+                                    name: "complex_lambda",
+                                    init_expr: Some(
+                                        EvalRef(
+                                            RefCell {
+                                                value: EvalLambda {
+                                                    data: LambdaData {
+                                                        params: [
+                                                            "y",
+                                                        ],
+                                                        body: Eval(
+                                                            EvalRef(
+                                                                RefCell {
+                                                                    value: EvalBlock {
+                                                                        statements: [
+                                                                            EvalRef(
+                                                                                RefCell {
+                                                                                    value: EvalDeclare {
+                                                                                        name: "first",
+                                                                                        init_expr: Some(
+                                                                                            EvalRef(
+                                                                                                RefCell {
+                                                                                                    value: EvalCall {
+                                                                                                        func_expr: EvalRef(
+                                                                                                            RefCell {
+                                                                                                                value: EvalGetAttr {
+                                                                                                                    obj_expr: EvalRef(
+                                                                                                                        RefCell {
+                                                                                                                            value: EvalVariable {
+                                                                                                                                name: "y",
+                                                                                                                            },
+                                                                                                                        },
+                                                                                                                    ),
+                                                                                                                    attr_name: "op_add",
+                                                                                                                },
+                                                                                                            },
+                                                                                                        ),
+                                                                                                        args: [
+                                                                                                            EvalRef(
+                                                                                                                RefCell {
+                                                                                                                    value: EvalLiteral {
+                                                                                                                        value: Int(
+                                                                                                                            10,
+                                                                                                                        ),
+                                                                                                                    },
+                                                                                                                },
+                                                                                                            ),
+                                                                                                        ],
+                                                                                                    },
+                                                                                                },
+                                                                                            ),
+                                                                                        ),
+                                                                                    },
+                                                                                },
+                                                                            ),
+                                                                            EvalRef(
+                                                                                RefCell {
+                                                                                    value: EvalDeclare {
+                                                                                        name: "second",
+                                                                                        init_expr: Some(
+                                                                                            EvalRef(
+                                                                                                RefCell {
+                                                                                                    value: EvalCall {
+                                                                                                        func_expr: EvalRef(
+                                                                                                            RefCell {
+                                                                                                                value: EvalGetAttr {
+                                                                                                                    obj_expr: EvalRef(
+                                                                                                                        RefCell {
+                                                                                                                            value: EvalVariable {
+                                                                                                                                name: "first",
+                                                                                                                            },
+                                                                                                                        },
+                                                                                                                    ),
+                                                                                                                    attr_name: "op_mul",
+                                                                                                                },
+                                                                                                            },
+                                                                                                        ),
+                                                                                                        args: [
+                                                                                                            EvalRef(
+                                                                                                                RefCell {
+                                                                                                                    value: EvalLiteral {
+                                                                                                                        value: Int(
+                                                                                                                            3,
+                                                                                                                        ),
+                                                                                                                    },
+                                                                                                                },
+                                                                                                            ),
+                                                                                                        ],
+                                                                                                    },
+                                                                                                },
+                                                                                            ),
+                                                                                        ),
+                                                                                    },
+                                                                                },
+                                                                            ),
+                                                                        ],
+                                                                        final_expr: Some(
+                                                                            EvalRef(
+                                                                                RefCell {
+                                                                                    value: EvalCall {
+                                                                                        func_expr: EvalRef(
+                                                                                            RefCell {
+                                                                                                value: EvalGetAttr {
+                                                                                                    obj_expr: EvalRef(
+                                                                                                        RefCell {
+                                                                                                            value: EvalVariable {
+                                                                                                                name: "second",
+                                                                                                            },
+                                                                                                        },
+                                                                                                    ),
+                                                                                                    attr_name: "op_sub",
+                                                                                                },
+                                                                                            },
+                                                                                        ),
+                                                                                        args: [
+                                                                                            EvalRef(
+                                                                                                RefCell {
+                                                                                                    value: EvalLiteral {
+                                                                                                        value: Int(
+                                                                                                            5,
+                                                                                                        ),
+                                                                                                    },
+                                                                                                },
+                                                                                            ),
+                                                                                        ],
+                                                                                    },
+                                                                                },
+                                                                            ),
+                                                                        ),
+                                                                    },
+                                                                },
+                                                            ),
+                                                        ),
+                                                    },
+                                                },
+                                            },
+                                        ),
+                                    ),
+                                },
+                            },
+                        ),
+                        EvalRef(
+                            RefCell {
+                                value: EvalCall {
+                                    func_expr: EvalRef(
+                                        RefCell {
+                                            value: EvalVariable {
+                                                name: "assert",
+                                            },
+                                        },
+                                    ),
+                                    args: [
+                                        EvalRef(
+                                            RefCell {
+                                                value: EvalCall {
+                                                    func_expr: EvalRef(
+                                                        RefCell {
+                                                            value: EvalGetAttr {
+                                                                obj_expr: EvalRef(
+                                                                    RefCell {
+                                                                        value: EvalCall {
+                                                                            func_expr: EvalRef(
+                                                                                RefCell {
+                                                                                    value: EvalVariable {
+                                                                                        name: "processor",
+                                                                                    },
+                                                                                },
+                                                                            ),
+                                                                            args: [
+                                                                                EvalRef(
+                                                                                    RefCell {
+                                                                                        value: EvalLiteral {
+                                                                                            value: Int(
+                                                                                                5,
+                                                                                            ),
+                                                                                        },
                                                                                     },
                                                                                 ),
-                                                                                args: [
-                                                                                    EvalRef(
-                                                                                        EvalLiteral {
+                                                                            ],
+                                                                        },
+                                                                    },
+                                                                ),
+                                                                attr_name: "op_eq",
+                                                            },
+                                                        },
+                                                    ),
+                                                    args: [
+                                                        EvalRef(
+                                                            RefCell {
+                                                                value: EvalLiteral {
+                                                                    value: Int(
+                                                                        11,
+                                                                    ),
+                                                                },
+                                                            },
+                                                        ),
+                                                    ],
+                                                },
+                                            },
+                                        ),
+                                    ],
+                                },
+                            },
+                        ),
+                        EvalRef(
+                            RefCell {
+                                value: EvalCall {
+                                    func_expr: EvalRef(
+                                        RefCell {
+                                            value: EvalVariable {
+                                                name: "assert",
+                                            },
+                                        },
+                                    ),
+                                    args: [
+                                        EvalRef(
+                                            RefCell {
+                                                value: EvalCall {
+                                                    func_expr: EvalRef(
+                                                        RefCell {
+                                                            value: EvalGetAttr {
+                                                                obj_expr: EvalRef(
+                                                                    RefCell {
+                                                                        value: EvalCall {
+                                                                            func_expr: EvalRef(
+                                                                                RefCell {
+                                                                                    value: EvalVariable {
+                                                                                        name: "processor",
+                                                                                    },
+                                                                                },
+                                                                            ),
+                                                                            args: [
+                                                                                EvalRef(
+                                                                                    RefCell {
+                                                                                        value: EvalLiteral {
+                                                                                            value: Int(
+                                                                                                0,
+                                                                                            ),
+                                                                                        },
+                                                                                    },
+                                                                                ),
+                                                                            ],
+                                                                        },
+                                                                    },
+                                                                ),
+                                                                attr_name: "op_eq",
+                                                            },
+                                                        },
+                                                    ),
+                                                    args: [
+                                                        EvalRef(
+                                                            RefCell {
+                                                                value: EvalLiteral {
+                                                                    value: Int(
+                                                                        1,
+                                                                    ),
+                                                                },
+                                                            },
+                                                        ),
+                                                    ],
+                                                },
+                                            },
+                                        ),
+                                    ],
+                                },
+                            },
+                        ),
+                        EvalRef(
+                            RefCell {
+                                value: EvalCall {
+                                    func_expr: EvalRef(
+                                        RefCell {
+                                            value: EvalVariable {
+                                                name: "assert",
+                                            },
+                                        },
+                                    ),
+                                    args: [
+                                        EvalRef(
+                                            RefCell {
+                                                value: EvalCall {
+                                                    func_expr: EvalRef(
+                                                        RefCell {
+                                                            value: EvalGetAttr {
+                                                                obj_expr: EvalRef(
+                                                                    RefCell {
+                                                                        value: EvalCall {
+                                                                            func_expr: EvalRef(
+                                                                                RefCell {
+                                                                                    value: EvalVariable {
+                                                                                        name: "complex_lambda",
+                                                                                    },
+                                                                                },
+                                                                            ),
+                                                                            args: [
+                                                                                EvalRef(
+                                                                                    RefCell {
+                                                                                        value: EvalLiteral {
                                                                                             value: Int(
                                                                                                 2,
                                                                                             ),
                                                                                         },
-                                                                                    ),
-                                                                                ],
-                                                                            },
-                                                                        ),
-                                                                    ),
-                                                                },
-                                                            ),
-                                                        ],
-                                                        final_expr: Some(
-                                                            EvalRef(
-                                                                EvalCall {
-                                                                    func_expr: EvalRef(
-                                                                        EvalGetAttr {
-                                                                            obj_expr: EvalRef(
-                                                                                EvalVariable {
-                                                                                    name: "temp",
-                                                                                },
-                                                                            ),
-                                                                            attr_name: "op_add",
-                                                                        },
-                                                                    ),
-                                                                    args: [
-                                                                        EvalRef(
-                                                                            EvalLiteral {
-                                                                                value: Int(
-                                                                                    1,
-                                                                                ),
-                                                                            },
-                                                                        ),
-                                                                    ],
-                                                                },
-                                                            ),
-                                                        ),
-                                                    },
-                                                ),
-                                            ),
-                                        },
-                                    },
-                                ),
-                            ),
-                        },
-                    ),
-                    EvalRef(
-                        EvalDeclare {
-                            name: "complex_lambda",
-                            init_expr: Some(
-                                EvalRef(
-                                    EvalLambda {
-                                        data: LambdaData {
-                                            params: [
-                                                "y",
-                                            ],
-                                            body: Eval(
-                                                EvalRef(
-                                                    EvalBlock {
-                                                        statements: [
-                                                            EvalRef(
-                                                                EvalDeclare {
-                                                                    name: "first",
-                                                                    init_expr: Some(
-                                                                        EvalRef(
-                                                                            EvalCall {
-                                                                                func_expr: EvalRef(
-                                                                                    EvalGetAttr {
-                                                                                        obj_expr: EvalRef(
-                                                                                            EvalVariable {
-                                                                                                name: "y",
-                                                                                            },
-                                                                                        ),
-                                                                                        attr_name: "op_add",
                                                                                     },
                                                                                 ),
-                                                                                args: [
-                                                                                    EvalRef(
-                                                                                        EvalLiteral {
+                                                                            ],
+                                                                        },
+                                                                    },
+                                                                ),
+                                                                attr_name: "op_eq",
+                                                            },
+                                                        },
+                                                    ),
+                                                    args: [
+                                                        EvalRef(
+                                                            RefCell {
+                                                                value: EvalLiteral {
+                                                                    value: Int(
+                                                                        31,
+                                                                    ),
+                                                                },
+                                                            },
+                                                        ),
+                                                    ],
+                                                },
+                                            },
+                                        ),
+                                    ],
+                                },
+                            },
+                        ),
+                        EvalRef(
+                            RefCell {
+                                value: EvalCall {
+                                    func_expr: EvalRef(
+                                        RefCell {
+                                            value: EvalVariable {
+                                                name: "assert",
+                                            },
+                                        },
+                                    ),
+                                    args: [
+                                        EvalRef(
+                                            RefCell {
+                                                value: EvalCall {
+                                                    func_expr: EvalRef(
+                                                        RefCell {
+                                                            value: EvalGetAttr {
+                                                                obj_expr: EvalRef(
+                                                                    RefCell {
+                                                                        value: EvalCall {
+                                                                            func_expr: EvalRef(
+                                                                                RefCell {
+                                                                                    value: EvalVariable {
+                                                                                        name: "complex_lambda",
+                                                                                    },
+                                                                                },
+                                                                            ),
+                                                                            args: [
+                                                                                EvalRef(
+                                                                                    RefCell {
+                                                                                        value: EvalLiteral {
                                                                                             value: Int(
                                                                                                 10,
                                                                                             ),
                                                                                         },
-                                                                                    ),
-                                                                                ],
-                                                                            },
-                                                                        ),
-                                                                    ),
-                                                                },
-                                                            ),
-                                                            EvalRef(
-                                                                EvalDeclare {
-                                                                    name: "second",
-                                                                    init_expr: Some(
-                                                                        EvalRef(
-                                                                            EvalCall {
-                                                                                func_expr: EvalRef(
-                                                                                    EvalGetAttr {
-                                                                                        obj_expr: EvalRef(
-                                                                                            EvalVariable {
-                                                                                                name: "first",
-                                                                                            },
-                                                                                        ),
-                                                                                        attr_name: "op_mul",
                                                                                     },
                                                                                 ),
-                                                                                args: [
-                                                                                    EvalRef(
-                                                                                        EvalLiteral {
-                                                                                            value: Int(
-                                                                                                3,
-                                                                                            ),
-                                                                                        },
-                                                                                    ),
-                                                                                ],
-                                                                            },
-                                                                        ),
-                                                                    ),
-                                                                },
-                                                            ),
-                                                        ],
-                                                        final_expr: Some(
-                                                            EvalRef(
-                                                                EvalCall {
-                                                                    func_expr: EvalRef(
-                                                                        EvalGetAttr {
-                                                                            obj_expr: EvalRef(
-                                                                                EvalVariable {
-                                                                                    name: "second",
-                                                                                },
-                                                                            ),
-                                                                            attr_name: "op_sub",
+                                                                            ],
                                                                         },
+                                                                    },
+                                                                ),
+                                                                attr_name: "op_eq",
+                                                            },
+                                                        },
+                                                    ),
+                                                    args: [
+                                                        EvalRef(
+                                                            RefCell {
+                                                                value: EvalLiteral {
+                                                                    value: Int(
+                                                                        55,
                                                                     ),
-                                                                    args: [
-                                                                        EvalRef(
-                                                                            EvalLiteral {
-                                                                                value: Int(
-                                                                                    5,
-                                                                                ),
-                                                                            },
-                                                                        ),
-                                                                    ],
                                                                 },
-                                                            ),
-                                                        ),
-                                                    },
-                                                ),
-                                            ),
-                                        },
-                                    },
-                                ),
-                            ),
-                        },
-                    ),
-                    EvalRef(
-                        EvalCall {
-                            func_expr: EvalRef(
-                                EvalVariable {
-                                    name: "assert",
-                                },
-                            ),
-                            args: [
-                                EvalRef(
-                                    EvalCall {
-                                        func_expr: EvalRef(
-                                            EvalGetAttr {
-                                                obj_expr: EvalRef(
-                                                    EvalCall {
-                                                        func_expr: EvalRef(
-                                                            EvalVariable {
-                                                                name: "processor",
                                                             },
                                                         ),
-                                                        args: [
-                                                            EvalRef(
-                                                                EvalLiteral {
-                                                                    value: Int(
-                                                                        5,
-                                                                    ),
-                                                                },
-                                                            ),
-                                                        ],
-                                                    },
-                                                ),
-                                                attr_name: "op_eq",
+                                                    ],
+                                                },
                                             },
                                         ),
-                                        args: [
-                                            EvalRef(
-                                                EvalLiteral {
-                                                    value: Int(
-                                                        11,
-                                                    ),
-                                                },
-                                            ),
-                                        ],
-                                    },
-                                ),
-                            ],
-                        },
-                    ),
-                    EvalRef(
-                        EvalCall {
-                            func_expr: EvalRef(
-                                EvalVariable {
-                                    name: "assert",
+                                    ],
                                 },
-                            ),
-                            args: [
-                                EvalRef(
-                                    EvalCall {
-                                        func_expr: EvalRef(
-                                            EvalGetAttr {
-                                                obj_expr: EvalRef(
-                                                    EvalCall {
-                                                        func_expr: EvalRef(
-                                                            EvalVariable {
-                                                                name: "processor",
-                                                            },
-                                                        ),
-                                                        args: [
-                                                            EvalRef(
-                                                                EvalLiteral {
-                                                                    value: Int(
-                                                                        0,
-                                                                    ),
-                                                                },
-                                                            ),
-                                                        ],
-                                                    },
-                                                ),
-                                                attr_name: "op_eq",
-                                            },
-                                        ),
-                                        args: [
-                                            EvalRef(
-                                                EvalLiteral {
-                                                    value: Int(
-                                                        1,
-                                                    ),
-                                                },
-                                            ),
-                                        ],
-                                    },
-                                ),
-                            ],
-                        },
-                    ),
-                    EvalRef(
-                        EvalCall {
-                            func_expr: EvalRef(
-                                EvalVariable {
-                                    name: "assert",
-                                },
-                            ),
-                            args: [
-                                EvalRef(
-                                    EvalCall {
-                                        func_expr: EvalRef(
-                                            EvalGetAttr {
-                                                obj_expr: EvalRef(
-                                                    EvalCall {
-                                                        func_expr: EvalRef(
-                                                            EvalVariable {
-                                                                name: "complex_lambda",
-                                                            },
-                                                        ),
-                                                        args: [
-                                                            EvalRef(
-                                                                EvalLiteral {
-                                                                    value: Int(
-                                                                        2,
-                                                                    ),
-                                                                },
-                                                            ),
-                                                        ],
-                                                    },
-                                                ),
-                                                attr_name: "op_eq",
-                                            },
-                                        ),
-                                        args: [
-                                            EvalRef(
-                                                EvalLiteral {
-                                                    value: Int(
-                                                        31,
-                                                    ),
-                                                },
-                                            ),
-                                        ],
-                                    },
-                                ),
-                            ],
-                        },
-                    ),
-                    EvalRef(
-                        EvalCall {
-                            func_expr: EvalRef(
-                                EvalVariable {
-                                    name: "assert",
-                                },
-                            ),
-                            args: [
-                                EvalRef(
-                                    EvalCall {
-                                        func_expr: EvalRef(
-                                            EvalGetAttr {
-                                                obj_expr: EvalRef(
-                                                    EvalCall {
-                                                        func_expr: EvalRef(
-                                                            EvalVariable {
-                                                                name: "complex_lambda",
-                                                            },
-                                                        ),
-                                                        args: [
-                                                            EvalRef(
-                                                                EvalLiteral {
-                                                                    value: Int(
-                                                                        10,
-                                                                    ),
-                                                                },
-                                                            ),
-                                                        ],
-                                                    },
-                                                ),
-                                                attr_name: "op_eq",
-                                            },
-                                        ),
-                                        args: [
-                                            EvalRef(
-                                                EvalLiteral {
-                                                    value: Int(
-                                                        55,
-                                                    ),
-                                                },
-                                            ),
-                                        ],
-                                    },
-                                ),
-                            ],
-                        },
-                    ),
-                ],
+                            },
+                        ),
+                    ],
+                },
             },
         ),
     ),

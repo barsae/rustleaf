@@ -69,6 +69,10 @@ pub struct Range {
 }
 
 impl RustValueRef {
+    pub fn new(val: Rc<RefCell<Box<dyn RustValue>>>) -> Self {
+        Self(val)
+    }
+
     pub fn borrow(&self) -> std::cell::Ref<Box<dyn RustValue>> {
         self.0.borrow()
     }
@@ -138,7 +142,7 @@ pub trait RustValue: fmt::Debug {
     }
 
     fn str(&self) -> String {
-        format!("{:?}", self) // Default to debug representation
+        format!("{:?}", self)
     }
 
     fn op_next(&mut self) -> Result<Option<Value>> {
@@ -151,6 +155,22 @@ pub trait RustValue: fmt::Debug {
 }
 
 impl Value {
+    pub fn str(&self) -> String {
+        match self {
+            Value::Null => "null".to_string(),
+            Value::Unit => "unit".to_string(),
+            Value::Bool(b) => b.to_string(),
+            Value::Int(i) => i.to_string(),
+            Value::Float(f) => f.to_string(),
+            Value::String(s) => s.clone(),
+            Value::RustValue(rust_val_ref) => {
+                let rust_val = rust_val_ref.borrow();
+                rust_val.str()
+            }
+            _ => format!("{:?}", self), // Fallback to debug representation for other types
+        }
+    }
+
     pub fn is_truthy(&self) -> bool {
         match self {
             Value::Bool(b) => *b,

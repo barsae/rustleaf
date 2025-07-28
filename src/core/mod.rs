@@ -3,7 +3,6 @@ mod args;
 mod ast;
 mod builtin_ops;
 mod builtins;
-mod eval_node;
 mod iter;
 mod value;
 
@@ -12,6 +11,5 @@ pub use args::*;
 pub use ast::*;
 pub use builtin_ops::*;
 pub use builtins::*;
-pub use eval_node::*;
 pub use iter::*;
 pub use value::*;

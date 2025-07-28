@@ -96,72 +96,94 @@ Ok(
 Ok(
     Eval(
         EvalRef(
-            EvalProgram {
-                statements: [
-                    EvalRef(
-                        EvalFunction {
-                            data: FunctionData {
-                                name: "greet",
-                                params: [],
-                                body: Eval(
-                                    EvalRef(
-                                        EvalBlock {
-                                            statements: [],
-                                            final_expr: Some(
-                                                EvalRef(
-                                                    EvalLiteral {
-                                                        value: String(
-                                                            "hello",
-                                                        ),
-                                                    },
-                                                ),
-                                            ),
-                                        },
-                                    ),
-                                ),
-                            },
-                        },
-                    ),
-                    EvalRef(
-                        EvalCall {
-                            func_expr: EvalRef(
-                                EvalVariable {
-                                    name: "assert",
-                                },
-                            ),
-                            args: [
-                                EvalRef(
-                                    EvalCall {
-                                        func_expr: EvalRef(
-                                            EvalGetAttr {
-                                                obj_expr: EvalRef(
-                                                    EvalCall {
-                                                        func_expr: EvalRef(
-                                                            EvalVariable {
-                                                                name: "greet",
-                                                            },
-                                                        ),
-                                                        args: [],
-                                                    },
-                                                ),
-                                                attr_name: "op_eq",
-                                            },
-                                        ),
-                                        args: [
+            RefCell {
+                value: EvalProgram {
+                    statements: [
+                        EvalRef(
+                            RefCell {
+                                value: EvalFunction {
+                                    data: FunctionData {
+                                        name: "greet",
+                                        params: [],
+                                        body: Eval(
                                             EvalRef(
-                                                EvalLiteral {
-                                                    value: String(
-                                                        "hello",
-                                                    ),
+                                                RefCell {
+                                                    value: EvalBlock {
+                                                        statements: [],
+                                                        final_expr: Some(
+                                                            EvalRef(
+                                                                RefCell {
+                                                                    value: EvalLiteral {
+                                                                        value: String(
+                                                                            "hello",
+                                                                        ),
+                                                                    },
+                                                                },
+                                                            ),
+                                                        ),
+                                                    },
                                                 },
                                             ),
-                                        ],
+                                        ),
                                     },
-                                ),
-                            ],
-                        },
-                    ),
-                ],
+                                },
+                            },
+                        ),
+                        EvalRef(
+                            RefCell {
+                                value: EvalCall {
+                                    func_expr: EvalRef(
+                                        RefCell {
+                                            value: EvalVariable {
+                                                name: "assert",
+                                            },
+                                        },
+                                    ),
+                                    args: [
+                                        EvalRef(
+                                            RefCell {
+                                                value: EvalCall {
+                                                    func_expr: EvalRef(
+                                                        RefCell {
+                                                            value: EvalGetAttr {
+                                                                obj_expr: EvalRef(
+                                                                    RefCell {
+                                                                        value: EvalCall {
+                                                                            func_expr: EvalRef(
+                                                                                RefCell {
+                                                                                    value: EvalVariable {
+                                                                                        name: "greet",
+                                                                                    },
+                                                                                },
+                                                                            ),
+                                                                            args: [],
+                                                                        },
+                                                                    },
+                                                                ),
+                                                                attr_name: "op_eq",
+                                                            },
+                                                        },
+                                                    ),
+                                                    args: [
+                                                        EvalRef(
+                                                            RefCell {
+                                                                value: EvalLiteral {
+                                                                    value: String(
+                                                                        "hello",
+                                                                    ),
+                                                                },
+                                                            },
+                                                        ),
+                                                    ],
+                                                },
+                                            },
+                                        ),
+                                    ],
+                                },
+                            },
+                        ),
+                    ],
+                },
             },
         ),
     ),

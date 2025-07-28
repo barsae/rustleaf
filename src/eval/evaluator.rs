@@ -348,5 +348,4 @@ impl Evaluator {
             EvalMatchPattern::Wildcard => Ok(true),
         }
     }
-
 }

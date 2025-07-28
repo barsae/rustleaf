@@ -139,121 +139,161 @@ Ok(
 Ok(
     Eval(
         EvalRef(
-            EvalProgram {
-                statements: [
-                    EvalRef(
-                        EvalDeclare {
-                            name: "name",
-                            init_expr: Some(
-                                EvalRef(
-                                    EvalLiteral {
-                                        value: String(
-                                            "World",
-                                        ),
-                                    },
-                                ),
-                            ),
-                        },
-                    ),
-                    EvalRef(
-                        EvalDeclare {
-                            name: "result",
-                            init_expr: Some(
-                                EvalRef(
-                                    EvalCall {
-                                        func_expr: EvalRef(
-                                            EvalGetAttr {
-                                                obj_expr: EvalRef(
-                                                    EvalLiteral {
-                                                        value: String(
-                                                            "Hello ",
-                                                        ),
-                                                    },
-                                                ),
-                                                attr_name: "op_add",
+            RefCell {
+                value: EvalProgram {
+                    statements: [
+                        EvalRef(
+                            RefCell {
+                                value: EvalDeclare {
+                                    name: "name",
+                                    init_expr: Some(
+                                        EvalRef(
+                                            RefCell {
+                                                value: EvalLiteral {
+                                                    value: String(
+                                                        "World",
+                                                    ),
+                                                },
                                             },
                                         ),
-                                        args: [
-                                            EvalRef(
-                                                EvalCall {
+                                    ),
+                                },
+                            },
+                        ),
+                        EvalRef(
+                            RefCell {
+                                value: EvalDeclare {
+                                    name: "result",
+                                    init_expr: Some(
+                                        EvalRef(
+                                            RefCell {
+                                                value: EvalCall {
                                                     func_expr: EvalRef(
-                                                        EvalVariable {
-                                                            name: "str",
+                                                        RefCell {
+                                                            value: EvalGetAttr {
+                                                                obj_expr: EvalRef(
+                                                                    RefCell {
+                                                                        value: EvalLiteral {
+                                                                            value: String(
+                                                                                "Hello ",
+                                                                            ),
+                                                                        },
+                                                                    },
+                                                                ),
+                                                                attr_name: "op_add",
+                                                            },
                                                         },
                                                     ),
                                                     args: [
                                                         EvalRef(
-                                                            EvalVariable {
-                                                                name: "name",
+                                                            RefCell {
+                                                                value: EvalCall {
+                                                                    func_expr: EvalRef(
+                                                                        RefCell {
+                                                                            value: EvalVariable {
+                                                                                name: "str",
+                                                                            },
+                                                                        },
+                                                                    ),
+                                                                    args: [
+                                                                        EvalRef(
+                                                                            RefCell {
+                                                                                value: EvalVariable {
+                                                                                    name: "name",
+                                                                                },
+                                                                            },
+                                                                        ),
+                                                                    ],
+                                                                },
+                                                            },
+                                                        ),
+                                                        EvalRef(
+                                                            RefCell {
+                                                                value: EvalLiteral {
+                                                                    value: String(
+                                                                        "!\nThis is a multiline string with interpolation.",
+                                                                    ),
+                                                                },
                                                             },
                                                         ),
                                                     ],
                                                 },
-                                            ),
-                                            EvalRef(
-                                                EvalLiteral {
-                                                    value: String(
-                                                        "!\nThis is a multiline string with interpolation.",
-                                                    ),
-                                                },
-                                            ),
-                                        ],
-                                    },
-                                ),
-                            ),
-                        },
-                    ),
-                    EvalRef(
-                        EvalCall {
-                            func_expr: EvalRef(
-                                EvalVariable {
-                                    name: "print",
-                                },
-                            ),
-                            args: [
-                                EvalRef(
-                                    EvalVariable {
-                                        name: "result",
-                                    },
-                                ),
-                            ],
-                        },
-                    ),
-                    EvalRef(
-                        EvalCall {
-                            func_expr: EvalRef(
-                                EvalVariable {
-                                    name: "assert",
-                                },
-                            ),
-                            args: [
-                                EvalRef(
-                                    EvalCall {
-                                        func_expr: EvalRef(
-                                            EvalGetAttr {
-                                                obj_expr: EvalRef(
-                                                    EvalVariable {
-                                                        name: "result",
-                                                    },
-                                                ),
-                                                attr_name: "op_eq",
                                             },
                                         ),
-                                        args: [
-                                            EvalRef(
-                                                EvalLiteral {
-                                                    value: String(
-                                                        "Hello World!\nThis is a multiline string with interpolation.",
-                                                    ),
+                                    ),
+                                },
+                            },
+                        ),
+                        EvalRef(
+                            RefCell {
+                                value: EvalCall {
+                                    func_expr: EvalRef(
+                                        RefCell {
+                                            value: EvalVariable {
+                                                name: "print",
+                                            },
+                                        },
+                                    ),
+                                    args: [
+                                        EvalRef(
+                                            RefCell {
+                                                value: EvalVariable {
+                                                    name: "result",
                                                 },
-                                            ),
-                                        ],
-                                    },
-                                ),
-                            ],
-                        },
-                    ),
-                ],
+                                            },
+                                        ),
+                                    ],
+                                },
+                            },
+                        ),
+                        EvalRef(
+                            RefCell {
+                                value: EvalCall {
+                                    func_expr: EvalRef(
+                                        RefCell {
+                                            value: EvalVariable {
+                                                name: "assert",
+                                            },
+                                        },
+                                    ),
+                                    args: [
+                                        EvalRef(
+                                            RefCell {
+                                                value: EvalCall {
+                                                    func_expr: EvalRef(
+                                                        RefCell {
+                                                            value: EvalGetAttr {
+                                                                obj_expr: EvalRef(
+                                                                    RefCell {
+                                                                        value: EvalVariable {
+                                                                            name: "result",
+                                                                        },
+                                                                    },
+                                                                ),
+                                                                attr_name: "op_eq",
+                                                            },
+                                                        },
+                                                    ),
+                                                    args: [
+                                                        EvalRef(
+                                                            RefCell {
+                                                                value: EvalLiteral {
+                                                                    value: String(
+                                                                        "Hello World!\nThis is a multiline string with interpolation.",
+                                                                    ),
+                                                                },
+                                                            },
+                                                        ),
+                                                    ],
+                                                },
+                                            },
+                                        ),
+                                    ],
+                                },
+                            },
+                        ),
+                    ],
+                },
             },
         ),
     ),

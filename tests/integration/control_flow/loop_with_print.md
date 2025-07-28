@@ -88,62 +88,82 @@ Ok(
 Ok(
     Eval(
         EvalRef(
-            EvalProgram {
-                statements: [
-                    EvalRef(
-                        EvalCall {
-                            func_expr: EvalRef(
-                                EvalVariable {
-                                    name: "assert",
-                                },
-                            ),
-                            args: [
-                                EvalRef(
-                                    EvalCall {
-                                        func_expr: EvalRef(
-                                            EvalGetAttr {
-                                                obj_expr: EvalRef(
-                                                    EvalLoop {
-                                                        body: EvalRef(
-                                                            EvalBlock {
-                                                                statements: [
-                                                                    EvalRef(
-                                                                        EvalBreak {
-                                                                            expr: Some(
-                                                                                EvalRef(
-                                                                                    EvalLiteral {
-                                                                                        value: Int(
-                                                                                            42,
-                                                                                        ),
+            RefCell {
+                value: EvalProgram {
+                    statements: [
+                        EvalRef(
+                            RefCell {
+                                value: EvalCall {
+                                    func_expr: EvalRef(
+                                        RefCell {
+                                            value: EvalVariable {
+                                                name: "assert",
+                                            },
+                                        },
+                                    ),
+                                    args: [
+                                        EvalRef(
+                                            RefCell {
+                                                value: EvalCall {
+                                                    func_expr: EvalRef(
+                                                        RefCell {
+                                                            value: EvalGetAttr {
+                                                                obj_expr: EvalRef(
+                                                                    RefCell {
+                                                                        value: EvalLoop {
+                                                                            body: EvalRef(
+                                                                                RefCell {
+                                                                                    value: EvalBlock {
+                                                                                        statements: [
+                                                                                            EvalRef(
+                                                                                                RefCell {
+                                                                                                    value: EvalBreak {
+                                                                                                        expr: Some(
+                                                                                                            EvalRef(
+                                                                                                                RefCell {
+                                                                                                                    value: EvalLiteral {
+                                                                                                                        value: Int(
+                                                                                                                            42,
+                                                                                                                        ),
+                                                                                                                    },
+                                                                                                                },
+                                                                                                            ),
+                                                                                                        ),
+                                                                                                    },
+                                                                                                },
+                                                                                            ),
+                                                                                        ],
+                                                                                        final_expr: None,
                                                                                     },
-                                                                                ),
+                                                                                },
                                                                             ),
                                                                         },
+                                                                    },
+                                                                ),
+                                                                attr_name: "op_eq",
+                                                            },
+                                                        },
+                                                    ),
+                                                    args: [
+                                                        EvalRef(
+                                                            RefCell {
+                                                                value: EvalLiteral {
+                                                                    value: Int(
+                                                                        42,
                                                                     ),
-                                                                ],
-                                                                final_expr: None,
+                                                                },
                                                             },
                                                         ),
-                                                    },
-                                                ),
-                                                attr_name: "op_eq",
+                                                    ],
+                                                },
                                             },
                                         ),
-                                        args: [
-                                            EvalRef(
-                                                EvalLiteral {
-                                                    value: Int(
-                                                        42,
-                                                    ),
-                                                },
-                                            ),
-                                        ],
-                                    },
-                                ),
-                            ],
-                        },
-                    ),
-                ],
+                                    ],
+                                },
+                            },
+                        ),
+                    ],
+                },
             },
         ),
     ),

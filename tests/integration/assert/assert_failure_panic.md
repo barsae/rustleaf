@@ -66,34 +66,44 @@ Ok(
 Ok(
     Eval(
         EvalRef(
-            EvalProgram {
-                statements: [
-                    EvalRef(
-                        EvalCall {
-                            func_expr: EvalRef(
-                                EvalVariable {
-                                    name: "assert",
+            RefCell {
+                value: EvalProgram {
+                    statements: [
+                        EvalRef(
+                            RefCell {
+                                value: EvalCall {
+                                    func_expr: EvalRef(
+                                        RefCell {
+                                            value: EvalVariable {
+                                                name: "assert",
+                                            },
+                                        },
+                                    ),
+                                    args: [
+                                        EvalRef(
+                                            RefCell {
+                                                value: EvalLiteral {
+                                                    value: Bool(
+                                                        false,
+                                                    ),
+                                                },
+                                            },
+                                        ),
+                                        EvalRef(
+                                            RefCell {
+                                                value: EvalLiteral {
+                                                    value: String(
+                                                        "This should fail",
+                                                    ),
+                                                },
+                                            },
+                                        ),
+                                    ],
                                 },
-                            ),
-                            args: [
-                                EvalRef(
-                                    EvalLiteral {
-                                        value: Bool(
-                                            false,
-                                        ),
-                                    },
-                                ),
-                                EvalRef(
-                                    EvalLiteral {
-                                        value: String(
-                                            "This should fail",
-                                        ),
-                                    },
-                                ),
-                            ],
-                        },
-                    ),
-                ],
+                            },
+                        ),
+                    ],
+                },
             },
         ),
     ),

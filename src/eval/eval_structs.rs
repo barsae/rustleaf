@@ -1,26 +1,29 @@
 /// Individual evaluation structs implementing RustValue trait
 /// This replaces the large Eval enum with modular, extensible structs
-
-use crate::core::{RustValue, Value, Args};
-use crate::eval::{EvalResult, Evaluator, ControlFlow, ErrorKind};
+use crate::core::{Args, RustValue, Value};
+use crate::eval::{ControlFlow, ErrorKind, EvalResult, Evaluator};
 use anyhow::anyhow;
+use std::cell::RefCell;
 use std::rc::Rc;
 
-// EvalRef - simplified ref pattern since Eval is immutable
 #[derive(Clone, Debug)]
-pub struct EvalRef(Rc<dyn RustValue>);
+pub struct EvalRef(Rc<RefCell<Box<dyn RustValue>>>);
 
 impl EvalRef {
     pub fn new<T: RustValue + 'static>(eval: T) -> Self {
-        Self(Rc::new(eval))
+        Self(Rc::new(RefCell::new(Box::new(eval))))
     }
 
     pub fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
-        self.0.eval(evaluator)
+        self.0.borrow().eval(evaluator)
     }
 
     pub fn str(&self) -> String {
-        self.0.str()
+        self.0.borrow().str()
+    }
+
+    pub fn as_rust_value(&self) -> Rc<RefCell<Box<dyn RustValue>>> {
+        self.0.clone()
     }
 }
 
@@ -36,7 +39,7 @@ impl RustValue for EvalLiteral {
     }
 
     fn str(&self) -> String {
-        format!("Literal({:?})", self.value)
+        self.value.str()
     }
 }
 
@@ -57,7 +60,7 @@ impl RustValue for EvalVariable {
     }
 
     fn str(&self) -> String {
-        format!("Variable({})", self.name)
+        self.name.clone()
     }
 }
 
@@ -89,7 +92,7 @@ impl RustValue for EvalCall {
                         // Convert back to old Eval for compatibility
                         // TODO: Remove this conversion once we fully migrate
                         arg_evals.push(crate::eval::Eval::literal(val));
-                    },
+                    }
                     Err(e) => return Ok(Err(e)),
                 }
             }
@@ -116,7 +119,9 @@ impl RustValue for EvalCall {
         match result {
             Ok(value) => {
                 if let Value::Raised(error_value) = value {
-                    return Ok(Err(ControlFlow::Error(ErrorKind::RaisedError(*error_value))));
+                    return Ok(Err(ControlFlow::Error(ErrorKind::RaisedError(
+                        *error_value,
+                    ))));
                 }
                 Ok(Ok(value))
             }
@@ -125,7 +130,13 @@ impl RustValue for EvalCall {
     }
 
     fn str(&self) -> String {
-        format!("Call({}, {} args)", self.func_expr.str(), self.args.len())
+        let args_str = self
+            .args
+            .iter()
+            .map(|arg| arg.str())
+            .collect::<Vec<_>>()
+            .join(", ");
+        format!("{}({})", self.func_expr.str(), args_str)
     }
 }
 
@@ -169,9 +180,15 @@ impl RustValue for EvalBlock {
     }
 
     fn str(&self) -> String {
-        format!("Block({} statements, final_expr: {})",
-                self.statements.len(),
-                self.final_expr.is_some())
+        let mut result = String::from("{");
+        for stmt in &self.statements {
+            result.push_str(&format!("\n    {};", stmt.str()));
+        }
+        if let Some(final_expr) = &self.final_expr {
+            result.push_str(&format!("\n    {}", final_expr.str()));
+        }
+        result.push_str("\n}");
+        result
     }
 }
 
@@ -192,7 +209,11 @@ impl RustValue for EvalProgram {
     }
 
     fn str(&self) -> String {
-        format!("Program({} statements)", self.statements.len())
+        self.statements
+            .iter()
+            .map(|stmt| stmt.str())
+            .collect::<Vec<_>>()
+            .join("\n")
     }
 }
 
@@ -205,12 +226,10 @@ pub struct EvalDeclare {
 impl RustValue for EvalDeclare {
     fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
         let value = match &self.init_expr {
-            Some(expr) => {
-                match expr.eval(evaluator)? {
-                    Ok(val) => val,
-                    Err(e) => return Ok(Err(e)),
-                }
-            }
+            Some(expr) => match expr.eval(evaluator)? {
+                Ok(val) => val,
+                Err(e) => return Ok(Err(e)),
+            },
             None => Value::Unit,
         };
         evaluator.current_env.define(&self.name, value);
@@ -218,7 +237,11 @@ impl RustValue for EvalDeclare {
     }
 
     fn str(&self) -> String {
-        format!("Declare({}, has_init: {})", self.name, self.init_expr.is_some())
+        if let Some(init_expr) = &self.init_expr {
+            format!("var {} = {}", self.name, init_expr.str())
+        } else {
+            format!("var {}", self.name)
+        }
     }
 }
 
@@ -249,7 +272,11 @@ impl RustValue for EvalIf {
     }
 
     fn str(&self) -> String {
-        format!("If(has_else: {})", self.else_expr.is_some())
+        let mut result = format!("if {} {}", self.condition.str(), self.then_expr.str());
+        if let Some(else_expr) = &self.else_expr {
+            result.push_str(&format!(" else {}", else_expr.str()));
+        }
+        result
     }
 }
 
@@ -261,19 +288,21 @@ pub struct EvalReturn {
 impl RustValue for EvalReturn {
     fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
         let value = match &self.expr {
-            Some(e) => {
-                match e.eval(evaluator)? {
-                    Ok(val) => val,
-                    Err(e) => return Ok(Err(e)),
-                }
-            }
+            Some(e) => match e.eval(evaluator)? {
+                Ok(val) => val,
+                Err(e) => return Ok(Err(e)),
+            },
             None => Value::Unit,
         };
         Ok(Err(ControlFlow::Return(value)))
     }
 
     fn str(&self) -> String {
-        format!("Return(has_expr: {})", self.expr.is_some())
+        if let Some(expr) = &self.expr {
+            format!("return {}", expr.str())
+        } else {
+            "return".to_string()
+        }
     }
 }
 
@@ -285,19 +314,21 @@ pub struct EvalBreak {
 impl RustValue for EvalBreak {
     fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
         let value = match &self.expr {
-            Some(e) => {
-                match e.eval(evaluator)? {
-                    Ok(val) => val,
-                    Err(e) => return Ok(Err(e)),
-                }
-            }
+            Some(e) => match e.eval(evaluator)? {
+                Ok(val) => val,
+                Err(e) => return Ok(Err(e)),
+            },
             None => Value::Unit,
         };
         Ok(Err(ControlFlow::Break(value)))
     }
 
     fn str(&self) -> String {
-        format!("Break(has_expr: {})", self.expr.is_some())
+        if let Some(expr) = &self.expr {
+            format!("break {}", expr.str())
+        } else {
+            "break".to_string()
+        }
     }
 }
 
@@ -310,7 +341,7 @@ impl RustValue for EvalContinue {
     }
 
     fn str(&self) -> String {
-        "Continue".to_string()
+        "continue".to_string()
     }
 }
 
@@ -330,12 +361,14 @@ impl RustValue for EvalAssign {
         };
         match evaluator.current_env.set(&self.name, value) {
             Ok(_) => Ok(Ok(Value::Unit)),
-            Err(err) => Ok(Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(err))))),
+            Err(err) => Ok(Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(
+                err
+            ))))),
         }
     }
 
     fn str(&self) -> String {
-        format!("Assign({}, {})", self.name, self.expr.str())
+        format!("{} = {}", self.name, self.expr.str())
     }
 }
 
@@ -357,7 +390,7 @@ impl RustValue for EvalLoop {
     }
 
     fn str(&self) -> String {
-        format!("Loop({})", self.body.str())
+        format!("loop {}", self.body.str())
     }
 }
 
@@ -389,7 +422,7 @@ impl RustValue for EvalWhile {
     }
 
     fn str(&self) -> String {
-        format!("While({}, {})", self.condition.str(), self.body.str())
+        format!("while {} {}", self.condition.str(), self.body.str())
     }
 }
 
@@ -455,7 +488,12 @@ impl RustValue for EvalFor {
     }
 
     fn str(&self) -> String {
-        format!("For({}, {}, {})", self.var_name, self.iter_expr.str(), self.body.str())
+        format!(
+            "for {} in {} {}",
+            self.var_name,
+            self.iter_expr.str(),
+            self.body.str()
+        )
     }
 }
 
@@ -481,7 +519,7 @@ impl RustValue for EvalLogicalAnd {
     }
 
     fn str(&self) -> String {
-        format!("LogicalAnd({}, {})", self.left.str(), self.right.str())
+        format!("{} and {}", self.left.str(), self.right.str())
     }
 }
 
@@ -505,7 +543,7 @@ impl RustValue for EvalLogicalOr {
     }
 
     fn str(&self) -> String {
-        format!("LogicalOr({}, {})", self.left.str(), self.right.str())
+        format!("{} or {}", self.left.str(), self.right.str())
     }
 }
 
@@ -524,7 +562,7 @@ impl RustValue for EvalLogicalNot {
     }
 
     fn str(&self) -> String {
-        format!("LogicalNot({})", self.expr.str())
+        format!("not {}", self.expr.str())
     }
 }
 
@@ -547,9 +585,8 @@ impl RustValue for EvalIs {
 
         if let Value::RustValue(rust_val_ref) = &right_val {
             let rust_val = rust_val_ref.borrow();
-            match rust_val.op_is(&left_val) {
-                Ok(result) => return Ok(Ok(result)),
-                Err(_) => {}
+            if let Ok(result) = rust_val.op_is(&left_val) {
+                return Ok(Ok(result));
             }
         }
 
@@ -557,7 +594,7 @@ impl RustValue for EvalIs {
     }
 
     fn str(&self) -> String {
-        format!("Is({}, {})", self.left.str(), self.right.str())
+        format!("{} is {}", self.left.str(), self.right.str())
     }
 }
 
@@ -587,7 +624,7 @@ impl RustValue for EvalGetAttr {
     }
 
     fn str(&self) -> String {
-        format!("GetAttr({}, {})", self.obj_expr.str(), self.attr_name)
+        format!("{}.{}", self.obj_expr.str(), self.attr_name)
     }
 }
 
@@ -611,12 +648,19 @@ impl RustValue for EvalSetAttr {
 
         match obj_value.set_attr(&self.attr_name, new_value) {
             Ok(_) => Ok(Ok(Value::Unit)),
-            Err(err) => Ok(Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(err))))),
+            Err(err) => Ok(Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(
+                err
+            ))))),
         }
     }
 
     fn str(&self) -> String {
-        format!("SetAttr({}, {}, {})", self.obj_expr.str(), self.attr_name, self.value_expr.str())
+        format!(
+            "{}.{} = {}",
+            self.obj_expr.str(),
+            self.attr_name,
+            self.value_expr.str()
+        )
     }
 }
 
@@ -653,7 +697,7 @@ impl RustValue for EvalGetItem {
     }
 
     fn str(&self) -> String {
-        format!("GetItem({}, {})", self.obj_expr.str(), self.index_expr.str())
+        format!("{}[{}]", self.obj_expr.str(), self.index_expr.str())
     }
 }
 
@@ -695,7 +739,12 @@ impl RustValue for EvalSetItem {
     }
 
     fn str(&self) -> String {
-        format!("SetItem({}, {}, {})", self.obj_expr.str(), self.index_expr.str(), self.value_expr.str())
+        format!(
+            "{}[{}] = {}",
+            self.obj_expr.str(),
+            self.index_expr.str(),
+            self.value_expr.str()
+        )
     }
 }
 
@@ -719,7 +768,13 @@ impl RustValue for EvalList {
     }
 
     fn str(&self) -> String {
-        format!("List({} elements)", self.elements.len())
+        let elements_str = self
+            .elements
+            .iter()
+            .map(|elem| elem.str())
+            .collect::<Vec<_>>()
+            .join(", ");
+        format!("[{}]", elements_str)
     }
 }
 
@@ -760,7 +815,13 @@ impl RustValue for EvalDict {
     }
 
     fn str(&self) -> String {
-        format!("Dict({} pairs)", self.pairs.len())
+        let pairs_str = self
+            .pairs
+            .iter()
+            .map(|(key, value)| format!("{}: {}", key.str(), value.str()))
+            .collect::<Vec<_>>()
+            .join(", ");
+        format!("{{{}}}", pairs_str)
     }
 }
 
@@ -773,7 +834,7 @@ pub struct EvalFunction {
 
 impl RustValue for EvalFunction {
     fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
-        use crate::eval::{RustLeafFunction, Params};
+        use crate::eval::{Params, RustLeafFunction};
 
         let params = Params::from_vec(self.data.params.clone());
         let function = RustLeafFunction::new(
@@ -783,12 +844,54 @@ impl RustValue for EvalFunction {
         );
 
         let function_value = Value::from_rust(function);
-        evaluator.current_env.define(&self.data.name, function_value);
+        evaluator
+            .current_env
+            .define(&self.data.name, function_value);
         Ok(Ok(Value::Unit))
     }
 
+    fn get_attr(&self, name: &str) -> Option<crate::core::Value> {
+        use crate::core::Value;
+        match name {
+            "name" => Some(Value::String(self.data.name.clone())),
+            "params" => {
+                // Return parameter names as a list of strings
+                let param_names: Vec<Value> = self
+                    .data
+                    .params
+                    .iter()
+                    .map(|(name, _, _)| Value::String(name.clone()))
+                    .collect();
+                Some(Value::new_list_with_values(param_names))
+            }
+            "body" => {
+                // Return the actual body Eval object
+                Some(Value::RustValue(crate::core::RustValueRef::new(
+                    self.data.body.0.as_rust_value(),
+                )))
+            }
+            _ => None,
+        }
+    }
+
     fn str(&self) -> String {
-        format!("Function({}, {} params)", self.data.name, self.data.params.len())
+        let params_str = self
+            .data
+            .params
+            .iter()
+            .map(|(name, default_value, _kind)| match default_value {
+                Some(default) => format!("{} = {}", name, default.str()),
+                None => name.clone(),
+            })
+            .collect::<Vec<_>>()
+            .join(", ");
+
+        format!(
+            "fn {}({}) {}",
+            self.data.name,
+            params_str,
+            self.data.body.0.str()
+        )
     }
 }
 
@@ -799,7 +902,7 @@ pub struct EvalLambda {
 
 impl RustValue for EvalLambda {
     fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
-        use crate::eval::{RustLeafFunction, Params};
+        use crate::eval::{Params, RustLeafFunction};
 
         let params = Params::from_names(&self.data.params);
         let lambda_fn = RustLeafFunction::new(
@@ -812,7 +915,8 @@ impl RustValue for EvalLambda {
     }
 
     fn str(&self) -> String {
-        format!("Lambda({} params)", self.data.params.len())
+        let params_str = self.data.params.join(", ");
+        format!("fn({}) {}", params_str, self.data.body.0.str())
     }
 }
 
@@ -838,7 +942,8 @@ impl RustValue for EvalClassDecl {
     }
 
     fn str(&self) -> String {
-        format!("ClassDecl({}, {} fields)", self.data.name, self.data.field_names.len())
+        let fields_str = self.data.field_names.join(", ");
+        format!("class {}({})", self.data.name, fields_str)
     }
 }
 
@@ -872,11 +977,13 @@ impl RustValue for EvalImport {
                                 let local_name = import_item.alias.as_ref().unwrap_or(item_name);
                                 evaluator.current_env.define(local_name, value);
                             } else {
-                                return Ok(Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(
-                                    "Item '{}' not found in module '{}'",
-                                    item_name,
-                                    self.data.module
-                                )))));
+                                return Ok(Err(ControlFlow::Error(ErrorKind::SystemError(
+                                    anyhow!(
+                                        "Item '{}' not found in module '{}'",
+                                        item_name,
+                                        self.data.module
+                                    ),
+                                ))));
                             }
                         }
                     }
@@ -888,7 +995,20 @@ impl RustValue for EvalImport {
     }
 
     fn str(&self) -> String {
-        format!("Import({})", self.data.module)
+        match &self.data.items {
+            crate::core::ImportItems::All => format!("import {}::*", self.data.module),
+            crate::core::ImportItems::Specific(items) => {
+                let items_str = items
+                    .iter()
+                    .map(|item| match &item.alias {
+                        Some(alias) => format!("{} as {}", item.name, alias),
+                        None => item.name.clone(),
+                    })
+                    .collect::<Vec<_>>()
+                    .join(", ");
+                format!("import {}::{{{}}}", self.data.module, items_str)
+            }
+        }
     }
 }
 
@@ -941,7 +1061,14 @@ impl RustValue for EvalMatch {
     }
 
     fn str(&self) -> String {
-        format!("Match({} cases)", self.data.cases.len())
+        let cases_str = self
+            .data
+            .cases
+            .iter()
+            .map(|case| format!("{:?} => {}", case.pattern, case.body.0.str()))
+            .collect::<Vec<_>>()
+            .join(", ");
+        format!("match {} {{ {} }}", self.data.expr.0.str(), cases_str)
     }
 }
 
@@ -970,23 +1097,41 @@ impl RustValue for EvalMacro {
         }
 
         // Add the target Eval as a special argument
-        let target_eval_value = Value::from_rust(crate::eval::EvalTypeConstant::new());
+        let target_eval_value = Value::RustValue(crate::core::RustValueRef::new(
+            self.data.target.0.as_rust_value(),
+        ));
         arg_values.insert(0, target_eval_value);
 
         // Call the macro function
         let args_obj = crate::core::Args::positional(arg_values);
         match macro_fn.call(args_obj) {
             Ok(result) => {
-                // For now, just return the result directly
-                // TODO: Properly handle macro expansion when EvalTypeConstant is enhanced
-                Ok(Ok(result))
+                // The macro should return an Eval node - extract it and execute it
+                match result {
+                    Value::RustValue(rust_val_ref) => {
+                        let rust_val = rust_val_ref.borrow();
+                        // Execute the generated Eval node
+                        rust_val.eval(evaluator)
+                    }
+                    _ => Ok(Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(
+                        "Macro must return an Eval node, got {:?}",
+                        result
+                    ))))),
+                }
             }
             Err(e) => Ok(Err(ControlFlow::Error(ErrorKind::SystemError(e)))),
         }
     }
 
     fn str(&self) -> String {
-        format!("Macro({} args)", self.data.args.len())
+        let args_str = self
+            .data
+            .args
+            .iter()
+            .map(|arg| arg.0.str())
+            .collect::<Vec<_>>()
+            .join(", ");
+        format!("macro({})", args_str)
     }
 }
 
@@ -1021,7 +1166,9 @@ impl RustValue for EvalWith {
             }
 
             // Define the resource in current scope
-            evaluator.current_env.define(resource_name.clone(), resource_value.clone());
+            evaluator
+                .current_env
+                .define(resource_name.clone(), resource_value.clone());
             resources.push((resource_name.clone(), resource_value));
         }
 
@@ -1035,7 +1182,14 @@ impl RustValue for EvalWith {
     }
 
     fn str(&self) -> String {
-        format!("With({} resources)", self.data.resources.len())
+        let resources_str = self
+            .data
+            .resources
+            .iter()
+            .map(|(name, expr)| format!("{} = {}", name, expr.0.str()))
+            .collect::<Vec<_>>()
+            .join(", ");
+        format!("with {} {}", resources_str, self.data.body.0.str())
     }
 }
 
@@ -1061,7 +1215,7 @@ impl RustValue for EvalDeclarePattern {
     }
 
     fn str(&self) -> String {
-        format!("DeclarePattern({:?})", self.pattern)
+        format!("var {:?} = {}", self.pattern, self.init_expr.str())
     }
 }
 
@@ -1095,6 +1249,11 @@ impl RustValue for EvalTry {
     }
 
     fn str(&self) -> String {
-        format!("Try(catch: {:?})", self.catch_pattern)
+        format!(
+            "try {} catch {:?} {}",
+            self.body.str(),
+            self.catch_pattern,
+            self.catch_body.str()
+        )
     }
 }

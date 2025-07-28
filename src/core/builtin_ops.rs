@@ -27,24 +27,29 @@ impl RustValue for BoundMethod {
 // General operator implementations that work for all value types
 pub fn op_add(self_value: &Value, mut args: Args) -> Result<Value> {
     args.set_function_name("op_add");
-    
+
     // For strings, support multiple arguments for efficient concatenation
     if let Value::String(first_str) = self_value {
         let mut result = first_str.clone();
-        
+
         // Concatenate all remaining arguments
         let remaining_args = args.rest();
         for arg in remaining_args {
             match arg {
                 Value::String(s) => result.push_str(&s),
-                _ => return Err(anyhow!("String concatenation requires all arguments to be strings, got {:?}", arg)),
+                _ => {
+                    return Err(anyhow!(
+                        "String concatenation requires all arguments to be strings, got {:?}",
+                        arg
+                    ))
+                }
             }
         }
-        
+
         args.complete()?;
         return Ok(Value::String(result));
     }
-    
+
     // For non-strings, fall back to binary operation
     let other = args.expect("other")?;
     args.complete()?;

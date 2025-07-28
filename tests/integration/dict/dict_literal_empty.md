@@ -81,46 +81,62 @@ Ok(
 Ok(
     Eval(
         EvalRef(
-            EvalProgram {
-                statements: [
-                    EvalRef(
-                        EvalDeclare {
-                            name: "x",
-                            init_expr: Some(
-                                EvalRef(
-                                    EvalDict {
-                                        pairs: [],
-                                    },
-                                ),
-                            ),
-                        },
-                    ),
-                    EvalRef(
-                        EvalCall {
-                            func_expr: EvalRef(
-                                EvalVariable {
-                                    name: "assert",
+            RefCell {
+                value: EvalProgram {
+                    statements: [
+                        EvalRef(
+                            RefCell {
+                                value: EvalDeclare {
+                                    name: "x",
+                                    init_expr: Some(
+                                        EvalRef(
+                                            RefCell {
+                                                value: EvalDict {
+                                                    pairs: [],
+                                                },
+                                            },
+                                        ),
+                                    ),
                                 },
-                            ),
-                            args: [
-                                EvalRef(
-                                    EvalIs {
-                                        left: EvalRef(
-                                            EvalVariable {
-                                                name: "x",
+                            },
+                        ),
+                        EvalRef(
+                            RefCell {
+                                value: EvalCall {
+                                    func_expr: EvalRef(
+                                        RefCell {
+                                            value: EvalVariable {
+                                                name: "assert",
+                                            },
+                                        },
+                                    ),
+                                    args: [
+                                        EvalRef(
+                                            RefCell {
+                                                value: EvalIs {
+                                                    left: EvalRef(
+                                                        RefCell {
+                                                            value: EvalVariable {
+                                                                name: "x",
+                                                            },
+                                                        },
+                                                    ),
+                                                    right: EvalRef(
+                                                        RefCell {
+                                                            value: EvalVariable {
+                                                                name: "Dict",
+                                                            },
+                                                        },
+                                                    ),
+                                                },
                                             },
                                         ),
-                                        right: EvalRef(
-                                            EvalVariable {
-                                                name: "Dict",
-                                            },
-                                        ),
-                                    },
-                                ),
-                            ],
-                        },
-                    ),
-                ],
+                                    ],
+                                },
+                            },
+                        ),
+                    ],
+                },
             },
         ),
     ),

@@ -13,7 +13,10 @@ impl Eval {
     }
 
     /// Evaluate this Eval node
-    pub fn eval(&self, evaluator: &mut crate::eval::Evaluator) -> anyhow::Result<crate::eval::EvalResult> {
+    pub fn eval(
+        &self,
+        evaluator: &mut crate::eval::Evaluator,
+    ) -> anyhow::Result<crate::eval::EvalResult> {
         self.0.eval(evaluator)
     }
 
@@ -29,30 +32,45 @@ impl Eval {
     pub fn call(func_expr: Eval, args: Vec<Eval>) -> Self {
         let func_ref = func_expr.0;
         let arg_refs = args.into_iter().map(|arg| arg.0).collect();
-        Self::new(crate::eval::EvalCall { func_expr: func_ref, args: arg_refs })
+        Self::new(crate::eval::EvalCall {
+            func_expr: func_ref,
+            args: arg_refs,
+        })
     }
 
     pub fn program(statements: Vec<Eval>) -> Self {
         let stmt_refs = statements.into_iter().map(|stmt| stmt.0).collect();
-        Self::new(crate::eval::EvalProgram { statements: stmt_refs })
+        Self::new(crate::eval::EvalProgram {
+            statements: stmt_refs,
+        })
     }
 
     pub fn block(statements: Vec<Eval>, final_expr: Option<Eval>) -> Self {
         let stmt_refs = statements.into_iter().map(|stmt| stmt.0).collect();
         let final_ref = final_expr.map(|expr| expr.0);
-        Self::new(crate::eval::EvalBlock { statements: stmt_refs, final_expr: final_ref })
+        Self::new(crate::eval::EvalBlock {
+            statements: stmt_refs,
+            final_expr: final_ref,
+        })
     }
 
     pub fn declare(name: String, init_expr: Option<Eval>) -> Self {
         let init_ref = init_expr.map(|expr| expr.0);
-        Self::new(crate::eval::EvalDeclare { name, init_expr: init_ref })
+        Self::new(crate::eval::EvalDeclare {
+            name,
+            init_expr: init_ref,
+        })
     }
 
     pub fn if_expr(condition: Eval, then_expr: Eval, else_expr: Option<Eval>) -> Self {
         let cond_ref = condition.0;
         let then_ref = then_expr.0;
         let else_ref = else_expr.map(|expr| expr.0);
-        Self::new(crate::eval::EvalIf { condition: cond_ref, then_expr: then_ref, else_expr: else_ref })
+        Self::new(crate::eval::EvalIf {
+            condition: cond_ref,
+            then_expr: then_ref,
+            else_expr: else_ref,
+        })
     }
 
     pub fn return_expr(expr: Option<Eval>) -> Self {
@@ -78,19 +96,32 @@ impl Eval {
     }
 
     pub fn while_expr(condition: Eval, body: Eval) -> Self {
-        Self::new(crate::eval::EvalWhile { condition: condition.0, body: body.0 })
+        Self::new(crate::eval::EvalWhile {
+            condition: condition.0,
+            body: body.0,
+        })
     }
 
     pub fn for_expr(var_name: String, iter_expr: Eval, body: Eval) -> Self {
-        Self::new(crate::eval::EvalFor { var_name, iter_expr: iter_expr.0, body: body.0 })
+        Self::new(crate::eval::EvalFor {
+            var_name,
+            iter_expr: iter_expr.0,
+            body: body.0,
+        })
     }
 
     pub fn logical_and(left: Eval, right: Eval) -> Self {
-        Self::new(crate::eval::EvalLogicalAnd { left: left.0, right: right.0 })
+        Self::new(crate::eval::EvalLogicalAnd {
+            left: left.0,
+            right: right.0,
+        })
     }
 
     pub fn logical_or(left: Eval, right: Eval) -> Self {
-        Self::new(crate::eval::EvalLogicalOr { left: left.0, right: right.0 })
+        Self::new(crate::eval::EvalLogicalOr {
+            left: left.0,
+            right: right.0,
+        })
     }
 
     pub fn logical_not(expr: Eval) -> Self {
@@ -98,28 +129,47 @@ impl Eval {
     }
 
     pub fn is(left: Eval, right: Eval) -> Self {
-        Self::new(crate::eval::EvalIs { left: left.0, right: right.0 })
+        Self::new(crate::eval::EvalIs {
+            left: left.0,
+            right: right.0,
+        })
     }
 
     pub fn get_attr(obj_expr: Eval, attr_name: String) -> Self {
-        Self::new(crate::eval::EvalGetAttr { obj_expr: obj_expr.0, attr_name })
+        Self::new(crate::eval::EvalGetAttr {
+            obj_expr: obj_expr.0,
+            attr_name,
+        })
     }
 
     pub fn set_attr(obj_expr: Eval, attr_name: String, value_expr: Eval) -> Self {
-        Self::new(crate::eval::EvalSetAttr { obj_expr: obj_expr.0, attr_name, value_expr: value_expr.0 })
+        Self::new(crate::eval::EvalSetAttr {
+            obj_expr: obj_expr.0,
+            attr_name,
+            value_expr: value_expr.0,
+        })
     }
 
     pub fn get_item(obj_expr: Eval, index_expr: Eval) -> Self {
-        Self::new(crate::eval::EvalGetItem { obj_expr: obj_expr.0, index_expr: index_expr.0 })
+        Self::new(crate::eval::EvalGetItem {
+            obj_expr: obj_expr.0,
+            index_expr: index_expr.0,
+        })
     }
 
     pub fn set_item(obj_expr: Eval, index_expr: Eval, value_expr: Eval) -> Self {
-        Self::new(crate::eval::EvalSetItem { obj_expr: obj_expr.0, index_expr: index_expr.0, value_expr: value_expr.0 })
+        Self::new(crate::eval::EvalSetItem {
+            obj_expr: obj_expr.0,
+            index_expr: index_expr.0,
+            value_expr: value_expr.0,
+        })
     }
 
     pub fn list(elements: Vec<Eval>) -> Self {
         let element_refs = elements.into_iter().map(|elem| elem.0).collect();
-        Self::new(crate::eval::EvalList { elements: element_refs })
+        Self::new(crate::eval::EvalList {
+            elements: element_refs,
+        })
     }
 
     pub fn dict(pairs: Vec<(Eval, Eval)>) -> Self {
@@ -158,11 +208,18 @@ impl Eval {
     }
 
     pub fn declare_pattern(pattern: EvalPattern, init_expr: Eval) -> Self {
-        Self::new(crate::eval::EvalDeclarePattern { pattern, init_expr: init_expr.0 })
+        Self::new(crate::eval::EvalDeclarePattern {
+            pattern,
+            init_expr: init_expr.0,
+        })
     }
 
     pub fn try_expr(body: Eval, catch_pattern: EvalPattern, catch_body: Eval) -> Self {
-        Self::new(crate::eval::EvalTry { body: body.0, catch_pattern, catch_body: catch_body.0 })
+        Self::new(crate::eval::EvalTry {
+            body: body.0,
+            catch_pattern,
+            catch_body: catch_body.0,
+        })
     }
 }
 

@@ -34,7 +34,10 @@ pub fn evaluate_with_dir(
 ) -> anyhow::Result<crate::core::Value> {
     println!("DEBUG: evaluate_with_dir starting compilation");
     let eval_ir = Compiler::compile(program)?;
-    println!("DEBUG: evaluate_with_dir compilation completed, eval_ir: {:?}", eval_ir);
+    println!(
+        "DEBUG: evaluate_with_dir compilation completed, eval_ir: {:?}",
+        eval_ir
+    );
     println!("DEBUG: evaluate_with_dir creating evaluator");
     let mut evaluator = match current_dir {
         Some(dir) => Evaluator::new_with_dir(dir),
@@ -45,7 +48,10 @@ pub fn evaluate_with_dir(
     let result = evaluator.eval(&eval_ir);
     println!("DEBUG: evaluate_with_dir evaluation completed");
     result.map_err(|control_flow| {
-        println!("DEBUG: evaluate_with_dir error occurred: {:?}", control_flow);
+        println!(
+            "DEBUG: evaluate_with_dir error occurred: {:?}",
+            control_flow
+        );
         match control_flow {
             ControlFlow::Error(ErrorKind::SystemError(err)) => err,
             ControlFlow::Error(ErrorKind::RaisedError(value)) => {

@@ -123,56 +123,38 @@ impl Compiler {
                         let final_value = match op {
                             AssignOp::Assign => compiled_value,
                             AssignOp::AddAssign => {
-                                let get_attr =
-                                    Eval::get_attr(compiled_obj.clone(), attr.clone());
-                                let get_method =
-                                    Eval::get_attr(get_attr, "op_add".to_string());
+                                let get_attr = Eval::get_attr(compiled_obj.clone(), attr.clone());
+                                let get_method = Eval::get_attr(get_attr, "op_add".to_string());
                                 Eval::call(get_method, vec![compiled_value])
                             }
                             AssignOp::SubAssign => {
-                                let get_attr =
-                                    Eval::get_attr(compiled_obj.clone(), attr.clone());
-                                let get_method =
-                                    Eval::get_attr(get_attr, "op_sub".to_string());
+                                let get_attr = Eval::get_attr(compiled_obj.clone(), attr.clone());
+                                let get_method = Eval::get_attr(get_attr, "op_sub".to_string());
                                 Eval::call(get_method, vec![compiled_value])
                             }
                             AssignOp::MulAssign => {
-                                let get_attr =
-                                    Eval::get_attr(compiled_obj.clone(), attr.clone());
-                                let get_method =
-                                    Eval::get_attr(get_attr, "op_mul".to_string());
+                                let get_attr = Eval::get_attr(compiled_obj.clone(), attr.clone());
+                                let get_method = Eval::get_attr(get_attr, "op_mul".to_string());
                                 Eval::call(get_method, vec![compiled_value])
                             }
                             AssignOp::DivAssign => {
-                                let get_attr =
-                                    Eval::get_attr(compiled_obj.clone(), attr.clone());
-                                let get_method =
-                                    Eval::get_attr(get_attr, "op_div".to_string());
+                                let get_attr = Eval::get_attr(compiled_obj.clone(), attr.clone());
+                                let get_method = Eval::get_attr(get_attr, "op_div".to_string());
                                 Eval::call(get_method, vec![compiled_value])
                             }
                             AssignOp::ModAssign => {
-                                let get_attr =
-                                    Eval::get_attr(compiled_obj.clone(), attr.clone());
-                                let get_method =
-                                    Eval::get_attr(get_attr, "op_mod".to_string());
+                                let get_attr = Eval::get_attr(compiled_obj.clone(), attr.clone());
+                                let get_method = Eval::get_attr(get_attr, "op_mod".to_string());
                                 Eval::call(get_method, vec![compiled_value])
                             }
                         };
 
-                        Ok(Eval::set_attr(
-                            compiled_obj,
-                            attr,
-                            final_value,
-                        ))
+                        Ok(Eval::set_attr(compiled_obj, attr, final_value))
                     }
                     LValue::GetItem(obj, key) => {
                         let compiled_obj = self.compile_expression(*obj)?;
                         let compiled_key = self.compile_expression(*key)?;
-                        Ok(Eval::set_item(
-                            compiled_obj,
-                            compiled_key,
-                            compiled_value,
-                        ))
+                        Ok(Eval::set_item(compiled_obj, compiled_key, compiled_value))
                     }
                 }
             }
@@ -241,10 +223,7 @@ impl Compiler {
             Expression::GetItem(obj, key) => {
                 let compiled_obj = self.compile_expression(*obj)?;
                 let compiled_key = self.compile_expression(*key)?;
-                Ok(Eval::get_item(
-                    compiled_obj,
-                    compiled_key,
-                ))
+                Ok(Eval::get_item(compiled_obj, compiled_key))
             }
             Expression::FunctionCall(func, args) => {
                 let compiled_func = self.compile_expression(*func)?;
@@ -290,10 +269,7 @@ impl Compiler {
                 match block.final_expr {
                     Some(expr) => {
                         let compiled_final_expr = self.compile_expression(*expr)?;
-                        Ok(Eval::block(
-                            eval_statements,
-                            Some(compiled_final_expr),
-                        ))
+                        Ok(Eval::block(eval_statements, Some(compiled_final_expr)))
                     }
                     None => Ok(Eval::block(eval_statements, None)),
                 }
@@ -331,18 +307,12 @@ impl Compiler {
             Expression::And(left, right) => {
                 let compiled_left = self.compile_expression(*left)?;
                 let compiled_right = self.compile_expression(*right)?;
-                Ok(Eval::logical_and(
-                    compiled_left,
-                    compiled_right,
-                ))
+                Ok(Eval::logical_and(compiled_left, compiled_right))
             }
             Expression::Or(left, right) => {
                 let compiled_left = self.compile_expression(*left)?;
                 let compiled_right = self.compile_expression(*right)?;
-                Ok(Eval::logical_or(
-                    compiled_left,
-                    compiled_right,
-                ))
+                Ok(Eval::logical_or(compiled_left, compiled_right))
             }
             Expression::Is(left, right) => {
                 let compiled_left = self.compile_expression(*left)?;
@@ -388,10 +358,7 @@ impl Compiler {
             Expression::While { condition, body } => {
                 let compiled_condition = self.compile_expression(*condition)?;
                 let compiled_body = self.compile_block_helper(body)?;
-                Ok(Eval::while_expr(
-                    compiled_condition,
-                    compiled_body,
-                ))
+                Ok(Eval::while_expr(compiled_condition, compiled_body))
             }
             Expression::For {
                 pattern,
@@ -403,11 +370,7 @@ impl Compiler {
                     Pattern::Variable(var_name) => {
                         let compiled_iter = self.compile_expression(*iter)?;
                         let compiled_body = self.compile_block_helper(body)?;
-                        Ok(Eval::for_expr(
-                            var_name,
-                            compiled_iter,
-                            compiled_body,
-                        ))
+                        Ok(Eval::for_expr(var_name, compiled_iter, compiled_body))
                     }
                     _ => Err(anyhow::anyhow!(
                         "Only variable patterns are supported in for loops for now: {:?}",
@@ -441,8 +404,12 @@ impl Compiler {
                 let compiled_body = self.compile_block_helper(body)?;
                 let compiled_catch_body = self.compile_block_helper(catch.body)?;
                 let catch_pattern = Self::compile_pattern(catch.pattern)?;
-                
-                Ok(Eval::try_expr(compiled_body, catch_pattern, compiled_catch_body))
+
+                Ok(Eval::try_expr(
+                    compiled_body,
+                    catch_pattern,
+                    compiled_catch_body,
+                ))
             }
 
             Expression::With { resources, body } => {
@@ -591,10 +558,7 @@ impl Compiler {
         match block.final_expr {
             Some(expr) => {
                 let compiled_final_expr = self.compile_expression(*expr)?;
-                Ok(Eval::block(
-                    eval_statements,
-                    Some(compiled_final_expr),
-                ))
+                Ok(Eval::block(eval_statements, Some(compiled_final_expr)))
             }
             None => Ok(Eval::block(eval_statements, None)),
         }
@@ -632,10 +596,8 @@ impl Compiler {
                 InterpolationPart::Expression(expr) => {
                     // Wrap non-string expressions in str() conversion
                     let compiled_expr = self.compile_expression(expr)?;
-                    let str_call = Eval::call(
-                        Eval::variable("str".to_string()),
-                        vec![compiled_expr],
-                    );
+                    let str_call =
+                        Eval::call(Eval::variable("str".to_string()), vec![compiled_expr]);
                     compiled_parts.push(str_call);
                 }
             }
@@ -650,7 +612,7 @@ impl Compiler {
         let mut parts_iter = compiled_parts.into_iter();
         let first_part = parts_iter.next().unwrap();
         let remaining_parts: Vec<Eval> = parts_iter.collect();
-        
+
         if remaining_parts.is_empty() {
             Ok(first_part)
         } else {
@@ -660,18 +622,23 @@ impl Compiler {
     }
 
     // Helper to compile range expressions - handle at Expression level to avoid downcasting
-    fn compile_range_expression(&mut self, start_expr: Expression, end_expr: Expression, inclusive: bool) -> Result<Eval> {
+    fn compile_range_expression(
+        &mut self,
+        start_expr: Expression,
+        end_expr: Expression,
+        inclusive: bool,
+    ) -> Result<Eval> {
         // Extract literal integers directly from expressions
         let start_val = match start_expr {
             Expression::Literal(LiteralValue::Int(i)) => i,
             _ => return Err(anyhow::anyhow!("Range start must be an integer literal")),
         };
-        
+
         let end_val = match end_expr {
             Expression::Literal(LiteralValue::Int(i)) => i,
             _ => return Err(anyhow::anyhow!("Range end must be an integer literal")),
         };
-        
+
         let range = crate::core::Range {
             start: start_val,
             end: end_val,

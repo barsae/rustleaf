@@ -39,11 +39,11 @@ impl EvalVariantConstant {
 
 impl RustValue for EvalVariantConstant {
     fn op_is(&self, other: &Value) -> anyhow::Result<Value> {
-        // Check if other is an EvalNode by trying to get its "node_type" attribute
+        // Check if other is an EvalRef by trying to get its "node_type" attribute
         if let Value::RustValue(rust_val_ref) = other {
             let rust_val = rust_val_ref.borrow();
 
-            // Try to get the type from the EvalNode directly
+            // Try to get the type from the EvalRef directly
             if let Some(Value::String(node_type)) = rust_val.get_attr("node_type") {
                 return Ok(Value::Bool(node_type == self.variant_name));
             }

@@ -175,145 +175,187 @@ Ok(
 Ok(
     Eval(
         EvalRef(
-            EvalProgram {
-                statements: [
-                    EvalRef(
-                        EvalDeclare {
-                            name: "user",
-                            init_expr: Some(
-                                EvalRef(
-                                    EvalDict {
-                                        pairs: [
-                                            (
-                                                EvalRef(
-                                                    EvalLiteral {
-                                                        value: String(
-                                                            "name",
-                                                        ),
-                                                    },
-                                                ),
-                                                EvalRef(
-                                                    EvalLiteral {
-                                                        value: String(
-                                                            "Alice",
-                                                        ),
-                                                    },
-                                                ),
-                                            ),
-                                            (
-                                                EvalRef(
-                                                    EvalLiteral {
-                                                        value: String(
-                                                            "age",
-                                                        ),
-                                                    },
-                                                ),
-                                                EvalRef(
-                                                    EvalLiteral {
-                                                        value: Int(
-                                                            30,
-                                                        ),
-                                                    },
-                                                ),
-                                            ),
-                                        ],
-                                    },
-                                ),
-                            ),
-                        },
-                    ),
-                    EvalRef(
-                        EvalDeclarePattern {
-                            pattern: Dict(
-                                [
-                                    EvalDictPattern {
-                                        key: "name",
-                                        alias: None,
-                                    },
-                                    EvalDictPattern {
-                                        key: "age",
-                                        alias: Some(
-                                            "user_age",
-                                        ),
-                                    },
-                                ],
-                            ),
-                            init_expr: EvalRef(
-                                EvalVariable {
+            RefCell {
+                value: EvalProgram {
+                    statements: [
+                        EvalRef(
+                            RefCell {
+                                value: EvalDeclare {
                                     name: "user",
-                                },
-                            ),
-                        },
-                    ),
-                    EvalRef(
-                        EvalCall {
-                            func_expr: EvalRef(
-                                EvalVariable {
-                                    name: "assert",
-                                },
-                            ),
-                            args: [
-                                EvalRef(
-                                    EvalCall {
-                                        func_expr: EvalRef(
-                                            EvalGetAttr {
-                                                obj_expr: EvalRef(
-                                                    EvalVariable {
-                                                        name: "name",
-                                                    },
-                                                ),
-                                                attr_name: "op_eq",
+                                    init_expr: Some(
+                                        EvalRef(
+                                            RefCell {
+                                                value: EvalDict {
+                                                    pairs: [
+                                                        (
+                                                            EvalRef(
+                                                                RefCell {
+                                                                    value: EvalLiteral {
+                                                                        value: String(
+                                                                            "name",
+                                                                        ),
+                                                                    },
+                                                                },
+                                                            ),
+                                                            EvalRef(
+                                                                RefCell {
+                                                                    value: EvalLiteral {
+                                                                        value: String(
+                                                                            "Alice",
+                                                                        ),
+                                                                    },
+                                                                },
+                                                            ),
+                                                        ),
+                                                        (
+                                                            EvalRef(
+                                                                RefCell {
+                                                                    value: EvalLiteral {
+                                                                        value: String(
+                                                                            "age",
+                                                                        ),
+                                                                    },
+                                                                },
+                                                            ),
+                                                            EvalRef(
+                                                                RefCell {
+                                                                    value: EvalLiteral {
+                                                                        value: Int(
+                                                                            30,
+                                                                        ),
+                                                                    },
+                                                                },
+                                                            ),
+                                                        ),
+                                                    ],
+                                                },
                                             },
                                         ),
-                                        args: [
-                                            EvalRef(
-                                                EvalLiteral {
-                                                    value: String(
-                                                        "Alice",
-                                                    ),
-                                                },
-                                            ),
-                                        ],
-                                    },
-                                ),
-                            ],
-                        },
-                    ),
-                    EvalRef(
-                        EvalCall {
-                            func_expr: EvalRef(
-                                EvalVariable {
-                                    name: "assert",
+                                    ),
                                 },
-                            ),
-                            args: [
-                                EvalRef(
-                                    EvalCall {
-                                        func_expr: EvalRef(
-                                            EvalGetAttr {
-                                                obj_expr: EvalRef(
-                                                    EvalVariable {
-                                                        name: "user_age",
-                                                    },
+                            },
+                        ),
+                        EvalRef(
+                            RefCell {
+                                value: EvalDeclarePattern {
+                                    pattern: Dict(
+                                        [
+                                            EvalDictPattern {
+                                                key: "name",
+                                                alias: None,
+                                            },
+                                            EvalDictPattern {
+                                                key: "age",
+                                                alias: Some(
+                                                    "user_age",
                                                 ),
-                                                attr_name: "op_eq",
+                                            },
+                                        ],
+                                    ),
+                                    init_expr: EvalRef(
+                                        RefCell {
+                                            value: EvalVariable {
+                                                name: "user",
+                                            },
+                                        },
+                                    ),
+                                },
+                            },
+                        ),
+                        EvalRef(
+                            RefCell {
+                                value: EvalCall {
+                                    func_expr: EvalRef(
+                                        RefCell {
+                                            value: EvalVariable {
+                                                name: "assert",
+                                            },
+                                        },
+                                    ),
+                                    args: [
+                                        EvalRef(
+                                            RefCell {
+                                                value: EvalCall {
+                                                    func_expr: EvalRef(
+                                                        RefCell {
+                                                            value: EvalGetAttr {
+                                                                obj_expr: EvalRef(
+                                                                    RefCell {
+                                                                        value: EvalVariable {
+                                                                            name: "name",
+                                                                        },
+                                                                    },
+                                                                ),
+                                                                attr_name: "op_eq",
+                                                            },
+                                                        },
+                                                    ),
+                                                    args: [
+                                                        EvalRef(
+                                                            RefCell {
+                                                                value: EvalLiteral {
+                                                                    value: String(
+                                                                        "Alice",
+                                                                    ),
+                                                                },
+                                                            },
+                                                        ),
+                                                    ],
+                                                },
                                             },
                                         ),
-                                        args: [
-                                            EvalRef(
-                                                EvalLiteral {
-                                                    value: Int(
-                                                        30,
+                                    ],
+                                },
+                            },
+                        ),
+                        EvalRef(
+                            RefCell {
+                                value: EvalCall {
+                                    func_expr: EvalRef(
+                                        RefCell {
+                                            value: EvalVariable {
+                                                name: "assert",
+                                            },
+                                        },
+                                    ),
+                                    args: [
+                                        EvalRef(
+                                            RefCell {
+                                                value: EvalCall {
+                                                    func_expr: EvalRef(
+                                                        RefCell {
+                                                            value: EvalGetAttr {
+                                                                obj_expr: EvalRef(
+                                                                    RefCell {
+                                                                        value: EvalVariable {
+                                                                            name: "user_age",
+                                                                        },
+                                                                    },
+                                                                ),
+                                                                attr_name: "op_eq",
+                                                            },
+                                                        },
                                                     ),
+                                                    args: [
+                                                        EvalRef(
+                                                            RefCell {
+                                                                value: EvalLiteral {
+                                                                    value: Int(
+                                                                        30,
+                                                                    ),
+                                                                },
+                                                            },
+                                                        ),
+                                                    ],
                                                 },
-                                            ),
-                                        ],
-                                    },
-                                ),
-                            ],
-                        },
-                    ),
-                ],
+                                            },
+                                        ),
+                                    ],
+                                },
+                            },
+                        ),
+                    ],
+                },
             },
         ),
     ),

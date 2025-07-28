@@ -92,9 +92,7 @@ pub fn start_print_capture() {
 }
 
 pub fn get_captured_prints() -> Vec<String> {
-    PRINT_CAPTURE.with(|capture| {
-        capture.borrow_mut().take().unwrap_or_default()
-    })
+    PRINT_CAPTURE.with(|capture| capture.borrow_mut().take().unwrap_or_default())
 }
 
 pub fn stop_print_capture() {
@@ -134,21 +132,7 @@ pub fn str(mut args: Args) -> Result<Value> {
     let value = args.expect("value")?;
     args.complete()?;
 
-    let string_repr = match value {
-        Value::Null => "null".to_string(),
-        Value::Unit => "unit".to_string(),
-        Value::Bool(b) => b.to_string(),
-        Value::Int(i) => i.to_string(),
-        Value::Float(f) => f.to_string(),
-        Value::String(s) => s.clone(),
-        Value::RustValue(rust_val_ref) => {
-            let rust_val = rust_val_ref.borrow();
-            rust_val.str()
-        }
-        _ => format!("{:?}", value), // Fallback to debug representation for other types
-    };
-
-    Ok(Value::String(string_repr))
+    Ok(Value::String(value.str()))
 }
 
 pub fn raise(mut args: Args) -> Result<Value> {
@@ -178,8 +162,10 @@ pub fn parse_builtin(mut args: Args) -> Result<Value> {
     let eval_ir = crate::eval::Compiler::compile(ast)
         .map_err(|e| anyhow!("Failed to compile: {}:\n{}", e, code_string))?;
 
-    // Return as EvalNode
-    Ok(Value::from_rust(crate::core::EvalNode::new(eval_ir)))
+    // Return the Eval directly as a RustValue
+    Ok(Value::RustValue(crate::core::RustValueRef::new(
+        eval_ir.0.as_rust_value(),
+    )))
 }
 
 pub fn macro_identity_builtin(mut args: Args) -> Result<Value> {

@@ -118,15 +118,14 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                             rustleaf::core::start_print_capture();
                             rustleaf::core::start_assertion_count();
                             println!("DEBUG: Print capture and assertion counting started");
-                            
+
                             // Get the directory of the test file for module imports
                             let test_file_dir = std::path::Path::new(#full_path).parent().map(|p| p.to_path_buf());
                             println!("DEBUG: Test file directory: {:?}", test_file_dir);
-                            
+
                             println!("DEBUG: About to call evaluate_with_dir - this is where the stack overflow likely occurs");
                             let result = rustleaf::eval::evaluate_with_dir(ast, test_file_dir);
                             println!("DEBUG: evaluate_with_dir returned successfully");
-                            
                             let captured_output = rustleaf::core::get_captured_prints();
                             let assertion_count = rustleaf::core::get_assertion_count();
                             let execution_output = format!("{:#?}", result);
