@@ -35,7 +35,7 @@ test: check-test-dirs
     just test-summary
     cargo clippy -- -D warnings
     cargo fmt
-    
+
 
 # Generate test summary from integration tests
 test-summary:
@@ -173,3 +173,7 @@ merge:
     git checkout main
     just merge-ff
     just checkout-worker-branch
+
+# Print LoC stats
+loc:
+    find . -name "*.rs" | xargs wc -l | sort
