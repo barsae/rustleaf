@@ -76,78 +76,18 @@ impl Compiler {
                 match target {
                     LValue::Identifier(name) => {
                         // Handle compound assignment operators
-                        let final_value = match op {
-                            AssignOp::Assign => compiled_value,
-                            AssignOp::AddAssign => {
-                                let get_method = Eval::get_attr(
-                                    Eval::variable(name.clone()),
-                                    "op_add".to_string(),
-                                );
-                                Eval::call(get_method, vec![compiled_value])
-                            }
-                            AssignOp::SubAssign => {
-                                let get_method = Eval::get_attr(
-                                    Eval::variable(name.clone()),
-                                    "op_sub".to_string(),
-                                );
-                                Eval::call(get_method, vec![compiled_value])
-                            }
-                            AssignOp::MulAssign => {
-                                let get_method = Eval::get_attr(
-                                    Eval::variable(name.clone()),
-                                    "op_mul".to_string(),
-                                );
-                                Eval::call(get_method, vec![compiled_value])
-                            }
-                            AssignOp::DivAssign => {
-                                let get_method = Eval::get_attr(
-                                    Eval::variable(name.clone()),
-                                    "op_div".to_string(),
-                                );
-                                Eval::call(get_method, vec![compiled_value])
-                            }
-                            AssignOp::ModAssign => {
-                                let get_method = Eval::get_attr(
-                                    Eval::variable(name.clone()),
-                                    "op_mod".to_string(),
-                                );
-                                Eval::call(get_method, vec![compiled_value])
-                            }
-                        };
+                        let target_eval = Eval::variable(name.clone());
+                        let final_value =
+                            self.compile_compound_assignment(target_eval, op, compiled_value)?;
                         Ok(Eval::assign(name, final_value))
                     }
                     LValue::GetAttr(obj, attr) => {
                         let compiled_obj = self.compile_expression(*obj)?;
 
                         // Handle compound assignment operators for attributes
-                        let final_value = match op {
-                            AssignOp::Assign => compiled_value,
-                            AssignOp::AddAssign => {
-                                let get_attr = Eval::get_attr(compiled_obj.clone(), attr.clone());
-                                let get_method = Eval::get_attr(get_attr, "op_add".to_string());
-                                Eval::call(get_method, vec![compiled_value])
-                            }
-                            AssignOp::SubAssign => {
-                                let get_attr = Eval::get_attr(compiled_obj.clone(), attr.clone());
-                                let get_method = Eval::get_attr(get_attr, "op_sub".to_string());
-                                Eval::call(get_method, vec![compiled_value])
-                            }
-                            AssignOp::MulAssign => {
-                                let get_attr = Eval::get_attr(compiled_obj.clone(), attr.clone());
-                                let get_method = Eval::get_attr(get_attr, "op_mul".to_string());
-                                Eval::call(get_method, vec![compiled_value])
-                            }
-                            AssignOp::DivAssign => {
-                                let get_attr = Eval::get_attr(compiled_obj.clone(), attr.clone());
-                                let get_method = Eval::get_attr(get_attr, "op_div".to_string());
-                                Eval::call(get_method, vec![compiled_value])
-                            }
-                            AssignOp::ModAssign => {
-                                let get_attr = Eval::get_attr(compiled_obj.clone(), attr.clone());
-                                let get_method = Eval::get_attr(get_attr, "op_mod".to_string());
-                                Eval::call(get_method, vec![compiled_value])
-                            }
-                        };
+                        let target_eval = Eval::get_attr(compiled_obj.clone(), attr.clone());
+                        let final_value =
+                            self.compile_compound_assignment(target_eval, op, compiled_value)?;
 
                         Ok(Eval::set_attr(compiled_obj, attr, final_value))
                     }
@@ -206,6 +146,34 @@ impl Compiler {
                 module: import_spec.module,
                 items: import_spec.items,
             })),
+        }
+    }
+
+    fn compile_binary_op(
+        &mut self,
+        left: Expression,
+        right: Expression,
+        method_name: &str,
+    ) -> Result<Eval> {
+        let left_eval = Box::new(self.compile_expression(left)?);
+        let right_eval = Box::new(self.compile_expression(right)?);
+        let get_method = Eval::get_attr(*left_eval, method_name.to_string());
+        Ok(Eval::call(get_method, vec![*right_eval]))
+    }
+
+    fn compile_compound_assignment(
+        &mut self,
+        target_eval: Eval,
+        op: AssignOp,
+        value_eval: Eval,
+    ) -> Result<Eval> {
+        match op {
+            AssignOp::Assign => Ok(value_eval),
+            _ => {
+                let method_name = op.to_method_name();
+                let get_method = Eval::get_attr(target_eval, method_name.to_string());
+                Ok(Eval::call(get_method, vec![value_eval]))
+            }
         }
     }
 
@@ -275,32 +243,32 @@ impl Compiler {
                 }
             }
             // Binary operators - most become method calls
-            Expression::Add(left, right) => self.compile_method_call_op(*left, *right, "op_add"),
-            Expression::Sub(left, right) => self.compile_method_call_op(*left, *right, "op_sub"),
-            Expression::Mul(left, right) => self.compile_method_call_op(*left, *right, "op_mul"),
-            Expression::Div(left, right) => self.compile_method_call_op(*left, *right, "op_div"),
-            Expression::Mod(left, right) => self.compile_method_call_op(*left, *right, "op_mod"),
-            Expression::Pow(left, right) => self.compile_method_call_op(*left, *right, "op_pow"),
-            Expression::Eq(left, right) => self.compile_method_call_op(*left, *right, "op_eq"),
-            Expression::Ne(left, right) => self.compile_method_call_op(*left, *right, "op_ne"),
-            Expression::Lt(left, right) => self.compile_method_call_op(*left, *right, "op_lt"),
-            Expression::Le(left, right) => self.compile_method_call_op(*left, *right, "op_le"),
-            Expression::Gt(left, right) => self.compile_method_call_op(*left, *right, "op_gt"),
-            Expression::Ge(left, right) => self.compile_method_call_op(*left, *right, "op_ge"),
+            Expression::Add(left, right) => self.compile_binary_op(*left, *right, "op_add"),
+            Expression::Sub(left, right) => self.compile_binary_op(*left, *right, "op_sub"),
+            Expression::Mul(left, right) => self.compile_binary_op(*left, *right, "op_mul"),
+            Expression::Div(left, right) => self.compile_binary_op(*left, *right, "op_div"),
+            Expression::Mod(left, right) => self.compile_binary_op(*left, *right, "op_mod"),
+            Expression::Pow(left, right) => self.compile_binary_op(*left, *right, "op_pow"),
+            Expression::Eq(left, right) => self.compile_binary_op(*left, *right, "op_eq"),
+            Expression::Ne(left, right) => self.compile_binary_op(*left, *right, "op_ne"),
+            Expression::Lt(left, right) => self.compile_binary_op(*left, *right, "op_lt"),
+            Expression::Le(left, right) => self.compile_binary_op(*left, *right, "op_le"),
+            Expression::Gt(left, right) => self.compile_binary_op(*left, *right, "op_gt"),
+            Expression::Ge(left, right) => self.compile_binary_op(*left, *right, "op_ge"),
             Expression::BitAnd(left, right) => {
-                self.compile_method_call_op(*left, *right, "op_bitwise_and")
+                self.compile_binary_op(*left, *right, "op_bitwise_and")
             }
             Expression::BitOr(left, right) => {
-                self.compile_method_call_op(*left, *right, "op_bitwise_or")
+                self.compile_binary_op(*left, *right, "op_bitwise_or")
             }
             Expression::BitXor(left, right) => {
-                self.compile_method_call_op(*left, *right, "op_bitwise_xor")
+                self.compile_binary_op(*left, *right, "op_bitwise_xor")
             }
             Expression::LeftShift(left, right) => {
-                self.compile_method_call_op(*left, *right, "op_lshift")
+                self.compile_binary_op(*left, *right, "op_lshift")
             }
             Expression::RightShift(left, right) => {
-                self.compile_method_call_op(*left, *right, "op_rshift")
+                self.compile_binary_op(*left, *right, "op_rshift")
             }
 
             // Special cases that remain built-in
@@ -320,7 +288,8 @@ impl Compiler {
                 Ok(Eval::is(compiled_left, compiled_right))
             }
             Expression::In(left, right) => {
-                self.compile_method_call_op_swapped(*left, *right, "op_contains")
+                // For 'in' operator, we need to swap arguments: item in container => container.op_contains(item)
+                self.compile_binary_op(*right, *left, "op_contains")
             }
             Expression::NotIn(left, right) => self.compile_not_in(*left, *right),
             Expression::IsNot(left, right) => self.compile_is_not(*left, *right),
@@ -494,38 +463,6 @@ impl Compiler {
         }
     }
 
-    // Helper to compile binary operations to method calls: a + b => a.op_get_attr("op_add").op_call(b)
-    fn compile_method_call_op(
-        &mut self,
-        left: Expression,
-        right: Expression,
-        method_name: &str,
-    ) -> Result<Eval> {
-        let compiled_left = self.compile_expression(left)?;
-        let compiled_right = self.compile_expression(right)?;
-
-        let get_method = Eval::get_attr(compiled_left, method_name.to_string());
-        let call_method = Eval::call(get_method, vec![compiled_right]);
-
-        Ok(call_method)
-    }
-
-    // Helper for operators like 'in' where operands are swapped: "item in container" => container.op_contains(item)
-    fn compile_method_call_op_swapped(
-        &mut self,
-        left: Expression,
-        right: Expression,
-        method_name: &str,
-    ) -> Result<Eval> {
-        let compiled_left = self.compile_expression(left)?;
-        let compiled_right = self.compile_expression(right)?;
-
-        let get_method = Eval::get_attr(compiled_right, method_name.to_string());
-        let call_method = Eval::call(get_method, vec![compiled_left]);
-
-        Ok(call_method)
-    }
-
     // Helper to compile unary operations to method calls: -a => a.op_get_attr("op_neg").op_call()
     fn compile_unary_method_call(&mut self, expr: Expression, method_name: &str) -> Result<Eval> {
         let compiled_expr = self.compile_expression(expr)?;
@@ -566,7 +503,8 @@ impl Compiler {
 
     // Helper to compile "not in" as !(left in right)
     fn compile_not_in(&mut self, left: Expression, right: Expression) -> Result<Eval> {
-        let in_expr = self.compile_method_call_op_swapped(left, right, "op_contains")?;
+        // For 'not in', swap arguments like 'in': item not in container => !(container.op_contains(item))
+        let in_expr = self.compile_binary_op(right, left, "op_contains")?;
         Ok(Eval::logical_not(in_expr))
     }
 

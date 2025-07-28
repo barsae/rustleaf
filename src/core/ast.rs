@@ -289,3 +289,44 @@ pub enum MacroArg {
     Positional(LiteralValue),
     Named(String, LiteralValue), // key: value
 }
+
+impl Expression {
+    /// Get the method name for binary operators
+    pub fn binary_op_method_name(&self) -> Option<&'static str> {
+        match self {
+            Expression::Add(_, _) => Some("op_add"),
+            Expression::Sub(_, _) => Some("op_sub"),
+            Expression::Mul(_, _) => Some("op_mul"),
+            Expression::Div(_, _) => Some("op_div"),
+            Expression::Mod(_, _) => Some("op_mod"),
+            Expression::Pow(_, _) => Some("op_pow"),
+            Expression::Eq(_, _) => Some("op_eq"),
+            Expression::Ne(_, _) => Some("op_ne"),
+            Expression::Lt(_, _) => Some("op_lt"),
+            Expression::Le(_, _) => Some("op_le"),
+            Expression::Gt(_, _) => Some("op_gt"),
+            Expression::Ge(_, _) => Some("op_ge"),
+            Expression::BitAnd(_, _) => Some("op_bitwise_and"),
+            Expression::BitOr(_, _) => Some("op_bitwise_or"),
+            Expression::BitXor(_, _) => Some("op_bitwise_xor"),
+            Expression::LeftShift(_, _) => Some("op_lshift"),
+            Expression::RightShift(_, _) => Some("op_rshift"),
+            Expression::In(_, _) => Some("op_contains"),
+            _ => None,
+        }
+    }
+}
+
+impl AssignOp {
+    /// Get the method name for assignment operators
+    pub fn to_method_name(&self) -> &'static str {
+        match self {
+            AssignOp::Assign => panic!("Assign is not a compound operator"),
+            AssignOp::AddAssign => "op_add",
+            AssignOp::SubAssign => "op_sub",
+            AssignOp::MulAssign => "op_mul",
+            AssignOp::DivAssign => "op_div",
+            AssignOp::ModAssign => "op_mod",
+        }
+    }
+}

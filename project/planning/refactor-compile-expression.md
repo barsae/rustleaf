@@ -4,6 +4,9 @@ Break down the massive `compile_expression()` method in `src/eval/compiler.rs` (
 
 Read all relevant code before working.
 
+## Planning
+Consider `https://docs.rs/enum_dispatch/latest/enum_dispatch/`
+
 ## Tasks
 
 1. Create expression compiler trait:
