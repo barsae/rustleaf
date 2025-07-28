@@ -58,7 +58,7 @@ impl ClassRef {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct RustValueRef(Rc<RefCell<Box<dyn RustValue>>>);
 
 #[derive(Clone, Debug, PartialEq)]
@@ -94,6 +94,12 @@ impl RustValueRef {
 
     pub fn as_rust_value(&self) -> Rc<RefCell<Box<dyn RustValue>>> {
         self.0.clone()
+    }
+}
+
+impl fmt::Debug for RustValueRef {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        self.0.borrow().fmt(f)
     }
 }
 

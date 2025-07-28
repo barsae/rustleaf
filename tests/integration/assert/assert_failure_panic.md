@@ -64,46 +64,26 @@ Ok(
 # Eval
 ```rust
 Ok(
-    RustValueRef(
-        RefCell {
-            value: EvalProgram {
-                statements: [
-                    RustValueRef(
-                        RefCell {
-                            value: EvalCall {
-                                func_expr: RustValueRef(
-                                    RefCell {
-                                        value: EvalVariable {
-                                            name: "assert",
-                                        },
-                                    },
-                                ),
-                                args: [
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLiteral {
-                                                value: Bool(
-                                                    false,
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLiteral {
-                                                value: String(
-                                                    "This should fail",
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                ],
-                            },
-                        },
-                    ),
+    EvalProgram {
+        statements: [
+            EvalCall {
+                func_expr: EvalVariable {
+                    name: "assert",
+                },
+                args: [
+                    EvalLiteral {
+                        value: Bool(
+                            false,
+                        ),
+                    },
+                    EvalLiteral {
+                        value: String(
+                            "This should fail",
+                        ),
+                    },
                 ],
             },
-        },
-    ),
+        ],
+    },
 )
 ```

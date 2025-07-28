@@ -1086,1418 +1086,674 @@ Ok(
 # Eval
 ```rust
 Ok(
-    RustValueRef(
-        RefCell {
-            value: EvalProgram {
-                statements: [
-                    RustValueRef(
-                        RefCell {
-                            value: EvalDeclare {
-                                name: "int_val",
-                                init_expr: Some(
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLiteral {
-                                                value: Int(
-                                                    42,
-                                                ),
-                                            },
-                                        },
-                                    ),
+    EvalProgram {
+        statements: [
+            EvalDeclare {
+                name: "int_val",
+                init_expr: Some(
+                    EvalLiteral {
+                        value: Int(
+                            42,
+                        ),
+                    },
+                ),
+            },
+            EvalDeclare {
+                name: "float_val",
+                init_expr: Some(
+                    EvalLiteral {
+                        value: Float(
+                            3.14,
+                        ),
+                    },
+                ),
+            },
+            EvalDeclare {
+                name: "string_val",
+                init_expr: Some(
+                    EvalLiteral {
+                        value: String(
+                            "hello",
+                        ),
+                    },
+                ),
+            },
+            EvalDeclare {
+                name: "bool_val",
+                init_expr: Some(
+                    EvalLiteral {
+                        value: Bool(
+                            true,
+                        ),
+                    },
+                ),
+            },
+            EvalDeclare {
+                name: "list_val",
+                init_expr: Some(
+                    EvalList {
+                        elements: [
+                            EvalLiteral {
+                                value: Int(
+                                    1,
                                 ),
                             },
-                        },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalDeclare {
-                                name: "float_val",
-                                init_expr: Some(
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLiteral {
-                                                value: Float(
-                                                    3.14,
-                                                ),
-                                            },
-                                        },
-                                    ),
+                            EvalLiteral {
+                                value: Int(
+                                    2,
                                 ),
                             },
-                        },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalDeclare {
-                                name: "string_val",
-                                init_expr: Some(
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLiteral {
-                                                value: String(
-                                                    "hello",
-                                                ),
-                                            },
-                                        },
-                                    ),
+                            EvalLiteral {
+                                value: Int(
+                                    3,
                                 ),
                             },
-                        },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalDeclare {
-                                name: "bool_val",
-                                init_expr: Some(
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLiteral {
-                                                value: Bool(
-                                                    true,
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                ),
-                            },
-                        },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalDeclare {
-                                name: "list_val",
-                                init_expr: Some(
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalList {
-                                                elements: [
-                                                    RustValueRef(
-                                                        RefCell {
-                                                            value: EvalLiteral {
-                                                                value: Int(
-                                                                    1,
-                                                                ),
-                                                            },
-                                                        },
-                                                    ),
-                                                    RustValueRef(
-                                                        RefCell {
-                                                            value: EvalLiteral {
-                                                                value: Int(
-                                                                    2,
-                                                                ),
-                                                            },
-                                                        },
-                                                    ),
-                                                    RustValueRef(
-                                                        RefCell {
-                                                            value: EvalLiteral {
-                                                                value: Int(
-                                                                    3,
-                                                                ),
-                                                            },
-                                                        },
-                                                    ),
-                                                ],
-                                            },
-                                        },
-                                    ),
-                                ),
-                            },
-                        },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalDeclare {
-                                name: "dict_val",
-                                init_expr: Some(
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalDict {
-                                                pairs: [
-                                                    (
-                                                        RustValueRef(
-                                                            RefCell {
-                                                                value: EvalLiteral {
-                                                                    value: String(
-                                                                        "key",
-                                                                    ),
-                                                                },
-                                                            },
-                                                        ),
-                                                        RustValueRef(
-                                                            RefCell {
-                                                                value: EvalLiteral {
-                                                                    value: String(
-                                                                        "value",
-                                                                    ),
-                                                                },
-                                                            },
-                                                        ),
-                                                    ),
-                                                ],
-                                            },
-                                        },
-                                    ),
-                                ),
-                            },
-                        },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalDeclare {
-                                name: "range_val",
-                                init_expr: Some(
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLiteral {
-                                                value: Range(
-                                                    Range {
-                                                        start: 1,
-                                                        end: 10,
-                                                        inclusive: false,
-                                                    },
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                ),
-                            },
-                        },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalDeclare {
-                                name: "lambda_val",
-                                init_expr: Some(
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLambda {
-                                                data: LambdaData {
-                                                    params: [
-                                                        "x",
-                                                    ],
-                                                    body: RustValueRef(
-                                                        RefCell {
-                                                            value: EvalCall {
-                                                                func_expr: RustValueRef(
-                                                                    RefCell {
-                                                                        value: EvalGetAttr {
-                                                                            obj_expr: RustValueRef(
-                                                                                RefCell {
-                                                                                    value: EvalVariable {
-                                                                                        name: "x",
-                                                                                    },
-                                                                                },
-                                                                            ),
-                                                                            attr_name: "op_add",
-                                                                        },
-                                                                    },
-                                                                ),
-                                                                args: [
-                                                                    RustValueRef(
-                                                                        RefCell {
-                                                                            value: EvalLiteral {
-                                                                                value: Int(
-                                                                                    1,
-                                                                                ),
-                                                                            },
-                                                                        },
-                                                                    ),
-                                                                ],
-                                                            },
-                                                        },
-                                                    ),
-                                                },
-                                            },
-                                        },
-                                    ),
-                                ),
-                            },
-                        },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalCall {
-                                func_expr: RustValueRef(
-                                    RefCell {
-                                        value: EvalVariable {
-                                            name: "assert",
-                                        },
-                                    },
-                                ),
-                                args: [
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalIs {
-                                                left: RustValueRef(
-                                                    RefCell {
-                                                        value: EvalVariable {
-                                                            name: "int_val",
-                                                        },
-                                                    },
-                                                ),
-                                                right: RustValueRef(
-                                                    RefCell {
-                                                        value: EvalVariable {
-                                                            name: "Int",
-                                                        },
-                                                    },
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLiteral {
-                                                value: String(
-                                                    "int_val should be Int",
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                ],
-                            },
-                        },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalCall {
-                                func_expr: RustValueRef(
-                                    RefCell {
-                                        value: EvalVariable {
-                                            name: "assert",
-                                        },
-                                    },
-                                ),
-                                args: [
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalIs {
-                                                left: RustValueRef(
-                                                    RefCell {
-                                                        value: EvalVariable {
-                                                            name: "float_val",
-                                                        },
-                                                    },
-                                                ),
-                                                right: RustValueRef(
-                                                    RefCell {
-                                                        value: EvalVariable {
-                                                            name: "Float",
-                                                        },
-                                                    },
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLiteral {
-                                                value: String(
-                                                    "float_val should be Float",
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                ],
-                            },
-                        },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalCall {
-                                func_expr: RustValueRef(
-                                    RefCell {
-                                        value: EvalVariable {
-                                            name: "assert",
-                                        },
-                                    },
-                                ),
-                                args: [
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalIs {
-                                                left: RustValueRef(
-                                                    RefCell {
-                                                        value: EvalVariable {
-                                                            name: "string_val",
-                                                        },
-                                                    },
-                                                ),
-                                                right: RustValueRef(
-                                                    RefCell {
-                                                        value: EvalVariable {
-                                                            name: "String",
-                                                        },
-                                                    },
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLiteral {
-                                                value: String(
-                                                    "string_val should be String",
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                ],
-                            },
-                        },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalCall {
-                                func_expr: RustValueRef(
-                                    RefCell {
-                                        value: EvalVariable {
-                                            name: "assert",
-                                        },
-                                    },
-                                ),
-                                args: [
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalIs {
-                                                left: RustValueRef(
-                                                    RefCell {
-                                                        value: EvalVariable {
-                                                            name: "bool_val",
-                                                        },
-                                                    },
-                                                ),
-                                                right: RustValueRef(
-                                                    RefCell {
-                                                        value: EvalVariable {
-                                                            name: "Bool",
-                                                        },
-                                                    },
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLiteral {
-                                                value: String(
-                                                    "bool_val should be Bool",
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                ],
-                            },
-                        },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalCall {
-                                func_expr: RustValueRef(
-                                    RefCell {
-                                        value: EvalVariable {
-                                            name: "assert",
-                                        },
-                                    },
-                                ),
-                                args: [
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalIs {
-                                                left: RustValueRef(
-                                                    RefCell {
-                                                        value: EvalVariable {
-                                                            name: "list_val",
-                                                        },
-                                                    },
-                                                ),
-                                                right: RustValueRef(
-                                                    RefCell {
-                                                        value: EvalVariable {
-                                                            name: "List",
-                                                        },
-                                                    },
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLiteral {
-                                                value: String(
-                                                    "list_val should be List",
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                ],
-                            },
-                        },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalCall {
-                                func_expr: RustValueRef(
-                                    RefCell {
-                                        value: EvalVariable {
-                                            name: "assert",
-                                        },
-                                    },
-                                ),
-                                args: [
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalIs {
-                                                left: RustValueRef(
-                                                    RefCell {
-                                                        value: EvalVariable {
-                                                            name: "dict_val",
-                                                        },
-                                                    },
-                                                ),
-                                                right: RustValueRef(
-                                                    RefCell {
-                                                        value: EvalVariable {
-                                                            name: "Dict",
-                                                        },
-                                                    },
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLiteral {
-                                                value: String(
-                                                    "dict_val should be Dict",
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                ],
-                            },
-                        },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalCall {
-                                func_expr: RustValueRef(
-                                    RefCell {
-                                        value: EvalVariable {
-                                            name: "assert",
-                                        },
-                                    },
-                                ),
-                                args: [
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalIs {
-                                                left: RustValueRef(
-                                                    RefCell {
-                                                        value: EvalVariable {
-                                                            name: "range_val",
-                                                        },
-                                                    },
-                                                ),
-                                                right: RustValueRef(
-                                                    RefCell {
-                                                        value: EvalVariable {
-                                                            name: "Range",
-                                                        },
-                                                    },
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLiteral {
-                                                value: String(
-                                                    "range_val should be Range",
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                ],
-                            },
-                        },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalCall {
-                                func_expr: RustValueRef(
-                                    RefCell {
-                                        value: EvalVariable {
-                                            name: "assert",
-                                        },
-                                    },
-                                ),
-                                args: [
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalIs {
-                                                left: RustValueRef(
-                                                    RefCell {
-                                                        value: EvalVariable {
-                                                            name: "lambda_val",
-                                                        },
-                                                    },
-                                                ),
-                                                right: RustValueRef(
-                                                    RefCell {
-                                                        value: EvalVariable {
-                                                            name: "Function",
-                                                        },
-                                                    },
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLiteral {
-                                                value: String(
-                                                    "lambda_val should be Function",
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                ],
-                            },
-                        },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalCall {
-                                func_expr: RustValueRef(
-                                    RefCell {
-                                        value: EvalVariable {
-                                            name: "assert",
-                                        },
-                                    },
-                                ),
-                                args: [
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLogicalNot {
-                                                expr: RustValueRef(
-                                                    RefCell {
-                                                        value: EvalIs {
-                                                            left: RustValueRef(
-                                                                RefCell {
-                                                                    value: EvalVariable {
-                                                                        name: "int_val",
-                                                                    },
-                                                                },
-                                                            ),
-                                                            right: RustValueRef(
-                                                                RefCell {
-                                                                    value: EvalVariable {
-                                                                        name: "String",
-                                                                    },
-                                                                },
-                                                            ),
-                                                        },
-                                                    },
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLiteral {
-                                                value: String(
-                                                    "int_val should not be String",
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                ],
-                            },
-                        },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalCall {
-                                func_expr: RustValueRef(
-                                    RefCell {
-                                        value: EvalVariable {
-                                            name: "assert",
-                                        },
-                                    },
-                                ),
-                                args: [
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLogicalNot {
-                                                expr: RustValueRef(
-                                                    RefCell {
-                                                        value: EvalIs {
-                                                            left: RustValueRef(
-                                                                RefCell {
-                                                                    value: EvalVariable {
-                                                                        name: "float_val",
-                                                                    },
-                                                                },
-                                                            ),
-                                                            right: RustValueRef(
-                                                                RefCell {
-                                                                    value: EvalVariable {
-                                                                        name: "Int",
-                                                                    },
-                                                                },
-                                                            ),
-                                                        },
-                                                    },
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLiteral {
-                                                value: String(
-                                                    "float_val should not be Int",
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                ],
-                            },
-                        },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalCall {
-                                func_expr: RustValueRef(
-                                    RefCell {
-                                        value: EvalVariable {
-                                            name: "assert",
-                                        },
-                                    },
-                                ),
-                                args: [
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLogicalNot {
-                                                expr: RustValueRef(
-                                                    RefCell {
-                                                        value: EvalIs {
-                                                            left: RustValueRef(
-                                                                RefCell {
-                                                                    value: EvalVariable {
-                                                                        name: "string_val",
-                                                                    },
-                                                                },
-                                                            ),
-                                                            right: RustValueRef(
-                                                                RefCell {
-                                                                    value: EvalVariable {
-                                                                        name: "Bool",
-                                                                    },
-                                                                },
-                                                            ),
-                                                        },
-                                                    },
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLiteral {
-                                                value: String(
-                                                    "string_val should not be Bool",
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                ],
-                            },
-                        },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalCall {
-                                func_expr: RustValueRef(
-                                    RefCell {
-                                        value: EvalVariable {
-                                            name: "assert",
-                                        },
-                                    },
-                                ),
-                                args: [
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLogicalNot {
-                                                expr: RustValueRef(
-                                                    RefCell {
-                                                        value: EvalIs {
-                                                            left: RustValueRef(
-                                                                RefCell {
-                                                                    value: EvalVariable {
-                                                                        name: "bool_val",
-                                                                    },
-                                                                },
-                                                            ),
-                                                            right: RustValueRef(
-                                                                RefCell {
-                                                                    value: EvalVariable {
-                                                                        name: "List",
-                                                                    },
-                                                                },
-                                                            ),
-                                                        },
-                                                    },
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLiteral {
-                                                value: String(
-                                                    "bool_val should not be List",
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                ],
-                            },
-                        },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalCall {
-                                func_expr: RustValueRef(
-                                    RefCell {
-                                        value: EvalVariable {
-                                            name: "assert",
-                                        },
-                                    },
-                                ),
-                                args: [
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLogicalNot {
-                                                expr: RustValueRef(
-                                                    RefCell {
-                                                        value: EvalIs {
-                                                            left: RustValueRef(
-                                                                RefCell {
-                                                                    value: EvalVariable {
-                                                                        name: "list_val",
-                                                                    },
-                                                                },
-                                                            ),
-                                                            right: RustValueRef(
-                                                                RefCell {
-                                                                    value: EvalVariable {
-                                                                        name: "Dict",
-                                                                    },
-                                                                },
-                                                            ),
-                                                        },
-                                                    },
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLiteral {
-                                                value: String(
-                                                    "list_val should not be Dict",
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                ],
-                            },
-                        },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalCall {
-                                func_expr: RustValueRef(
-                                    RefCell {
-                                        value: EvalVariable {
-                                            name: "assert",
-                                        },
-                                    },
-                                ),
-                                args: [
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLogicalNot {
-                                                expr: RustValueRef(
-                                                    RefCell {
-                                                        value: EvalIs {
-                                                            left: RustValueRef(
-                                                                RefCell {
-                                                                    value: EvalVariable {
-                                                                        name: "dict_val",
-                                                                    },
-                                                                },
-                                                            ),
-                                                            right: RustValueRef(
-                                                                RefCell {
-                                                                    value: EvalVariable {
-                                                                        name: "Range",
-                                                                    },
-                                                                },
-                                                            ),
-                                                        },
-                                                    },
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLiteral {
-                                                value: String(
-                                                    "dict_val should not be Range",
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                ],
-                            },
-                        },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalCall {
-                                func_expr: RustValueRef(
-                                    RefCell {
-                                        value: EvalVariable {
-                                            name: "assert",
-                                        },
-                                    },
-                                ),
-                                args: [
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLogicalNot {
-                                                expr: RustValueRef(
-                                                    RefCell {
-                                                        value: EvalIs {
-                                                            left: RustValueRef(
-                                                                RefCell {
-                                                                    value: EvalVariable {
-                                                                        name: "range_val",
-                                                                    },
-                                                                },
-                                                            ),
-                                                            right: RustValueRef(
-                                                                RefCell {
-                                                                    value: EvalVariable {
-                                                                        name: "Function",
-                                                                    },
-                                                                },
-                                                            ),
-                                                        },
-                                                    },
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLiteral {
-                                                value: String(
-                                                    "range_val should not be Function",
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                ],
-                            },
-                        },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalCall {
-                                func_expr: RustValueRef(
-                                    RefCell {
-                                        value: EvalVariable {
-                                            name: "assert",
-                                        },
-                                    },
-                                ),
-                                args: [
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLogicalNot {
-                                                expr: RustValueRef(
-                                                    RefCell {
-                                                        value: EvalIs {
-                                                            left: RustValueRef(
-                                                                RefCell {
-                                                                    value: EvalVariable {
-                                                                        name: "lambda_val",
-                                                                    },
-                                                                },
-                                                            ),
-                                                            right: RustValueRef(
-                                                                RefCell {
-                                                                    value: EvalVariable {
-                                                                        name: "Int",
-                                                                    },
-                                                                },
-                                                            ),
-                                                        },
-                                                    },
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLiteral {
-                                                value: String(
-                                                    "lambda_val should not be Int",
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                ],
-                            },
-                        },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalFunction {
-                                data: FunctionData {
-                                    name: "f",
-                                    params: [],
-                                    body: RustValueRef(
-                                        RefCell {
-                                            value: EvalBlock {
-                                                statements: [],
-                                                final_expr: None,
-                                            },
-                                        },
+                        ],
+                    },
+                ),
+            },
+            EvalDeclare {
+                name: "dict_val",
+                init_expr: Some(
+                    EvalDict {
+                        pairs: [
+                            (
+                                EvalLiteral {
+                                    value: String(
+                                        "key",
                                     ),
                                 },
-                            },
-                        },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalDeclare {
-                                name: "unit",
-                                init_expr: Some(
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalCall {
-                                                func_expr: RustValueRef(
-                                                    RefCell {
-                                                        value: EvalVariable {
-                                                            name: "f",
-                                                        },
-                                                    },
-                                                ),
-                                                args: [],
-                                            },
-                                        },
+                                EvalLiteral {
+                                    value: String(
+                                        "value",
                                     ),
-                                ),
+                                },
+                            ),
+                        ],
+                    },
+                ),
+            },
+            EvalDeclare {
+                name: "range_val",
+                init_expr: Some(
+                    EvalLiteral {
+                        value: Range(
+                            Range {
+                                start: 1,
+                                end: 10,
+                                inclusive: false,
                             },
-                        },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalCall {
-                                func_expr: RustValueRef(
-                                    RefCell {
-                                        value: EvalVariable {
-                                            name: "assert",
-                                        },
+                        ),
+                    },
+                ),
+            },
+            EvalDeclare {
+                name: "lambda_val",
+                init_expr: Some(
+                    EvalLambda {
+                        data: LambdaData {
+                            params: [
+                                "x",
+                            ],
+                            body: EvalCall {
+                                func_expr: EvalGetAttr {
+                                    obj_expr: EvalVariable {
+                                        name: "x",
                                     },
-                                ),
+                                    attr_name: "op_add",
+                                },
                                 args: [
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalIs {
-                                                left: RustValueRef(
-                                                    RefCell {
-                                                        value: EvalLiteral {
-                                                            value: Null,
-                                                        },
-                                                    },
-                                                ),
-                                                right: RustValueRef(
-                                                    RefCell {
-                                                        value: EvalVariable {
-                                                            name: "Null",
-                                                        },
-                                                    },
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLiteral {
-                                                value: String(
-                                                    "null should be Null",
-                                                ),
-                                            },
-                                        },
-                                    ),
+                                    EvalLiteral {
+                                        value: Int(
+                                            1,
+                                        ),
+                                    },
                                 ],
                             },
                         },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalCall {
-                                func_expr: RustValueRef(
-                                    RefCell {
-                                        value: EvalVariable {
-                                            name: "assert",
-                                        },
-                                    },
-                                ),
-                                args: [
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalIs {
-                                                left: RustValueRef(
-                                                    RefCell {
-                                                        value: EvalVariable {
-                                                            name: "unit",
-                                                        },
-                                                    },
-                                                ),
-                                                right: RustValueRef(
-                                                    RefCell {
-                                                        value: EvalVariable {
-                                                            name: "Unit",
-                                                        },
-                                                    },
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLiteral {
-                                                value: String(
-                                                    "unit should be Unit",
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                ],
-                            },
+                    },
+                ),
+            },
+            EvalCall {
+                func_expr: EvalVariable {
+                    name: "assert",
+                },
+                args: [
+                    EvalIs {
+                        left: EvalVariable {
+                            name: "int_val",
                         },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalCall {
-                                func_expr: RustValueRef(
-                                    RefCell {
-                                        value: EvalVariable {
-                                            name: "assert",
-                                        },
-                                    },
-                                ),
-                                args: [
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLogicalNot {
-                                                expr: RustValueRef(
-                                                    RefCell {
-                                                        value: EvalIs {
-                                                            left: RustValueRef(
-                                                                RefCell {
-                                                                    value: EvalLiteral {
-                                                                        value: Null,
-                                                                    },
-                                                                },
-                                                            ),
-                                                            right: RustValueRef(
-                                                                RefCell {
-                                                                    value: EvalVariable {
-                                                                        name: "Unit",
-                                                                    },
-                                                                },
-                                                            ),
-                                                        },
-                                                    },
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLiteral {
-                                                value: String(
-                                                    "null should not be Unit",
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                ],
-                            },
+                        right: EvalVariable {
+                            name: "Int",
                         },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalCall {
-                                func_expr: RustValueRef(
-                                    RefCell {
-                                        value: EvalVariable {
-                                            name: "assert",
-                                        },
-                                    },
-                                ),
-                                args: [
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLogicalNot {
-                                                expr: RustValueRef(
-                                                    RefCell {
-                                                        value: EvalIs {
-                                                            left: RustValueRef(
-                                                                RefCell {
-                                                                    value: EvalVariable {
-                                                                        name: "unit",
-                                                                    },
-                                                                },
-                                                            ),
-                                                            right: RustValueRef(
-                                                                RefCell {
-                                                                    value: EvalVariable {
-                                                                        name: "Null",
-                                                                    },
-                                                                },
-                                                            ),
-                                                        },
-                                                    },
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLiteral {
-                                                value: String(
-                                                    "unit should not be Null",
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                ],
-                            },
-                        },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalDeclare {
-                                name: "list1",
-                                init_expr: Some(
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalList {
-                                                elements: [
-                                                    RustValueRef(
-                                                        RefCell {
-                                                            value: EvalLiteral {
-                                                                value: Int(
-                                                                    1,
-                                                                ),
-                                                            },
-                                                        },
-                                                    ),
-                                                    RustValueRef(
-                                                        RefCell {
-                                                            value: EvalLiteral {
-                                                                value: Int(
-                                                                    2,
-                                                                ),
-                                                            },
-                                                        },
-                                                    ),
-                                                    RustValueRef(
-                                                        RefCell {
-                                                            value: EvalLiteral {
-                                                                value: Int(
-                                                                    3,
-                                                                ),
-                                                            },
-                                                        },
-                                                    ),
-                                                ],
-                                            },
-                                        },
-                                    ),
-                                ),
-                            },
-                        },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalDeclare {
-                                name: "list2",
-                                init_expr: Some(
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalList {
-                                                elements: [
-                                                    RustValueRef(
-                                                        RefCell {
-                                                            value: EvalLiteral {
-                                                                value: Int(
-                                                                    1,
-                                                                ),
-                                                            },
-                                                        },
-                                                    ),
-                                                    RustValueRef(
-                                                        RefCell {
-                                                            value: EvalLiteral {
-                                                                value: Int(
-                                                                    2,
-                                                                ),
-                                                            },
-                                                        },
-                                                    ),
-                                                    RustValueRef(
-                                                        RefCell {
-                                                            value: EvalLiteral {
-                                                                value: Int(
-                                                                    3,
-                                                                ),
-                                                            },
-                                                        },
-                                                    ),
-                                                ],
-                                            },
-                                        },
-                                    ),
-                                ),
-                            },
-                        },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalDeclare {
-                                name: "list3",
-                                init_expr: Some(
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalVariable {
-                                                name: "list1",
-                                            },
-                                        },
-                                    ),
-                                ),
-                            },
-                        },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalCall {
-                                func_expr: RustValueRef(
-                                    RefCell {
-                                        value: EvalVariable {
-                                            name: "assert",
-                                        },
-                                    },
-                                ),
-                                args: [
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLogicalNot {
-                                                expr: RustValueRef(
-                                                    RefCell {
-                                                        value: EvalIs {
-                                                            left: RustValueRef(
-                                                                RefCell {
-                                                                    value: EvalVariable {
-                                                                        name: "list1",
-                                                                    },
-                                                                },
-                                                            ),
-                                                            right: RustValueRef(
-                                                                RefCell {
-                                                                    value: EvalVariable {
-                                                                        name: "list2",
-                                                                    },
-                                                                },
-                                                            ),
-                                                        },
-                                                    },
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLiteral {
-                                                value: String(
-                                                    "list1 should not be identical to list2 (different objects)",
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                ],
-                            },
-                        },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalCall {
-                                func_expr: RustValueRef(
-                                    RefCell {
-                                        value: EvalVariable {
-                                            name: "assert",
-                                        },
-                                    },
-                                ),
-                                args: [
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalIs {
-                                                left: RustValueRef(
-                                                    RefCell {
-                                                        value: EvalVariable {
-                                                            name: "list1",
-                                                        },
-                                                    },
-                                                ),
-                                                right: RustValueRef(
-                                                    RefCell {
-                                                        value: EvalVariable {
-                                                            name: "list3",
-                                                        },
-                                                    },
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLiteral {
-                                                value: String(
-                                                    "list1 should be identical to list3 (same object reference)",
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                ],
-                            },
-                        },
-                    ),
+                    },
+                    EvalLiteral {
+                        value: String(
+                            "int_val should be Int",
+                        ),
+                    },
                 ],
             },
-        },
-    ),
+            EvalCall {
+                func_expr: EvalVariable {
+                    name: "assert",
+                },
+                args: [
+                    EvalIs {
+                        left: EvalVariable {
+                            name: "float_val",
+                        },
+                        right: EvalVariable {
+                            name: "Float",
+                        },
+                    },
+                    EvalLiteral {
+                        value: String(
+                            "float_val should be Float",
+                        ),
+                    },
+                ],
+            },
+            EvalCall {
+                func_expr: EvalVariable {
+                    name: "assert",
+                },
+                args: [
+                    EvalIs {
+                        left: EvalVariable {
+                            name: "string_val",
+                        },
+                        right: EvalVariable {
+                            name: "String",
+                        },
+                    },
+                    EvalLiteral {
+                        value: String(
+                            "string_val should be String",
+                        ),
+                    },
+                ],
+            },
+            EvalCall {
+                func_expr: EvalVariable {
+                    name: "assert",
+                },
+                args: [
+                    EvalIs {
+                        left: EvalVariable {
+                            name: "bool_val",
+                        },
+                        right: EvalVariable {
+                            name: "Bool",
+                        },
+                    },
+                    EvalLiteral {
+                        value: String(
+                            "bool_val should be Bool",
+                        ),
+                    },
+                ],
+            },
+            EvalCall {
+                func_expr: EvalVariable {
+                    name: "assert",
+                },
+                args: [
+                    EvalIs {
+                        left: EvalVariable {
+                            name: "list_val",
+                        },
+                        right: EvalVariable {
+                            name: "List",
+                        },
+                    },
+                    EvalLiteral {
+                        value: String(
+                            "list_val should be List",
+                        ),
+                    },
+                ],
+            },
+            EvalCall {
+                func_expr: EvalVariable {
+                    name: "assert",
+                },
+                args: [
+                    EvalIs {
+                        left: EvalVariable {
+                            name: "dict_val",
+                        },
+                        right: EvalVariable {
+                            name: "Dict",
+                        },
+                    },
+                    EvalLiteral {
+                        value: String(
+                            "dict_val should be Dict",
+                        ),
+                    },
+                ],
+            },
+            EvalCall {
+                func_expr: EvalVariable {
+                    name: "assert",
+                },
+                args: [
+                    EvalIs {
+                        left: EvalVariable {
+                            name: "range_val",
+                        },
+                        right: EvalVariable {
+                            name: "Range",
+                        },
+                    },
+                    EvalLiteral {
+                        value: String(
+                            "range_val should be Range",
+                        ),
+                    },
+                ],
+            },
+            EvalCall {
+                func_expr: EvalVariable {
+                    name: "assert",
+                },
+                args: [
+                    EvalIs {
+                        left: EvalVariable {
+                            name: "lambda_val",
+                        },
+                        right: EvalVariable {
+                            name: "Function",
+                        },
+                    },
+                    EvalLiteral {
+                        value: String(
+                            "lambda_val should be Function",
+                        ),
+                    },
+                ],
+            },
+            EvalCall {
+                func_expr: EvalVariable {
+                    name: "assert",
+                },
+                args: [
+                    EvalLogicalNot {
+                        expr: EvalIs {
+                            left: EvalVariable {
+                                name: "int_val",
+                            },
+                            right: EvalVariable {
+                                name: "String",
+                            },
+                        },
+                    },
+                    EvalLiteral {
+                        value: String(
+                            "int_val should not be String",
+                        ),
+                    },
+                ],
+            },
+            EvalCall {
+                func_expr: EvalVariable {
+                    name: "assert",
+                },
+                args: [
+                    EvalLogicalNot {
+                        expr: EvalIs {
+                            left: EvalVariable {
+                                name: "float_val",
+                            },
+                            right: EvalVariable {
+                                name: "Int",
+                            },
+                        },
+                    },
+                    EvalLiteral {
+                        value: String(
+                            "float_val should not be Int",
+                        ),
+                    },
+                ],
+            },
+            EvalCall {
+                func_expr: EvalVariable {
+                    name: "assert",
+                },
+                args: [
+                    EvalLogicalNot {
+                        expr: EvalIs {
+                            left: EvalVariable {
+                                name: "string_val",
+                            },
+                            right: EvalVariable {
+                                name: "Bool",
+                            },
+                        },
+                    },
+                    EvalLiteral {
+                        value: String(
+                            "string_val should not be Bool",
+                        ),
+                    },
+                ],
+            },
+            EvalCall {
+                func_expr: EvalVariable {
+                    name: "assert",
+                },
+                args: [
+                    EvalLogicalNot {
+                        expr: EvalIs {
+                            left: EvalVariable {
+                                name: "bool_val",
+                            },
+                            right: EvalVariable {
+                                name: "List",
+                            },
+                        },
+                    },
+                    EvalLiteral {
+                        value: String(
+                            "bool_val should not be List",
+                        ),
+                    },
+                ],
+            },
+            EvalCall {
+                func_expr: EvalVariable {
+                    name: "assert",
+                },
+                args: [
+                    EvalLogicalNot {
+                        expr: EvalIs {
+                            left: EvalVariable {
+                                name: "list_val",
+                            },
+                            right: EvalVariable {
+                                name: "Dict",
+                            },
+                        },
+                    },
+                    EvalLiteral {
+                        value: String(
+                            "list_val should not be Dict",
+                        ),
+                    },
+                ],
+            },
+            EvalCall {
+                func_expr: EvalVariable {
+                    name: "assert",
+                },
+                args: [
+                    EvalLogicalNot {
+                        expr: EvalIs {
+                            left: EvalVariable {
+                                name: "dict_val",
+                            },
+                            right: EvalVariable {
+                                name: "Range",
+                            },
+                        },
+                    },
+                    EvalLiteral {
+                        value: String(
+                            "dict_val should not be Range",
+                        ),
+                    },
+                ],
+            },
+            EvalCall {
+                func_expr: EvalVariable {
+                    name: "assert",
+                },
+                args: [
+                    EvalLogicalNot {
+                        expr: EvalIs {
+                            left: EvalVariable {
+                                name: "range_val",
+                            },
+                            right: EvalVariable {
+                                name: "Function",
+                            },
+                        },
+                    },
+                    EvalLiteral {
+                        value: String(
+                            "range_val should not be Function",
+                        ),
+                    },
+                ],
+            },
+            EvalCall {
+                func_expr: EvalVariable {
+                    name: "assert",
+                },
+                args: [
+                    EvalLogicalNot {
+                        expr: EvalIs {
+                            left: EvalVariable {
+                                name: "lambda_val",
+                            },
+                            right: EvalVariable {
+                                name: "Int",
+                            },
+                        },
+                    },
+                    EvalLiteral {
+                        value: String(
+                            "lambda_val should not be Int",
+                        ),
+                    },
+                ],
+            },
+            EvalFunction {
+                data: FunctionData {
+                    name: "f",
+                    params: [],
+                    body: EvalBlock {
+                        statements: [],
+                        final_expr: None,
+                    },
+                },
+            },
+            EvalDeclare {
+                name: "unit",
+                init_expr: Some(
+                    EvalCall {
+                        func_expr: EvalVariable {
+                            name: "f",
+                        },
+                        args: [],
+                    },
+                ),
+            },
+            EvalCall {
+                func_expr: EvalVariable {
+                    name: "assert",
+                },
+                args: [
+                    EvalIs {
+                        left: EvalLiteral {
+                            value: Null,
+                        },
+                        right: EvalVariable {
+                            name: "Null",
+                        },
+                    },
+                    EvalLiteral {
+                        value: String(
+                            "null should be Null",
+                        ),
+                    },
+                ],
+            },
+            EvalCall {
+                func_expr: EvalVariable {
+                    name: "assert",
+                },
+                args: [
+                    EvalIs {
+                        left: EvalVariable {
+                            name: "unit",
+                        },
+                        right: EvalVariable {
+                            name: "Unit",
+                        },
+                    },
+                    EvalLiteral {
+                        value: String(
+                            "unit should be Unit",
+                        ),
+                    },
+                ],
+            },
+            EvalCall {
+                func_expr: EvalVariable {
+                    name: "assert",
+                },
+                args: [
+                    EvalLogicalNot {
+                        expr: EvalIs {
+                            left: EvalLiteral {
+                                value: Null,
+                            },
+                            right: EvalVariable {
+                                name: "Unit",
+                            },
+                        },
+                    },
+                    EvalLiteral {
+                        value: String(
+                            "null should not be Unit",
+                        ),
+                    },
+                ],
+            },
+            EvalCall {
+                func_expr: EvalVariable {
+                    name: "assert",
+                },
+                args: [
+                    EvalLogicalNot {
+                        expr: EvalIs {
+                            left: EvalVariable {
+                                name: "unit",
+                            },
+                            right: EvalVariable {
+                                name: "Null",
+                            },
+                        },
+                    },
+                    EvalLiteral {
+                        value: String(
+                            "unit should not be Null",
+                        ),
+                    },
+                ],
+            },
+            EvalDeclare {
+                name: "list1",
+                init_expr: Some(
+                    EvalList {
+                        elements: [
+                            EvalLiteral {
+                                value: Int(
+                                    1,
+                                ),
+                            },
+                            EvalLiteral {
+                                value: Int(
+                                    2,
+                                ),
+                            },
+                            EvalLiteral {
+                                value: Int(
+                                    3,
+                                ),
+                            },
+                        ],
+                    },
+                ),
+            },
+            EvalDeclare {
+                name: "list2",
+                init_expr: Some(
+                    EvalList {
+                        elements: [
+                            EvalLiteral {
+                                value: Int(
+                                    1,
+                                ),
+                            },
+                            EvalLiteral {
+                                value: Int(
+                                    2,
+                                ),
+                            },
+                            EvalLiteral {
+                                value: Int(
+                                    3,
+                                ),
+                            },
+                        ],
+                    },
+                ),
+            },
+            EvalDeclare {
+                name: "list3",
+                init_expr: Some(
+                    EvalVariable {
+                        name: "list1",
+                    },
+                ),
+            },
+            EvalCall {
+                func_expr: EvalVariable {
+                    name: "assert",
+                },
+                args: [
+                    EvalLogicalNot {
+                        expr: EvalIs {
+                            left: EvalVariable {
+                                name: "list1",
+                            },
+                            right: EvalVariable {
+                                name: "list2",
+                            },
+                        },
+                    },
+                    EvalLiteral {
+                        value: String(
+                            "list1 should not be identical to list2 (different objects)",
+                        ),
+                    },
+                ],
+            },
+            EvalCall {
+                func_expr: EvalVariable {
+                    name: "assert",
+                },
+                args: [
+                    EvalIs {
+                        left: EvalVariable {
+                            name: "list1",
+                        },
+                        right: EvalVariable {
+                            name: "list3",
+                        },
+                    },
+                    EvalLiteral {
+                        value: String(
+                            "list1 should be identical to list3 (same object reference)",
+                        ),
+                    },
+                ],
+            },
+        ],
+    },
 )
 ```

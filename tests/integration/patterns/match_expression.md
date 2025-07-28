@@ -468,505 +468,297 @@ Ok(
 # Eval
 ```rust
 Ok(
-    RustValueRef(
-        RefCell {
-            value: EvalProgram {
-                statements: [
-                    RustValueRef(
-                        RefCell {
-                            value: EvalDeclare {
+    EvalProgram {
+        statements: [
+            EvalDeclare {
+                name: "x",
+                init_expr: Some(
+                    EvalLiteral {
+                        value: Int(
+                            1,
+                        ),
+                    },
+                ),
+            },
+            EvalDeclare {
+                name: "result",
+                init_expr: Some(
+                    EvalMatch {
+                        data: MatchData {
+                            expr: EvalVariable {
                                 name: "x",
-                                init_expr: Some(
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLiteral {
-                                                value: Int(
-                                                    1,
+                            },
+                            cases: [
+                                EvalMatchCase {
+                                    pattern: Literal(
+                                        Int(
+                                            0,
+                                        ),
+                                    ),
+                                    guard: None,
+                                    body: EvalBlock {
+                                        statements: [],
+                                        final_expr: Some(
+                                            EvalLiteral {
+                                                value: String(
+                                                    "zero",
                                                 ),
                                             },
-                                        },
+                                        ),
+                                    },
+                                },
+                                EvalMatchCase {
+                                    pattern: Literal(
+                                        Int(
+                                            1,
+                                        ),
                                     ),
-                                ),
-                            },
+                                    guard: None,
+                                    body: EvalBlock {
+                                        statements: [],
+                                        final_expr: Some(
+                                            EvalLiteral {
+                                                value: String(
+                                                    "one",
+                                                ),
+                                            },
+                                        ),
+                                    },
+                                },
+                                EvalMatchCase {
+                                    pattern: Wildcard,
+                                    guard: None,
+                                    body: EvalBlock {
+                                        statements: [],
+                                        final_expr: Some(
+                                            EvalLiteral {
+                                                value: String(
+                                                    "other",
+                                                ),
+                                            },
+                                        ),
+                                    },
+                                },
+                            ],
                         },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalDeclare {
+                    },
+                ),
+            },
+            EvalCall {
+                func_expr: EvalVariable {
+                    name: "assert",
+                },
+                args: [
+                    EvalCall {
+                        func_expr: EvalGetAttr {
+                            obj_expr: EvalVariable {
                                 name: "result",
-                                init_expr: Some(
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalMatch {
-                                                data: MatchData {
-                                                    expr: RustValueRef(
-                                                        RefCell {
-                                                            value: EvalVariable {
-                                                                name: "x",
-                                                            },
-                                                        },
-                                                    ),
-                                                    cases: [
-                                                        EvalMatchCase {
-                                                            pattern: Literal(
-                                                                Int(
-                                                                    0,
-                                                                ),
-                                                            ),
-                                                            guard: None,
-                                                            body: RustValueRef(
-                                                                RefCell {
-                                                                    value: EvalBlock {
-                                                                        statements: [],
-                                                                        final_expr: Some(
-                                                                            RustValueRef(
-                                                                                RefCell {
-                                                                                    value: EvalLiteral {
-                                                                                        value: String(
-                                                                                            "zero",
-                                                                                        ),
-                                                                                    },
-                                                                                },
-                                                                            ),
-                                                                        ),
-                                                                    },
-                                                                },
-                                                            ),
-                                                        },
-                                                        EvalMatchCase {
-                                                            pattern: Literal(
-                                                                Int(
-                                                                    1,
-                                                                ),
-                                                            ),
-                                                            guard: None,
-                                                            body: RustValueRef(
-                                                                RefCell {
-                                                                    value: EvalBlock {
-                                                                        statements: [],
-                                                                        final_expr: Some(
-                                                                            RustValueRef(
-                                                                                RefCell {
-                                                                                    value: EvalLiteral {
-                                                                                        value: String(
-                                                                                            "one",
-                                                                                        ),
-                                                                                    },
-                                                                                },
-                                                                            ),
-                                                                        ),
-                                                                    },
-                                                                },
-                                                            ),
-                                                        },
-                                                        EvalMatchCase {
-                                                            pattern: Wildcard,
-                                                            guard: None,
-                                                            body: RustValueRef(
-                                                                RefCell {
-                                                                    value: EvalBlock {
-                                                                        statements: [],
-                                                                        final_expr: Some(
-                                                                            RustValueRef(
-                                                                                RefCell {
-                                                                                    value: EvalLiteral {
-                                                                                        value: String(
-                                                                                            "other",
-                                                                                        ),
-                                                                                    },
-                                                                                },
-                                                                            ),
-                                                                        ),
-                                                                    },
-                                                                },
-                                                            ),
-                                                        },
-                                                    ],
-                                                },
-                                            },
-                                        },
-                                    ),
+                            },
+                            attr_name: "op_eq",
+                        },
+                        args: [
+                            EvalLiteral {
+                                value: String(
+                                    "one",
                                 ),
                             },
-                        },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalCall {
-                                func_expr: RustValueRef(
-                                    RefCell {
-                                        value: EvalVariable {
-                                            name: "assert",
-                                        },
-                                    },
-                                ),
-                                args: [
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalCall {
-                                                func_expr: RustValueRef(
-                                                    RefCell {
-                                                        value: EvalGetAttr {
-                                                            obj_expr: RustValueRef(
-                                                                RefCell {
-                                                                    value: EvalVariable {
-                                                                        name: "result",
-                                                                    },
-                                                                },
-                                                            ),
-                                                            attr_name: "op_eq",
-                                                        },
-                                                    },
-                                                ),
-                                                args: [
-                                                    RustValueRef(
-                                                        RefCell {
-                                                            value: EvalLiteral {
-                                                                value: String(
-                                                                    "one",
-                                                                ),
-                                                            },
-                                                        },
-                                                    ),
-                                                ],
-                                            },
-                                        },
-                                    ),
-                                ],
-                            },
-                        },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalDeclare {
-                                name: "y",
-                                init_expr: Some(
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLiteral {
-                                                value: Int(
-                                                    42,
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                ),
-                            },
-                        },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalDeclare {
-                                name: "result2",
-                                init_expr: Some(
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalMatch {
-                                                data: MatchData {
-                                                    expr: RustValueRef(
-                                                        RefCell {
-                                                            value: EvalVariable {
-                                                                name: "y",
-                                                            },
-                                                        },
-                                                    ),
-                                                    cases: [
-                                                        EvalMatchCase {
-                                                            pattern: Literal(
-                                                                Int(
-                                                                    0,
-                                                                ),
-                                                            ),
-                                                            guard: None,
-                                                            body: RustValueRef(
-                                                                RefCell {
-                                                                    value: EvalBlock {
-                                                                        statements: [],
-                                                                        final_expr: Some(
-                                                                            RustValueRef(
-                                                                                RefCell {
-                                                                                    value: EvalLiteral {
-                                                                                        value: String(
-                                                                                            "zero",
-                                                                                        ),
-                                                                                    },
-                                                                                },
-                                                                            ),
-                                                                        ),
-                                                                    },
-                                                                },
-                                                            ),
-                                                        },
-                                                        EvalMatchCase {
-                                                            pattern: Literal(
-                                                                Int(
-                                                                    1,
-                                                                ),
-                                                            ),
-                                                            guard: None,
-                                                            body: RustValueRef(
-                                                                RefCell {
-                                                                    value: EvalBlock {
-                                                                        statements: [],
-                                                                        final_expr: Some(
-                                                                            RustValueRef(
-                                                                                RefCell {
-                                                                                    value: EvalLiteral {
-                                                                                        value: String(
-                                                                                            "one",
-                                                                                        ),
-                                                                                    },
-                                                                                },
-                                                                            ),
-                                                                        ),
-                                                                    },
-                                                                },
-                                                            ),
-                                                        },
-                                                        EvalMatchCase {
-                                                            pattern: Wildcard,
-                                                            guard: None,
-                                                            body: RustValueRef(
-                                                                RefCell {
-                                                                    value: EvalBlock {
-                                                                        statements: [],
-                                                                        final_expr: Some(
-                                                                            RustValueRef(
-                                                                                RefCell {
-                                                                                    value: EvalLiteral {
-                                                                                        value: String(
-                                                                                            "other",
-                                                                                        ),
-                                                                                    },
-                                                                                },
-                                                                            ),
-                                                                        ),
-                                                                    },
-                                                                },
-                                                            ),
-                                                        },
-                                                    ],
-                                                },
-                                            },
-                                        },
-                                    ),
-                                ),
-                            },
-                        },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalCall {
-                                func_expr: RustValueRef(
-                                    RefCell {
-                                        value: EvalVariable {
-                                            name: "assert",
-                                        },
-                                    },
-                                ),
-                                args: [
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalCall {
-                                                func_expr: RustValueRef(
-                                                    RefCell {
-                                                        value: EvalGetAttr {
-                                                            obj_expr: RustValueRef(
-                                                                RefCell {
-                                                                    value: EvalVariable {
-                                                                        name: "result2",
-                                                                    },
-                                                                },
-                                                            ),
-                                                            attr_name: "op_eq",
-                                                        },
-                                                    },
-                                                ),
-                                                args: [
-                                                    RustValueRef(
-                                                        RefCell {
-                                                            value: EvalLiteral {
-                                                                value: String(
-                                                                    "other",
-                                                                ),
-                                                            },
-                                                        },
-                                                    ),
-                                                ],
-                                            },
-                                        },
-                                    ),
-                                ],
-                            },
-                        },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalDeclare {
-                                name: "z",
-                                init_expr: Some(
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalLiteral {
-                                                value: Int(
-                                                    0,
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                ),
-                            },
-                        },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalDeclare {
-                                name: "result3",
-                                init_expr: Some(
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalMatch {
-                                                data: MatchData {
-                                                    expr: RustValueRef(
-                                                        RefCell {
-                                                            value: EvalVariable {
-                                                                name: "z",
-                                                            },
-                                                        },
-                                                    ),
-                                                    cases: [
-                                                        EvalMatchCase {
-                                                            pattern: Literal(
-                                                                Int(
-                                                                    0,
-                                                                ),
-                                                            ),
-                                                            guard: None,
-                                                            body: RustValueRef(
-                                                                RefCell {
-                                                                    value: EvalBlock {
-                                                                        statements: [],
-                                                                        final_expr: Some(
-                                                                            RustValueRef(
-                                                                                RefCell {
-                                                                                    value: EvalLiteral {
-                                                                                        value: String(
-                                                                                            "zero",
-                                                                                        ),
-                                                                                    },
-                                                                                },
-                                                                            ),
-                                                                        ),
-                                                                    },
-                                                                },
-                                                            ),
-                                                        },
-                                                        EvalMatchCase {
-                                                            pattern: Literal(
-                                                                Int(
-                                                                    1,
-                                                                ),
-                                                            ),
-                                                            guard: None,
-                                                            body: RustValueRef(
-                                                                RefCell {
-                                                                    value: EvalBlock {
-                                                                        statements: [],
-                                                                        final_expr: Some(
-                                                                            RustValueRef(
-                                                                                RefCell {
-                                                                                    value: EvalLiteral {
-                                                                                        value: String(
-                                                                                            "one",
-                                                                                        ),
-                                                                                    },
-                                                                                },
-                                                                            ),
-                                                                        ),
-                                                                    },
-                                                                },
-                                                            ),
-                                                        },
-                                                        EvalMatchCase {
-                                                            pattern: Wildcard,
-                                                            guard: None,
-                                                            body: RustValueRef(
-                                                                RefCell {
-                                                                    value: EvalBlock {
-                                                                        statements: [],
-                                                                        final_expr: Some(
-                                                                            RustValueRef(
-                                                                                RefCell {
-                                                                                    value: EvalLiteral {
-                                                                                        value: String(
-                                                                                            "other",
-                                                                                        ),
-                                                                                    },
-                                                                                },
-                                                                            ),
-                                                                        ),
-                                                                    },
-                                                                },
-                                                            ),
-                                                        },
-                                                    ],
-                                                },
-                                            },
-                                        },
-                                    ),
-                                ),
-                            },
-                        },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalCall {
-                                func_expr: RustValueRef(
-                                    RefCell {
-                                        value: EvalVariable {
-                                            name: "assert",
-                                        },
-                                    },
-                                ),
-                                args: [
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalCall {
-                                                func_expr: RustValueRef(
-                                                    RefCell {
-                                                        value: EvalGetAttr {
-                                                            obj_expr: RustValueRef(
-                                                                RefCell {
-                                                                    value: EvalVariable {
-                                                                        name: "result3",
-                                                                    },
-                                                                },
-                                                            ),
-                                                            attr_name: "op_eq",
-                                                        },
-                                                    },
-                                                ),
-                                                args: [
-                                                    RustValueRef(
-                                                        RefCell {
-                                                            value: EvalLiteral {
-                                                                value: String(
-                                                                    "zero",
-                                                                ),
-                                                            },
-                                                        },
-                                                    ),
-                                                ],
-                                            },
-                                        },
-                                    ),
-                                ],
-                            },
-                        },
-                    ),
+                        ],
+                    },
                 ],
             },
-        },
-    ),
+            EvalDeclare {
+                name: "y",
+                init_expr: Some(
+                    EvalLiteral {
+                        value: Int(
+                            42,
+                        ),
+                    },
+                ),
+            },
+            EvalDeclare {
+                name: "result2",
+                init_expr: Some(
+                    EvalMatch {
+                        data: MatchData {
+                            expr: EvalVariable {
+                                name: "y",
+                            },
+                            cases: [
+                                EvalMatchCase {
+                                    pattern: Literal(
+                                        Int(
+                                            0,
+                                        ),
+                                    ),
+                                    guard: None,
+                                    body: EvalBlock {
+                                        statements: [],
+                                        final_expr: Some(
+                                            EvalLiteral {
+                                                value: String(
+                                                    "zero",
+                                                ),
+                                            },
+                                        ),
+                                    },
+                                },
+                                EvalMatchCase {
+                                    pattern: Literal(
+                                        Int(
+                                            1,
+                                        ),
+                                    ),
+                                    guard: None,
+                                    body: EvalBlock {
+                                        statements: [],
+                                        final_expr: Some(
+                                            EvalLiteral {
+                                                value: String(
+                                                    "one",
+                                                ),
+                                            },
+                                        ),
+                                    },
+                                },
+                                EvalMatchCase {
+                                    pattern: Wildcard,
+                                    guard: None,
+                                    body: EvalBlock {
+                                        statements: [],
+                                        final_expr: Some(
+                                            EvalLiteral {
+                                                value: String(
+                                                    "other",
+                                                ),
+                                            },
+                                        ),
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ),
+            },
+            EvalCall {
+                func_expr: EvalVariable {
+                    name: "assert",
+                },
+                args: [
+                    EvalCall {
+                        func_expr: EvalGetAttr {
+                            obj_expr: EvalVariable {
+                                name: "result2",
+                            },
+                            attr_name: "op_eq",
+                        },
+                        args: [
+                            EvalLiteral {
+                                value: String(
+                                    "other",
+                                ),
+                            },
+                        ],
+                    },
+                ],
+            },
+            EvalDeclare {
+                name: "z",
+                init_expr: Some(
+                    EvalLiteral {
+                        value: Int(
+                            0,
+                        ),
+                    },
+                ),
+            },
+            EvalDeclare {
+                name: "result3",
+                init_expr: Some(
+                    EvalMatch {
+                        data: MatchData {
+                            expr: EvalVariable {
+                                name: "z",
+                            },
+                            cases: [
+                                EvalMatchCase {
+                                    pattern: Literal(
+                                        Int(
+                                            0,
+                                        ),
+                                    ),
+                                    guard: None,
+                                    body: EvalBlock {
+                                        statements: [],
+                                        final_expr: Some(
+                                            EvalLiteral {
+                                                value: String(
+                                                    "zero",
+                                                ),
+                                            },
+                                        ),
+                                    },
+                                },
+                                EvalMatchCase {
+                                    pattern: Literal(
+                                        Int(
+                                            1,
+                                        ),
+                                    ),
+                                    guard: None,
+                                    body: EvalBlock {
+                                        statements: [],
+                                        final_expr: Some(
+                                            EvalLiteral {
+                                                value: String(
+                                                    "one",
+                                                ),
+                                            },
+                                        ),
+                                    },
+                                },
+                                EvalMatchCase {
+                                    pattern: Wildcard,
+                                    guard: None,
+                                    body: EvalBlock {
+                                        statements: [],
+                                        final_expr: Some(
+                                            EvalLiteral {
+                                                value: String(
+                                                    "other",
+                                                ),
+                                            },
+                                        ),
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ),
+            },
+            EvalCall {
+                func_expr: EvalVariable {
+                    name: "assert",
+                },
+                args: [
+                    EvalCall {
+                        func_expr: EvalGetAttr {
+                            obj_expr: EvalVariable {
+                                name: "result3",
+                            },
+                            attr_name: "op_eq",
+                        },
+                        args: [
+                            EvalLiteral {
+                                value: String(
+                                    "zero",
+                                ),
+                            },
+                        ],
+                    },
+                ],
+            },
+        ],
+    },
 )
 ```

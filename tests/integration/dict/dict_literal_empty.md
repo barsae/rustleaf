@@ -79,64 +79,32 @@ Ok(
 # Eval
 ```rust
 Ok(
-    RustValueRef(
-        RefCell {
-            value: EvalProgram {
-                statements: [
-                    RustValueRef(
-                        RefCell {
-                            value: EvalDeclare {
-                                name: "x",
-                                init_expr: Some(
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalDict {
-                                                pairs: [],
-                                            },
-                                        },
-                                    ),
-                                ),
-                            },
+    EvalProgram {
+        statements: [
+            EvalDeclare {
+                name: "x",
+                init_expr: Some(
+                    EvalDict {
+                        pairs: [],
+                    },
+                ),
+            },
+            EvalCall {
+                func_expr: EvalVariable {
+                    name: "assert",
+                },
+                args: [
+                    EvalIs {
+                        left: EvalVariable {
+                            name: "x",
                         },
-                    ),
-                    RustValueRef(
-                        RefCell {
-                            value: EvalCall {
-                                func_expr: RustValueRef(
-                                    RefCell {
-                                        value: EvalVariable {
-                                            name: "assert",
-                                        },
-                                    },
-                                ),
-                                args: [
-                                    RustValueRef(
-                                        RefCell {
-                                            value: EvalIs {
-                                                left: RustValueRef(
-                                                    RefCell {
-                                                        value: EvalVariable {
-                                                            name: "x",
-                                                        },
-                                                    },
-                                                ),
-                                                right: RustValueRef(
-                                                    RefCell {
-                                                        value: EvalVariable {
-                                                            name: "Dict",
-                                                        },
-                                                    },
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                ],
-                            },
+                        right: EvalVariable {
+                            name: "Dict",
                         },
-                    ),
+                    },
                 ],
             },
-        },
-    ),
+        ],
+    },
 )
 ```
