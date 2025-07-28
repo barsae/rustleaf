@@ -26,13 +26,9 @@ pub enum Eval {
     DeclarePattern(EvalPattern, Box<Eval>),
 
     // Function declaration
-    Function(
-        String,
-        Vec<(String, Option<Value>, ParameterKind)>,
-        Box<Eval>,
-    ), // name, params with defaults and kinds, body
+    Function(Box<FunctionData>),
     // Lambda expression
-    Lambda(Vec<String>, Box<Eval>),
+    Lambda(Box<LambdaData>),
 
     // Control flow
     If(Box<Eval>, Box<Eval>, Option<Box<Eval>>),
@@ -47,17 +43,17 @@ pub enum Eval {
     Try(Box<Eval>, String, Box<Eval>), // body, catch_var, catch_body
 
     // Resource management
-    With(Vec<(String, Eval)>, Box<Eval>), // resources as (name, value) pairs, body
+    With(Box<WithData>), // resources as (name, value) pairs, body
 
     // Collections
-    List(Vec<Eval>),
-    Dict(Vec<(Eval, Eval)>),
+    List(Box<Vec<Eval>>),
+    Dict(Box<Vec<(Eval, Eval)>>),
 
     // Program - sequence of statements at the same scope level (no scope boundary)
-    Program(Vec<Eval>),
+    Program(Box<Vec<Eval>>),
 
     // Block - with optional terminal expression (creates new scope)
-    Block(Vec<Eval>, Option<Box<Eval>>),
+    Block(Box<Vec<Eval>>, Option<Box<Eval>>),
 
     // Built-in operations that don't use method dispatch
     LogicalAnd(Box<Eval>, Box<Eval>),
@@ -66,31 +62,16 @@ pub enum Eval {
     Is(Box<Eval>, Box<Eval>),
 
     // Class support
-    ClassDecl {
-        name: String,
-        field_names: Vec<String>,
-        field_defaults: Vec<Option<Eval>>,
-        methods: Vec<ClassMethod>,
-    },
+    ClassDecl(Box<ClassDeclData>),
 
     // Module import
-    Import {
-        module: String,
-        items: ImportItems,
-    },
+    Import(Box<ImportData>),
 
     // Match expression
-    Match {
-        expr: Box<Eval>,
-        cases: Vec<EvalMatchCase>,
-    },
+    Match(Box<MatchData>),
 
     // Macro application - transforms an Eval node using a macro function
-    Macro {
-        macro_fn: Box<Eval>, // The macro function to call
-        target: Box<Eval>,   // The Eval node to transform
-        args: Vec<Eval>,     // Macro arguments
-    },
+    Macro(Box<MacroData>),
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -99,6 +80,52 @@ pub struct ClassMethod {
     pub params: Vec<String>,
     pub body: Eval,
     pub is_static: bool,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct ClassDeclData {
+    pub name: String,
+    pub field_names: Vec<String>,
+    pub field_defaults: Vec<Option<Eval>>,
+    pub methods: Vec<ClassMethod>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct ImportData {
+    pub module: String,
+    pub items: ImportItems,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct MatchData {
+    pub expr: Box<Eval>,
+    pub cases: Vec<EvalMatchCase>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct MacroData {
+    pub macro_fn: Box<Eval>, // The macro function to call
+    pub target: Box<Eval>,   // The Eval node to transform
+    pub args: Vec<Eval>,     // Macro arguments
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct FunctionData {
+    pub name: String,
+    pub params: Vec<(String, Option<Value>, ParameterKind)>,
+    pub body: Box<Eval>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct LambdaData {
+    pub params: Vec<String>,
+    pub body: Box<Eval>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct WithData {
+    pub resources: Vec<(String, Eval)>,
+    pub body: Box<Eval>,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -128,4 +155,16 @@ pub enum EvalMatchPattern {
     Variable(String),
     Wildcard,
     // Future: structured patterns like List, Dict
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::mem;
+
+    #[test]
+    fn eval_enum_size() {
+        println!("Eval enum size: {} bytes", mem::size_of::<Eval>());
+        assert!(mem::size_of::<Eval>() > 0);
+    }
 }

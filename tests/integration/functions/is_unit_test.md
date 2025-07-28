@@ -376,23 +376,25 @@ Ok(
                 ],
             ),
             Function(
-                "side_effect",
-                [],
-                Block(
-                    [
-                        Declare(
-                            "x",
-                            Some(
-                                Literal(
-                                    Int(
-                                        1,
+                FunctionData {
+                    name: "side_effect",
+                    params: [],
+                    body: Block(
+                        [
+                            Declare(
+                                "x",
+                                Some(
+                                    Literal(
+                                        Int(
+                                            1,
+                                        ),
                                     ),
                                 ),
                             ),
-                        ),
-                    ],
-                    None,
-                ),
+                        ],
+                        None,
+                    ),
+                },
             ),
             Call(
                 Variable(

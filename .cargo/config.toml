@@ -1,0 +1,2 @@
+# [build]
+# rustflags = ["-Z", "emit-stack-sizes"]  # Nightly only - commented out

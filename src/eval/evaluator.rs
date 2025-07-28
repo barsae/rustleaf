@@ -98,635 +98,39 @@ impl Evaluator {
 
     pub fn eval(&mut self, eval: &Eval) -> EvalResult {
         match eval {
-            Eval::Program(statements) => {
-                // Execute statements in current scope (no new scope created)
-                for stmt in statements {
-                    self.eval(stmt)?;
-                }
-                Ok(Value::Unit)
-            }
-            Eval::Block(statements, final_expr) => {
-                // Create a new scope for the block
-                let block_scope = self.current_env.child();
-                let previous_env = std::mem::replace(&mut self.current_env, block_scope);
-
-                let mut result = Value::Unit;
-
-                // Execute each statement in the block
-                for stmt in statements {
-                    match self.eval(stmt) {
-                        Ok(_) => {}
-                        Err(e) => {
-                            // Restore previous scope before propagating error
-                            self.current_env = previous_env;
-                            return Err(e);
-                        }
-                    }
-                }
-
-                // If there's a final expression, evaluate it and return its value
-                if let Some(final_expr) = final_expr {
-                    result = match self.eval(final_expr) {
-                        Ok(val) => val,
-                        Err(e) => {
-                            // Restore previous scope before propagating error
-                            self.current_env = previous_env;
-                            return Err(e);
-                        }
-                    };
-                }
-
-                // Restore the previous scope
-                self.current_env = previous_env;
-                Ok(result)
-            }
-            Eval::Literal(value) => Ok(value.clone()),
-            Eval::Variable(name) => self.current_env.get(name).ok_or_else(|| {
-                ControlFlow::Error(ErrorKind::SystemError(anyhow!(
-                    "Undefined variable: {}",
-                    name
-                )))
-            }),
-            Eval::Call(func_expr, args) => {
-                // Evaluate the function expression
-                let func_value = self.eval(func_expr)?;
-
-                // Special handling for class constructors
-                if let Value::Class(class_ref) = &func_value {
-                    let class = class_ref.borrow();
-                    return self.handle_class_constructor(&class, args);
-                }
-
-                // Evaluate all arguments
-                let arg_values: Result<Vec<Value>, ControlFlow> =
-                    args.iter().map(|arg| self.eval(arg)).collect();
-                let arg_values = arg_values?;
-
-                // Create Args object for function call
-                let args_obj = Args::positional(arg_values);
-
-                // Call the function
-                let result = func_value
-                    .call(args_obj)
-                    .map_err(|e| ControlFlow::Error(ErrorKind::SystemError(e)))?;
-
-                // Check if the result is a Value::Error (from raise() function)
-                if let Value::Raised(error_value) = result {
-                    return Err(ControlFlow::Error(ErrorKind::RaisedError(*error_value)));
-                }
-
-                Ok(result)
-            }
-            Eval::Declare(name, init_expr) => {
-                let value = match init_expr {
-                    Some(expr) => self.eval(expr)?,
-                    None => Value::Unit,
-                };
-                self.current_env.define(name, value);
-                Ok(Value::Unit)
-            }
-            Eval::DeclarePattern(pattern, init_expr) => {
-                let value = self.eval(init_expr)?;
-                self.match_pattern(pattern, &value)?;
-                Ok(Value::Unit)
-            }
-            Eval::Function(name, params, body) => {
-                let function = RustLeafFunction::new(
-                    Params::from_vec(params.clone()),
-                    (**body).clone(),
-                    self.current_env.clone(),
-                );
-                let function_value = function.into_value();
-                self.current_env.define(name, function_value);
-                Ok(Value::Unit)
-            }
-            Eval::Lambda(params, body) => {
-                let param_data = Params::from_names(params);
-
-                let function =
-                    RustLeafFunction::new(param_data, (**body).clone(), self.current_env.clone());
-                Ok(function.into_value())
-            }
-            Eval::Assign(name, expr) => {
-                let value = self.eval(expr)?;
-                self.current_env
-                    .set(name, value)
-                    .map_err(|err| ControlFlow::Error(ErrorKind::SystemError(anyhow!(err))))?;
-                Ok(Value::Unit)
-            }
-            Eval::If(condition, then_expr, else_expr) => {
-                let condition_val = self.eval(condition)?;
-
-                if condition_val.is_truthy() {
-                    self.eval(then_expr)
-                } else {
-                    match else_expr {
-                        Some(expr) => self.eval(expr),
-                        None => Ok(Value::Unit),
-                    }
-                }
-            }
-            Eval::Loop(body) => loop {
-                match self.eval(body) {
-                    Ok(_) => {
-                        continue;
-                    }
-                    Err(ControlFlow::Break(value)) => {
-                        return Ok(value);
-                    }
-                    Err(ControlFlow::Continue) => {
-                        continue;
-                    }
-                    Err(other) => {
-                        return Err(other);
-                    }
-                }
-            },
-            Eval::While(condition, body) => {
-                loop {
-                    // Evaluate condition
-                    let condition_val = self.eval(condition)?;
-
-                    if !condition_val.is_truthy() {
-                        // Condition is false, exit loop
-                        return Ok(Value::Unit);
-                    }
-
-                    // Execute body
-                    match self.eval(body) {
-                        Ok(_) => {
-                            // Normal completion, continue looping
-                            continue;
-                        }
-                        Err(ControlFlow::Break(value)) => {
-                            // Break out of loop with value
-                            return Ok(value);
-                        }
-                        Err(ControlFlow::Continue) => {
-                            // Continue to next iteration
-                            continue;
-                        }
-                        Err(other) => {
-                            // Propagate other control flow (Return, Error)
-                            return Err(other);
-                        }
-                    }
-                }
-            }
-            Eval::For(var_name, iter_expr, body) => {
-                // Evaluate the iterator expression
-                let iter_value = self.eval(iter_expr)?;
-
-                // Create a new scope for the loop variable
-                let loop_scope = self.current_env.child();
-                let previous_env = std::mem::replace(&mut self.current_env, loop_scope);
-
-                let mut result = Value::Unit;
-
-                // Create iterator using the unified contract
-                let mut iterator = match iter_value.op_iter() {
-                    Ok(iter) => iter,
-                    Err(e) => {
-                        // Restore scope and return error
-                        self.current_env = previous_env;
-                        return Err(ControlFlow::Error(ErrorKind::SystemError(e)));
-                    }
-                };
-
-                // Iterate using the unified contract
-                loop {
-                    let next_item = match iterator.op_next() {
-                        Ok(item) => item,
-                        Err(e) => {
-                            // Restore scope and return error
-                            self.current_env = previous_env;
-                            return Err(ControlFlow::Error(ErrorKind::SystemError(e)));
-                        }
-                    };
-
-                    match next_item {
-                        Some(item) => {
-                            // Bind loop variable to current item
-                            self.current_env.define(var_name, item);
-
-                            // Execute body
-                            match self.eval(body) {
-                                Ok(_) => {
-                                    // Normal completion, continue to next iteration
-                                }
-                                Err(ControlFlow::Break(value)) => {
-                                    // Break out of loop with value
-                                    result = value;
-                                    break;
-                                }
-                                Err(ControlFlow::Continue) => {
-                                    // Continue to next iteration
-                                    continue;
-                                }
-                                Err(other) => {
-                                    // Restore scope and propagate other control flow (Return, Error)
-                                    self.current_env = previous_env;
-                                    return Err(other);
-                                }
-                            }
-                        }
-                        None => {
-                            // Iterator exhausted, exit loop
-                            break;
-                        }
-                    }
-                }
-
-                // Restore the previous scope
-                self.current_env = previous_env;
-                Ok(result)
-            }
-            Eval::Break(expr) => {
-                let value = match expr {
-                    Some(e) => self.eval(e)?,
-                    None => Value::Unit,
-                };
-                Err(ControlFlow::Break(value))
-            }
-            Eval::Continue => Err(ControlFlow::Continue),
-            Eval::Return(expr) => {
-                let value = match expr {
-                    Some(e) => self.eval(e)?,
-                    None => Value::Unit,
-                };
-                Err(ControlFlow::Return(value))
-            }
-            Eval::GetAttr(obj_expr, attr_name) => {
-                let obj_value = self.eval(obj_expr)?;
-
-                match obj_value.get_attr(attr_name, self) {
-                    Some(value) => Ok(value),
-                    None => Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(
-                        "No attribute '{}' on value {:?}",
-                        attr_name,
-                        obj_value
-                    )))),
-                }
-            }
-
-            // Built-in operations that don't use method dispatch
-            Eval::LogicalAnd(left, right) => {
-                let left_val = self.eval(left)?;
-                // Short-circuit evaluation
-                if !left_val.is_truthy() {
-                    Ok(left_val)
-                } else {
-                    self.eval(right)
-                }
-            }
-            Eval::LogicalOr(left, right) => {
-                let left_val = self.eval(left)?;
-                // Short-circuit evaluation
-                if left_val.is_truthy() {
-                    Ok(left_val)
-                } else {
-                    self.eval(right)
-                }
-            }
-            Eval::LogicalNot(expr) => {
-                let val = self.eval(expr)?;
-                Ok(Value::Bool(!val.is_truthy()))
-            }
-            Eval::Is(left, right) => {
-                let left_val = self.eval(left)?;
-                let right_val = self.eval(right)?;
-
-                // Check if right side is a RustValue that implements op_is
-                if let Value::RustValue(rust_val_ref) = &right_val {
-                    let rust_val = rust_val_ref.borrow();
-                    match rust_val.op_is(&left_val) {
-                        Ok(result) => return Ok(result),
-                        Err(_) => {
-                            // Fall through to identity comparison if op_is is not supported
-                        }
-                    }
-                }
-
-                // Fall back to identity comparison
-                Ok(Value::Bool(left_val == right_val))
-            }
-
-            // Collections
-            Eval::List(elements) => {
-                let mut list_values = Vec::new();
-                for element in elements {
-                    list_values.push(self.eval(element)?);
-                }
-                Ok(Value::new_list_with_values(list_values))
-            }
-            Eval::Dict(pairs) => {
-                let mut dict_map = indexmap::IndexMap::new();
-                for (key_expr, value_expr) in pairs {
-                    let key_val = self.eval(key_expr)?;
-                    let value_val = self.eval(value_expr)?;
-
-                    let key_str = match key_val {
-                        Value::String(s) => s,
-                        // TODO: these should be fair game as keys as-is
-                        Value::Int(i) => i.to_string(),
-                        Value::Float(f) => f.to_string(),
-                        Value::Bool(b) => b.to_string(),
-                        _ => {
-                            return Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(
-                                "Dictionary keys must be strings, numbers, or booleans, got {:?}",
-                                key_val
-                            ))))
-                        }
-                    };
-
-                    dict_map.insert(key_str, value_val);
-                }
-                Ok(Value::new_dict_with_map(dict_map))
-            }
-            Eval::GetItem(obj_expr, index_expr) => {
-                let obj_value = self.eval(obj_expr)?;
-                let index_value = self.eval(index_expr)?;
-
-                // Use operator method system: a[b] → a.op_get_attr("op_get_item").op_call(b)
-                match obj_value.get_attr("op_get_item", self) {
-                    Some(method) => {
-                        let args = Args::positional(vec![index_value]);
-                        method
-                            .call(args)
-                            .map_err(|e| ControlFlow::Error(ErrorKind::SystemError(e)))
-                    }
-                    None => Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(
-                        "No op_get_item method on value {:?}",
-                        obj_value
-                    )))),
-                }
-            }
-            Eval::SetAttr(obj_expr, attr_name, value_expr) => {
-                let obj_value = self.eval(obj_expr)?;
-                let new_value = self.eval(value_expr)?;
-
-                match obj_value.set_attr(attr_name, new_value) {
-                    Ok(_) => Ok(Value::Unit),
-                    Err(err) => Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(err)))),
-                }
-            }
-            Eval::SetItem(obj_expr, index_expr, value_expr) => {
-                let obj_value = self.eval(obj_expr)?;
-                let index_value = self.eval(index_expr)?;
-                let new_value = self.eval(value_expr)?;
-
-                // Use operator method system: a[b] = c → a.op_get_attr("op_set_item").op_call(b, c)
-                match obj_value.get_attr("op_set_item", self) {
-                    Some(method) => {
-                        let args = Args::positional(vec![index_value, new_value]);
-                        method
-                            .call(args)
-                            .map_err(|e| ControlFlow::Error(ErrorKind::SystemError(e)))?;
-                        Ok(Value::Unit)
-                    }
-                    None => Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(
-                        "No op_set_item method on value {:?}",
-                        obj_value
-                    )))),
-                }
-            }
-            Eval::Try(body, catch_var, catch_body) => {
-                // Execute the try body
-                match self.eval(body) {
-                    Ok(value) => Ok(value),
-                    Err(ControlFlow::Error(ErrorKind::RaisedError(error_value))) => {
-                        // Create new scope for catch block
-                        let catch_scope = self.current_env.child();
-                        let previous_env = std::mem::replace(&mut self.current_env, catch_scope);
-
-                        // Bind the error value to the catch variable
-                        self.current_env.define(catch_var.clone(), error_value);
-
-                        // Execute catch body
-                        let result = self.eval(catch_body);
-
-                        // Restore previous scope
-                        self.current_env = previous_env;
-
-                        result
-                    }
-                    Err(other_error) => Err(other_error), // System errors and other control flow
-                }
-            }
-            Eval::With(resources, body) => {
-                // Create new scope for with block
-                let with_scope = self.current_env.child();
-                let previous_env = std::mem::replace(&mut self.current_env, with_scope);
-
-                let mut resource_values = Vec::new();
-
-                // Evaluate and bind resources, call op_open on each
-                for (name, resource_expr) in resources {
-                    match self.eval(resource_expr) {
-                        Ok(resource_value) => {
-                            // Bind resource to scope
-                            self.current_env
-                                .define(name.clone(), resource_value.clone());
-
-                            // Call op_open() if it exists - use the same logic as GetAttr evaluation
-                            let open_method = resource_value.get_attr("op_open", self);
-                            if let Some(open_method) = open_method {
-                                // Bound methods already have self bound, so call with no arguments
-                                let args = Args::positional(vec![]);
-                                if let Err(e) = open_method.call(args) {
-                                    // If op_open fails, cleanup already opened resources and propagate error
-                                    self.cleanup_resources(&resource_values);
-                                    self.current_env = previous_env;
-                                    return Err(ControlFlow::Error(ErrorKind::SystemError(e)));
-                                }
-                            }
-
-                            resource_values.push((name.clone(), resource_value));
-                        }
-                        Err(e) => {
-                            // If resource evaluation fails, cleanup already opened resources and propagate error
-                            self.cleanup_resources(&resource_values);
-                            self.current_env = previous_env;
-                            return Err(e);
-                        }
-                    }
-                }
-
-                // Execute the body
-                let result = match self.eval(body) {
-                    Ok(val) => val,
-                    Err(e) => {
-                        // Cleanup on error
-                        self.cleanup_resources(&resource_values);
-                        self.current_env = previous_env;
-                        return Err(e);
-                    }
-                };
-
-                // Cleanup resources (call op_close in reverse order)
-                self.cleanup_resources(&resource_values);
-
-                // Restore previous scope
-                self.current_env = previous_env;
-                Ok(result)
-            }
-            Eval::ClassDecl {
-                name,
-                field_names,
-                field_defaults,
-                methods,
-            } => {
-                use crate::eval::Class;
-
-                // Create the class definition
-                let class = Class::new(
-                    name.clone(),
-                    field_names.clone(),
-                    field_defaults.clone(),
-                    methods.clone(),
-                );
-
-                // Store the class in the current scope as a callable value
-                let class_value = Value::new_class(class);
-                self.current_env.define(name.clone(), class_value);
-
-                Ok(Value::Unit)
-            }
-            Eval::Import { module, items } => {
-                // Load and evaluate the module
-                let module_scope = self.load_module(module)?;
-
-                // Built-in names to exclude from imports
-                let builtin_names: std::collections::HashSet<&str> = [
-                    "print", "assert", "is_unit", "str", "raise", "Null", "Unit", "Bool", "Int",
-                    "Float", "String", "List", "Dict", "Range", "Function",
-                ]
-                .iter()
-                .cloned()
-                .collect();
-
-                // Import items into current scope (ignoring pub visibility for now)
-                match items {
-                    ImportItems::All => {
-                        // Import all non-builtin items from the module
-                        for (name, value) in module_scope.iter() {
-                            if !builtin_names.contains(name.as_str()) {
-                                self.current_env.define(name, value);
-                            }
-                        }
-                    }
-                    ImportItems::Specific(import_items) => {
-                        for import_item in import_items {
-                            let item_name = &import_item.name;
-                            let alias = import_item.alias.as_ref().unwrap_or(item_name);
-
-                            match module_scope.get(item_name) {
-                                Some(value) => {
-                                    self.current_env.define(alias.clone(), value);
-                                }
-                                None => {
-                                    // For debugging, let's see what's actually in the module scope (excluding built-ins)
-                                    let available_items: Vec<_> = module_scope
-                                        .iter()
-                                        .into_iter()
-                                        .filter(|(k, _)| !builtin_names.contains(k.as_str()))
-                                        .map(|(k, _)| k)
-                                        .collect();
-                                    return Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(
-                                        "Module '{}' does not have item '{}'. Available items: {:?}",
-                                        module,
-                                        item_name,
-                                        available_items
-                                    ))));
-                                }
-                            }
-                        }
-                    }
-                }
-
-                Ok(Value::Unit)
-            }
-            Eval::Match { expr, cases } => {
-                let match_value = self.eval(expr)?;
-
-                for case in cases {
-                    // Check if pattern matches
-                    if self.match_pattern_matches(&case.pattern, &match_value)? {
-                        // Check guard if present
-                        if let Some(guard) = &case.guard {
-                            let guard_result = self.eval(guard)?;
-                            if !guard_result.is_truthy() {
-                                continue; // Guard failed, try next case
-                            }
-                        }
-
-                        // Pattern matches and guard passes (if any), execute body
-                        // Create new scope for pattern variable bindings
-                        let match_scope = self.current_env.child();
-                        let previous_env = std::mem::replace(&mut self.current_env, match_scope);
-
-                        // Bind pattern variables if needed
-                        if let crate::eval::core::EvalMatchPattern::Variable(var_name) =
-                            &case.pattern
-                        {
-                            self.current_env
-                                .define(var_name.clone(), match_value.clone());
-                        }
-
-                        let result = self.eval(&case.body);
-
-                        // Restore previous scope
-                        self.current_env = previous_env;
-
-                        return result;
-                    }
-                }
-
-                // No case matched
-                Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(
-                    "No matching case found in match expression for value: {:?}",
-                    match_value
-                ))))
-            }
-            Eval::Macro {
-                macro_fn,
-                target,
-                args,
-            } => {
-                // Evaluate the macro function
-                let macro_function = self.eval(macro_fn)?;
-
-                // Evaluate macro arguments
-                let mut macro_args = Vec::new();
-
-                // First argument is always the target Eval node wrapped as a RustValue
-                macro_args.push(Value::from_rust(EvalNode::new((**target).clone())));
-
-                // Add any additional macro arguments
-                for arg in args {
-                    macro_args.push(self.eval(arg)?);
-                }
-
-                // Call the macro function
-                let args_obj = Args::positional(macro_args);
-                let transformed_node = macro_function
-                    .call(args_obj)
-                    .map_err(|e| ControlFlow::Error(ErrorKind::SystemError(e)))?;
-
-                // Extract and evaluate the transformed Eval node from the result
-                if let Value::RustValue(rust_val_ref) = transformed_node {
-                    let rust_val = rust_val_ref.borrow();
-                    match rust_val.eval(self) {
-                        Ok(result) => return result,
-                        Err(e) => return Err(ControlFlow::Error(ErrorKind::SystemError(e))),
-                    }
-                }
-
-                Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(
-                    "Macro function must return an EvalNode, got {:?}",
-                    transformed_node
-                ))))
-            }
+            Eval::Program(_) => self.eval_program(eval),
+            Eval::Block(_, _) => self.eval_block(eval),
+            Eval::Literal(_) => self.eval_literal(eval),
+            Eval::Variable(_) => self.eval_variable(eval),
+            Eval::Call(_, _) => self.eval_call(eval),
+            Eval::Declare(_, _) => self.eval_declare(eval),
+            Eval::DeclarePattern(_, _) => self.eval_declare_pattern(eval),
+            Eval::Function(_) => self.eval_function(eval),
+            Eval::Lambda(_) => self.eval_lambda(eval),
+            Eval::Assign(_, _) => self.eval_assign(eval),
+            Eval::If(_, _, _) => self.eval_if(eval),
+            Eval::Loop(_) => self.eval_loop(eval),
+            Eval::While(_, _) => self.eval_while(eval),
+            Eval::For(_, _, _) => self.eval_for(eval),
+            Eval::Break(_) => self.eval_break(eval),
+            Eval::Continue => self.eval_continue(eval),
+            Eval::Return(_) => self.eval_return(eval),
+            Eval::GetAttr(_, _) => self.eval_get_attr(eval),
+            Eval::LogicalAnd(_, _) => self.eval_logical_and(eval),
+            Eval::LogicalOr(_, _) => self.eval_logical_or(eval),
+            Eval::LogicalNot(_) => self.eval_logical_not(eval),
+            Eval::Is(_, _) => self.eval_is(eval),
+            Eval::List(_) => self.eval_list(eval),
+            Eval::Dict(_) => self.eval_dict(eval),
+            Eval::GetItem(_, _) => self.eval_get_item(eval),
+            Eval::SetAttr(_, _, _) => self.eval_set_attr(eval),
+            Eval::SetItem(_, _, _) => self.eval_set_item(eval),
+            Eval::Try(_, _, _) => self.eval_try(eval),
+            Eval::With(_) => self.eval_with(eval),
+            Eval::ClassDecl(_) => self.eval_class_decl(eval),
+            Eval::Import(_) => self.eval_import(eval),
+            Eval::Match(_) => self.eval_match(eval),
+            Eval::Macro(_) => self.eval_macro(eval),
         }
     }
 
@@ -827,13 +231,13 @@ impl Evaluator {
         match eval_ir {
             Eval::Program(statements) => {
                 // For modules, evaluate statements directly in the module scope
-                for stmt in &statements {
+                for stmt in statements.iter() {
                     module_evaluator.eval(stmt)?;
                 }
             }
             Eval::Block(statements, final_expr) => {
                 // For modules, evaluate statements directly in the module scope (not in a child scope)
-                for stmt in &statements {
+                for stmt in statements.iter() {
                     module_evaluator.eval(stmt)?;
                 }
                 // Evaluate final expression if present
@@ -990,6 +394,711 @@ impl Evaluator {
             EvalMatchPattern::Literal(literal) => Ok(literal == value),
             EvalMatchPattern::Variable(_) => Ok(true),
             EvalMatchPattern::Wildcard => Ok(true),
+        }
+    }
+
+    // Individual evaluation methods
+    fn eval_program(&mut self, eval: &Eval) -> EvalResult {
+        if let Eval::Program(statements) = eval {
+            for stmt in statements.iter() {
+                self.eval(stmt)?;
+            }
+            Ok(Value::Unit)
+        } else {
+            unreachable!()
+        }
+    }
+
+    fn eval_block(&mut self, eval: &Eval) -> EvalResult {
+        if let Eval::Block(statements, final_expr) = eval {
+            let block_scope = self.current_env.child();
+            let previous_env = std::mem::replace(&mut self.current_env, block_scope);
+
+            let mut result = Value::Unit;
+
+            for stmt in statements.iter() {
+                match self.eval(stmt) {
+                    Ok(_) => {}
+                    Err(e) => {
+                        self.current_env = previous_env;
+                        return Err(e);
+                    }
+                }
+            }
+
+            if let Some(final_expr) = final_expr {
+                result = match self.eval(final_expr) {
+                    Ok(val) => val,
+                    Err(e) => {
+                        self.current_env = previous_env;
+                        return Err(e);
+                    }
+                };
+            }
+
+            self.current_env = previous_env;
+            Ok(result)
+        } else {
+            unreachable!()
+        }
+    }
+
+    fn eval_literal(&mut self, eval: &Eval) -> EvalResult {
+        if let Eval::Literal(value) = eval {
+            Ok(value.clone())
+        } else {
+            unreachable!()
+        }
+    }
+
+    fn eval_variable(&mut self, eval: &Eval) -> EvalResult {
+        if let Eval::Variable(name) = eval {
+            self.current_env.get(name).ok_or_else(|| {
+                ControlFlow::Error(ErrorKind::SystemError(anyhow!(
+                    "Undefined variable: {}",
+                    name
+                )))
+            })
+        } else {
+            unreachable!()
+        }
+    }
+
+    fn eval_call(&mut self, eval: &Eval) -> EvalResult {
+        if let Eval::Call(func_expr, args) = eval {
+            let func_value = self.eval(func_expr)?;
+
+            if let Value::Class(class_ref) = &func_value {
+                let class = class_ref.borrow();
+                return self.handle_class_constructor(&class, args);
+            }
+
+            let arg_values: Result<Vec<Value>, ControlFlow> =
+                args.iter().map(|arg| self.eval(arg)).collect();
+            let arg_values = arg_values?;
+
+            let args_obj = Args::positional(arg_values);
+
+            let result = func_value
+                .call(args_obj)
+                .map_err(|e| ControlFlow::Error(ErrorKind::SystemError(e)))?;
+
+            if let Value::Raised(error_value) = result {
+                return Err(ControlFlow::Error(ErrorKind::RaisedError(*error_value)));
+            }
+
+            Ok(result)
+        } else {
+            unreachable!()
+        }
+    }
+
+    fn eval_declare(&mut self, eval: &Eval) -> EvalResult {
+        if let Eval::Declare(name, init_expr) = eval {
+            let value = match init_expr {
+                Some(expr) => self.eval(expr)?,
+                None => Value::Unit,
+            };
+            self.current_env.define(name, value);
+            Ok(Value::Unit)
+        } else {
+            unreachable!()
+        }
+    }
+
+    fn eval_declare_pattern(&mut self, eval: &Eval) -> EvalResult {
+        if let Eval::DeclarePattern(pattern, init_expr) = eval {
+            let value = self.eval(init_expr)?;
+            self.match_pattern(pattern, &value)?;
+            Ok(Value::Unit)
+        } else {
+            unreachable!()
+        }
+    }
+
+    fn eval_function(&mut self, eval: &Eval) -> EvalResult {
+        if let Eval::Function(data) = eval {
+            let function = RustLeafFunction::new(
+                Params::from_vec(data.params.clone()),
+                (*data.body).clone(),
+                self.current_env.clone(),
+            );
+            let function_value = function.into_value();
+            self.current_env.define(&data.name, function_value);
+            Ok(Value::Unit)
+        } else {
+            unreachable!()
+        }
+    }
+
+    fn eval_lambda(&mut self, eval: &Eval) -> EvalResult {
+        if let Eval::Lambda(data) = eval {
+            let param_data = Params::from_names(&data.params);
+            let function =
+                RustLeafFunction::new(param_data, (*data.body).clone(), self.current_env.clone());
+            Ok(function.into_value())
+        } else {
+            unreachable!()
+        }
+    }
+
+    fn eval_assign(&mut self, eval: &Eval) -> EvalResult {
+        if let Eval::Assign(name, expr) = eval {
+            let value = self.eval(expr)?;
+            self.current_env
+                .set(name, value)
+                .map_err(|err| ControlFlow::Error(ErrorKind::SystemError(anyhow!(err))))?;
+            Ok(Value::Unit)
+        } else {
+            unreachable!()
+        }
+    }
+
+    fn eval_if(&mut self, eval: &Eval) -> EvalResult {
+        if let Eval::If(condition, then_expr, else_expr) = eval {
+            let condition_val = self.eval(condition)?;
+
+            if condition_val.is_truthy() {
+                self.eval(then_expr)
+            } else {
+                match else_expr {
+                    Some(expr) => self.eval(expr),
+                    None => Ok(Value::Unit),
+                }
+            }
+        } else {
+            unreachable!()
+        }
+    }
+
+    fn eval_loop(&mut self, eval: &Eval) -> EvalResult {
+        if let Eval::Loop(body) = eval {
+            loop {
+                match self.eval(body) {
+                    Ok(_) => {
+                        continue;
+                    }
+                    Err(ControlFlow::Break(value)) => {
+                        return Ok(value);
+                    }
+                    Err(ControlFlow::Continue) => {
+                        continue;
+                    }
+                    Err(other) => {
+                        return Err(other);
+                    }
+                }
+            }
+        } else {
+            unreachable!()
+        }
+    }
+
+    fn eval_while(&mut self, eval: &Eval) -> EvalResult {
+        if let Eval::While(condition, body) = eval {
+            loop {
+                let condition_val = self.eval(condition)?;
+
+                if !condition_val.is_truthy() {
+                    return Ok(Value::Unit);
+                }
+
+                match self.eval(body) {
+                    Ok(_) => {
+                        continue;
+                    }
+                    Err(ControlFlow::Break(value)) => {
+                        return Ok(value);
+                    }
+                    Err(ControlFlow::Continue) => {
+                        continue;
+                    }
+                    Err(other) => {
+                        return Err(other);
+                    }
+                }
+            }
+        } else {
+            unreachable!()
+        }
+    }
+
+    fn eval_for(&mut self, eval: &Eval) -> EvalResult {
+        if let Eval::For(var_name, iter_expr, body) = eval {
+            let iter_value = self.eval(iter_expr)?;
+
+            let loop_scope = self.current_env.child();
+            let previous_env = std::mem::replace(&mut self.current_env, loop_scope);
+
+            let mut result = Value::Unit;
+
+            let mut iterator = match iter_value.op_iter() {
+                Ok(iter) => iter,
+                Err(e) => {
+                    self.current_env = previous_env;
+                    return Err(ControlFlow::Error(ErrorKind::SystemError(e)));
+                }
+            };
+
+            loop {
+                let next_item = match iterator.op_next() {
+                    Ok(item) => item,
+                    Err(e) => {
+                        self.current_env = previous_env;
+                        return Err(ControlFlow::Error(ErrorKind::SystemError(e)));
+                    }
+                };
+
+                match next_item {
+                    Some(item) => {
+                        self.current_env.define(var_name, item);
+
+                        match self.eval(body) {
+                            Ok(_) => {}
+                            Err(ControlFlow::Break(value)) => {
+                                result = value;
+                                break;
+                            }
+                            Err(ControlFlow::Continue) => {
+                                continue;
+                            }
+                            Err(other) => {
+                                self.current_env = previous_env;
+                                return Err(other);
+                            }
+                        }
+                    }
+                    None => {
+                        break;
+                    }
+                }
+            }
+
+            self.current_env = previous_env;
+            Ok(result)
+        } else {
+            unreachable!()
+        }
+    }
+
+    fn eval_break(&mut self, eval: &Eval) -> EvalResult {
+        if let Eval::Break(expr) = eval {
+            let value = match expr {
+                Some(e) => self.eval(e)?,
+                None => Value::Unit,
+            };
+            Err(ControlFlow::Break(value))
+        } else {
+            unreachable!()
+        }
+    }
+
+    fn eval_continue(&mut self, _eval: &Eval) -> EvalResult {
+        Err(ControlFlow::Continue)
+    }
+
+    fn eval_return(&mut self, eval: &Eval) -> EvalResult {
+        if let Eval::Return(expr) = eval {
+            let value = match expr {
+                Some(e) => self.eval(e)?,
+                None => Value::Unit,
+            };
+            Err(ControlFlow::Return(value))
+        } else {
+            unreachable!()
+        }
+    }
+
+    fn eval_get_attr(&mut self, eval: &Eval) -> EvalResult {
+        if let Eval::GetAttr(obj_expr, attr_name) = eval {
+            let obj_value = self.eval(obj_expr)?;
+
+            match obj_value.get_attr(attr_name, self) {
+                Some(value) => Ok(value),
+                None => Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(
+                    "No attribute '{}' on value {:?}",
+                    attr_name,
+                    obj_value
+                )))),
+            }
+        } else {
+            unreachable!()
+        }
+    }
+
+    fn eval_logical_and(&mut self, eval: &Eval) -> EvalResult {
+        if let Eval::LogicalAnd(left, right) = eval {
+            let left_val = self.eval(left)?;
+            if !left_val.is_truthy() {
+                Ok(left_val)
+            } else {
+                self.eval(right)
+            }
+        } else {
+            unreachable!()
+        }
+    }
+
+    fn eval_logical_or(&mut self, eval: &Eval) -> EvalResult {
+        if let Eval::LogicalOr(left, right) = eval {
+            let left_val = self.eval(left)?;
+            if left_val.is_truthy() {
+                Ok(left_val)
+            } else {
+                self.eval(right)
+            }
+        } else {
+            unreachable!()
+        }
+    }
+
+    fn eval_logical_not(&mut self, eval: &Eval) -> EvalResult {
+        if let Eval::LogicalNot(expr) = eval {
+            let val = self.eval(expr)?;
+            Ok(Value::Bool(!val.is_truthy()))
+        } else {
+            unreachable!()
+        }
+    }
+
+    fn eval_is(&mut self, eval: &Eval) -> EvalResult {
+        if let Eval::Is(left, right) = eval {
+            let left_val = self.eval(left)?;
+            let right_val = self.eval(right)?;
+
+            if let Value::RustValue(rust_val_ref) = &right_val {
+                let rust_val = rust_val_ref.borrow();
+                match rust_val.op_is(&left_val) {
+                    Ok(result) => return Ok(result),
+                    Err(_) => {}
+                }
+            }
+
+            Ok(Value::Bool(left_val == right_val))
+        } else {
+            unreachable!()
+        }
+    }
+
+    fn eval_list(&mut self, eval: &Eval) -> EvalResult {
+        if let Eval::List(elements) = eval {
+            let mut list_values = Vec::new();
+            for element in elements.iter() {
+                list_values.push(self.eval(element)?);
+            }
+            Ok(Value::new_list_with_values(list_values))
+        } else {
+            unreachable!()
+        }
+    }
+
+    fn eval_dict(&mut self, eval: &Eval) -> EvalResult {
+        if let Eval::Dict(pairs) = eval {
+            let mut dict_map = indexmap::IndexMap::new();
+            for (key_expr, value_expr) in pairs.iter() {
+                let key_val = self.eval(key_expr)?;
+                let value_val = self.eval(value_expr)?;
+
+                let key_str = match key_val {
+                    Value::String(s) => s,
+                    Value::Int(i) => i.to_string(),
+                    Value::Float(f) => f.to_string(),
+                    Value::Bool(b) => b.to_string(),
+                    _ => {
+                        return Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(
+                            "Dictionary keys must be strings, numbers, or booleans, got {:?}",
+                            key_val
+                        ))))
+                    }
+                };
+
+                dict_map.insert(key_str, value_val);
+            }
+            Ok(Value::new_dict_with_map(dict_map))
+        } else {
+            unreachable!()
+        }
+    }
+
+    fn eval_get_item(&mut self, eval: &Eval) -> EvalResult {
+        if let Eval::GetItem(obj_expr, index_expr) = eval {
+            let obj_value = self.eval(obj_expr)?;
+            let index_value = self.eval(index_expr)?;
+
+            match obj_value.get_attr("op_get_item", self) {
+                Some(method) => {
+                    let args = Args::positional(vec![index_value]);
+                    method
+                        .call(args)
+                        .map_err(|e| ControlFlow::Error(ErrorKind::SystemError(e)))
+                }
+                None => Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(
+                    "No op_get_item method on value {:?}",
+                    obj_value
+                )))),
+            }
+        } else {
+            unreachable!()
+        }
+    }
+
+    fn eval_set_attr(&mut self, eval: &Eval) -> EvalResult {
+        if let Eval::SetAttr(obj_expr, attr_name, value_expr) = eval {
+            let obj_value = self.eval(obj_expr)?;
+            let new_value = self.eval(value_expr)?;
+
+            match obj_value.set_attr(attr_name, new_value) {
+                Ok(_) => Ok(Value::Unit),
+                Err(err) => Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(err)))),
+            }
+        } else {
+            unreachable!()
+        }
+    }
+
+    fn eval_set_item(&mut self, eval: &Eval) -> EvalResult {
+        if let Eval::SetItem(obj_expr, index_expr, value_expr) = eval {
+            let obj_value = self.eval(obj_expr)?;
+            let index_value = self.eval(index_expr)?;
+            let new_value = self.eval(value_expr)?;
+
+            match obj_value.get_attr("op_set_item", self) {
+                Some(method) => {
+                    let args = Args::positional(vec![index_value, new_value]);
+                    method
+                        .call(args)
+                        .map_err(|e| ControlFlow::Error(ErrorKind::SystemError(e)))?;
+                    Ok(Value::Unit)
+                }
+                None => Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(
+                    "No op_set_item method on value {:?}",
+                    obj_value
+                )))),
+            }
+        } else {
+            unreachable!()
+        }
+    }
+
+    fn eval_try(&mut self, eval: &Eval) -> EvalResult {
+        if let Eval::Try(body, catch_var, catch_body) = eval {
+            match self.eval(body) {
+                Ok(value) => Ok(value),
+                Err(ControlFlow::Error(ErrorKind::RaisedError(error_value))) => {
+                    let catch_scope = self.current_env.child();
+                    let previous_env = std::mem::replace(&mut self.current_env, catch_scope);
+
+                    self.current_env.define(catch_var.clone(), error_value);
+
+                    let result = self.eval(catch_body);
+
+                    self.current_env = previous_env;
+
+                    result
+                }
+                Err(other_error) => Err(other_error),
+            }
+        } else {
+            unreachable!()
+        }
+    }
+
+    fn eval_with(&mut self, eval: &Eval) -> EvalResult {
+        if let Eval::With(data) = eval {
+            let with_scope = self.current_env.child();
+            let previous_env = std::mem::replace(&mut self.current_env, with_scope);
+
+            let mut resource_values = Vec::new();
+
+            for (name, resource_expr) in &data.resources {
+                match self.eval(resource_expr) {
+                    Ok(resource_value) => {
+                        self.current_env
+                            .define(name.clone(), resource_value.clone());
+
+                        let open_method = resource_value.get_attr("op_open", self);
+                        if let Some(open_method) = open_method {
+                            let args = Args::positional(vec![]);
+                            if let Err(e) = open_method.call(args) {
+                                self.cleanup_resources(&resource_values);
+                                self.current_env = previous_env;
+                                return Err(ControlFlow::Error(ErrorKind::SystemError(e)));
+                            }
+                        }
+
+                        resource_values.push((name.clone(), resource_value));
+                    }
+                    Err(e) => {
+                        self.cleanup_resources(&resource_values);
+                        self.current_env = previous_env;
+                        return Err(e);
+                    }
+                }
+            }
+
+            let result = match self.eval(&data.body) {
+                Ok(val) => val,
+                Err(e) => {
+                    self.cleanup_resources(&resource_values);
+                    self.current_env = previous_env;
+                    return Err(e);
+                }
+            };
+
+            self.cleanup_resources(&resource_values);
+
+            self.current_env = previous_env;
+            Ok(result)
+        } else {
+            unreachable!()
+        }
+    }
+
+    fn eval_class_decl(&mut self, eval: &Eval) -> EvalResult {
+        if let Eval::ClassDecl(data) = eval {
+            use crate::eval::Class;
+
+            let class = Class::new(
+                data.name.clone(),
+                data.field_names.clone(),
+                data.field_defaults.clone(),
+                data.methods.clone(),
+            );
+
+            let class_value = Value::new_class(class);
+            self.current_env.define(data.name.clone(), class_value);
+
+            Ok(Value::Unit)
+        } else {
+            unreachable!()
+        }
+    }
+
+    fn eval_import(&mut self, eval: &Eval) -> EvalResult {
+        if let Eval::Import(data) = eval {
+            let module_scope = self.load_module(&data.module)?;
+
+            let builtin_names: std::collections::HashSet<&str> = [
+                "print", "assert", "is_unit", "str", "raise", "Null", "Unit", "Bool", "Int",
+                "Float", "String", "List", "Dict", "Range", "Function",
+            ]
+            .iter()
+            .cloned()
+            .collect();
+
+            match &data.items {
+                ImportItems::All => {
+                    for (name, value) in module_scope.iter() {
+                        if !builtin_names.contains(name.as_str()) {
+                            self.current_env.define(name, value);
+                        }
+                    }
+                }
+                ImportItems::Specific(import_items) => {
+                    for import_item in import_items {
+                        let item_name = &import_item.name;
+                        let alias = import_item.alias.as_ref().unwrap_or(item_name);
+
+                        match module_scope.get(item_name) {
+                            Some(value) => {
+                                self.current_env.define(alias.clone(), value);
+                            }
+                            None => {
+                                let available_items: Vec<_> = module_scope
+                                    .iter()
+                                    .into_iter()
+                                    .filter(|(k, _)| !builtin_names.contains(k.as_str()))
+                                    .map(|(k, _)| k)
+                                    .collect();
+                                return Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(
+                                    "Module '{}' does not have item '{}'. Available items: {:?}",
+                                    data.module,
+                                    item_name,
+                                    available_items
+                                ))));
+                            }
+                        }
+                    }
+                }
+            }
+
+            Ok(Value::Unit)
+        } else {
+            unreachable!()
+        }
+    }
+
+    fn eval_match(&mut self, eval: &Eval) -> EvalResult {
+        if let Eval::Match(data) = eval {
+            let match_value = self.eval(&data.expr)?;
+
+            for case in &data.cases {
+                if self.match_pattern_matches(&case.pattern, &match_value)? {
+                    if let Some(guard) = &case.guard {
+                        let guard_result = self.eval(guard)?;
+                        if !guard_result.is_truthy() {
+                            continue;
+                        }
+                    }
+
+                    let match_scope = self.current_env.child();
+                    let previous_env = std::mem::replace(&mut self.current_env, match_scope);
+
+                    if let crate::eval::core::EvalMatchPattern::Variable(var_name) =
+                        &case.pattern
+                    {
+                        self.current_env
+                            .define(var_name.clone(), match_value.clone());
+                    }
+
+                    let result = self.eval(&case.body);
+
+                    self.current_env = previous_env;
+
+                    return result;
+                }
+            }
+
+            Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(
+                "No matching case found in match expression for value: {:?}",
+                match_value
+            ))))
+        } else {
+            unreachable!()
+        }
+    }
+
+    fn eval_macro(&mut self, eval: &Eval) -> EvalResult {
+        if let Eval::Macro(data) = eval {
+            let macro_function = self.eval(&data.macro_fn)?;
+
+            let mut macro_args = Vec::new();
+
+            macro_args.push(Value::from_rust(EvalNode::new((*data.target).clone())));
+
+            for arg in &data.args {
+                macro_args.push(self.eval(arg)?);
+            }
+
+            let args_obj = Args::positional(macro_args);
+            let transformed_node = macro_function
+                .call(args_obj)
+                .map_err(|e| ControlFlow::Error(ErrorKind::SystemError(e)))?;
+
+            if let Value::RustValue(rust_val_ref) = transformed_node {
+                let rust_val = rust_val_ref.borrow();
+                match rust_val.eval(self) {
+                    Ok(result) => return result,
+                    Err(e) => return Err(ControlFlow::Error(ErrorKind::SystemError(e))),
+                }
+            }
+
+            Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(
+                "Macro function must return an EvalNode, got {:?}",
+                transformed_node
+            ))))
+        } else {
+            unreachable!()
         }
     }
 }

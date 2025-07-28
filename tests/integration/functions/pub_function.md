@@ -181,38 +181,40 @@ Ok(
     Program(
         [
             Function(
-                "greet",
-                [
-                    (
-                        "name",
-                        None,
-                        Regular,
-                    ),
-                ],
-                Block(
-                    [
-                        Return(
-                            Some(
-                                Call(
-                                    GetAttr(
-                                        Literal(
-                                            String(
-                                                "Hello, ",
-                                            ),
-                                        ),
-                                        "op_add",
-                                    ),
-                                    [
-                                        Variable(
-                                            "name",
-                                        ),
-                                    ],
-                                ),
-                            ),
+                FunctionData {
+                    name: "greet",
+                    params: [
+                        (
+                            "name",
+                            None,
+                            Regular,
                         ),
                     ],
-                    None,
-                ),
+                    body: Block(
+                        [
+                            Return(
+                                Some(
+                                    Call(
+                                        GetAttr(
+                                            Literal(
+                                                String(
+                                                    "Hello, ",
+                                                ),
+                                            ),
+                                            "op_add",
+                                        ),
+                                        [
+                                            Variable(
+                                                "name",
+                                            ),
+                                        ],
+                                    ),
+                                ),
+                            ),
+                        ],
+                        None,
+                    ),
+                },
             ),
             Declare(
                 "result",

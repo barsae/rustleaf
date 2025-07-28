@@ -453,24 +453,26 @@ Ok(
                 "add_one",
                 Some(
                     Lambda(
-                        [
-                            "x",
-                        ],
-                        Call(
-                            GetAttr(
-                                Variable(
-                                    "x",
-                                ),
-                                "op_add",
-                            ),
-                            [
-                                Literal(
-                                    Int(
-                                        1,
-                                    ),
-                                ),
+                        LambdaData {
+                            params: [
+                                "x",
                             ],
-                        ),
+                            body: Call(
+                                GetAttr(
+                                    Variable(
+                                        "x",
+                                    ),
+                                    "op_add",
+                                ),
+                                [
+                                    Literal(
+                                        Int(
+                                            1,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                        },
                     ),
                 ),
             ),
@@ -506,57 +508,61 @@ Ok(
                 ],
             ),
             Function(
-                "apply",
-                [
-                    (
-                        "func",
-                        None,
-                        Regular,
-                    ),
-                    (
-                        "value",
-                        None,
-                        Regular,
-                    ),
-                ],
-                Block(
-                    [],
-                    Some(
-                        Call(
-                            Variable(
-                                "func",
-                            ),
-                            [
+                FunctionData {
+                    name: "apply",
+                    params: [
+                        (
+                            "func",
+                            None,
+                            Regular,
+                        ),
+                        (
+                            "value",
+                            None,
+                            Regular,
+                        ),
+                    ],
+                    body: Block(
+                        [],
+                        Some(
+                            Call(
                                 Variable(
-                                    "value",
+                                    "func",
                                 ),
-                            ],
+                                [
+                                    Variable(
+                                        "value",
+                                    ),
+                                ],
+                            ),
                         ),
                     ),
-                ),
+                },
             ),
             Declare(
                 "double",
                 Some(
                     Lambda(
-                        [
-                            "x",
-                        ],
-                        Call(
-                            GetAttr(
-                                Variable(
-                                    "x",
-                                ),
-                                "op_mul",
-                            ),
-                            [
-                                Literal(
-                                    Int(
-                                        2,
-                                    ),
-                                ),
+                        LambdaData {
+                            params: [
+                                "x",
                             ],
-                        ),
+                            body: Call(
+                                GetAttr(
+                                    Variable(
+                                        "x",
+                                    ),
+                                    "op_mul",
+                                ),
+                                [
+                                    Literal(
+                                        Int(
+                                            2,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                        },
                     ),
                 ),
             ),
@@ -598,48 +604,50 @@ Ok(
                 "complex_func",
                 Some(
                     Lambda(
-                        [
-                            "n",
-                        ],
-                        Block(
-                            [
-                                Declare(
-                                    "result",
-                                    Some(
-                                        Call(
-                                            GetAttr(
-                                                Variable(
-                                                    "n",
-                                                ),
-                                                "op_mul",
-                                            ),
-                                            [
-                                                Variable(
-                                                    "n",
-                                                ),
-                                            ],
-                                        ),
-                                    ),
-                                ),
+                        LambdaData {
+                            params: [
+                                "n",
                             ],
-                            Some(
-                                Call(
-                                    GetAttr(
-                                        Variable(
-                                            "result",
-                                        ),
-                                        "op_add",
-                                    ),
-                                    [
-                                        Literal(
-                                            Int(
-                                                1,
+                            body: Block(
+                                [
+                                    Declare(
+                                        "result",
+                                        Some(
+                                            Call(
+                                                GetAttr(
+                                                    Variable(
+                                                        "n",
+                                                    ),
+                                                    "op_mul",
+                                                ),
+                                                [
+                                                    Variable(
+                                                        "n",
+                                                    ),
+                                                ],
                                             ),
                                         ),
-                                    ],
+                                    ),
+                                ],
+                                Some(
+                                    Call(
+                                        GetAttr(
+                                            Variable(
+                                                "result",
+                                            ),
+                                            "op_add",
+                                        ),
+                                        [
+                                            Literal(
+                                                Int(
+                                                    1,
+                                                ),
+                                            ),
+                                        ],
+                                    ),
                                 ),
                             ),
-                        ),
+                        },
                     ),
                 ),
             ),
@@ -688,22 +696,24 @@ Ok(
                 "multiply_by_three",
                 Some(
                     Lambda(
-                        [
-                            "x",
-                        ],
-                        Call(
-                            GetAttr(
-                                Variable(
-                                    "x",
-                                ),
-                                "op_mul",
-                            ),
-                            [
-                                Variable(
-                                    "multiplier",
-                                ),
+                        LambdaData {
+                            params: [
+                                "x",
                             ],
-                        ),
+                            body: Call(
+                                GetAttr(
+                                    Variable(
+                                        "x",
+                                    ),
+                                    "op_mul",
+                                ),
+                                [
+                                    Variable(
+                                        "multiplier",
+                                    ),
+                                ],
+                            ),
+                        },
                     ),
                 ),
             ),

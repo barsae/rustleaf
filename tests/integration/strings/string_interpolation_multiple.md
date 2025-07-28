@@ -183,59 +183,38 @@ Ok(
                     Call(
                         GetAttr(
                             Call(
-                                GetAttr(
-                                    Call(
-                                        GetAttr(
-                                            Call(
-                                                GetAttr(
-                                                    Call(
-                                                        Variable(
-                                                            "str",
-                                                        ),
-                                                        [
-                                                            Variable(
-                                                                "a",
-                                                            ),
-                                                        ],
-                                                    ),
-                                                    "op_add",
-                                                ),
-                                                [
-                                                    Literal(
-                                                        String(
-                                                            " and ",
-                                                        ),
-                                                    ),
-                                                ],
-                                            ),
-                                            "op_add",
-                                        ),
-                                        [
-                                            Call(
-                                                Variable(
-                                                    "str",
-                                                ),
-                                                [
-                                                    Variable(
-                                                        "b",
-                                                    ),
-                                                ],
-                                            ),
-                                        ],
-                                    ),
-                                    "op_add",
+                                Variable(
+                                    "str",
                                 ),
                                 [
-                                    Literal(
-                                        String(
-                                            " equals ",
-                                        ),
+                                    Variable(
+                                        "a",
                                     ),
                                 ],
                             ),
                             "op_add",
                         ),
                         [
+                            Literal(
+                                String(
+                                    " and ",
+                                ),
+                            ),
+                            Call(
+                                Variable(
+                                    "str",
+                                ),
+                                [
+                                    Variable(
+                                        "b",
+                                    ),
+                                ],
+                            ),
+                            Literal(
+                                String(
+                                    " equals ",
+                                ),
+                            ),
                             Call(
                                 Variable(
                                     "str",

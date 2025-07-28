@@ -120,22 +120,24 @@ Ok(
     Program(
         [
             Function(
-                "test_return",
-                [],
-                Block(
-                    [
-                        Return(
-                            Some(
-                                Literal(
-                                    Int(
-                                        42,
+                FunctionData {
+                    name: "test_return",
+                    params: [],
+                    body: Block(
+                        [
+                            Return(
+                                Some(
+                                    Literal(
+                                        Int(
+                                            42,
+                                        ),
                                     ),
                                 ),
                             ),
-                        ),
-                    ],
-                    None,
-                ),
+                        ],
+                        None,
+                    ),
+                },
             ),
             Declare(
                 "result",

@@ -17,7 +17,7 @@ impl Compiler {
         let statements = program.0;
 
         if statements.is_empty() {
-            return Ok(Eval::Program(vec![]));
+            return Ok(Eval::Program(Box::new(vec![])));
         }
 
         let eval_statements: Result<Vec<_>> = statements
@@ -25,7 +25,7 @@ impl Compiler {
             .map(|stmt| self.compile_statement(stmt))
             .collect();
 
-        Ok(Eval::Program(eval_statements?))
+        Ok(Eval::Program(Box::new(eval_statements?)))
     }
 
     fn compile_statement(&mut self, stmt: Statement) -> Result<Eval> {
@@ -39,11 +39,11 @@ impl Compiler {
                 let target_eval = self.compile_statement(*statement)?;
 
                 // Create an Eval::Macro node that will call the macro function
-                Ok(Eval::Macro {
+                Ok(Eval::Macro(Box::new(super::core::MacroData {
                     macro_fn: Box::new(Eval::Variable(name)),
                     target: Box::new(target_eval),
                     args: Vec::new(), // For now, ignore macro arguments
-                })
+                })))
             }
             Statement::Expression(expr) => self.compile_expression(expr),
             Statement::VarDecl { pattern, value } => {
@@ -209,17 +209,21 @@ impl Compiler {
                 // Compile the function body
                 let compiled_body = self.compile_block_helper(body)?;
 
-                Ok(Eval::Function(name, param_data, Box::new(compiled_body)))
+                Ok(Eval::Function(Box::new(super::core::FunctionData {
+                    name,
+                    params: param_data,
+                    body: Box::new(compiled_body),
+                })))
             }
             Statement::ClassDecl {
                 name,
                 members,
                 is_pub: _,
             } => self.compile_class_decl(name, members),
-            Statement::Import(import_spec) => Ok(Eval::Import {
+            Statement::Import(import_spec) => Ok(Eval::Import(Box::new(super::core::ImportData {
                 module: import_spec.module,
                 items: import_spec.items,
-            }),
+            }))),
         }
     }
 
@@ -265,14 +269,14 @@ impl Compiler {
                     .into_iter()
                     .map(|elem| self.compile_expression(elem))
                     .collect();
-                Ok(Eval::List(compiled_elements?))
+                Ok(Eval::List(Box::new(compiled_elements?)))
             }
             Expression::Dict(pairs) => {
                 let compiled_pairs: Result<Vec<(Eval, Eval)>> = pairs
                     .into_iter()
                     .map(|(k, v)| Ok((self.compile_expression(k)?, self.compile_expression(v)?)))
                     .collect();
-                Ok(Eval::Dict(compiled_pairs?))
+                Ok(Eval::Dict(Box::new(compiled_pairs?)))
             }
             Expression::Block(block) => {
                 let mut eval_statements = Vec::new();
@@ -287,11 +291,11 @@ impl Compiler {
                     Some(expr) => {
                         let compiled_final_expr = self.compile_expression(*expr)?;
                         Ok(Eval::Block(
-                            eval_statements,
+                            Box::new(eval_statements),
                             Some(Box::new(compiled_final_expr)),
                         ))
                     }
-                    None => Ok(Eval::Block(eval_statements, None)),
+                    None => Ok(Eval::Block(Box::new(eval_statements), None)),
                 }
             }
             // Binary operators - most become method calls
@@ -431,7 +435,10 @@ impl Compiler {
                     LambdaBody::Expression(expr) => self.compile_expression(*expr)?,
                     LambdaBody::Block(block) => self.compile_block_helper(block)?,
                 };
-                Ok(Eval::Lambda(params, Box::new(compiled_body)))
+                Ok(Eval::Lambda(Box::new(super::core::LambdaData {
+                    params,
+                    body: Box::new(compiled_body),
+                })))
             }
 
             Expression::Try { body, catch } => {
@@ -461,7 +468,10 @@ impl Compiler {
                 }
 
                 let compiled_body = self.compile_block_helper(body)?;
-                Ok(Eval::With(compiled_resources, Box::new(compiled_body)))
+                Ok(Eval::With(Box::new(super::core::WithData {
+                    resources: compiled_resources,
+                    body: Box::new(compiled_body),
+                })))
             }
 
             // Pipe operator: expr1 : expr2
@@ -518,10 +528,10 @@ impl Compiler {
                     .into_iter()
                     .map(|case| self.compile_match_case(case))
                     .collect();
-                Ok(Eval::Match {
+                Ok(Eval::Match(Box::new(super::core::MatchData {
                     expr: Box::new(compiled_expr),
                     cases: compiled_cases?,
-                })
+                })))
             }
 
             _ => Err(anyhow::anyhow!(
@@ -596,11 +606,11 @@ impl Compiler {
             Some(expr) => {
                 let compiled_final_expr = self.compile_expression(*expr)?;
                 Ok(Eval::Block(
-                    eval_statements,
+                    Box::new(eval_statements),
                     Some(Box::new(compiled_final_expr)),
                 ))
             }
-            None => Ok(Eval::Block(eval_statements, None)),
+            None => Ok(Eval::Block(Box::new(eval_statements), None)),
         }
     }
 
@@ -650,16 +660,17 @@ impl Compiler {
             return Ok(compiled_parts.into_iter().next().unwrap());
         }
 
-        // Build a chain of additions: a + b + c + ...
+        // Use a single op_add call with all parts as arguments: first.op_add(second, third, ...)
         let mut parts_iter = compiled_parts.into_iter();
-        let mut result = parts_iter.next().unwrap();
-        for part in parts_iter {
-            // Use the same pattern as Expression::Add: left.op_add(right)
-            let get_method = Eval::GetAttr(Box::new(result), "op_add".to_string());
-            result = Eval::Call(Box::new(get_method), vec![part]);
+        let first_part = parts_iter.next().unwrap();
+        let remaining_parts: Vec<Eval> = parts_iter.collect();
+        
+        if remaining_parts.is_empty() {
+            Ok(first_part)
+        } else {
+            let get_method = Eval::GetAttr(Box::new(first_part), "op_add".to_string());
+            Ok(Eval::Call(Box::new(get_method), remaining_parts))
         }
-
-        Ok(result)
     }
 
     // Helper to compile range expressions - for now, only support integer literals
@@ -722,12 +733,12 @@ impl Compiler {
             }
         }
 
-        Ok(Eval::ClassDecl {
+        Ok(Eval::ClassDecl(Box::new(super::core::ClassDeclData {
             name,
             field_names,
             field_defaults,
             methods,
-        })
+        })))
     }
 
     fn compile_pattern(pattern: Pattern) -> Result<super::core::EvalPattern> {

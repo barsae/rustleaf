@@ -345,70 +345,74 @@ Ok(
     Program(
         [
             Function(
-                "add",
-                [
-                    (
-                        "x",
-                        None,
-                        Regular,
-                    ),
-                    (
-                        "y",
-                        None,
-                        Regular,
-                    ),
-                ],
-                Block(
-                    [],
-                    Some(
-                        Call(
-                            GetAttr(
-                                Variable(
-                                    "x",
+                FunctionData {
+                    name: "add",
+                    params: [
+                        (
+                            "x",
+                            None,
+                            Regular,
+                        ),
+                        (
+                            "y",
+                            None,
+                            Regular,
+                        ),
+                    ],
+                    body: Block(
+                        [],
+                        Some(
+                            Call(
+                                GetAttr(
+                                    Variable(
+                                        "x",
+                                    ),
+                                    "op_add",
                                 ),
-                                "op_add",
+                                [
+                                    Variable(
+                                        "y",
+                                    ),
+                                ],
                             ),
-                            [
-                                Variable(
-                                    "y",
-                                ),
-                            ],
                         ),
                     ),
-                ),
+                },
             ),
             Function(
-                "multiply",
-                [
-                    (
-                        "a",
-                        None,
-                        Regular,
-                    ),
-                    (
-                        "b",
-                        None,
-                        Regular,
-                    ),
-                ],
-                Block(
-                    [],
-                    Some(
-                        Call(
-                            GetAttr(
-                                Variable(
-                                    "a",
+                FunctionData {
+                    name: "multiply",
+                    params: [
+                        (
+                            "a",
+                            None,
+                            Regular,
+                        ),
+                        (
+                            "b",
+                            None,
+                            Regular,
+                        ),
+                    ],
+                    body: Block(
+                        [],
+                        Some(
+                            Call(
+                                GetAttr(
+                                    Variable(
+                                        "a",
+                                    ),
+                                    "op_mul",
                                 ),
-                                "op_mul",
+                                [
+                                    Variable(
+                                        "b",
+                                    ),
+                                ],
                             ),
-                            [
-                                Variable(
-                                    "b",
-                                ),
-                            ],
                         ),
                     ),
-                ),
+                },
             ),
             Declare(
                 "sum",

@@ -1,6 +1,6 @@
 # Program
 Status: 🔴
-Assertions: 0
+Assertions: 1
 
 ```rustleaf
 #[macro]
@@ -43,7 +43,7 @@ fn fibonacci(n) {
     }
 }
 
-var f = fibonacci(10);
+var f = fibonacci(9);
 assert(f == 55, "f");
 assert(count == 11, "count");
 ```
@@ -54,7 +54,7 @@ None
 # Result
 ```rust
 Err(
-    "No attribute 'has' on value Dict(DictRef(RefCell { value: {} }))",
+    "Assertion failed: f",
 )
 ```
 
@@ -132,7 +132,7 @@ Ok(
         Token(InterpolationStart),
         Token(Ident, "param_list"),
         Token(InterpolationEnd),
-        Token(StringPart, ");\n            if cache.has(args_key) {\n                cache[args_key]\n            } else {\n                var result = original("),
+        Token(StringPart, ");\n            if args_key in cache {\n                cache[args_key]\n            } else {\n                var result = original("),
         Token(InterpolationStart),
         Token(Ident, "param_list"),
         Token(InterpolationEnd),
@@ -191,7 +191,7 @@ Ok(
         Token(Equal),
         Token(Ident, "fibonacci"),
         Token(LeftParen),
-        Token(Int, "10"),
+        Token(Int, "9"),
         Token(RightParen),
         Token(Semicolon),
         Token(Ident, "assert"),
@@ -370,7 +370,7 @@ Ok(
                                                 ),
                                             ),
                                             Text(
-                                                ");\n            if cache.has(args_key) {\n                cache[args_key]\n            } else {\n                var result = original(",
+                                                ");\n            if args_key in cache {\n                cache[args_key]\n            } else {\n                var result = original(",
                                             ),
                                             Expression(
                                                 Identifier(
@@ -516,7 +516,7 @@ Ok(
                         [
                             Literal(
                                 Int(
-                                    10,
+                                    9,
                                 ),
                             ),
                         ],
@@ -581,313 +581,122 @@ Ok(
 Ok(
     Program(
         [
-            Macro {
-                macro_fn: Variable(
-                    "macro",
-                ),
-                target: Function(
-                    "memoize",
-                    [
-                        (
-                            "eval_node",
-                            None,
-                            Regular,
-                        ),
-                    ],
-                    Block(
-                        [
-                            If(
-                                LogicalNot(
-                                    Is(
-                                        Variable(
-                                            "eval_node",
-                                        ),
-                                        GetAttr(
-                                            Variable(
-                                                "Eval",
-                                            ),
-                                            "Function",
-                                        ),
-                                    ),
+            Macro(
+                MacroData {
+                    macro_fn: Variable(
+                        "macro",
+                    ),
+                    target: Function(
+                        FunctionData {
+                            name: "memoize",
+                            params: [
+                                (
+                                    "eval_node",
+                                    None,
+                                    Regular,
                                 ),
-                                Block(
-                                    [
-                                        Call(
-                                            Variable(
-                                                "raise",
-                                            ),
-                                            [
-                                                Literal(
-                                                    String(
-                                                        "#[memoize] can only be applied to functions",
+                            ],
+                            body: Block(
+                                [
+                                    If(
+                                        LogicalNot(
+                                            Is(
+                                                Variable(
+                                                    "eval_node",
+                                                ),
+                                                GetAttr(
+                                                    Variable(
+                                                        "Eval",
                                                     ),
+                                                    "Function",
+                                                ),
+                                            ),
+                                        ),
+                                        Block(
+                                            [
+                                                Call(
+                                                    Variable(
+                                                        "raise",
+                                                    ),
+                                                    [
+                                                        Literal(
+                                                            String(
+                                                                "#[memoize] can only be applied to functions",
+                                                            ),
+                                                        ),
+                                                    ],
                                                 ),
                                             ],
+                                            None,
                                         ),
-                                    ],
-                                    None,
-                                ),
-                                None,
-                            ),
-                            Declare(
-                                "func",
-                                Some(
-                                    Variable(
-                                        "eval_node",
+                                        None,
                                     ),
-                                ),
-                            ),
-                            Declare(
-                                "param_list",
+                                    Declare(
+                                        "func",
+                                        Some(
+                                            Variable(
+                                                "eval_node",
+                                            ),
+                                        ),
+                                    ),
+                                    Declare(
+                                        "param_list",
+                                        Some(
+                                            Call(
+                                                Variable(
+                                                    "join",
+                                                ),
+                                                [
+                                                    GetAttr(
+                                                        Variable(
+                                                            "func",
+                                                        ),
+                                                        "params",
+                                                    ),
+                                                    Literal(
+                                                        String(
+                                                            ", ",
+                                                        ),
+                                                    ),
+                                                ],
+                                            ),
+                                        ),
+                                    ),
+                                ],
                                 Some(
                                     Call(
                                         Variable(
-                                            "join",
+                                            "parse",
                                         ),
                                         [
-                                            GetAttr(
-                                                Variable(
-                                                    "func",
-                                                ),
-                                                "params",
-                                            ),
-                                            Literal(
-                                                String(
-                                                    ", ",
-                                                ),
-                                            ),
-                                        ],
-                                    ),
-                                ),
-                            ),
-                        ],
-                        Some(
-                            Call(
-                                Variable(
-                                    "parse",
-                                ),
-                                [
-                                    Call(
-                                        GetAttr(
                                             Call(
                                                 GetAttr(
-                                                    Call(
-                                                        GetAttr(
-                                                            Call(
-                                                                GetAttr(
-                                                                    Call(
-                                                                        GetAttr(
-                                                                            Call(
-                                                                                GetAttr(
-                                                                                    Call(
-                                                                                        GetAttr(
-                                                                                            Call(
-                                                                                                GetAttr(
-                                                                                                    Call(
-                                                                                                        GetAttr(
-                                                                                                            Call(
-                                                                                                                GetAttr(
-                                                                                                                    Call(
-                                                                                                                        GetAttr(
-                                                                                                                            Call(
-                                                                                                                                GetAttr(
-                                                                                                                                    Call(
-                                                                                                                                        GetAttr(
-                                                                                                                                            Call(
-                                                                                                                                                GetAttr(
-                                                                                                                                                    Call(
-                                                                                                                                                        GetAttr(
-                                                                                                                                                            Call(
-                                                                                                                                                                GetAttr(
-                                                                                                                                                                    Literal(
-                                                                                                                                                                        String(
-                                                                                                                                                                            "fn ",
-                                                                                                                                                                        ),
-                                                                                                                                                                    ),
-                                                                                                                                                                    "op_add",
-                                                                                                                                                                ),
-                                                                                                                                                                [
-                                                                                                                                                                    Call(
-                                                                                                                                                                        Variable(
-                                                                                                                                                                            "str",
-                                                                                                                                                                        ),
-                                                                                                                                                                        [
-                                                                                                                                                                            GetAttr(
-                                                                                                                                                                                Variable(
-                                                                                                                                                                                    "func",
-                                                                                                                                                                                ),
-                                                                                                                                                                                "name",
-                                                                                                                                                                            ),
-                                                                                                                                                                        ],
-                                                                                                                                                                    ),
-                                                                                                                                                                ],
-                                                                                                                                                            ),
-                                                                                                                                                            "op_add",
-                                                                                                                                                        ),
-                                                                                                                                                        [
-                                                                                                                                                            Literal(
-                                                                                                                                                                String(
-                                                                                                                                                                    "(",
-                                                                                                                                                                ),
-                                                                                                                                                            ),
-                                                                                                                                                        ],
-                                                                                                                                                    ),
-                                                                                                                                                    "op_add",
-                                                                                                                                                ),
-                                                                                                                                                [
-                                                                                                                                                    Call(
-                                                                                                                                                        Variable(
-                                                                                                                                                            "str",
-                                                                                                                                                        ),
-                                                                                                                                                        [
-                                                                                                                                                            Variable(
-                                                                                                                                                                "param_list",
-                                                                                                                                                            ),
-                                                                                                                                                        ],
-                                                                                                                                                    ),
-                                                                                                                                                ],
-                                                                                                                                            ),
-                                                                                                                                            "op_add",
-                                                                                                                                        ),
-                                                                                                                                        [
-                                                                                                                                            Literal(
-                                                                                                                                                String(
-                                                                                                                                                    ") {\n        var cache = {};\n\n        fn original(",
-                                                                                                                                                ),
-                                                                                                                                            ),
-                                                                                                                                        ],
-                                                                                                                                    ),
-                                                                                                                                    "op_add",
-                                                                                                                                ),
-                                                                                                                                [
-                                                                                                                                    Call(
-                                                                                                                                        Variable(
-                                                                                                                                            "str",
-                                                                                                                                        ),
-                                                                                                                                        [
-                                                                                                                                            Variable(
-                                                                                                                                                "param_list",
-                                                                                                                                            ),
-                                                                                                                                        ],
-                                                                                                                                    ),
-                                                                                                                                ],
-                                                                                                                            ),
-                                                                                                                            "op_add",
-                                                                                                                        ),
-                                                                                                                        [
-                                                                                                                            Literal(
-                                                                                                                                String(
-                                                                                                                                    ") ",
-                                                                                                                                ),
-                                                                                                                            ),
-                                                                                                                        ],
-                                                                                                                    ),
-                                                                                                                    "op_add",
-                                                                                                                ),
-                                                                                                                [
-                                                                                                                    Call(
-                                                                                                                        Variable(
-                                                                                                                            "str",
-                                                                                                                        ),
-                                                                                                                        [
-                                                                                                                            GetAttr(
-                                                                                                                                Variable(
-                                                                                                                                    "func",
-                                                                                                                                ),
-                                                                                                                                "body",
-                                                                                                                            ),
-                                                                                                                        ],
-                                                                                                                    ),
-                                                                                                                ],
-                                                                                                            ),
-                                                                                                            "op_add",
-                                                                                                        ),
-                                                                                                        [
-                                                                                                            Literal(
-                                                                                                                String(
-                                                                                                                    "\n\n        fn cached(",
-                                                                                                                ),
-                                                                                                            ),
-                                                                                                        ],
-                                                                                                    ),
-                                                                                                    "op_add",
-                                                                                                ),
-                                                                                                [
-                                                                                                    Call(
-                                                                                                        Variable(
-                                                                                                            "str",
-                                                                                                        ),
-                                                                                                        [
-                                                                                                            Variable(
-                                                                                                                "param_list",
-                                                                                                            ),
-                                                                                                        ],
-                                                                                                    ),
-                                                                                                ],
-                                                                                            ),
-                                                                                            "op_add",
-                                                                                        ),
-                                                                                        [
-                                                                                            Literal(
-                                                                                                String(
-                                                                                                    ") {\n            var args_key = str(",
-                                                                                                ),
-                                                                                            ),
-                                                                                        ],
-                                                                                    ),
-                                                                                    "op_add",
-                                                                                ),
-                                                                                [
-                                                                                    Call(
-                                                                                        Variable(
-                                                                                            "str",
-                                                                                        ),
-                                                                                        [
-                                                                                            Variable(
-                                                                                                "param_list",
-                                                                                            ),
-                                                                                        ],
-                                                                                    ),
-                                                                                ],
-                                                                            ),
-                                                                            "op_add",
-                                                                        ),
-                                                                        [
-                                                                            Literal(
-                                                                                String(
-                                                                                    ");\n            if cache.has(args_key) {\n                cache[args_key]\n            } else {\n                var result = original(",
-                                                                                ),
-                                                                            ),
-                                                                        ],
-                                                                    ),
-                                                                    "op_add",
-                                                                ),
-                                                                [
-                                                                    Call(
-                                                                        Variable(
-                                                                            "str",
-                                                                        ),
-                                                                        [
-                                                                            Variable(
-                                                                                "param_list",
-                                                                            ),
-                                                                        ],
-                                                                    ),
-                                                                ],
-                                                            ),
-                                                            "op_add",
+                                                    Literal(
+                                                        String(
+                                                            "fn ",
                                                         ),
-                                                        [
-                                                            Literal(
-                                                                String(
-                                                                    ");\n                cache[args_key] = result;\n                result\n            }\n        }\n\n        cached(",
-                                                                ),
-                                                            ),
-                                                        ],
                                                     ),
                                                     "op_add",
                                                 ),
                                                 [
+                                                    Call(
+                                                        Variable(
+                                                            "str",
+                                                        ),
+                                                        [
+                                                            GetAttr(
+                                                                Variable(
+                                                                    "func",
+                                                                ),
+                                                                "name",
+                                                            ),
+                                                        ],
+                                                    ),
+                                                    Literal(
+                                                        String(
+                                                            "(",
+                                                        ),
+                                                    ),
                                                     Call(
                                                         Variable(
                                                             "str",
@@ -898,25 +707,115 @@ Ok(
                                                             ),
                                                         ],
                                                     ),
+                                                    Literal(
+                                                        String(
+                                                            ") {\n        var cache = {};\n\n        fn original(",
+                                                        ),
+                                                    ),
+                                                    Call(
+                                                        Variable(
+                                                            "str",
+                                                        ),
+                                                        [
+                                                            Variable(
+                                                                "param_list",
+                                                            ),
+                                                        ],
+                                                    ),
+                                                    Literal(
+                                                        String(
+                                                            ") ",
+                                                        ),
+                                                    ),
+                                                    Call(
+                                                        Variable(
+                                                            "str",
+                                                        ),
+                                                        [
+                                                            GetAttr(
+                                                                Variable(
+                                                                    "func",
+                                                                ),
+                                                                "body",
+                                                            ),
+                                                        ],
+                                                    ),
+                                                    Literal(
+                                                        String(
+                                                            "\n\n        fn cached(",
+                                                        ),
+                                                    ),
+                                                    Call(
+                                                        Variable(
+                                                            "str",
+                                                        ),
+                                                        [
+                                                            Variable(
+                                                                "param_list",
+                                                            ),
+                                                        ],
+                                                    ),
+                                                    Literal(
+                                                        String(
+                                                            ") {\n            var args_key = str(",
+                                                        ),
+                                                    ),
+                                                    Call(
+                                                        Variable(
+                                                            "str",
+                                                        ),
+                                                        [
+                                                            Variable(
+                                                                "param_list",
+                                                            ),
+                                                        ],
+                                                    ),
+                                                    Literal(
+                                                        String(
+                                                            ");\n            if args_key in cache {\n                cache[args_key]\n            } else {\n                var result = original(",
+                                                        ),
+                                                    ),
+                                                    Call(
+                                                        Variable(
+                                                            "str",
+                                                        ),
+                                                        [
+                                                            Variable(
+                                                                "param_list",
+                                                            ),
+                                                        ],
+                                                    ),
+                                                    Literal(
+                                                        String(
+                                                            ");\n                cache[args_key] = result;\n                result\n            }\n        }\n\n        cached(",
+                                                        ),
+                                                    ),
+                                                    Call(
+                                                        Variable(
+                                                            "str",
+                                                        ),
+                                                        [
+                                                            Variable(
+                                                                "param_list",
+                                                            ),
+                                                        ],
+                                                    ),
+                                                    Literal(
+                                                        String(
+                                                            ")\n    }",
+                                                        ),
+                                                    ),
                                                 ],
-                                            ),
-                                            "op_add",
-                                        ),
-                                        [
-                                            Literal(
-                                                String(
-                                                    ")\n    }",
-                                                ),
                                             ),
                                         ],
                                     ),
-                                ],
+                                ),
                             ),
-                        ),
+                        },
                     ),
-                ),
-                args: [],
-            },
+                    args: [],
+                },
+            ),
             Declare(
                 "count",
                 Some(
@@ -927,129 +826,133 @@ Ok(
                     ),
                 ),
             ),
-            Macro {
-                macro_fn: Variable(
-                    "memoize",
-                ),
-                target: Function(
-                    "fibonacci",
-                    [
-                        (
-                            "n",
-                            None,
-                            Regular,
-                        ),
-                    ],
-                    Block(
-                        [
-                            Assign(
-                                "count",
-                                Call(
-                                    GetAttr(
-                                        Variable(
-                                            "count",
-                                        ),
-                                        "op_add",
-                                    ),
-                                    [
-                                        Literal(
-                                            Int(
-                                                1,
-                                            ),
-                                        ),
-                                    ],
-                                ),
-                            ),
-                        ],
-                        Some(
-                            If(
-                                Call(
-                                    GetAttr(
-                                        Variable(
-                                            "n",
-                                        ),
-                                        "op_le",
-                                    ),
-                                    [
-                                        Literal(
-                                            Int(
-                                                1,
-                                            ),
-                                        ),
-                                    ],
-                                ),
-                                Block(
-                                    [],
-                                    Some(
-                                        Variable(
-                                            "n",
-                                        ),
-                                    ),
-                                ),
-                                Some(
-                                    Block(
-                                        [],
-                                        Some(
-                                            Call(
-                                                GetAttr(
-                                                    Call(
-                                                        Variable(
-                                                            "fibonacci",
-                                                        ),
-                                                        [
-                                                            Call(
-                                                                GetAttr(
-                                                                    Variable(
-                                                                        "n",
-                                                                    ),
-                                                                    "op_sub",
-                                                                ),
-                                                                [
-                                                                    Literal(
-                                                                        Int(
-                                                                            1,
-                                                                        ),
-                                                                    ),
-                                                                ],
-                                                            ),
-                                                        ],
-                                                    ),
-                                                    "op_add",
-                                                ),
-                                                [
-                                                    Call(
-                                                        Variable(
-                                                            "fibonacci",
-                                                        ),
-                                                        [
-                                                            Call(
-                                                                GetAttr(
-                                                                    Variable(
-                                                                        "n",
-                                                                    ),
-                                                                    "op_sub",
-                                                                ),
-                                                                [
-                                                                    Literal(
-                                                                        Int(
-                                                                            2,
-                                                                        ),
-                                                                    ),
-                                                                ],
-                                                            ),
-                                                        ],
-                                                    ),
-                                                ],
-                                            ),
-                                        ),
-                                    ),
-                                ),
-                            ),
-                        ),
+            Macro(
+                MacroData {
+                    macro_fn: Variable(
+                        "memoize",
                     ),
-                ),
-                args: [],
-            },
+                    target: Function(
+                        FunctionData {
+                            name: "fibonacci",
+                            params: [
+                                (
+                                    "n",
+                                    None,
+                                    Regular,
+                                ),
+                            ],
+                            body: Block(
+                                [
+                                    Assign(
+                                        "count",
+                                        Call(
+                                            GetAttr(
+                                                Variable(
+                                                    "count",
+                                                ),
+                                                "op_add",
+                                            ),
+                                            [
+                                                Literal(
+                                                    Int(
+                                                        1,
+                                                    ),
+                                                ),
+                                            ],
+                                        ),
+                                    ),
+                                ],
+                                Some(
+                                    If(
+                                        Call(
+                                            GetAttr(
+                                                Variable(
+                                                    "n",
+                                                ),
+                                                "op_le",
+                                            ),
+                                            [
+                                                Literal(
+                                                    Int(
+                                                        1,
+                                                    ),
+                                                ),
+                                            ],
+                                        ),
+                                        Block(
+                                            [],
+                                            Some(
+                                                Variable(
+                                                    "n",
+                                                ),
+                                            ),
+                                        ),
+                                        Some(
+                                            Block(
+                                                [],
+                                                Some(
+                                                    Call(
+                                                        GetAttr(
+                                                            Call(
+                                                                Variable(
+                                                                    "fibonacci",
+                                                                ),
+                                                                [
+                                                                    Call(
+                                                                        GetAttr(
+                                                                            Variable(
+                                                                                "n",
+                                                                            ),
+                                                                            "op_sub",
+                                                                        ),
+                                                                        [
+                                                                            Literal(
+                                                                                Int(
+                                                                                    1,
+                                                                                ),
+                                                                            ),
+                                                                        ],
+                                                                    ),
+                                                                ],
+                                                            ),
+                                                            "op_add",
+                                                        ),
+                                                        [
+                                                            Call(
+                                                                Variable(
+                                                                    "fibonacci",
+                                                                ),
+                                                                [
+                                                                    Call(
+                                                                        GetAttr(
+                                                                            Variable(
+                                                                                "n",
+                                                                            ),
+                                                                            "op_sub",
+                                                                        ),
+                                                                        [
+                                                                            Literal(
+                                                                                Int(
+                                                                                    2,
+                                                                                ),
+                                                                            ),
+                                                                        ],
+                                                                    ),
+                                                                ],
+                                                            ),
+                                                        ],
+                                                    ),
+                                                ),
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        },
+                    ),
+                    args: [],
+                },
+            ),
             Declare(
                 "f",
                 Some(
@@ -1060,7 +963,7 @@ Ok(
                         [
                             Literal(
                                 Int(
-                                    10,
+                                    9,
                                 ),
                             ),
                         ],

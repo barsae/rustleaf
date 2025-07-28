@@ -149,37 +149,39 @@ Ok(
     Program(
         [
             Function(
-                "test",
-                [
-                    (
-                        "x",
-                        None,
-                        Regular,
-                    ),
-                    (
-                        "y",
-                        None,
-                        Regular,
-                    ),
-                ],
-                Block(
-                    [],
-                    Some(
-                        Call(
-                            GetAttr(
-                                Variable(
-                                    "x",
+                FunctionData {
+                    name: "test",
+                    params: [
+                        (
+                            "x",
+                            None,
+                            Regular,
+                        ),
+                        (
+                            "y",
+                            None,
+                            Regular,
+                        ),
+                    ],
+                    body: Block(
+                        [],
+                        Some(
+                            Call(
+                                GetAttr(
+                                    Variable(
+                                        "x",
+                                    ),
+                                    "op_add",
                                 ),
-                                "op_add",
+                                [
+                                    Variable(
+                                        "y",
+                                    ),
+                                ],
                             ),
-                            [
-                                Variable(
-                                    "y",
-                                ),
-                            ],
                         ),
                     ),
-                ),
+                },
             ),
             Declare(
                 "z",

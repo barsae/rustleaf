@@ -154,31 +154,24 @@ Ok(
                 Some(
                     Call(
                         GetAttr(
-                            Call(
-                                GetAttr(
-                                    Literal(
-                                        String(
-                                            "Hello ",
-                                        ),
-                                    ),
-                                    "op_add",
+                            Literal(
+                                String(
+                                    "Hello ",
                                 ),
-                                [
-                                    Call(
-                                        Variable(
-                                            "str",
-                                        ),
-                                        [
-                                            Variable(
-                                                "name",
-                                            ),
-                                        ],
-                                    ),
-                                ],
                             ),
                             "op_add",
                         ),
                         [
+                            Call(
+                                Variable(
+                                    "str",
+                                ),
+                                [
+                                    Variable(
+                                        "name",
+                                    ),
+                                ],
+                            ),
                             Literal(
                                 String(
                                     "!\nThis is a multiline string with interpolation.",

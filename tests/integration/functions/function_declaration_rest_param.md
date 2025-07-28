@@ -696,52 +696,56 @@ Ok(
     Program(
         [
             Function(
-                "sum",
-                [
-                    (
-                        "args",
-                        None,
-                        Rest,
-                    ),
-                ],
-                Block(
-                    [],
-                    Some(
-                        Variable(
+                FunctionData {
+                    name: "sum",
+                    params: [
+                        (
                             "args",
+                            None,
+                            Rest,
+                        ),
+                    ],
+                    body: Block(
+                        [],
+                        Some(
+                            Variable(
+                                "args",
+                            ),
                         ),
                     ),
-                ),
+                },
             ),
             Function(
-                "first_and_rest",
-                [
-                    (
-                        "first",
-                        None,
-                        Regular,
-                    ),
-                    (
-                        "rest",
-                        None,
-                        Rest,
-                    ),
-                ],
-                Block(
-                    [],
-                    Some(
-                        List(
-                            [
-                                Variable(
-                                    "first",
-                                ),
-                                Variable(
-                                    "rest",
-                                ),
-                            ],
+                FunctionData {
+                    name: "first_and_rest",
+                    params: [
+                        (
+                            "first",
+                            None,
+                            Regular,
+                        ),
+                        (
+                            "rest",
+                            None,
+                            Rest,
+                        ),
+                    ],
+                    body: Block(
+                        [],
+                        Some(
+                            List(
+                                [
+                                    Variable(
+                                        "first",
+                                    ),
+                                    Variable(
+                                        "rest",
+                                    ),
+                                ],
+                            ),
                         ),
                     ),
-                ),
+                },
             ),
             Declare(
                 "empty",

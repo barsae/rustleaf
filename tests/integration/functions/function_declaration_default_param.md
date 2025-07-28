@@ -563,104 +563,110 @@ Ok(
     Program(
         [
             Function(
-                "greet",
-                [
-                    (
-                        "name",
-                        Some(
-                            String(
-                                "world",
-                            ),
-                        ),
-                        Regular,
-                    ),
-                ],
-                Block(
-                    [],
-                    Some(
-                        Variable(
+                FunctionData {
+                    name: "greet",
+                    params: [
+                        (
                             "name",
+                            Some(
+                                String(
+                                    "world",
+                                ),
+                            ),
+                            Regular,
+                        ),
+                    ],
+                    body: Block(
+                        [],
+                        Some(
+                            Variable(
+                                "name",
+                            ),
                         ),
                     ),
-                ),
+                },
             ),
             Function(
-                "add",
-                [
-                    (
-                        "x",
-                        None,
-                        Regular,
-                    ),
-                    (
-                        "y",
+                FunctionData {
+                    name: "add",
+                    params: [
+                        (
+                            "x",
+                            None,
+                            Regular,
+                        ),
+                        (
+                            "y",
+                            Some(
+                                Int(
+                                    10,
+                                ),
+                            ),
+                            Regular,
+                        ),
+                    ],
+                    body: Block(
+                        [],
                         Some(
-                            Int(
-                                10,
+                            Call(
+                                GetAttr(
+                                    Variable(
+                                        "x",
+                                    ),
+                                    "op_add",
+                                ),
+                                [
+                                    Variable(
+                                        "y",
+                                    ),
+                                ],
                             ),
                         ),
-                        Regular,
                     ),
-                ],
-                Block(
-                    [],
-                    Some(
-                        Call(
-                            GetAttr(
-                                Variable(
-                                    "x",
-                                ),
-                                "op_add",
-                            ),
-                            [
-                                Variable(
-                                    "y",
-                                ),
-                            ],
-                        ),
-                    ),
-                ),
+                },
             ),
             Function(
-                "multiply",
-                [
-                    (
-                        "a",
-                        Some(
-                            Int(
-                                2,
-                            ),
-                        ),
-                        Regular,
-                    ),
-                    (
-                        "b",
-                        Some(
-                            Int(
-                                3,
-                            ),
-                        ),
-                        Regular,
-                    ),
-                ],
-                Block(
-                    [],
-                    Some(
-                        Call(
-                            GetAttr(
-                                Variable(
-                                    "a",
+                FunctionData {
+                    name: "multiply",
+                    params: [
+                        (
+                            "a",
+                            Some(
+                                Int(
+                                    2,
                                 ),
-                                "op_mul",
                             ),
-                            [
-                                Variable(
-                                    "b",
+                            Regular,
+                        ),
+                        (
+                            "b",
+                            Some(
+                                Int(
+                                    3,
                                 ),
-                            ],
+                            ),
+                            Regular,
+                        ),
+                    ],
+                    body: Block(
+                        [],
+                        Some(
+                            Call(
+                                GetAttr(
+                                    Variable(
+                                        "a",
+                                    ),
+                                    "op_mul",
+                                ),
+                                [
+                                    Variable(
+                                        "b",
+                                    ),
+                                ],
+                            ),
                         ),
                     ),
-                ),
+                },
             ),
             Declare(
                 "greeting1",

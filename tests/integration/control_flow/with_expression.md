@@ -354,102 +354,104 @@ Ok(
 Ok(
     Program(
         [
-            ClassDecl {
-                name: "File",
-                field_names: [
-                    "opened",
-                    "closed",
-                ],
-                field_defaults: [
-                    None,
-                    None,
-                ],
-                methods: [
-                    ClassMethod {
-                        name: "op_open",
-                        params: [
-                            "self",
-                        ],
-                        body: Block(
-                            [
-                                SetAttr(
-                                    Variable(
-                                        "self",
-                                    ),
-                                    "opened",
-                                    Call(
-                                        GetAttr(
-                                            GetAttr(
-                                                Variable(
-                                                    "self",
-                                                ),
-                                                "opened",
-                                            ),
-                                            "op_add",
-                                        ),
-                                        [
-                                            Literal(
-                                                Int(
-                                                    1,
-                                                ),
-                                            ),
-                                        ],
-                                    ),
-                                ),
+            ClassDecl(
+                ClassDeclData {
+                    name: "File",
+                    field_names: [
+                        "opened",
+                        "closed",
+                    ],
+                    field_defaults: [
+                        None,
+                        None,
+                    ],
+                    methods: [
+                        ClassMethod {
+                            name: "op_open",
+                            params: [
+                                "self",
                             ],
-                            None,
-                        ),
-                        is_static: false,
-                    },
-                    ClassMethod {
-                        name: "op_close",
-                        params: [
-                            "self",
-                        ],
-                        body: Block(
-                            [
-                                SetAttr(
-                                    Variable(
-                                        "self",
-                                    ),
-                                    "closed",
-                                    Call(
-                                        GetAttr(
-                                            GetAttr(
-                                                Variable(
-                                                    "self",
-                                                ),
-                                                "closed",
-                                            ),
-                                            "op_add",
+                            body: Block(
+                                [
+                                    SetAttr(
+                                        Variable(
+                                            "self",
                                         ),
-                                        [
-                                            Literal(
-                                                Int(
-                                                    1,
+                                        "opened",
+                                        Call(
+                                            GetAttr(
+                                                GetAttr(
+                                                    Variable(
+                                                        "self",
+                                                    ),
+                                                    "opened",
                                                 ),
+                                                "op_add",
                                             ),
-                                        ],
+                                            [
+                                                Literal(
+                                                    Int(
+                                                        1,
+                                                    ),
+                                                ),
+                                            ],
+                                        ),
                                     ),
-                                ),
+                                ],
+                                None,
+                            ),
+                            is_static: false,
+                        },
+                        ClassMethod {
+                            name: "op_close",
+                            params: [
+                                "self",
                             ],
-                            None,
-                        ),
-                        is_static: false,
-                    },
-                    ClassMethod {
-                        name: "read",
-                        params: [
-                            "self",
-                        ],
-                        body: Block(
-                            [],
-                            None,
-                        ),
-                        is_static: false,
-                    },
-                ],
-            },
+                            body: Block(
+                                [
+                                    SetAttr(
+                                        Variable(
+                                            "self",
+                                        ),
+                                        "closed",
+                                        Call(
+                                            GetAttr(
+                                                GetAttr(
+                                                    Variable(
+                                                        "self",
+                                                    ),
+                                                    "closed",
+                                                ),
+                                                "op_add",
+                                            ),
+                                            [
+                                                Literal(
+                                                    Int(
+                                                        1,
+                                                    ),
+                                                ),
+                                            ],
+                                        ),
+                                    ),
+                                ],
+                                None,
+                            ),
+                            is_static: false,
+                        },
+                        ClassMethod {
+                            name: "read",
+                            params: [
+                                "self",
+                            ],
+                            body: Block(
+                                [],
+                                None,
+                            ),
+                            is_static: false,
+                        },
+                    ],
+                },
+            ),
             Declare(
                 "f",
                 Some(
@@ -484,28 +486,30 @@ Ok(
                 ),
             ),
             With(
-                [
-                    (
-                        "f",
-                        Variable(
+                WithData {
+                    resources: [
+                        (
                             "f",
-                        ),
-                    ),
-                ],
-                Block(
-                    [
-                        Call(
-                            GetAttr(
-                                Variable(
-                                    "f",
-                                ),
-                                "read",
+                            Variable(
+                                "f",
                             ),
-                            [],
                         ),
                     ],
-                    None,
-                ),
+                    body: Block(
+                        [
+                            Call(
+                                GetAttr(
+                                    Variable(
+                                        "f",
+                                    ),
+                                    "read",
+                                ),
+                                [],
+                            ),
+                        ],
+                        None,
+                    ),
+                },
             ),
             Call(
                 Variable(

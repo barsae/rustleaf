@@ -170,50 +170,58 @@ Ok(
 Ok(
     Program(
         [
-            Macro {
-                macro_fn: Variable(
-                    "macro",
-                ),
-                target: Function(
-                    "identity",
-                    [
-                        (
-                            "eval_node",
-                            None,
-                            Regular,
-                        ),
-                    ],
-                    Block(
-                        [],
-                        Some(
-                            Variable(
-                                "eval_node",
-                            ),
-                        ),
+            Macro(
+                MacroData {
+                    macro_fn: Variable(
+                        "macro",
                     ),
-                ),
-                args: [],
-            },
-            Macro {
-                macro_fn: Variable(
-                    "identity",
-                ),
-                target: Function(
-                    "test_func",
-                    [],
-                    Block(
-                        [],
-                        Some(
-                            Literal(
-                                Int(
-                                    42,
+                    target: Function(
+                        FunctionData {
+                            name: "identity",
+                            params: [
+                                (
+                                    "eval_node",
+                                    None,
+                                    Regular,
+                                ),
+                            ],
+                            body: Block(
+                                [],
+                                Some(
+                                    Variable(
+                                        "eval_node",
+                                    ),
                                 ),
                             ),
-                        ),
+                        },
                     ),
-                ),
-                args: [],
-            },
+                    args: [],
+                },
+            ),
+            Macro(
+                MacroData {
+                    macro_fn: Variable(
+                        "identity",
+                    ),
+                    target: Function(
+                        FunctionData {
+                            name: "test_func",
+                            params: [],
+                            body: Block(
+                                [],
+                                Some(
+                                    Literal(
+                                        Int(
+                                            42,
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        },
+                    ),
+                    args: [],
+                },
+            ),
             Declare(
                 "result",
                 Some(

@@ -305,24 +305,26 @@ Ok(
                 "increment",
                 Some(
                     Lambda(
-                        [
-                            "x",
-                        ],
-                        Call(
-                            GetAttr(
-                                Variable(
-                                    "x",
-                                ),
-                                "op_add",
-                            ),
-                            [
-                                Literal(
-                                    Int(
-                                        1,
-                                    ),
-                                ),
+                        LambdaData {
+                            params: [
+                                "x",
                             ],
-                        ),
+                            body: Call(
+                                GetAttr(
+                                    Variable(
+                                        "x",
+                                    ),
+                                    "op_add",
+                                ),
+                                [
+                                    Literal(
+                                        Int(
+                                            1,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                        },
                     ),
                 ),
             ),
@@ -330,24 +332,26 @@ Ok(
                 "double",
                 Some(
                     Lambda(
-                        [
-                            "y",
-                        ],
-                        Call(
-                            GetAttr(
-                                Variable(
-                                    "y",
-                                ),
-                                "op_mul",
-                            ),
-                            [
-                                Literal(
-                                    Int(
-                                        2,
-                                    ),
-                                ),
+                        LambdaData {
+                            params: [
+                                "y",
                             ],
-                        ),
+                            body: Call(
+                                GetAttr(
+                                    Variable(
+                                        "y",
+                                    ),
+                                    "op_mul",
+                                ),
+                                [
+                                    Literal(
+                                        Int(
+                                            2,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                        },
                     ),
                 ),
             ),
@@ -355,24 +359,26 @@ Ok(
                 "add_ten",
                 Some(
                     Lambda(
-                        [
-                            "z",
-                        ],
-                        Call(
-                            GetAttr(
-                                Variable(
-                                    "z",
-                                ),
-                                "op_add",
-                            ),
-                            [
-                                Literal(
-                                    Int(
-                                        10,
-                                    ),
-                                ),
+                        LambdaData {
+                            params: [
+                                "z",
                             ],
-                        ),
+                            body: Call(
+                                GetAttr(
+                                    Variable(
+                                        "z",
+                                    ),
+                                    "op_add",
+                                ),
+                                [
+                                    Literal(
+                                        Int(
+                                            10,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                        },
                     ),
                 ),
             ),

@@ -205,55 +205,57 @@ Ok(
                 ),
             ),
             Function(
-                "add",
-                [
-                    (
-                        "x",
-                        None,
-                        Regular,
-                    ),
-                    (
-                        "y",
-                        None,
-                        Regular,
-                    ),
-                ],
-                Block(
-                    [
-                        Assign(
-                            "z",
+                FunctionData {
+                    name: "add",
+                    params: [
+                        (
+                            "x",
+                            None,
+                            Regular,
+                        ),
+                        (
+                            "y",
+                            None,
+                            Regular,
+                        ),
+                    ],
+                    body: Block(
+                        [
+                            Assign(
+                                "z",
+                                Call(
+                                    GetAttr(
+                                        Variable(
+                                            "z",
+                                        ),
+                                        "op_add",
+                                    ),
+                                    [
+                                        Literal(
+                                            Int(
+                                                1,
+                                            ),
+                                        ),
+                                    ],
+                                ),
+                            ),
                             Call(
                                 GetAttr(
                                     Variable(
-                                        "z",
+                                        "x",
                                     ),
                                     "op_add",
                                 ),
                                 [
-                                    Literal(
-                                        Int(
-                                            1,
-                                        ),
+                                    Variable(
+                                        "y",
                                     ),
                                 ],
                             ),
-                        ),
-                        Call(
-                            GetAttr(
-                                Variable(
-                                    "x",
-                                ),
-                                "op_add",
-                            ),
-                            [
-                                Variable(
-                                    "y",
-                                ),
-                            ],
-                        ),
-                    ],
-                    None,
-                ),
+                        ],
+                        None,
+                    ),
+                },
             ),
             Call(
                 Variable(

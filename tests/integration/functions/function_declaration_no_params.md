@@ -287,46 +287,52 @@ Ok(
     Program(
         [
             Function(
-                "hello",
-                [],
-                Block(
-                    [],
-                    Some(
-                        Literal(
-                            Int(
-                                42,
+                FunctionData {
+                    name: "hello",
+                    params: [],
+                    body: Block(
+                        [],
+                        Some(
+                            Literal(
+                                Int(
+                                    42,
+                                ),
                             ),
                         ),
                     ),
-                ),
+                },
             ),
             Function(
-                "get_pi",
-                [],
-                Block(
-                    [],
-                    Some(
-                        Literal(
-                            Float(
-                                3.14,
+                FunctionData {
+                    name: "get_pi",
+                    params: [],
+                    body: Block(
+                        [],
+                        Some(
+                            Literal(
+                                Float(
+                                    3.14,
+                                ),
                             ),
                         ),
                     ),
-                ),
+                },
             ),
             Function(
-                "get_greeting",
-                [],
-                Block(
-                    [],
-                    Some(
-                        Literal(
-                            String(
-                                "Hello, World!",
+                FunctionData {
+                    name: "get_greeting",
+                    params: [],
+                    body: Block(
+                        [],
+                        Some(
+                            Literal(
+                                String(
+                                    "Hello, World!",
+                                ),
                             ),
                         ),
                     ),
-                ),
+                },
             ),
             Declare(
                 "result1",

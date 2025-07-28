@@ -483,63 +483,65 @@ Ok(
             Declare(
                 "result",
                 Some(
-                    Match {
-                        expr: Variable(
-                            "x",
-                        ),
-                        cases: [
-                            EvalMatchCase {
-                                pattern: Literal(
-                                    Int(
-                                        0,
+                    Match(
+                        MatchData {
+                            expr: Variable(
+                                "x",
+                            ),
+                            cases: [
+                                EvalMatchCase {
+                                    pattern: Literal(
+                                        Int(
+                                            0,
+                                        ),
                                     ),
-                                ),
-                                guard: None,
-                                body: Block(
-                                    [],
-                                    Some(
-                                        Literal(
-                                            String(
-                                                "zero",
+                                    guard: None,
+                                    body: Block(
+                                        [],
+                                        Some(
+                                            Literal(
+                                                String(
+                                                    "zero",
+                                                ),
                                             ),
                                         ),
                                     ),
-                                ),
-                            },
-                            EvalMatchCase {
-                                pattern: Literal(
-                                    Int(
-                                        1,
+                                },
+                                EvalMatchCase {
+                                    pattern: Literal(
+                                        Int(
+                                            1,
+                                        ),
                                     ),
-                                ),
-                                guard: None,
-                                body: Block(
-                                    [],
-                                    Some(
-                                        Literal(
-                                            String(
-                                                "one",
+                                    guard: None,
+                                    body: Block(
+                                        [],
+                                        Some(
+                                            Literal(
+                                                String(
+                                                    "one",
+                                                ),
                                             ),
                                         ),
                                     ),
-                                ),
-                            },
-                            EvalMatchCase {
-                                pattern: Wildcard,
-                                guard: None,
-                                body: Block(
-                                    [],
-                                    Some(
-                                        Literal(
-                                            String(
-                                                "other",
+                                },
+                                EvalMatchCase {
+                                    pattern: Wildcard,
+                                    guard: None,
+                                    body: Block(
+                                        [],
+                                        Some(
+                                            Literal(
+                                                String(
+                                                    "other",
+                                                ),
                                             ),
                                         ),
                                     ),
-                                ),
-                            },
-                        ],
-                    },
+                                },
+                            ],
+                        },
+                    ),
                 ),
             ),
             Call(
@@ -577,63 +579,65 @@ Ok(
             Declare(
                 "result2",
                 Some(
-                    Match {
-                        expr: Variable(
-                            "y",
-                        ),
-                        cases: [
-                            EvalMatchCase {
-                                pattern: Literal(
-                                    Int(
-                                        0,
+                    Match(
+                        MatchData {
+                            expr: Variable(
+                                "y",
+                            ),
+                            cases: [
+                                EvalMatchCase {
+                                    pattern: Literal(
+                                        Int(
+                                            0,
+                                        ),
                                     ),
-                                ),
-                                guard: None,
-                                body: Block(
-                                    [],
-                                    Some(
-                                        Literal(
-                                            String(
-                                                "zero",
+                                    guard: None,
+                                    body: Block(
+                                        [],
+                                        Some(
+                                            Literal(
+                                                String(
+                                                    "zero",
+                                                ),
                                             ),
                                         ),
                                     ),
-                                ),
-                            },
-                            EvalMatchCase {
-                                pattern: Literal(
-                                    Int(
-                                        1,
+                                },
+                                EvalMatchCase {
+                                    pattern: Literal(
+                                        Int(
+                                            1,
+                                        ),
                                     ),
-                                ),
-                                guard: None,
-                                body: Block(
-                                    [],
-                                    Some(
-                                        Literal(
-                                            String(
-                                                "one",
+                                    guard: None,
+                                    body: Block(
+                                        [],
+                                        Some(
+                                            Literal(
+                                                String(
+                                                    "one",
+                                                ),
                                             ),
                                         ),
                                     ),
-                                ),
-                            },
-                            EvalMatchCase {
-                                pattern: Wildcard,
-                                guard: None,
-                                body: Block(
-                                    [],
-                                    Some(
-                                        Literal(
-                                            String(
-                                                "other",
+                                },
+                                EvalMatchCase {
+                                    pattern: Wildcard,
+                                    guard: None,
+                                    body: Block(
+                                        [],
+                                        Some(
+                                            Literal(
+                                                String(
+                                                    "other",
+                                                ),
                                             ),
                                         ),
                                     ),
-                                ),
-                            },
-                        ],
-                    },
+                                },
+                            ],
+                        },
+                    ),
                 ),
             ),
             Call(
@@ -671,63 +675,65 @@ Ok(
             Declare(
                 "result3",
                 Some(
-                    Match {
-                        expr: Variable(
-                            "z",
-                        ),
-                        cases: [
-                            EvalMatchCase {
-                                pattern: Literal(
-                                    Int(
-                                        0,
+                    Match(
+                        MatchData {
+                            expr: Variable(
+                                "z",
+                            ),
+                            cases: [
+                                EvalMatchCase {
+                                    pattern: Literal(
+                                        Int(
+                                            0,
+                                        ),
                                     ),
-                                ),
-                                guard: None,
-                                body: Block(
-                                    [],
-                                    Some(
-                                        Literal(
-                                            String(
-                                                "zero",
+                                    guard: None,
+                                    body: Block(
+                                        [],
+                                        Some(
+                                            Literal(
+                                                String(
+                                                    "zero",
+                                                ),
                                             ),
                                         ),
                                     ),
-                                ),
-                            },
-                            EvalMatchCase {
-                                pattern: Literal(
-                                    Int(
-                                        1,
+                                },
+                                EvalMatchCase {
+                                    pattern: Literal(
+                                        Int(
+                                            1,
+                                        ),
                                     ),
-                                ),
-                                guard: None,
-                                body: Block(
-                                    [],
-                                    Some(
-                                        Literal(
-                                            String(
-                                                "one",
+                                    guard: None,
+                                    body: Block(
+                                        [],
+                                        Some(
+                                            Literal(
+                                                String(
+                                                    "one",
+                                                ),
                                             ),
                                         ),
                                     ),
-                                ),
-                            },
-                            EvalMatchCase {
-                                pattern: Wildcard,
-                                guard: None,
-                                body: Block(
-                                    [],
-                                    Some(
-                                        Literal(
-                                            String(
-                                                "other",
+                                },
+                                EvalMatchCase {
+                                    pattern: Wildcard,
+                                    guard: None,
+                                    body: Block(
+                                        [],
+                                        Some(
+                                            Literal(
+                                                String(
+                                                    "other",
+                                                ),
                                             ),
                                         ),
                                     ),
-                                ),
-                            },
-                        ],
-                    },
+                                },
+                            ],
+                        },
+                    ),
                 ),
             ),
             Call(

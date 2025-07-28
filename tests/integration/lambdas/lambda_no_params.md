@@ -153,12 +153,14 @@ Ok(
                 "lambda",
                 Some(
                     Lambda(
-                        [],
-                        Literal(
-                            Int(
-                                42,
+                        LambdaData {
+                            params: [],
+                            body: Literal(
+                                Int(
+                                    42,
+                                ),
                             ),
-                        ),
+                        },
                     ),
                 ),
             ),

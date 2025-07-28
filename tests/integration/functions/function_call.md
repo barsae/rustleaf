@@ -128,37 +128,39 @@ Ok(
     Program(
         [
             Function(
-                "add",
-                [
-                    (
-                        "x",
-                        None,
-                        Regular,
-                    ),
-                    (
-                        "y",
-                        None,
-                        Regular,
-                    ),
-                ],
-                Block(
-                    [],
-                    Some(
-                        Call(
-                            GetAttr(
-                                Variable(
-                                    "x",
+                FunctionData {
+                    name: "add",
+                    params: [
+                        (
+                            "x",
+                            None,
+                            Regular,
+                        ),
+                        (
+                            "y",
+                            None,
+                            Regular,
+                        ),
+                    ],
+                    body: Block(
+                        [],
+                        Some(
+                            Call(
+                                GetAttr(
+                                    Variable(
+                                        "x",
+                                    ),
+                                    "op_add",
                                 ),
-                                "op_add",
+                                [
+                                    Variable(
+                                        "y",
+                                    ),
+                                ],
                             ),
-                            [
-                                Variable(
-                                    "y",
-                                ),
-                            ],
                         ),
                     ),
-                ),
+                },
             ),
             Call(
                 Variable(

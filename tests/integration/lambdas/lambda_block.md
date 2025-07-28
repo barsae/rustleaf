@@ -366,50 +366,52 @@ Ok(
                 "processor",
                 Some(
                     Lambda(
-                        [
-                            "x",
-                        ],
-                        Block(
-                            [
-                                Declare(
-                                    "temp",
-                                    Some(
-                                        Call(
-                                            GetAttr(
-                                                Variable(
-                                                    "x",
-                                                ),
-                                                "op_mul",
-                                            ),
-                                            [
-                                                Literal(
-                                                    Int(
-                                                        2,
-                                                    ),
-                                                ),
-                                            ],
-                                        ),
-                                    ),
-                                ),
+                        LambdaData {
+                            params: [
+                                "x",
                             ],
-                            Some(
-                                Call(
-                                    GetAttr(
-                                        Variable(
-                                            "temp",
-                                        ),
-                                        "op_add",
-                                    ),
-                                    [
-                                        Literal(
-                                            Int(
-                                                1,
+                            body: Block(
+                                [
+                                    Declare(
+                                        "temp",
+                                        Some(
+                                            Call(
+                                                GetAttr(
+                                                    Variable(
+                                                        "x",
+                                                    ),
+                                                    "op_mul",
+                                                ),
+                                                [
+                                                    Literal(
+                                                        Int(
+                                                            2,
+                                                        ),
+                                                    ),
+                                                ],
                                             ),
                                         ),
-                                    ],
+                                    ),
+                                ],
+                                Some(
+                                    Call(
+                                        GetAttr(
+                                            Variable(
+                                                "temp",
+                                            ),
+                                            "op_add",
+                                        ),
+                                        [
+                                            Literal(
+                                                Int(
+                                                    1,
+                                                ),
+                                            ),
+                                        ],
+                                    ),
                                 ),
                             ),
-                        ),
+                        },
                     ),
                 ),
             ),
@@ -417,70 +419,72 @@ Ok(
                 "complex_lambda",
                 Some(
                     Lambda(
-                        [
-                            "y",
-                        ],
-                        Block(
-                            [
-                                Declare(
-                                    "first",
-                                    Some(
-                                        Call(
-                                            GetAttr(
-                                                Variable(
-                                                    "y",
-                                                ),
-                                                "op_add",
-                                            ),
-                                            [
-                                                Literal(
-                                                    Int(
-                                                        10,
-                                                    ),
-                                                ),
-                                            ],
-                                        ),
-                                    ),
-                                ),
-                                Declare(
-                                    "second",
-                                    Some(
-                                        Call(
-                                            GetAttr(
-                                                Variable(
-                                                    "first",
-                                                ),
-                                                "op_mul",
-                                            ),
-                                            [
-                                                Literal(
-                                                    Int(
-                                                        3,
-                                                    ),
-                                                ),
-                                            ],
-                                        ),
-                                    ),
-                                ),
+                        LambdaData {
+                            params: [
+                                "y",
                             ],
-                            Some(
-                                Call(
-                                    GetAttr(
-                                        Variable(
-                                            "second",
-                                        ),
-                                        "op_sub",
-                                    ),
-                                    [
-                                        Literal(
-                                            Int(
-                                                5,
+                            body: Block(
+                                [
+                                    Declare(
+                                        "first",
+                                        Some(
+                                            Call(
+                                                GetAttr(
+                                                    Variable(
+                                                        "y",
+                                                    ),
+                                                    "op_add",
+                                                ),
+                                                [
+                                                    Literal(
+                                                        Int(
+                                                            10,
+                                                        ),
+                                                    ),
+                                                ],
                                             ),
                                         ),
-                                    ],
+                                    ),
+                                    Declare(
+                                        "second",
+                                        Some(
+                                            Call(
+                                                GetAttr(
+                                                    Variable(
+                                                        "first",
+                                                    ),
+                                                    "op_mul",
+                                                ),
+                                                [
+                                                    Literal(
+                                                        Int(
+                                                            3,
+                                                        ),
+                                                    ),
+                                                ],
+                                            ),
+                                        ),
+                                    ),
+                                ],
+                                Some(
+                                    Call(
+                                        GetAttr(
+                                            Variable(
+                                                "second",
+                                            ),
+                                            "op_sub",
+                                        ),
+                                        [
+                                            Literal(
+                                                Int(
+                                                    5,
+                                                ),
+                                            ),
+                                        ],
+                                    ),
                                 ),
                             ),
-                        ),
+                        },
                     ),
                 ),
             ),

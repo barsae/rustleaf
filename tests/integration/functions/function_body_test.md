@@ -97,18 +97,20 @@ Ok(
     Program(
         [
             Function(
-                "greet",
-                [],
-                Block(
-                    [],
-                    Some(
-                        Literal(
-                            String(
-                                "hello",
+                FunctionData {
+                    name: "greet",
+                    params: [],
+                    body: Block(
+                        [],
+                        Some(
+                            Literal(
+                                String(
+                                    "hello",
+                                ),
                             ),
                         ),
                     ),
-                ),
+                },
             ),
             Call(
                 Variable(

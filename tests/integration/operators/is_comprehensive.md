@@ -1191,24 +1191,26 @@ Ok(
                 "lambda_val",
                 Some(
                     Lambda(
-                        [
-                            "x",
-                        ],
-                        Call(
-                            GetAttr(
-                                Variable(
-                                    "x",
-                                ),
-                                "op_add",
-                            ),
-                            [
-                                Literal(
-                                    Int(
-                                        1,
-                                    ),
-                                ),
+                        LambdaData {
+                            params: [
+                                "x",
                             ],
-                        ),
+                            body: Call(
+                                GetAttr(
+                                    Variable(
+                                        "x",
+                                    ),
+                                    "op_add",
+                                ),
+                                [
+                                    Literal(
+                                        Int(
+                                            1,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                        },
                     ),
                 ),
             ),
@@ -1549,12 +1551,14 @@ Ok(
                 ],
             ),
             Function(
-                "f",
-                [],
-                Block(
-                    [],
-                    None,
-                ),
+                FunctionData {
+                    name: "f",
+                    params: [],
+                    body: Block(
+                        [],
+                        None,
+                    ),
+                },
             ),
             Declare(
                 "unit",

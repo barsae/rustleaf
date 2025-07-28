@@ -184,60 +184,62 @@ Ok(
 Ok(
     Program(
         [
-            ClassDecl {
-                name: "Greeter",
-                field_names: [
-                    "name",
-                ],
-                field_defaults: [
-                    Some(
-                        Literal(
-                            String(
-                                "Eric",
-                            ),
-                        ),
-                    ),
-                ],
-                methods: [
-                    ClassMethod {
-                        name: "greet",
-                        params: [
-                            "self",
-                        ],
-                        body: Block(
-                            [],
-                            Some(
-                                Call(
-                                    GetAttr(
-                                        Literal(
-                                            String(
-                                                "Hello, ",
-                                            ),
-                                        ),
-                                        "op_add",
-                                    ),
-                                    [
-                                        Call(
-                                            Variable(
-                                                "str",
-                                            ),
-                                            [
-                                                GetAttr(
-                                                    Variable(
-                                                        "self",
-                                                    ),
-                                                    "name",
-                                                ),
-                                            ],
-                                        ),
-                                    ],
+            ClassDecl(
+                ClassDeclData {
+                    name: "Greeter",
+                    field_names: [
+                        "name",
+                    ],
+                    field_defaults: [
+                        Some(
+                            Literal(
+                                String(
+                                    "Eric",
                                 ),
                             ),
                         ),
-                        is_static: false,
-                    },
-                ],
-            },
+                    ],
+                    methods: [
+                        ClassMethod {
+                            name: "greet",
+                            params: [
+                                "self",
+                            ],
+                            body: Block(
+                                [],
+                                Some(
+                                    Call(
+                                        GetAttr(
+                                            Literal(
+                                                String(
+                                                    "Hello, ",
+                                                ),
+                                            ),
+                                            "op_add",
+                                        ),
+                                        [
+                                            Call(
+                                                Variable(
+                                                    "str",
+                                                ),
+                                                [
+                                                    GetAttr(
+                                                        Variable(
+                                                            "self",
+                                                        ),
+                                                        "name",
+                                                    ),
+                                                ],
+                                            ),
+                                        ],
+                                    ),
+                                ),
+                            ),
+                            is_static: false,
+                        },
+                    ],
+                },
+            ),
             Declare(
                 "greeter",
                 Some(

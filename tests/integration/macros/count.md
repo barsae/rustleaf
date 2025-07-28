@@ -175,44 +175,52 @@ Ok(
                     ),
                 ),
             ),
-            Macro {
-                macro_fn: Variable(
-                    "macro",
-                ),
-                target: Function(
-                    "count",
-                    [
-                        (
-                            "ast",
-                            None,
-                            Regular,
-                        ),
-                    ],
-                    Block(
-                        [],
-                        Some(
-                            Variable(
-                                "ast",
+            Macro(
+                MacroData {
+                    macro_fn: Variable(
+                        "macro",
+                    ),
+                    target: Function(
+                        FunctionData {
+                            name: "count",
+                            params: [
+                                (
+                                    "ast",
+                                    None,
+                                    Regular,
+                                ),
+                            ],
+                            body: Block(
+                                [],
+                                Some(
+                                    Variable(
+                                        "ast",
+                                    ),
+                                ),
                             ),
-                        ),
+                        },
                     ),
-                ),
-                args: [],
-            },
-            Macro {
-                macro_fn: Variable(
-                    "count",
-                ),
-                target: Function(
-                    "test",
-                    [],
-                    Block(
-                        [],
-                        None,
+                    args: [],
+                },
+            ),
+            Macro(
+                MacroData {
+                    macro_fn: Variable(
+                        "count",
                     ),
-                ),
-                args: [],
-            },
+                    target: Function(
+                        FunctionData {
+                            name: "test",
+                            params: [],
+                            body: Block(
+                                [],
+                                None,
+                            ),
+                        },
+                    ),
+                    args: [],
+                },
+            ),
             Call(
                 Variable(
                     "test",

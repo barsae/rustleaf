@@ -120,17 +120,19 @@ Ok(
 Ok(
     Program(
         [
-            Import {
-                module: "math",
-                items: Specific(
-                    [
-                        ImportItem {
-                            name: "adder",
-                            alias: None,
-                        },
-                    ],
-                ),
-            },
+            Import(
+                ImportData {
+                    module: "math",
+                    items: Specific(
+                        [
+                            ImportItem {
+                                name: "adder",
+                                alias: None,
+                            },
+                        ],
+                    ),
+                },
+            ),
             Declare(
                 "x",
                 Some(
