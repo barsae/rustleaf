@@ -81,7 +81,7 @@ impl RustValue for EvalCall {
 
 #[derive(Debug, Clone)]
 pub struct EvalFunction {
-    pub data: crate::eval::core::FunctionData,
+    pub data: super::eval_ref::FunctionData,
 }
 
 impl RustValue for EvalFunction {
@@ -148,7 +148,7 @@ impl RustValue for EvalFunction {
 
 #[derive(Debug, Clone)]
 pub struct EvalLambda {
-    pub data: crate::eval::core::LambdaData,
+    pub data: super::eval_ref::LambdaData,
 }
 
 impl RustValue for EvalLambda {
@@ -173,7 +173,7 @@ impl RustValue for EvalLambda {
 
 #[derive(Debug, Clone)]
 pub struct EvalClassDecl {
-    pub data: crate::eval::core::ClassDeclData,
+    pub data: super::eval_ref::ClassDeclData,
 }
 
 impl RustValue for EvalClassDecl {

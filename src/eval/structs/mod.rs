@@ -4,6 +4,7 @@ pub mod attributes;
 pub mod blocks;
 pub mod collections;
 pub mod control_flow;
+pub mod eval_ref;
 pub mod functions;
 pub mod literals;
 pub mod misc;
@@ -20,3 +21,9 @@ pub use literals::{EvalLiteral, EvalRef, EvalVariable};
 pub use misc::{EvalAssign, EvalDeclare, EvalImport, EvalMacro};
 pub use operators::{EvalIs, EvalLogicalAnd, EvalLogicalNot, EvalLogicalOr};
 pub use patterns::{EvalDeclarePattern, EvalMatch, EvalTry};
+
+// Re-export from eval_ref
+pub use eval_ref::{
+    ClassDeclData, ClassMethod, Eval, EvalDictPattern, EvalMatchCase, EvalMatchPattern,
+    EvalPattern, FunctionData, ImportData, LambdaData, MacroData, MatchData, WithData,
+};

@@ -6,7 +6,7 @@ use super::literals::EvalRef;
 
 #[derive(Debug, Clone)]
 pub struct EvalMatch {
-    pub data: crate::eval::core::MatchData,
+    pub data: super::eval_ref::MatchData,
 }
 
 impl RustValue for EvalMatch {
@@ -35,7 +35,7 @@ impl RustValue for EvalMatch {
 
                     // Pattern matches (and guard passes), execute body
                     // For Variable patterns, bind the variable
-                    if let crate::eval::core::EvalMatchPattern::Variable(var_name) = &case.pattern {
+                    if let super::eval_ref::EvalMatchPattern::Variable(var_name) = &case.pattern {
                         evaluator.current_env.define(var_name.clone(), match_value);
                     }
 
@@ -66,7 +66,7 @@ impl RustValue for EvalMatch {
 
 #[derive(Debug, Clone)]
 pub struct EvalDeclarePattern {
-    pub pattern: crate::eval::core::EvalPattern,
+    pub pattern: super::eval_ref::EvalPattern,
     pub init_expr: EvalRef,
 }
 
@@ -93,7 +93,7 @@ impl RustValue for EvalDeclarePattern {
 #[derive(Debug, Clone)]
 pub struct EvalTry {
     pub body: EvalRef,
-    pub catch_pattern: crate::eval::core::EvalPattern,
+    pub catch_pattern: super::eval_ref::EvalPattern,
     pub catch_body: EvalRef,
 }
 

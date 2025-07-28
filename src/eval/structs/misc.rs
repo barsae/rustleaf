@@ -59,7 +59,7 @@ impl RustValue for EvalAssign {
 
 #[derive(Debug, Clone)]
 pub struct EvalImport {
-    pub data: crate::eval::core::ImportData,
+    pub data: super::eval_ref::ImportData,
 }
 
 impl RustValue for EvalImport {
@@ -122,7 +122,7 @@ impl RustValue for EvalImport {
 
 #[derive(Debug, Clone)]
 pub struct EvalMacro {
-    pub data: crate::eval::core::MacroData,
+    pub data: super::eval_ref::MacroData,
 }
 
 impl RustValue for EvalMacro {

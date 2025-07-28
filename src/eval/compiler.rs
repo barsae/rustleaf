@@ -1,7 +1,7 @@
 /// Compiler from AST to simplified evaluation IR
 use anyhow::Result;
 
-use super::core::{ClassMethod, Eval};
+use super::structs::{ClassMethod, Eval};
 use crate::core::*;
 
 pub struct Compiler;
@@ -39,7 +39,7 @@ impl Compiler {
                 let target_eval = self.compile_statement(*statement)?;
 
                 // Create an Eval::Macro node that will call the macro function
-                Ok(Eval::macro_expr(super::core::MacroData {
+                Ok(Eval::macro_expr(super::structs::MacroData {
                     macro_fn: Box::new(Eval::variable(name)),
                     target: Box::new(target_eval),
                     args: Vec::new(), // For now, ignore macro arguments
@@ -131,7 +131,7 @@ impl Compiler {
                 // Compile the function body
                 let compiled_body = self.compile_block_helper(body)?;
 
-                Ok(Eval::function(super::core::FunctionData {
+                Ok(Eval::function(super::structs::FunctionData {
                     name,
                     params: param_data,
                     body: Box::new(compiled_body),
@@ -142,7 +142,7 @@ impl Compiler {
                 members,
                 is_pub: _,
             } => self.compile_class_decl(name, members),
-            Statement::Import(import_spec) => Ok(Eval::import(super::core::ImportData {
+            Statement::Import(import_spec) => Ok(Eval::import(super::structs::ImportData {
                 module: import_spec.module,
                 items: import_spec.items,
             })),
@@ -363,7 +363,7 @@ impl Compiler {
                     LambdaBody::Expression(expr) => self.compile_expression(*expr)?,
                     LambdaBody::Block(block) => self.compile_block_helper(block)?,
                 };
-                Ok(Eval::lambda(super::core::LambdaData {
+                Ok(Eval::lambda(super::structs::LambdaData {
                     params,
                     body: Box::new(compiled_body),
                 }))
@@ -390,7 +390,7 @@ impl Compiler {
                 }
 
                 let compiled_body = self.compile_block_helper(body)?;
-                Ok(Eval::with_expr(super::core::WithData {
+                Ok(Eval::with_expr(super::structs::WithData {
                     resources: compiled_resources,
                     body: Box::new(compiled_body),
                 }))
@@ -446,11 +446,11 @@ impl Compiler {
 
             Expression::Match { expr, cases } => {
                 let compiled_expr = self.compile_expression(*expr)?;
-                let compiled_cases: Result<Vec<super::core::EvalMatchCase>> = cases
+                let compiled_cases: Result<Vec<super::structs::EvalMatchCase>> = cases
                     .into_iter()
                     .map(|case| self.compile_match_case(case))
                     .collect();
-                Ok(Eval::match_expr(super::core::MatchData {
+                Ok(Eval::match_expr(super::structs::MatchData {
                     expr: Box::new(compiled_expr),
                     cases: compiled_cases?,
                 }))
@@ -627,7 +627,7 @@ impl Compiler {
             }
         }
 
-        Ok(Eval::class_decl(super::core::ClassDeclData {
+        Ok(Eval::class_decl(super::structs::ClassDeclData {
             name,
             field_names,
             field_defaults,
@@ -635,8 +635,8 @@ impl Compiler {
         }))
     }
 
-    fn compile_pattern(pattern: Pattern) -> Result<super::core::EvalPattern> {
-        use super::core::{EvalDictPattern, EvalPattern};
+    fn compile_pattern(pattern: Pattern) -> Result<super::structs::EvalPattern> {
+        use super::structs::{EvalDictPattern, EvalPattern};
 
         match pattern {
             Pattern::Variable(name) => Ok(EvalPattern::Variable(name)),
@@ -670,8 +670,8 @@ impl Compiler {
     fn compile_match_case(
         &mut self,
         case: crate::core::MatchCase,
-    ) -> Result<super::core::EvalMatchCase> {
-        use super::core::{EvalMatchCase, EvalMatchPattern};
+    ) -> Result<super::structs::EvalMatchCase> {
+        use super::structs::{EvalMatchCase, EvalMatchPattern};
 
         let compiled_pattern = match case.pattern {
             Pattern::Literal(lit) => EvalMatchPattern::Literal(self.compile_literal(lit)),

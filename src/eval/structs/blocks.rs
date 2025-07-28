@@ -82,7 +82,7 @@ impl RustValue for EvalProgram {
 
 #[derive(Debug, Clone)]
 pub struct EvalWith {
-    pub data: crate::eval::core::WithData,
+    pub data: super::eval_ref::WithData,
 }
 
 impl RustValue for EvalWith {

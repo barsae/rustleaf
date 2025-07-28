@@ -224,10 +224,10 @@ impl Evaluator {
     #[allow(dead_code)]
     pub fn match_pattern(
         &mut self,
-        pattern: &crate::eval::core::EvalPattern,
+        pattern: &crate::eval::EvalPattern,
         value: &Value,
     ) -> Result<(), ControlFlow> {
-        use crate::eval::core::EvalPattern;
+        use crate::eval::EvalPattern;
 
         match pattern {
             EvalPattern::Variable(name) => {
@@ -333,10 +333,10 @@ impl Evaluator {
 
     pub fn match_pattern_matches(
         &mut self,
-        pattern: &crate::eval::core::EvalMatchPattern,
+        pattern: &crate::eval::EvalMatchPattern,
         value: &Value,
     ) -> Result<bool, ControlFlow> {
-        use crate::eval::core::EvalMatchPattern;
+        use crate::eval::EvalMatchPattern;
 
         match pattern {
             EvalMatchPattern::Literal(literal) => Ok(literal == value),

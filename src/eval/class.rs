@@ -2,8 +2,8 @@ use anyhow::Result;
 use std::collections::HashMap;
 
 use super::{
-    core::{ClassMethod, Eval},
     scope::ScopeRef,
+    structs::{ClassMethod, Eval},
 };
 use crate::core::{Args, RustValue, Value};
 
