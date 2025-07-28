@@ -46,18 +46,17 @@ impl DictIter {
 
 impl RustValue for DictIter {
     fn op_next(&mut self) -> Result<Option<Value>> {
-        if self.index < self.keys.len() {
+        while self.index < self.keys.len() {
             let key = &self.keys[self.index];
             let value = self.dict.borrow().get(key).cloned();
             self.index += 1;
-            match value {
-                Some(_) => Ok(Some(Value::String(key.clone()))),
-                // TODO: this should continue on until a key-value is found (or end-of-iter)
-                None => Ok(None),
+
+            if value.is_some() {
+                return Ok(Some(Value::String(key.clone())));
             }
-        } else {
-            Ok(None)
+            // Continue to next key if this one has no value
         }
+        Ok(None)
     }
 }
 
