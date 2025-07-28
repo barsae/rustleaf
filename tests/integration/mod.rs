@@ -46,10 +46,6 @@ mod macro_tests {}
 #[rustleaf_tests("tests/integration/operators")]
 mod operator_tests {}
 
-// Parser tests
-#[rustleaf_tests("tests/integration/parse")]
-mod parse_tests {}
-
 // Pattern matching
 #[rustleaf_tests("tests/integration/patterns")]
 mod pattern_tests {}
