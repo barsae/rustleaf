@@ -1,0 +1,32 @@
+use crate::core::{RustValue, Value};
+use crate::eval::{EvalResult, Evaluator};
+
+use super::eval_ref::EvalRef;
+
+#[derive(Debug, Clone)]
+pub struct EvalList {
+    pub elements: Vec<EvalRef>,
+}
+
+impl RustValue for EvalList {
+    fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
+        let mut list_values = Vec::new();
+        for element in &self.elements {
+            match element.eval(evaluator)? {
+                Ok(val) => list_values.push(val),
+                Err(e) => return Ok(Err(e)),
+            }
+        }
+        Ok(Ok(Value::new_list_with_values(list_values)))
+    }
+
+    fn str(&self) -> String {
+        let elements_str = self
+            .elements
+            .iter()
+            .map(|elem| elem.str())
+            .collect::<Vec<_>>()
+            .join(", ");
+        format!("[{}]", elements_str)
+    }
+}

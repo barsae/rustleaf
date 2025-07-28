@@ -1,15 +1,39 @@
 /// Core evaluation types - simplified AST for execution
-use crate::core::{ImportItems, ParameterKind, Value};
+use crate::core::{ImportItems, ParameterKind, RustValue, Value};
+use crate::eval::{EvalResult, Evaluator};
+use std::cell::RefCell;
+use std::rc::Rc;
+
+#[derive(Clone, Debug)]
+pub struct EvalRef(Rc<RefCell<Box<dyn RustValue>>>);
+
+impl EvalRef {
+    pub fn new<T: RustValue + 'static>(eval: T) -> Self {
+        Self(Rc::new(RefCell::new(Box::new(eval))))
+    }
+
+    pub fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
+        self.0.borrow().eval(evaluator)
+    }
+
+    pub fn str(&self) -> String {
+        self.0.borrow().str()
+    }
+
+    pub fn as_rust_value(&self) -> Rc<RefCell<Box<dyn RustValue>>> {
+        self.0.clone()
+    }
+}
 
 /// Eval - now a simple wrapper around trait-based evaluation
 /// This eliminates the massive match statement dispatch in favor of trait method calls
 #[derive(Debug, Clone)]
-pub struct Eval(pub crate::eval::EvalRef);
+pub struct Eval(pub EvalRef);
 
 impl Eval {
     /// Create an Eval from any RustValue implementer
     pub fn new<T: crate::core::RustValue + 'static>(eval_impl: T) -> Self {
-        Self(crate::eval::EvalRef::new(eval_impl))
+        Self(EvalRef::new(eval_impl))
     }
 
     /// Evaluate this Eval node
