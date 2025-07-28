@@ -1,4 +1,4 @@
-use super::{scope::ScopeRef, EvalTypeConstant, TypeConstant};
+use super::{scope::ScopeRef, TypeConstant};
 use crate::{core::*, eval::Eval};
 use anyhow::anyhow;
 use std::path::{Path, PathBuf};
@@ -85,10 +85,6 @@ impl Evaluator {
             .define("Range", Value::from_rust(TypeConstant::new("Range")));
         self.globals
             .define("Function", Value::from_rust(TypeConstant::new("Function")));
-
-        // Add Eval type constant for macro system
-        self.globals
-            .define("Eval", Value::from_rust(EvalTypeConstant::new()));
     }
 
     fn register_builtin_fn(&mut self, name: &'static str, func: fn(Args) -> anyhow::Result<Value>) {
