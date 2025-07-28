@@ -1,6 +1,6 @@
 # Program
 Status: 🔴
-Assertions: 1
+Assertions: 2
 
 ```rustleaf
 #[macro]
@@ -43,18 +43,20 @@ fn fibonacci(n) {
     }
 }
 
-var f = fibonacci(9);
+var f = fibonacci(10);
 assert(f == 55, "f");
 assert(count == 11, "count");
 ```
 
 # Output
-None
+```
+177
+```
 
 # Result
 ```rust
 Err(
-    "Assertion failed: f",
+    "Assertion failed: count",
 )
 ```
 
@@ -191,7 +193,7 @@ Ok(
         Token(Equal),
         Token(Ident, "fibonacci"),
         Token(LeftParen),
-        Token(Int, "9"),
+        Token(Int, "10"),
         Token(RightParen),
         Token(Semicolon),
         Token(Ident, "assert"),
@@ -201,6 +203,11 @@ Ok(
         Token(Int, "55"),
         Token(Comma),
         Token(String, "f"),
+        Token(RightParen),
+        Token(Semicolon),
+        Token(Ident, "print"),
+        Token(LeftParen),
+        Token(Ident, "count"),
         Token(RightParen),
         Token(Semicolon),
         Token(Ident, "assert"),
@@ -516,7 +523,7 @@ Ok(
                         [
                             Literal(
                                 Int(
-                                    9,
+                                    10,
                                 ),
                             ),
                         ],
@@ -543,6 +550,18 @@ Ok(
                             String(
                                 "f",
                             ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "print",
+                    ),
+                    [
+                        Identifier(
+                            "count",
                         ),
                     ],
                 ),
@@ -963,7 +982,7 @@ Ok(
                         [
                             Literal(
                                 Int(
-                                    9,
+                                    10,
                                 ),
                             ),
                         ],
@@ -994,6 +1013,16 @@ Ok(
                         String(
                             "f",
                         ),
+                    ),
+                ],
+            ),
+            Call(
+                Variable(
+                    "print",
+                ),
+                [
+                    Variable(
+                        "count",
                     ),
                 ],
             ),

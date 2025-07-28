@@ -1,77 +1,139 @@
 /// Core evaluation types - simplified AST for execution
 use crate::core::{ImportItems, ParameterKind, Value};
 
-#[derive(Debug, Clone, PartialEq)]
-pub enum Eval {
-    // Primitives
-    Literal(Value),
-    Variable(String),
+/// Eval - now a simple wrapper around trait-based evaluation
+/// This eliminates the massive match statement dispatch in favor of trait method calls
+#[derive(Debug, Clone)]
+pub struct Eval(pub crate::eval::EvalRef);
 
-    // Function calls (all calls - methods, functions, etc.)
-    Call(Box<Eval>, Vec<Eval>),
+impl Eval {
+    /// Create an Eval from any RustValue implementer
+    pub fn new<T: crate::core::RustValue + 'static>(eval_impl: T) -> Self {
+        Self(crate::eval::EvalRef::new(eval_impl))
+    }
+    
+    /// Evaluate this Eval node
+    pub fn eval(&self, evaluator: &mut crate::eval::Evaluator) -> anyhow::Result<crate::eval::EvalResult> {
+        self.0.eval(evaluator)
+    }
+    
+    // Helper constructors for backward compatibility
+    pub fn literal(value: Value) -> Self {
+        Self::new(crate::eval::EvalLiteral { value })
+    }
+    
+    pub fn variable(name: String) -> Self {
+        Self::new(crate::eval::EvalVariable { name })
+    }
+    
+    pub fn call(func_expr: Eval, args: Vec<Eval>) -> Self {
+        let func_ref = func_expr.0;
+        let arg_refs = args.into_iter().map(|arg| arg.0).collect();
+        Self::new(crate::eval::EvalCall { func_expr: func_ref, args: arg_refs })
+    }
+    
+    pub fn program(statements: Vec<Eval>) -> Self {
+        let stmt_refs = statements.into_iter().map(|stmt| stmt.0).collect();
+        Self::new(crate::eval::EvalProgram { statements: stmt_refs })
+    }
+    
+    pub fn block(statements: Vec<Eval>, final_expr: Option<Eval>) -> Self {
+        let stmt_refs = statements.into_iter().map(|stmt| stmt.0).collect();
+        let final_ref = final_expr.map(|expr| expr.0);
+        Self::new(crate::eval::EvalBlock { statements: stmt_refs, final_expr: final_ref })
+    }
+    
+    pub fn declare(name: String, init_expr: Option<Eval>) -> Self {
+        let init_ref = init_expr.map(|expr| expr.0);
+        Self::new(crate::eval::EvalDeclare { name, init_expr: init_ref })
+    }
+    
+    pub fn if_expr(condition: Eval, then_expr: Eval, else_expr: Option<Eval>) -> Self {
+        let cond_ref = condition.0;
+        let then_ref = then_expr.0;
+        let else_ref = else_expr.map(|expr| expr.0);
+        Self::new(crate::eval::EvalIf { condition: cond_ref, then_expr: then_ref, else_expr: else_ref })
+    }
+    
+    pub fn return_expr(expr: Option<Eval>) -> Self {
+        let expr_ref = expr.map(|e| e.0);
+        Self::new(crate::eval::EvalReturn { expr: expr_ref })
+    }
+    
+    pub fn break_expr(expr: Option<Eval>) -> Self {
+        let expr_ref = expr.map(|e| e.0);
+        Self::new(crate::eval::EvalBreak { expr: expr_ref })
+    }
+    
+    pub fn continue_expr() -> Self {
+        Self::new(crate::eval::EvalContinue)
+    }
+    
+    pub fn assign(name: String, expr: Eval) -> Self {
+        Self::new(crate::eval::EvalAssign { name, expr: expr.0 })
+    }
+    
+    pub fn loop_expr(body: Eval) -> Self {
+        Self::new(crate::eval::EvalLoop { body: body.0 })
+    }
+    
+    pub fn while_expr(condition: Eval, body: Eval) -> Self {
+        Self::new(crate::eval::EvalWhile { condition: condition.0, body: body.0 })
+    }
+    
+    pub fn for_expr(var_name: String, iter_expr: Eval, body: Eval) -> Self {
+        Self::new(crate::eval::EvalFor { var_name, iter_expr: iter_expr.0, body: body.0 })
+    }
+    
+    pub fn logical_and(left: Eval, right: Eval) -> Self {
+        Self::new(crate::eval::EvalLogicalAnd { left: left.0, right: right.0 })
+    }
+    
+    pub fn logical_or(left: Eval, right: Eval) -> Self {
+        Self::new(crate::eval::EvalLogicalOr { left: left.0, right: right.0 })
+    }
+    
+    pub fn logical_not(expr: Eval) -> Self {
+        Self::new(crate::eval::EvalLogicalNot { expr: expr.0 })
+    }
+    
+    pub fn is(left: Eval, right: Eval) -> Self {
+        Self::new(crate::eval::EvalIs { left: left.0, right: right.0 })
+    }
+    
+    pub fn get_attr(obj_expr: Eval, attr_name: String) -> Self {
+        Self::new(crate::eval::EvalGetAttr { obj_expr: obj_expr.0, attr_name })
+    }
+    
+    pub fn set_attr(obj_expr: Eval, attr_name: String, value_expr: Eval) -> Self {
+        Self::new(crate::eval::EvalSetAttr { obj_expr: obj_expr.0, attr_name, value_expr: value_expr.0 })
+    }
+    
+    pub fn get_item(obj_expr: Eval, index_expr: Eval) -> Self {
+        Self::new(crate::eval::EvalGetItem { obj_expr: obj_expr.0, index_expr: index_expr.0 })
+    }
+    
+    pub fn set_item(obj_expr: Eval, index_expr: Eval, value_expr: Eval) -> Self {
+        Self::new(crate::eval::EvalSetItem { obj_expr: obj_expr.0, index_expr: index_expr.0, value_expr: value_expr.0 })
+    }
+    
+    pub fn list(elements: Vec<Eval>) -> Self {
+        let element_refs = elements.into_iter().map(|elem| elem.0).collect();
+        Self::new(crate::eval::EvalList { elements: element_refs })
+    }
+    
+    pub fn dict(pairs: Vec<(Eval, Eval)>) -> Self {
+        let pair_refs = pairs.into_iter().map(|(k, v)| (k.0, v.0)).collect();
+        Self::new(crate::eval::EvalDict { pairs: pair_refs })
+    }
+}
 
-    // Property access
-    GetAttr(Box<Eval>, String),
-    GetItem(Box<Eval>, Box<Eval>),
-
-    // Assignment
-    Assign(String, Box<Eval>),
-    SetAttr(Box<Eval>, String, Box<Eval>),
-    SetItem(Box<Eval>, Box<Eval>, Box<Eval>),
-
-    // Variable declaration
-    Declare(String, Option<Box<Eval>>),
-
-    // Pattern-based declaration
-    DeclarePattern(EvalPattern, Box<Eval>),
-
-    // Function declaration
-    Function(Box<FunctionData>),
-    // Lambda expression
-    Lambda(Box<LambdaData>),
-
-    // Control flow
-    If(Box<Eval>, Box<Eval>, Option<Box<Eval>>),
-    While(Box<Eval>, Box<Eval>),       // condition, body
-    For(String, Box<Eval>, Box<Eval>), // variable name, iterator, body
-    Loop(Box<Eval>),
-    Return(Option<Box<Eval>>),
-    Break(Option<Box<Eval>>),
-    Continue,
-
-    // Error handling
-    Try(Box<Eval>, String, Box<Eval>), // body, catch_var, catch_body
-
-    // Resource management
-    With(Box<WithData>), // resources as (name, value) pairs, body
-
-    // Collections
-    List(Box<Vec<Eval>>),
-    Dict(Box<Vec<(Eval, Eval)>>),
-
-    // Program - sequence of statements at the same scope level (no scope boundary)
-    Program(Box<Vec<Eval>>),
-
-    // Block - with optional terminal expression (creates new scope)
-    Block(Box<Vec<Eval>>, Option<Box<Eval>>),
-
-    // Built-in operations that don't use method dispatch
-    LogicalAnd(Box<Eval>, Box<Eval>),
-    LogicalOr(Box<Eval>, Box<Eval>),
-    LogicalNot(Box<Eval>),
-    Is(Box<Eval>, Box<Eval>),
-
-    // Class support
-    ClassDecl(Box<ClassDeclData>),
-
-    // Module import
-    Import(Box<ImportData>),
-
-    // Match expression
-    Match(Box<MatchData>),
-
-    // Macro application - transforms an Eval node using a macro function
-    Macro(Box<MacroData>),
+impl PartialEq for Eval {
+    fn eq(&self, _other: &Self) -> bool {
+        // Note: PartialEq is difficult to implement for trait objects
+        // This is a placeholder - may need to be revisited
+        false
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]

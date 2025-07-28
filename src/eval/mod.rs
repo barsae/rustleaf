@@ -2,6 +2,7 @@ mod class;
 /// Evaluator module - executes the AST
 mod compiler;
 mod core;
+mod eval_structs;
 mod eval_type_constant;
 mod evaluator;
 mod function;
@@ -13,6 +14,7 @@ mod type_constant;
 pub use class::{BoundMethod, Class, ClassInstance, StaticMethod};
 pub use compiler::Compiler;
 pub use core::*;
+pub use eval_structs::*;
 pub use eval_type_constant::EvalTypeConstant;
 pub use evaluator::{ControlFlow, ErrorKind, EvalResult, Evaluator};
 pub use function::RustLeafFunction;
