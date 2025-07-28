@@ -1,18 +1,15 @@
 use anyhow::Result;
 use std::collections::HashMap;
 
-use super::{
-    scope::ScopeRef,
-    structs::{ClassMethod, Eval},
-};
-use crate::core::{Args, RustValue, Value};
+use super::{scope::ScopeRef, structs::ClassMethod};
+use crate::core::{Args, RustValue, RustValueRef, Value};
 
 /// A class definition - the "type" that can be called as a constructor
 #[derive(Debug)]
 pub struct Class {
     pub name: String,
     pub field_names: Vec<String>,
-    pub field_defaults: Vec<Option<Eval>>,
+    pub field_defaults: Vec<Option<RustValueRef>>,
     pub methods: Vec<ClassMethod>,
 }
 
@@ -20,7 +17,7 @@ impl Class {
     pub fn new(
         name: String,
         field_names: Vec<String>,
-        field_defaults: Vec<Option<Eval>>,
+        field_defaults: Vec<Option<RustValueRef>>,
         methods: Vec<ClassMethod>,
     ) -> Self {
         Self {

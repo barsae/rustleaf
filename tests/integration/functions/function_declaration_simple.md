@@ -342,471 +342,465 @@ Ok(
 # Eval
 ```rust
 Ok(
-    Eval(
-        EvalRef(
-            RefCell {
-                value: EvalProgram {
-                    statements: [
-                        EvalRef(
-                            RefCell {
-                                value: EvalFunction {
-                                    data: FunctionData {
-                                        name: "add",
-                                        params: [
-                                            (
-                                                "x",
-                                                None,
-                                                Regular,
-                                            ),
-                                            (
-                                                "y",
-                                                None,
-                                                Regular,
-                                            ),
-                                        ],
-                                        body: Eval(
-                                            EvalRef(
-                                                RefCell {
-                                                    value: EvalBlock {
-                                                        statements: [],
-                                                        final_expr: Some(
-                                                            EvalRef(
+    RustValueRef(
+        RefCell {
+            value: EvalProgram {
+                statements: [
+                    RustValueRef(
+                        RefCell {
+                            value: EvalFunction {
+                                data: FunctionData {
+                                    name: "add",
+                                    params: [
+                                        (
+                                            "x",
+                                            None,
+                                            Regular,
+                                        ),
+                                        (
+                                            "y",
+                                            None,
+                                            Regular,
+                                        ),
+                                    ],
+                                    body: RustValueRef(
+                                        RefCell {
+                                            value: EvalBlock {
+                                                statements: [],
+                                                final_expr: Some(
+                                                    RustValueRef(
+                                                        RefCell {
+                                                            value: EvalCall {
+                                                                func_expr: RustValueRef(
+                                                                    RefCell {
+                                                                        value: EvalGetAttr {
+                                                                            obj_expr: RustValueRef(
+                                                                                RefCell {
+                                                                                    value: EvalVariable {
+                                                                                        name: "x",
+                                                                                    },
+                                                                                },
+                                                                            ),
+                                                                            attr_name: "op_add",
+                                                                        },
+                                                                    },
+                                                                ),
+                                                                args: [
+                                                                    RustValueRef(
+                                                                        RefCell {
+                                                                            value: EvalVariable {
+                                                                                name: "y",
+                                                                            },
+                                                                        },
+                                                                    ),
+                                                                ],
+                                                            },
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                        },
+                                    ),
+                                },
+                            },
+                        },
+                    ),
+                    RustValueRef(
+                        RefCell {
+                            value: EvalFunction {
+                                data: FunctionData {
+                                    name: "multiply",
+                                    params: [
+                                        (
+                                            "a",
+                                            None,
+                                            Regular,
+                                        ),
+                                        (
+                                            "b",
+                                            None,
+                                            Regular,
+                                        ),
+                                    ],
+                                    body: RustValueRef(
+                                        RefCell {
+                                            value: EvalBlock {
+                                                statements: [],
+                                                final_expr: Some(
+                                                    RustValueRef(
+                                                        RefCell {
+                                                            value: EvalCall {
+                                                                func_expr: RustValueRef(
+                                                                    RefCell {
+                                                                        value: EvalGetAttr {
+                                                                            obj_expr: RustValueRef(
+                                                                                RefCell {
+                                                                                    value: EvalVariable {
+                                                                                        name: "a",
+                                                                                    },
+                                                                                },
+                                                                            ),
+                                                                            attr_name: "op_mul",
+                                                                        },
+                                                                    },
+                                                                ),
+                                                                args: [
+                                                                    RustValueRef(
+                                                                        RefCell {
+                                                                            value: EvalVariable {
+                                                                                name: "b",
+                                                                            },
+                                                                        },
+                                                                    ),
+                                                                ],
+                                                            },
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                        },
+                                    ),
+                                },
+                            },
+                        },
+                    ),
+                    RustValueRef(
+                        RefCell {
+                            value: EvalDeclare {
+                                name: "sum",
+                                init_expr: Some(
+                                    RustValueRef(
+                                        RefCell {
+                                            value: EvalCall {
+                                                func_expr: RustValueRef(
+                                                    RefCell {
+                                                        value: EvalVariable {
+                                                            name: "add",
+                                                        },
+                                                    },
+                                                ),
+                                                args: [
+                                                    RustValueRef(
+                                                        RefCell {
+                                                            value: EvalLiteral {
+                                                                value: Int(
+                                                                    5,
+                                                                ),
+                                                            },
+                                                        },
+                                                    ),
+                                                    RustValueRef(
+                                                        RefCell {
+                                                            value: EvalLiteral {
+                                                                value: Int(
+                                                                    3,
+                                                                ),
+                                                            },
+                                                        },
+                                                    ),
+                                                ],
+                                            },
+                                        },
+                                    ),
+                                ),
+                            },
+                        },
+                    ),
+                    RustValueRef(
+                        RefCell {
+                            value: EvalDeclare {
+                                name: "product",
+                                init_expr: Some(
+                                    RustValueRef(
+                                        RefCell {
+                                            value: EvalCall {
+                                                func_expr: RustValueRef(
+                                                    RefCell {
+                                                        value: EvalVariable {
+                                                            name: "multiply",
+                                                        },
+                                                    },
+                                                ),
+                                                args: [
+                                                    RustValueRef(
+                                                        RefCell {
+                                                            value: EvalLiteral {
+                                                                value: Int(
+                                                                    4,
+                                                                ),
+                                                            },
+                                                        },
+                                                    ),
+                                                    RustValueRef(
+                                                        RefCell {
+                                                            value: EvalLiteral {
+                                                                value: Int(
+                                                                    6,
+                                                                ),
+                                                            },
+                                                        },
+                                                    ),
+                                                ],
+                                            },
+                                        },
+                                    ),
+                                ),
+                            },
+                        },
+                    ),
+                    RustValueRef(
+                        RefCell {
+                            value: EvalCall {
+                                func_expr: RustValueRef(
+                                    RefCell {
+                                        value: EvalVariable {
+                                            name: "assert",
+                                        },
+                                    },
+                                ),
+                                args: [
+                                    RustValueRef(
+                                        RefCell {
+                                            value: EvalCall {
+                                                func_expr: RustValueRef(
+                                                    RefCell {
+                                                        value: EvalGetAttr {
+                                                            obj_expr: RustValueRef(
+                                                                RefCell {
+                                                                    value: EvalVariable {
+                                                                        name: "sum",
+                                                                    },
+                                                                },
+                                                            ),
+                                                            attr_name: "op_eq",
+                                                        },
+                                                    },
+                                                ),
+                                                args: [
+                                                    RustValueRef(
+                                                        RefCell {
+                                                            value: EvalLiteral {
+                                                                value: Int(
+                                                                    8,
+                                                                ),
+                                                            },
+                                                        },
+                                                    ),
+                                                ],
+                                            },
+                                        },
+                                    ),
+                                ],
+                            },
+                        },
+                    ),
+                    RustValueRef(
+                        RefCell {
+                            value: EvalCall {
+                                func_expr: RustValueRef(
+                                    RefCell {
+                                        value: EvalVariable {
+                                            name: "assert",
+                                        },
+                                    },
+                                ),
+                                args: [
+                                    RustValueRef(
+                                        RefCell {
+                                            value: EvalCall {
+                                                func_expr: RustValueRef(
+                                                    RefCell {
+                                                        value: EvalGetAttr {
+                                                            obj_expr: RustValueRef(
+                                                                RefCell {
+                                                                    value: EvalVariable {
+                                                                        name: "product",
+                                                                    },
+                                                                },
+                                                            ),
+                                                            attr_name: "op_eq",
+                                                        },
+                                                    },
+                                                ),
+                                                args: [
+                                                    RustValueRef(
+                                                        RefCell {
+                                                            value: EvalLiteral {
+                                                                value: Int(
+                                                                    24,
+                                                                ),
+                                                            },
+                                                        },
+                                                    ),
+                                                ],
+                                            },
+                                        },
+                                    ),
+                                ],
+                            },
+                        },
+                    ),
+                    RustValueRef(
+                        RefCell {
+                            value: EvalCall {
+                                func_expr: RustValueRef(
+                                    RefCell {
+                                        value: EvalVariable {
+                                            name: "assert",
+                                        },
+                                    },
+                                ),
+                                args: [
+                                    RustValueRef(
+                                        RefCell {
+                                            value: EvalCall {
+                                                func_expr: RustValueRef(
+                                                    RefCell {
+                                                        value: EvalGetAttr {
+                                                            obj_expr: RustValueRef(
                                                                 RefCell {
                                                                     value: EvalCall {
-                                                                        func_expr: EvalRef(
+                                                                        func_expr: RustValueRef(
                                                                             RefCell {
-                                                                                value: EvalGetAttr {
-                                                                                    obj_expr: EvalRef(
-                                                                                        RefCell {
-                                                                                            value: EvalVariable {
-                                                                                                name: "x",
-                                                                                            },
-                                                                                        },
-                                                                                    ),
-                                                                                    attr_name: "op_add",
+                                                                                value: EvalVariable {
+                                                                                    name: "add",
                                                                                 },
                                                                             },
                                                                         ),
                                                                         args: [
-                                                                            EvalRef(
+                                                                            RustValueRef(
                                                                                 RefCell {
-                                                                                    value: EvalVariable {
-                                                                                        name: "y",
+                                                                                    value: EvalLiteral {
+                                                                                        value: Int(
+                                                                                            10,
+                                                                                        ),
                                                                                     },
                                                                                 },
                                                                             ),
-                                                                        ],
-                                                                    },
-                                                                },
-                                                            ),
-                                                        ),
-                                                    },
-                                                },
-                                            ),
-                                        ),
-                                    },
-                                },
-                            },
-                        ),
-                        EvalRef(
-                            RefCell {
-                                value: EvalFunction {
-                                    data: FunctionData {
-                                        name: "multiply",
-                                        params: [
-                                            (
-                                                "a",
-                                                None,
-                                                Regular,
-                                            ),
-                                            (
-                                                "b",
-                                                None,
-                                                Regular,
-                                            ),
-                                        ],
-                                        body: Eval(
-                                            EvalRef(
-                                                RefCell {
-                                                    value: EvalBlock {
-                                                        statements: [],
-                                                        final_expr: Some(
-                                                            EvalRef(
-                                                                RefCell {
-                                                                    value: EvalCall {
-                                                                        func_expr: EvalRef(
-                                                                            RefCell {
-                                                                                value: EvalGetAttr {
-                                                                                    obj_expr: EvalRef(
-                                                                                        RefCell {
-                                                                                            value: EvalVariable {
-                                                                                                name: "a",
-                                                                                            },
-                                                                                        },
-                                                                                    ),
-                                                                                    attr_name: "op_mul",
-                                                                                },
-                                                                            },
-                                                                        ),
-                                                                        args: [
-                                                                            EvalRef(
+                                                                            RustValueRef(
                                                                                 RefCell {
-                                                                                    value: EvalVariable {
-                                                                                        name: "b",
-                                                                                    },
-                                                                                },
-                                                                            ),
-                                                                        ],
-                                                                    },
-                                                                },
-                                                            ),
-                                                        ),
-                                                    },
-                                                },
-                                            ),
-                                        ),
-                                    },
-                                },
-                            },
-                        ),
-                        EvalRef(
-                            RefCell {
-                                value: EvalDeclare {
-                                    name: "sum",
-                                    init_expr: Some(
-                                        EvalRef(
-                                            RefCell {
-                                                value: EvalCall {
-                                                    func_expr: EvalRef(
-                                                        RefCell {
-                                                            value: EvalVariable {
-                                                                name: "add",
-                                                            },
-                                                        },
-                                                    ),
-                                                    args: [
-                                                        EvalRef(
-                                                            RefCell {
-                                                                value: EvalLiteral {
-                                                                    value: Int(
-                                                                        5,
-                                                                    ),
-                                                                },
-                                                            },
-                                                        ),
-                                                        EvalRef(
-                                                            RefCell {
-                                                                value: EvalLiteral {
-                                                                    value: Int(
-                                                                        3,
-                                                                    ),
-                                                                },
-                                                            },
-                                                        ),
-                                                    ],
-                                                },
-                                            },
-                                        ),
-                                    ),
-                                },
-                            },
-                        ),
-                        EvalRef(
-                            RefCell {
-                                value: EvalDeclare {
-                                    name: "product",
-                                    init_expr: Some(
-                                        EvalRef(
-                                            RefCell {
-                                                value: EvalCall {
-                                                    func_expr: EvalRef(
-                                                        RefCell {
-                                                            value: EvalVariable {
-                                                                name: "multiply",
-                                                            },
-                                                        },
-                                                    ),
-                                                    args: [
-                                                        EvalRef(
-                                                            RefCell {
-                                                                value: EvalLiteral {
-                                                                    value: Int(
-                                                                        4,
-                                                                    ),
-                                                                },
-                                                            },
-                                                        ),
-                                                        EvalRef(
-                                                            RefCell {
-                                                                value: EvalLiteral {
-                                                                    value: Int(
-                                                                        6,
-                                                                    ),
-                                                                },
-                                                            },
-                                                        ),
-                                                    ],
-                                                },
-                                            },
-                                        ),
-                                    ),
-                                },
-                            },
-                        ),
-                        EvalRef(
-                            RefCell {
-                                value: EvalCall {
-                                    func_expr: EvalRef(
-                                        RefCell {
-                                            value: EvalVariable {
-                                                name: "assert",
-                                            },
-                                        },
-                                    ),
-                                    args: [
-                                        EvalRef(
-                                            RefCell {
-                                                value: EvalCall {
-                                                    func_expr: EvalRef(
-                                                        RefCell {
-                                                            value: EvalGetAttr {
-                                                                obj_expr: EvalRef(
-                                                                    RefCell {
-                                                                        value: EvalVariable {
-                                                                            name: "sum",
-                                                                        },
-                                                                    },
-                                                                ),
-                                                                attr_name: "op_eq",
-                                                            },
-                                                        },
-                                                    ),
-                                                    args: [
-                                                        EvalRef(
-                                                            RefCell {
-                                                                value: EvalLiteral {
-                                                                    value: Int(
-                                                                        8,
-                                                                    ),
-                                                                },
-                                                            },
-                                                        ),
-                                                    ],
-                                                },
-                                            },
-                                        ),
-                                    ],
-                                },
-                            },
-                        ),
-                        EvalRef(
-                            RefCell {
-                                value: EvalCall {
-                                    func_expr: EvalRef(
-                                        RefCell {
-                                            value: EvalVariable {
-                                                name: "assert",
-                                            },
-                                        },
-                                    ),
-                                    args: [
-                                        EvalRef(
-                                            RefCell {
-                                                value: EvalCall {
-                                                    func_expr: EvalRef(
-                                                        RefCell {
-                                                            value: EvalGetAttr {
-                                                                obj_expr: EvalRef(
-                                                                    RefCell {
-                                                                        value: EvalVariable {
-                                                                            name: "product",
-                                                                        },
-                                                                    },
-                                                                ),
-                                                                attr_name: "op_eq",
-                                                            },
-                                                        },
-                                                    ),
-                                                    args: [
-                                                        EvalRef(
-                                                            RefCell {
-                                                                value: EvalLiteral {
-                                                                    value: Int(
-                                                                        24,
-                                                                    ),
-                                                                },
-                                                            },
-                                                        ),
-                                                    ],
-                                                },
-                                            },
-                                        ),
-                                    ],
-                                },
-                            },
-                        ),
-                        EvalRef(
-                            RefCell {
-                                value: EvalCall {
-                                    func_expr: EvalRef(
-                                        RefCell {
-                                            value: EvalVariable {
-                                                name: "assert",
-                                            },
-                                        },
-                                    ),
-                                    args: [
-                                        EvalRef(
-                                            RefCell {
-                                                value: EvalCall {
-                                                    func_expr: EvalRef(
-                                                        RefCell {
-                                                            value: EvalGetAttr {
-                                                                obj_expr: EvalRef(
-                                                                    RefCell {
-                                                                        value: EvalCall {
-                                                                            func_expr: EvalRef(
-                                                                                RefCell {
-                                                                                    value: EvalVariable {
-                                                                                        name: "add",
-                                                                                    },
-                                                                                },
-                                                                            ),
-                                                                            args: [
-                                                                                EvalRef(
-                                                                                    RefCell {
-                                                                                        value: EvalLiteral {
-                                                                                            value: Int(
-                                                                                                10,
-                                                                                            ),
-                                                                                        },
-                                                                                    },
-                                                                                ),
-                                                                                EvalRef(
-                                                                                    RefCell {
-                                                                                        value: EvalCall {
-                                                                                            func_expr: EvalRef(
-                                                                                                RefCell {
-                                                                                                    value: EvalGetAttr {
-                                                                                                        obj_expr: EvalRef(
-                                                                                                            RefCell {
-                                                                                                                value: EvalLiteral {
-                                                                                                                    value: Int(
-                                                                                                                        2,
-                                                                                                                    ),
-                                                                                                                },
+                                                                                    value: EvalCall {
+                                                                                        func_expr: RustValueRef(
+                                                                                            RefCell {
+                                                                                                value: EvalGetAttr {
+                                                                                                    obj_expr: RustValueRef(
+                                                                                                        RefCell {
+                                                                                                            value: EvalLiteral {
+                                                                                                                value: Int(
+                                                                                                                    2,
+                                                                                                                ),
                                                                                                             },
-                                                                                                        ),
-                                                                                                        attr_name: "op_neg",
-                                                                                                    },
+                                                                                                        },
+                                                                                                    ),
+                                                                                                    attr_name: "op_neg",
                                                                                                 },
-                                                                                            ),
-                                                                                            args: [],
-                                                                                        },
-                                                                                    },
-                                                                                ),
-                                                                            ],
-                                                                        },
-                                                                    },
-                                                                ),
-                                                                attr_name: "op_eq",
-                                                            },
-                                                        },
-                                                    ),
-                                                    args: [
-                                                        EvalRef(
-                                                            RefCell {
-                                                                value: EvalLiteral {
-                                                                    value: Int(
-                                                                        8,
-                                                                    ),
-                                                                },
-                                                            },
-                                                        ),
-                                                    ],
-                                                },
-                                            },
-                                        ),
-                                    ],
-                                },
-                            },
-                        ),
-                        EvalRef(
-                            RefCell {
-                                value: EvalCall {
-                                    func_expr: EvalRef(
-                                        RefCell {
-                                            value: EvalVariable {
-                                                name: "assert",
-                                            },
-                                        },
-                                    ),
-                                    args: [
-                                        EvalRef(
-                                            RefCell {
-                                                value: EvalCall {
-                                                    func_expr: EvalRef(
-                                                        RefCell {
-                                                            value: EvalGetAttr {
-                                                                obj_expr: EvalRef(
-                                                                    RefCell {
-                                                                        value: EvalCall {
-                                                                            func_expr: EvalRef(
-                                                                                RefCell {
-                                                                                    value: EvalVariable {
-                                                                                        name: "multiply",
+                                                                                            },
+                                                                                        ),
+                                                                                        args: [],
                                                                                     },
                                                                                 },
                                                                             ),
-                                                                            args: [
-                                                                                EvalRef(
-                                                                                    RefCell {
-                                                                                        value: EvalLiteral {
-                                                                                            value: Int(
-                                                                                                0,
-                                                                                            ),
-                                                                                        },
-                                                                                    },
-                                                                                ),
-                                                                                EvalRef(
-                                                                                    RefCell {
-                                                                                        value: EvalLiteral {
-                                                                                            value: Int(
-                                                                                                100,
-                                                                                            ),
-                                                                                        },
-                                                                                    },
-                                                                                ),
-                                                                            ],
-                                                                        },
+                                                                        ],
                                                                     },
+                                                                },
+                                                            ),
+                                                            attr_name: "op_eq",
+                                                        },
+                                                    },
+                                                ),
+                                                args: [
+                                                    RustValueRef(
+                                                        RefCell {
+                                                            value: EvalLiteral {
+                                                                value: Int(
+                                                                    8,
                                                                 ),
-                                                                attr_name: "op_eq",
                                                             },
                                                         },
                                                     ),
-                                                    args: [
-                                                        EvalRef(
-                                                            RefCell {
-                                                                value: EvalLiteral {
-                                                                    value: Int(
-                                                                        0,
-                                                                    ),
-                                                                },
-                                                            },
-                                                        ),
-                                                    ],
-                                                },
+                                                ],
                                             },
-                                        ),
-                                    ],
-                                },
+                                        },
+                                    ),
+                                ],
                             },
-                        ),
-                    ],
-                },
+                        },
+                    ),
+                    RustValueRef(
+                        RefCell {
+                            value: EvalCall {
+                                func_expr: RustValueRef(
+                                    RefCell {
+                                        value: EvalVariable {
+                                            name: "assert",
+                                        },
+                                    },
+                                ),
+                                args: [
+                                    RustValueRef(
+                                        RefCell {
+                                            value: EvalCall {
+                                                func_expr: RustValueRef(
+                                                    RefCell {
+                                                        value: EvalGetAttr {
+                                                            obj_expr: RustValueRef(
+                                                                RefCell {
+                                                                    value: EvalCall {
+                                                                        func_expr: RustValueRef(
+                                                                            RefCell {
+                                                                                value: EvalVariable {
+                                                                                    name: "multiply",
+                                                                                },
+                                                                            },
+                                                                        ),
+                                                                        args: [
+                                                                            RustValueRef(
+                                                                                RefCell {
+                                                                                    value: EvalLiteral {
+                                                                                        value: Int(
+                                                                                            0,
+                                                                                        ),
+                                                                                    },
+                                                                                },
+                                                                            ),
+                                                                            RustValueRef(
+                                                                                RefCell {
+                                                                                    value: EvalLiteral {
+                                                                                        value: Int(
+                                                                                            100,
+                                                                                        ),
+                                                                                    },
+                                                                                },
+                                                                            ),
+                                                                        ],
+                                                                    },
+                                                                },
+                                                            ),
+                                                            attr_name: "op_eq",
+                                                        },
+                                                    },
+                                                ),
+                                                args: [
+                                                    RustValueRef(
+                                                        RefCell {
+                                                            value: EvalLiteral {
+                                                                value: Int(
+                                                                    0,
+                                                                ),
+                                                            },
+                                                        },
+                                                    ),
+                                                ],
+                                            },
+                                        },
+                                    ),
+                                ],
+                            },
+                        },
+                    ),
+                ],
             },
-        ),
+        },
     ),
 )
 ```

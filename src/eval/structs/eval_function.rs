@@ -13,7 +13,7 @@ impl RustValue for EvalFunction {
         let params = Params::from_vec(self.data.params.clone());
         let function = RustLeafFunction::new(
             params,
-            self.data.body.as_ref().clone(),
+            self.data.body.clone(),
             evaluator.current_env.clone(),
         );
 
@@ -39,9 +39,7 @@ impl RustValue for EvalFunction {
             }
             "body" => {
                 // Return the actual body Eval object
-                Some(Value::RustValue(crate::core::RustValueRef::new(
-                    self.data.body.0.as_rust_value(),
-                )))
+                Some(Value::RustValue(self.data.body.clone()))
             }
             _ => None,
         }
@@ -63,7 +61,7 @@ impl RustValue for EvalFunction {
             "fn {}({}) {}",
             self.data.name,
             params_str,
-            self.data.body.0.str()
+            self.data.body.str()
         )
     }
 }

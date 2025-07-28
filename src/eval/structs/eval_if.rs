@@ -1,13 +1,13 @@
 use crate::core::{RustValue, Value};
 use crate::eval::{EvalResult, Evaluator};
 
-use super::eval_ref::EvalRef;
+use crate::core::RustValueRef;
 
 #[derive(Debug, Clone)]
 pub struct EvalIf {
-    pub condition: EvalRef,
-    pub then_expr: EvalRef,
-    pub else_expr: Option<EvalRef>,
+    pub condition: RustValueRef,
+    pub then_expr: RustValueRef,
+    pub else_expr: Option<RustValueRef>,
 }
 
 impl RustValue for EvalIf {

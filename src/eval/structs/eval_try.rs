@@ -1,13 +1,13 @@
 use crate::core::RustValue;
 use crate::eval::{ControlFlow, ErrorKind, EvalResult, Evaluator};
 
-use super::eval_ref::EvalRef;
+use crate::core::RustValueRef;
 
 #[derive(Debug, Clone)]
 pub struct EvalTry {
-    pub body: EvalRef,
+    pub body: RustValueRef,
     pub catch_pattern: super::eval_ref::EvalPattern,
-    pub catch_body: EvalRef,
+    pub catch_body: RustValueRef,
 }
 
 impl RustValue for EvalTry {

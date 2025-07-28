@@ -54,9 +54,9 @@ impl RustValue for EvalWith {
             .data
             .resources
             .iter()
-            .map(|(name, expr)| format!("{} = {}", name, expr.0.str()))
+            .map(|(name, expr)| format!("{} = {}", name, expr.str()))
             .collect::<Vec<_>>()
             .join(", ");
-        format!("with {} {}", resources_str, self.data.body.0.str())
+        format!("with {} {}", resources_str, self.data.body.str())
     }
 }

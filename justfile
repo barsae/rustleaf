@@ -177,3 +177,8 @@ merge:
 # Print LoC stats
 loc:
     find . -name "*.rs" | xargs wc -l | sort
+
+# Find todos
+todo:
+   find . -name "*.rs" | xargs grep -i todo
+

@@ -1,5 +1,5 @@
 use super::{scope::ScopeRef, TypeConstant};
-use crate::{core::*, eval::Eval};
+use crate::core::*;
 use anyhow::anyhow;
 use std::path::{Path, PathBuf};
 
@@ -92,7 +92,7 @@ impl Evaluator {
         self.globals.define(name, rust_fn);
     }
 
-    pub fn eval(&mut self, eval: &Eval) -> EvalResult {
+    pub fn eval(&mut self, eval: &RustValueRef) -> EvalResult {
         // New trait-based dispatch - eliminates the massive match statement!
         match eval.eval(self) {
             Ok(result) => result,
@@ -104,7 +104,7 @@ impl Evaluator {
     pub fn handle_class_constructor(
         &mut self,
         class: &crate::eval::Class,
-        args: &[crate::eval::Eval],
+        args: &[RustValueRef],
     ) -> EvalResult {
         use std::collections::HashMap;
 

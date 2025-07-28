@@ -2,12 +2,12 @@ use crate::core::{Args, RustValue};
 use crate::eval::{ControlFlow, ErrorKind, EvalResult, Evaluator};
 use anyhow::anyhow;
 
-use super::eval_ref::EvalRef;
+use crate::core::RustValueRef;
 
 #[derive(Debug, Clone)]
 pub struct EvalGetItem {
-    pub obj_expr: EvalRef,
-    pub index_expr: EvalRef,
+    pub obj_expr: RustValueRef,
+    pub index_expr: RustValueRef,
 }
 
 impl RustValue for EvalGetItem {

@@ -80,6 +80,21 @@ impl RustValueRef {
     pub fn borrow_mut(&self) -> std::cell::RefMut<Box<dyn RustValue>> {
         self.0.borrow_mut()
     }
+
+    pub fn eval(
+        &self,
+        evaluator: &mut crate::eval::Evaluator,
+    ) -> anyhow::Result<crate::eval::EvalResult> {
+        self.0.borrow().eval(evaluator)
+    }
+
+    pub fn str(&self) -> String {
+        self.0.borrow().str()
+    }
+
+    pub fn as_rust_value(&self) -> Rc<RefCell<Box<dyn RustValue>>> {
+        self.0.clone()
+    }
 }
 
 #[derive(Clone, Debug)]

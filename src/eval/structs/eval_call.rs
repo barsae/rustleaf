@@ -1,12 +1,12 @@
 use crate::core::{Args, RustValue, Value};
 use crate::eval::{ControlFlow, ErrorKind, EvalResult, Evaluator};
 
-use super::eval_ref::EvalRef;
+use crate::core::RustValueRef;
 
 #[derive(Debug, Clone)]
 pub struct EvalCall {
-    pub func_expr: EvalRef,
-    pub args: Vec<EvalRef>,
+    pub func_expr: RustValueRef,
+    pub args: Vec<RustValueRef>,
 }
 
 impl RustValue for EvalCall {
@@ -28,8 +28,6 @@ impl RustValue for EvalCall {
                 let arg_result = arg.eval(evaluator)?;
                 match arg_result {
                     Ok(val) => {
-                        // Convert back to old Eval for compatibility
-                        // TODO: Remove this conversion once we fully migrate
                         arg_evals.push(crate::eval::Eval::literal(val));
                     }
                     Err(e) => return Ok(Err(e)),

@@ -1,19 +1,20 @@
 /// Compiler from AST to simplified evaluation IR
 use anyhow::Result;
 
-use super::structs::{ClassMethod, Eval};
+use super::constructors::Eval;
+use super::structs::ClassMethod;
 use crate::core::*;
 
 pub struct Compiler;
 
 impl Compiler {
     /// Compile an AST program to evaluation IR
-    pub fn compile(ast: Program) -> Result<Eval> {
+    pub fn compile(ast: Program) -> Result<RustValueRef> {
         let mut compiler = Self;
         compiler.compile_program(ast)
     }
 
-    fn compile_program(&mut self, program: Program) -> Result<Eval> {
+    fn compile_program(&mut self, program: Program) -> Result<RustValueRef> {
         let statements = program.0;
 
         if statements.is_empty() {
@@ -28,7 +29,7 @@ impl Compiler {
         Ok(Eval::program(eval_statements?))
     }
 
-    fn compile_statement(&mut self, stmt: Statement) -> Result<Eval> {
+    fn compile_statement(&mut self, stmt: Statement) -> Result<RustValueRef> {
         match stmt {
             Statement::Macro {
                 name,
@@ -40,8 +41,8 @@ impl Compiler {
 
                 // Create an Eval::Macro node that will call the macro function
                 Ok(Eval::macro_expr(super::structs::MacroData {
-                    macro_fn: Box::new(Eval::variable(name)),
-                    target: Box::new(target_eval),
+                    macro_fn: Eval::variable(name),
+                    target: target_eval,
                     args: Vec::new(), // For now, ignore macro arguments
                 }))
             }
@@ -134,7 +135,7 @@ impl Compiler {
                 Ok(Eval::function(super::structs::FunctionData {
                     name,
                     params: param_data,
-                    body: Box::new(compiled_body),
+                    body: compiled_body,
                 }))
             }
             Statement::ClassDecl {
@@ -154,7 +155,7 @@ impl Compiler {
         left: Expression,
         right: Expression,
         method_name: &str,
-    ) -> Result<Eval> {
+    ) -> Result<RustValueRef> {
         let left_eval = Box::new(self.compile_expression(left)?);
         let right_eval = Box::new(self.compile_expression(right)?);
         let get_method = Eval::get_attr(*left_eval, method_name.to_string());
@@ -163,10 +164,10 @@ impl Compiler {
 
     fn compile_compound_assignment(
         &mut self,
-        target_eval: Eval,
+        target_eval: RustValueRef,
         op: AssignOp,
-        value_eval: Eval,
-    ) -> Result<Eval> {
+        value_eval: RustValueRef,
+    ) -> Result<RustValueRef> {
         match op {
             AssignOp::Assign => Ok(value_eval),
             _ => {
@@ -177,7 +178,7 @@ impl Compiler {
         }
     }
 
-    fn compile_expression(&mut self, expr: Expression) -> Result<Eval> {
+    fn compile_expression(&mut self, expr: Expression) -> Result<RustValueRef> {
         match expr {
             Expression::Literal(lit) => {
                 let value = self.compile_literal(lit);
@@ -195,7 +196,7 @@ impl Compiler {
             }
             Expression::FunctionCall(func, args) => {
                 let compiled_func = self.compile_expression(*func)?;
-                let compiled_args: Result<Vec<Eval>> = args
+                let compiled_args: Result<Vec<RustValueRef>> = args
                     .into_iter()
                     .map(|arg| self.compile_expression(arg))
                     .collect();
@@ -205,21 +206,21 @@ impl Compiler {
                 // Desugar method call to function call
                 let compiled_obj = self.compile_expression(*obj)?;
                 let method_expr = Eval::get_attr(compiled_obj, method);
-                let compiled_args: Result<Vec<Eval>> = args
+                let compiled_args: Result<Vec<RustValueRef>> = args
                     .into_iter()
                     .map(|arg| self.compile_expression(arg))
                     .collect();
                 Ok(Eval::call(method_expr, compiled_args?))
             }
             Expression::List(elements) => {
-                let compiled_elements: Result<Vec<Eval>> = elements
+                let compiled_elements: Result<Vec<RustValueRef>> = elements
                     .into_iter()
                     .map(|elem| self.compile_expression(elem))
                     .collect();
                 Ok(Eval::list(compiled_elements?))
             }
             Expression::Dict(pairs) => {
-                let compiled_pairs: Result<Vec<(Eval, Eval)>> = pairs
+                let compiled_pairs: Result<Vec<(RustValueRef, RustValueRef)>> = pairs
                     .into_iter()
                     .map(|(k, v)| Ok((self.compile_expression(k)?, self.compile_expression(v)?)))
                     .collect();
@@ -365,7 +366,7 @@ impl Compiler {
                 };
                 Ok(Eval::lambda(super::structs::LambdaData {
                     params,
-                    body: Box::new(compiled_body),
+                    body: compiled_body,
                 }))
             }
 
@@ -392,7 +393,7 @@ impl Compiler {
                 let compiled_body = self.compile_block_helper(body)?;
                 Ok(Eval::with_expr(super::structs::WithData {
                     resources: compiled_resources,
-                    body: Box::new(compiled_body),
+                    body: compiled_body,
                 }))
             }
 
@@ -407,7 +408,7 @@ impl Compiler {
                     // Simple function call: left : func(args) => func(left, args)
                     Expression::FunctionCall(func, args) => {
                         let compiled_func = self.compile_expression(*func)?;
-                        let mut compiled_args: Vec<Eval> = vec![compiled_left]; // Insert left as first argument
+                        let mut compiled_args: Vec<RustValueRef> = vec![compiled_left]; // Insert left as first argument
 
                         // Add the existing arguments
                         for arg in args {
@@ -421,7 +422,7 @@ impl Compiler {
                         let compiled_obj = self.compile_expression(*obj)?;
                         let method_expr = Eval::get_attr(compiled_obj, method);
 
-                        let mut compiled_args: Vec<Eval> = vec![compiled_left]; // Insert left as first argument
+                        let mut compiled_args: Vec<RustValueRef> = vec![compiled_left]; // Insert left as first argument
 
                         // Add the existing arguments
                         for arg in args {
@@ -451,7 +452,7 @@ impl Compiler {
                     .map(|case| self.compile_match_case(case))
                     .collect();
                 Ok(Eval::match_expr(super::structs::MatchData {
-                    expr: Box::new(compiled_expr),
+                    expr: compiled_expr,
                     cases: compiled_cases?,
                 }))
             }
@@ -464,7 +465,11 @@ impl Compiler {
     }
 
     // Helper to compile unary operations to method calls: -a => a.op_get_attr("op_neg").op_call()
-    fn compile_unary_method_call(&mut self, expr: Expression, method_name: &str) -> Result<Eval> {
+    fn compile_unary_method_call(
+        &mut self,
+        expr: Expression,
+        method_name: &str,
+    ) -> Result<RustValueRef> {
         let compiled_expr = self.compile_expression(expr)?;
 
         let get_method = Eval::get_attr(compiled_expr, method_name.to_string());
@@ -483,7 +488,7 @@ impl Compiler {
         }
     }
 
-    fn compile_block_helper(&mut self, block: crate::core::Block) -> Result<Eval> {
+    fn compile_block_helper(&mut self, block: crate::core::Block) -> Result<RustValueRef> {
         let mut eval_statements = Vec::new();
 
         // Compile all statements
@@ -502,14 +507,14 @@ impl Compiler {
     }
 
     // Helper to compile "not in" as !(left in right)
-    fn compile_not_in(&mut self, left: Expression, right: Expression) -> Result<Eval> {
+    fn compile_not_in(&mut self, left: Expression, right: Expression) -> Result<RustValueRef> {
         // For 'not in', swap arguments like 'in': item not in container => !(container.op_contains(item))
         let in_expr = self.compile_binary_op(right, left, "op_contains")?;
         Ok(Eval::logical_not(in_expr))
     }
 
     // Helper to compile "is not" as !(left is right)
-    fn compile_is_not(&mut self, left: Expression, right: Expression) -> Result<Eval> {
+    fn compile_is_not(&mut self, left: Expression, right: Expression) -> Result<RustValueRef> {
         let compiled_left = self.compile_expression(left)?;
         let compiled_right = self.compile_expression(right)?;
         let is_expr = Eval::is(compiled_left, compiled_right);
@@ -519,7 +524,10 @@ impl Compiler {
     // Helper to compile interpolated strings as string concatenation
     // "Hello ${name}" becomes "Hello " + name
     // "${a} and ${b}" becomes a + " and " + b
-    fn compile_interpolated_string(&mut self, parts: Vec<InterpolationPart>) -> Result<Eval> {
+    fn compile_interpolated_string(
+        &mut self,
+        parts: Vec<InterpolationPart>,
+    ) -> Result<RustValueRef> {
         if parts.is_empty() {
             return Ok(Eval::literal(Value::String(String::new())));
         }
@@ -549,7 +557,7 @@ impl Compiler {
         // Use a single op_add call with all parts as arguments: first.op_add(second, third, ...)
         let mut parts_iter = compiled_parts.into_iter();
         let first_part = parts_iter.next().unwrap();
-        let remaining_parts: Vec<Eval> = parts_iter.collect();
+        let remaining_parts: Vec<RustValueRef> = parts_iter.collect();
 
         if remaining_parts.is_empty() {
             Ok(first_part)
@@ -565,7 +573,7 @@ impl Compiler {
         start_expr: Expression,
         end_expr: Expression,
         inclusive: bool,
-    ) -> Result<Eval> {
+    ) -> Result<RustValueRef> {
         // Extract literal integers directly from expressions
         let start_val = match start_expr {
             Expression::Literal(LiteralValue::Int(i)) => i,
@@ -585,7 +593,11 @@ impl Compiler {
         Ok(Eval::literal(Value::Range(range)))
     }
 
-    fn compile_class_decl(&mut self, name: String, members: Vec<ClassMember>) -> Result<Eval> {
+    fn compile_class_decl(
+        &mut self,
+        name: String,
+        members: Vec<ClassMember>,
+    ) -> Result<RustValueRef> {
         let mut field_names = Vec::new();
         let mut field_defaults = Vec::new();
         let mut methods = Vec::new();

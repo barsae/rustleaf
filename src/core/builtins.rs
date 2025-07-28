@@ -163,9 +163,7 @@ pub fn parse_builtin(mut args: Args) -> Result<Value> {
         .map_err(|e| anyhow!("Failed to compile: {}:\n{}", e, code_string))?;
 
     // Return the Eval directly as a RustValue
-    Ok(Value::RustValue(crate::core::RustValueRef::new(
-        eval_ir.0.as_rust_value(),
-    )))
+    Ok(Value::RustValue(eval_ir))
 }
 
 pub fn macro_identity_builtin(mut args: Args) -> Result<Value> {

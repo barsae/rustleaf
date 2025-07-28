@@ -352,297 +352,82 @@ Ok(
 # Eval
 ```rust
 Ok(
-    Eval(
-        EvalRef(
-            RefCell {
-                value: EvalProgram {
-                    statements: [
-                        EvalRef(
-                            RefCell {
-                                value: EvalClassDecl {
-                                    data: ClassDeclData {
-                                        name: "File",
-                                        field_names: [
-                                            "opened",
-                                            "closed",
-                                        ],
-                                        field_defaults: [
-                                            None,
-                                            None,
-                                        ],
-                                        methods: [
-                                            ClassMethod {
-                                                name: "op_open",
-                                                params: [
-                                                    "self",
-                                                ],
-                                                body: Eval(
-                                                    EvalRef(
-                                                        RefCell {
-                                                            value: EvalBlock {
-                                                                statements: [
-                                                                    EvalRef(
-                                                                        RefCell {
-                                                                            value: EvalSetAttr {
-                                                                                obj_expr: EvalRef(
-                                                                                    RefCell {
-                                                                                        value: EvalVariable {
-                                                                                            name: "self",
-                                                                                        },
-                                                                                    },
-                                                                                ),
-                                                                                attr_name: "opened",
-                                                                                value_expr: EvalRef(
-                                                                                    RefCell {
-                                                                                        value: EvalCall {
-                                                                                            func_expr: EvalRef(
-                                                                                                RefCell {
-                                                                                                    value: EvalGetAttr {
-                                                                                                        obj_expr: EvalRef(
-                                                                                                            RefCell {
-                                                                                                                value: EvalGetAttr {
-                                                                                                                    obj_expr: EvalRef(
-                                                                                                                        RefCell {
-                                                                                                                            value: EvalVariable {
-                                                                                                                                name: "self",
-                                                                                                                            },
-                                                                                                                        },
-                                                                                                                    ),
-                                                                                                                    attr_name: "opened",
-                                                                                                                },
-                                                                                                            },
-                                                                                                        ),
-                                                                                                        attr_name: "op_add",
-                                                                                                    },
-                                                                                                },
-                                                                                            ),
-                                                                                            args: [
-                                                                                                EvalRef(
-                                                                                                    RefCell {
-                                                                                                        value: EvalLiteral {
-                                                                                                            value: Int(
-                                                                                                                1,
-                                                                                                            ),
-                                                                                                        },
-                                                                                                    },
-                                                                                                ),
-                                                                                            ],
-                                                                                        },
-                                                                                    },
-                                                                                ),
-                                                                            },
-                                                                        },
-                                                                    ),
-                                                                ],
-                                                                final_expr: None,
-                                                            },
-                                                        },
-                                                    ),
-                                                ),
-                                                is_static: false,
-                                            },
-                                            ClassMethod {
-                                                name: "op_close",
-                                                params: [
-                                                    "self",
-                                                ],
-                                                body: Eval(
-                                                    EvalRef(
-                                                        RefCell {
-                                                            value: EvalBlock {
-                                                                statements: [
-                                                                    EvalRef(
-                                                                        RefCell {
-                                                                            value: EvalSetAttr {
-                                                                                obj_expr: EvalRef(
-                                                                                    RefCell {
-                                                                                        value: EvalVariable {
-                                                                                            name: "self",
-                                                                                        },
-                                                                                    },
-                                                                                ),
-                                                                                attr_name: "closed",
-                                                                                value_expr: EvalRef(
-                                                                                    RefCell {
-                                                                                        value: EvalCall {
-                                                                                            func_expr: EvalRef(
-                                                                                                RefCell {
-                                                                                                    value: EvalGetAttr {
-                                                                                                        obj_expr: EvalRef(
-                                                                                                            RefCell {
-                                                                                                                value: EvalGetAttr {
-                                                                                                                    obj_expr: EvalRef(
-                                                                                                                        RefCell {
-                                                                                                                            value: EvalVariable {
-                                                                                                                                name: "self",
-                                                                                                                            },
-                                                                                                                        },
-                                                                                                                    ),
-                                                                                                                    attr_name: "closed",
-                                                                                                                },
-                                                                                                            },
-                                                                                                        ),
-                                                                                                        attr_name: "op_add",
-                                                                                                    },
-                                                                                                },
-                                                                                            ),
-                                                                                            args: [
-                                                                                                EvalRef(
-                                                                                                    RefCell {
-                                                                                                        value: EvalLiteral {
-                                                                                                            value: Int(
-                                                                                                                1,
-                                                                                                            ),
-                                                                                                        },
-                                                                                                    },
-                                                                                                ),
-                                                                                            ],
-                                                                                        },
-                                                                                    },
-                                                                                ),
-                                                                            },
-                                                                        },
-                                                                    ),
-                                                                ],
-                                                                final_expr: None,
-                                                            },
-                                                        },
-                                                    ),
-                                                ),
-                                                is_static: false,
-                                            },
-                                            ClassMethod {
-                                                name: "read",
-                                                params: [
-                                                    "self",
-                                                ],
-                                                body: Eval(
-                                                    EvalRef(
-                                                        RefCell {
-                                                            value: EvalBlock {
-                                                                statements: [],
-                                                                final_expr: None,
-                                                            },
-                                                        },
-                                                    ),
-                                                ),
-                                                is_static: false,
-                                            },
-                                        ],
-                                    },
-                                },
-                            },
-                        ),
-                        EvalRef(
-                            RefCell {
-                                value: EvalDeclare {
-                                    name: "f",
-                                    init_expr: Some(
-                                        EvalRef(
-                                            RefCell {
-                                                value: EvalCall {
-                                                    func_expr: EvalRef(
-                                                        RefCell {
-                                                            value: EvalVariable {
-                                                                name: "File",
-                                                            },
-                                                        },
-                                                    ),
-                                                    args: [],
-                                                },
-                                            },
-                                        ),
-                                    ),
-                                },
-                            },
-                        ),
-                        EvalRef(
-                            RefCell {
-                                value: EvalSetAttr {
-                                    obj_expr: EvalRef(
-                                        RefCell {
-                                            value: EvalVariable {
-                                                name: "f",
-                                            },
-                                        },
-                                    ),
-                                    attr_name: "opened",
-                                    value_expr: EvalRef(
-                                        RefCell {
-                                            value: EvalLiteral {
-                                                value: Int(
-                                                    0,
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                },
-                            },
-                        ),
-                        EvalRef(
-                            RefCell {
-                                value: EvalSetAttr {
-                                    obj_expr: EvalRef(
-                                        RefCell {
-                                            value: EvalVariable {
-                                                name: "f",
-                                            },
-                                        },
-                                    ),
-                                    attr_name: "closed",
-                                    value_expr: EvalRef(
-                                        RefCell {
-                                            value: EvalLiteral {
-                                                value: Int(
-                                                    0,
-                                                ),
-                                            },
-                                        },
-                                    ),
-                                },
-                            },
-                        ),
-                        EvalRef(
-                            RefCell {
-                                value: EvalWith {
-                                    data: WithData {
-                                        resources: [
-                                            (
-                                                "f",
-                                                Eval(
-                                                    EvalRef(
-                                                        RefCell {
-                                                            value: EvalVariable {
-                                                                name: "f",
-                                                            },
-                                                        },
-                                                    ),
-                                                ),
-                                            ),
-                                        ],
-                                        body: Eval(
-                                            EvalRef(
+    RustValueRef(
+        RefCell {
+            value: EvalProgram {
+                statements: [
+                    RustValueRef(
+                        RefCell {
+                            value: EvalClassDecl {
+                                data: ClassDeclData {
+                                    name: "File",
+                                    field_names: [
+                                        "opened",
+                                        "closed",
+                                    ],
+                                    field_defaults: [
+                                        None,
+                                        None,
+                                    ],
+                                    methods: [
+                                        ClassMethod {
+                                            name: "op_open",
+                                            params: [
+                                                "self",
+                                            ],
+                                            body: RustValueRef(
                                                 RefCell {
                                                     value: EvalBlock {
                                                         statements: [
-                                                            EvalRef(
+                                                            RustValueRef(
                                                                 RefCell {
-                                                                    value: EvalCall {
-                                                                        func_expr: EvalRef(
+                                                                    value: EvalSetAttr {
+                                                                        obj_expr: RustValueRef(
                                                                             RefCell {
-                                                                                value: EvalGetAttr {
-                                                                                    obj_expr: EvalRef(
-                                                                                        RefCell {
-                                                                                            value: EvalVariable {
-                                                                                                name: "f",
-                                                                                            },
-                                                                                        },
-                                                                                    ),
-                                                                                    attr_name: "read",
+                                                                                value: EvalVariable {
+                                                                                    name: "self",
                                                                                 },
                                                                             },
                                                                         ),
-                                                                        args: [],
+                                                                        attr_name: "opened",
+                                                                        value_expr: RustValueRef(
+                                                                            RefCell {
+                                                                                value: EvalCall {
+                                                                                    func_expr: RustValueRef(
+                                                                                        RefCell {
+                                                                                            value: EvalGetAttr {
+                                                                                                obj_expr: RustValueRef(
+                                                                                                    RefCell {
+                                                                                                        value: EvalGetAttr {
+                                                                                                            obj_expr: RustValueRef(
+                                                                                                                RefCell {
+                                                                                                                    value: EvalVariable {
+                                                                                                                        name: "self",
+                                                                                                                    },
+                                                                                                                },
+                                                                                                            ),
+                                                                                                            attr_name: "opened",
+                                                                                                        },
+                                                                                                    },
+                                                                                                ),
+                                                                                                attr_name: "op_add",
+                                                                                            },
+                                                                                        },
+                                                                                    ),
+                                                                                    args: [
+                                                                                        RustValueRef(
+                                                                                            RefCell {
+                                                                                                value: EvalLiteral {
+                                                                                                    value: Int(
+                                                                                                        1,
+                                                                                                    ),
+                                                                                                },
+                                                                                            },
+                                                                                        ),
+                                                                                    ],
+                                                                                },
+                                                                            },
+                                                                        ),
                                                                     },
                                                                 },
                                                             ),
@@ -651,139 +436,342 @@ Ok(
                                                     },
                                                 },
                                             ),
-                                        ),
+                                            is_static: false,
+                                        },
+                                        ClassMethod {
+                                            name: "op_close",
+                                            params: [
+                                                "self",
+                                            ],
+                                            body: RustValueRef(
+                                                RefCell {
+                                                    value: EvalBlock {
+                                                        statements: [
+                                                            RustValueRef(
+                                                                RefCell {
+                                                                    value: EvalSetAttr {
+                                                                        obj_expr: RustValueRef(
+                                                                            RefCell {
+                                                                                value: EvalVariable {
+                                                                                    name: "self",
+                                                                                },
+                                                                            },
+                                                                        ),
+                                                                        attr_name: "closed",
+                                                                        value_expr: RustValueRef(
+                                                                            RefCell {
+                                                                                value: EvalCall {
+                                                                                    func_expr: RustValueRef(
+                                                                                        RefCell {
+                                                                                            value: EvalGetAttr {
+                                                                                                obj_expr: RustValueRef(
+                                                                                                    RefCell {
+                                                                                                        value: EvalGetAttr {
+                                                                                                            obj_expr: RustValueRef(
+                                                                                                                RefCell {
+                                                                                                                    value: EvalVariable {
+                                                                                                                        name: "self",
+                                                                                                                    },
+                                                                                                                },
+                                                                                                            ),
+                                                                                                            attr_name: "closed",
+                                                                                                        },
+                                                                                                    },
+                                                                                                ),
+                                                                                                attr_name: "op_add",
+                                                                                            },
+                                                                                        },
+                                                                                    ),
+                                                                                    args: [
+                                                                                        RustValueRef(
+                                                                                            RefCell {
+                                                                                                value: EvalLiteral {
+                                                                                                    value: Int(
+                                                                                                        1,
+                                                                                                    ),
+                                                                                                },
+                                                                                            },
+                                                                                        ),
+                                                                                    ],
+                                                                                },
+                                                                            },
+                                                                        ),
+                                                                    },
+                                                                },
+                                                            ),
+                                                        ],
+                                                        final_expr: None,
+                                                    },
+                                                },
+                                            ),
+                                            is_static: false,
+                                        },
+                                        ClassMethod {
+                                            name: "read",
+                                            params: [
+                                                "self",
+                                            ],
+                                            body: RustValueRef(
+                                                RefCell {
+                                                    value: EvalBlock {
+                                                        statements: [],
+                                                        final_expr: None,
+                                                    },
+                                                },
+                                            ),
+                                            is_static: false,
+                                        },
+                                    ],
+                                },
+                            },
+                        },
+                    ),
+                    RustValueRef(
+                        RefCell {
+                            value: EvalDeclare {
+                                name: "f",
+                                init_expr: Some(
+                                    RustValueRef(
+                                        RefCell {
+                                            value: EvalCall {
+                                                func_expr: RustValueRef(
+                                                    RefCell {
+                                                        value: EvalVariable {
+                                                            name: "File",
+                                                        },
+                                                    },
+                                                ),
+                                                args: [],
+                                            },
+                                        },
+                                    ),
+                                ),
+                            },
+                        },
+                    ),
+                    RustValueRef(
+                        RefCell {
+                            value: EvalSetAttr {
+                                obj_expr: RustValueRef(
+                                    RefCell {
+                                        value: EvalVariable {
+                                            name: "f",
+                                        },
                                     },
-                                },
-                            },
-                        ),
-                        EvalRef(
-                            RefCell {
-                                value: EvalCall {
-                                    func_expr: EvalRef(
-                                        RefCell {
-                                            value: EvalVariable {
-                                                name: "assert",
-                                            },
+                                ),
+                                attr_name: "opened",
+                                value_expr: RustValueRef(
+                                    RefCell {
+                                        value: EvalLiteral {
+                                            value: Int(
+                                                0,
+                                            ),
                                         },
-                                    ),
-                                    args: [
-                                        EvalRef(
-                                            RefCell {
-                                                value: EvalCall {
-                                                    func_expr: EvalRef(
+                                    },
+                                ),
+                            },
+                        },
+                    ),
+                    RustValueRef(
+                        RefCell {
+                            value: EvalSetAttr {
+                                obj_expr: RustValueRef(
+                                    RefCell {
+                                        value: EvalVariable {
+                                            name: "f",
+                                        },
+                                    },
+                                ),
+                                attr_name: "closed",
+                                value_expr: RustValueRef(
+                                    RefCell {
+                                        value: EvalLiteral {
+                                            value: Int(
+                                                0,
+                                            ),
+                                        },
+                                    },
+                                ),
+                            },
+                        },
+                    ),
+                    RustValueRef(
+                        RefCell {
+                            value: EvalWith {
+                                data: WithData {
+                                    resources: [
+                                        (
+                                            "f",
+                                            RustValueRef(
+                                                RefCell {
+                                                    value: EvalVariable {
+                                                        name: "f",
+                                                    },
+                                                },
+                                            ),
+                                        ),
+                                    ],
+                                    body: RustValueRef(
+                                        RefCell {
+                                            value: EvalBlock {
+                                                statements: [
+                                                    RustValueRef(
                                                         RefCell {
-                                                            value: EvalGetAttr {
-                                                                obj_expr: EvalRef(
+                                                            value: EvalCall {
+                                                                func_expr: RustValueRef(
                                                                     RefCell {
                                                                         value: EvalGetAttr {
-                                                                            obj_expr: EvalRef(
+                                                                            obj_expr: RustValueRef(
                                                                                 RefCell {
                                                                                     value: EvalVariable {
                                                                                         name: "f",
                                                                                     },
                                                                                 },
                                                                             ),
-                                                                            attr_name: "opened",
+                                                                            attr_name: "read",
                                                                         },
                                                                     },
                                                                 ),
-                                                                attr_name: "op_eq",
+                                                                args: [],
                                                             },
                                                         },
                                                     ),
-                                                    args: [
-                                                        EvalRef(
-                                                            RefCell {
-                                                                value: EvalLiteral {
-                                                                    value: Int(
-                                                                        1,
-                                                                    ),
-                                                                },
-                                                            },
-                                                        ),
-                                                    ],
-                                                },
-                                            },
-                                        ),
-                                        EvalRef(
-                                            RefCell {
-                                                value: EvalLiteral {
-                                                    value: String(
-                                                        "opened should be 1",
-                                                    ),
-                                                },
-                                            },
-                                        ),
-                                    ],
-                                },
-                            },
-                        ),
-                        EvalRef(
-                            RefCell {
-                                value: EvalCall {
-                                    func_expr: EvalRef(
-                                        RefCell {
-                                            value: EvalVariable {
-                                                name: "assert",
+                                                ],
+                                                final_expr: None,
                                             },
                                         },
                                     ),
-                                    args: [
-                                        EvalRef(
-                                            RefCell {
-                                                value: EvalCall {
-                                                    func_expr: EvalRef(
-                                                        RefCell {
-                                                            value: EvalGetAttr {
-                                                                obj_expr: EvalRef(
-                                                                    RefCell {
-                                                                        value: EvalGetAttr {
-                                                                            obj_expr: EvalRef(
-                                                                                RefCell {
-                                                                                    value: EvalVariable {
-                                                                                        name: "f",
-                                                                                    },
+                                },
+                            },
+                        },
+                    ),
+                    RustValueRef(
+                        RefCell {
+                            value: EvalCall {
+                                func_expr: RustValueRef(
+                                    RefCell {
+                                        value: EvalVariable {
+                                            name: "assert",
+                                        },
+                                    },
+                                ),
+                                args: [
+                                    RustValueRef(
+                                        RefCell {
+                                            value: EvalCall {
+                                                func_expr: RustValueRef(
+                                                    RefCell {
+                                                        value: EvalGetAttr {
+                                                            obj_expr: RustValueRef(
+                                                                RefCell {
+                                                                    value: EvalGetAttr {
+                                                                        obj_expr: RustValueRef(
+                                                                            RefCell {
+                                                                                value: EvalVariable {
+                                                                                    name: "f",
                                                                                 },
-                                                                            ),
-                                                                            attr_name: "closed",
-                                                                        },
+                                                                            },
+                                                                        ),
+                                                                        attr_name: "opened",
                                                                     },
+                                                                },
+                                                            ),
+                                                            attr_name: "op_eq",
+                                                        },
+                                                    },
+                                                ),
+                                                args: [
+                                                    RustValueRef(
+                                                        RefCell {
+                                                            value: EvalLiteral {
+                                                                value: Int(
+                                                                    1,
                                                                 ),
-                                                                attr_name: "op_eq",
                                                             },
                                                         },
                                                     ),
-                                                    args: [
-                                                        EvalRef(
-                                                            RefCell {
-                                                                value: EvalLiteral {
-                                                                    value: Int(
-                                                                        1,
-                                                                    ),
-                                                                },
-                                                            },
-                                                        ),
-                                                    ],
-                                                },
+                                                ],
                                             },
-                                        ),
-                                        EvalRef(
-                                            RefCell {
-                                                value: EvalLiteral {
-                                                    value: String(
-                                                        "closed should be 1",
-                                                    ),
-                                                },
+                                        },
+                                    ),
+                                    RustValueRef(
+                                        RefCell {
+                                            value: EvalLiteral {
+                                                value: String(
+                                                    "opened should be 1",
+                                                ),
                                             },
-                                        ),
-                                    ],
-                                },
+                                        },
+                                    ),
+                                ],
                             },
-                        ),
-                    ],
-                },
+                        },
+                    ),
+                    RustValueRef(
+                        RefCell {
+                            value: EvalCall {
+                                func_expr: RustValueRef(
+                                    RefCell {
+                                        value: EvalVariable {
+                                            name: "assert",
+                                        },
+                                    },
+                                ),
+                                args: [
+                                    RustValueRef(
+                                        RefCell {
+                                            value: EvalCall {
+                                                func_expr: RustValueRef(
+                                                    RefCell {
+                                                        value: EvalGetAttr {
+                                                            obj_expr: RustValueRef(
+                                                                RefCell {
+                                                                    value: EvalGetAttr {
+                                                                        obj_expr: RustValueRef(
+                                                                            RefCell {
+                                                                                value: EvalVariable {
+                                                                                    name: "f",
+                                                                                },
+                                                                            },
+                                                                        ),
+                                                                        attr_name: "closed",
+                                                                    },
+                                                                },
+                                                            ),
+                                                            attr_name: "op_eq",
+                                                        },
+                                                    },
+                                                ),
+                                                args: [
+                                                    RustValueRef(
+                                                        RefCell {
+                                                            value: EvalLiteral {
+                                                                value: Int(
+                                                                    1,
+                                                                ),
+                                                            },
+                                                        },
+                                                    ),
+                                                ],
+                                            },
+                                        },
+                                    ),
+                                    RustValueRef(
+                                        RefCell {
+                                            value: EvalLiteral {
+                                                value: String(
+                                                    "closed should be 1",
+                                                ),
+                                            },
+                                        },
+                                    ),
+                                ],
+                            },
+                        },
+                    ),
+                ],
             },
-        ),
+        },
     ),
 )
 ```

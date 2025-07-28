@@ -1,6 +1,6 @@
 mod class;
-/// Evaluator module - executes the AST
 mod compiler;
+mod constructors;
 mod evaluator;
 mod function;
 mod params;
@@ -8,9 +8,9 @@ mod scope;
 mod structs;
 mod type_constant;
 
-// Re-export public API
 pub use class::{BoundMethod, Class, ClassInstance, StaticMethod};
 pub use compiler::Compiler;
+pub use constructors::Eval;
 pub use evaluator::{ControlFlow, ErrorKind, EvalResult, Evaluator};
 pub use function::RustLeafFunction;
 pub use params::Params;

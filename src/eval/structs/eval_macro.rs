@@ -27,9 +27,7 @@ impl RustValue for EvalMacro {
         }
 
         // Add the target Eval as a special argument
-        let target_eval_value = Value::RustValue(crate::core::RustValueRef::new(
-            self.data.target.0.as_rust_value(),
-        ));
+        let target_eval_value = Value::RustValue(self.data.target.clone());
         arg_values.insert(0, target_eval_value);
 
         // Call the macro function
@@ -58,7 +56,7 @@ impl RustValue for EvalMacro {
             .data
             .args
             .iter()
-            .map(|arg| arg.0.str())
+            .map(|arg| arg.str())
             .collect::<Vec<_>>()
             .join(", ");
         format!("macro({})", args_str)

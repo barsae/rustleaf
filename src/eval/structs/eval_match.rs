@@ -55,9 +55,9 @@ impl RustValue for EvalMatch {
             .data
             .cases
             .iter()
-            .map(|case| format!("{:?} => {}", case.pattern, case.body.0.str()))
+            .map(|case| format!("{:?} => {}", case.pattern, case.body.str()))
             .collect::<Vec<_>>()
             .join(", ");
-        format!("match {} {{ {} }}", self.data.expr.0.str(), cases_str)
+        format!("match {} {{ {} }}", self.data.expr.str(), cases_str)
     }
 }

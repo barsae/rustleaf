@@ -71,6 +71,6 @@ pub use eval_with::EvalWith;
 
 // Re-export from eval_ref (which contains multiple related structs)
 pub use eval_ref::{
-    ClassDeclData, ClassMethod, Eval, EvalDictPattern, EvalMatchCase, EvalMatchPattern,
-    EvalPattern, EvalRef, FunctionData, ImportData, LambdaData, MacroData, MatchData, WithData,
+    ClassDeclData, ClassMethod, EvalDictPattern, EvalMatchCase, EvalMatchPattern, EvalPattern,
+    FunctionData, ImportData, LambdaData, MacroData, MatchData, WithData,
 };

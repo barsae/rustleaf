@@ -86,86 +86,84 @@ Ok(
 # Eval
 ```rust
 Ok(
-    Eval(
-        EvalRef(
-            RefCell {
-                value: EvalProgram {
-                    statements: [
-                        EvalRef(
-                            RefCell {
-                                value: EvalCall {
-                                    func_expr: EvalRef(
-                                        RefCell {
-                                            value: EvalVariable {
-                                                name: "assert",
-                                            },
+    RustValueRef(
+        RefCell {
+            value: EvalProgram {
+                statements: [
+                    RustValueRef(
+                        RefCell {
+                            value: EvalCall {
+                                func_expr: RustValueRef(
+                                    RefCell {
+                                        value: EvalVariable {
+                                            name: "assert",
                                         },
-                                    ),
-                                    args: [
-                                        EvalRef(
-                                            RefCell {
-                                                value: EvalCall {
-                                                    func_expr: EvalRef(
-                                                        RefCell {
-                                                            value: EvalGetAttr {
-                                                                obj_expr: EvalRef(
-                                                                    RefCell {
-                                                                        value: EvalLoop {
-                                                                            body: EvalRef(
-                                                                                RefCell {
-                                                                                    value: EvalBlock {
-                                                                                        statements: [
-                                                                                            EvalRef(
-                                                                                                RefCell {
-                                                                                                    value: EvalBreak {
-                                                                                                        expr: Some(
-                                                                                                            EvalRef(
-                                                                                                                RefCell {
-                                                                                                                    value: EvalLiteral {
-                                                                                                                        value: Int(
-                                                                                                                            42,
-                                                                                                                        ),
-                                                                                                                    },
+                                    },
+                                ),
+                                args: [
+                                    RustValueRef(
+                                        RefCell {
+                                            value: EvalCall {
+                                                func_expr: RustValueRef(
+                                                    RefCell {
+                                                        value: EvalGetAttr {
+                                                            obj_expr: RustValueRef(
+                                                                RefCell {
+                                                                    value: EvalLoop {
+                                                                        body: RustValueRef(
+                                                                            RefCell {
+                                                                                value: EvalBlock {
+                                                                                    statements: [
+                                                                                        RustValueRef(
+                                                                                            RefCell {
+                                                                                                value: EvalBreak {
+                                                                                                    expr: Some(
+                                                                                                        RustValueRef(
+                                                                                                            RefCell {
+                                                                                                                value: EvalLiteral {
+                                                                                                                    value: Int(
+                                                                                                                        42,
+                                                                                                                    ),
                                                                                                                 },
-                                                                                                            ),
+                                                                                                            },
                                                                                                         ),
-                                                                                                    },
+                                                                                                    ),
                                                                                                 },
-                                                                                            ),
-                                                                                        ],
-                                                                                        final_expr: None,
-                                                                                    },
+                                                                                            },
+                                                                                        ),
+                                                                                    ],
+                                                                                    final_expr: None,
                                                                                 },
-                                                                            ),
-                                                                        },
+                                                                            },
+                                                                        ),
                                                                     },
+                                                                },
+                                                            ),
+                                                            attr_name: "op_eq",
+                                                        },
+                                                    },
+                                                ),
+                                                args: [
+                                                    RustValueRef(
+                                                        RefCell {
+                                                            value: EvalLiteral {
+                                                                value: Int(
+                                                                    42,
                                                                 ),
-                                                                attr_name: "op_eq",
                                                             },
                                                         },
                                                     ),
-                                                    args: [
-                                                        EvalRef(
-                                                            RefCell {
-                                                                value: EvalLiteral {
-                                                                    value: Int(
-                                                                        42,
-                                                                    ),
-                                                                },
-                                                            },
-                                                        ),
-                                                    ],
-                                                },
+                                                ],
                                             },
-                                        ),
-                                    ],
-                                },
+                                        },
+                                    ),
+                                ],
                             },
-                        ),
-                    ],
-                },
+                        },
+                    ),
+                ],
             },
-        ),
+        },
     ),
 )
 ```

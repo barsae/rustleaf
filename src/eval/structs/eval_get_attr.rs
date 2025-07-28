@@ -2,11 +2,11 @@ use crate::core::RustValue;
 use crate::eval::{ControlFlow, ErrorKind, EvalResult, Evaluator};
 use anyhow::anyhow;
 
-use super::eval_ref::EvalRef;
+use crate::core::RustValueRef;
 
 #[derive(Debug, Clone)]
 pub struct EvalGetAttr {
-    pub obj_expr: EvalRef,
+    pub obj_expr: RustValueRef,
     pub attr_name: String,
 }
 

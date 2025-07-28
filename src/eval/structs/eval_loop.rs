@@ -1,11 +1,11 @@
 use crate::core::RustValue;
 use crate::eval::{ControlFlow, EvalResult, Evaluator};
 
-use super::eval_ref::EvalRef;
+use crate::core::RustValueRef;
 
 #[derive(Debug, Clone)]
 pub struct EvalLoop {
-    pub body: EvalRef,
+    pub body: RustValueRef,
 }
 
 impl RustValue for EvalLoop {

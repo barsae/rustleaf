@@ -2,12 +2,12 @@ use crate::core::{RustValue, Value};
 use crate::eval::{ControlFlow, ErrorKind, EvalResult, Evaluator};
 use anyhow::anyhow;
 
-use super::eval_ref::EvalRef;
+use crate::core::RustValueRef;
 
 #[derive(Debug, Clone)]
 pub struct EvalAssign {
     pub name: String,
-    pub expr: EvalRef,
+    pub expr: RustValueRef,
 }
 
 impl RustValue for EvalAssign {

@@ -1,12 +1,12 @@
 use crate::core::{RustValue, Value};
 use crate::eval::{EvalResult, Evaluator};
 
-use super::eval_ref::EvalRef;
+use crate::core::RustValueRef;
 
 #[derive(Debug, Clone)]
 pub struct EvalBlock {
-    pub statements: Vec<EvalRef>,
-    pub final_expr: Option<EvalRef>,
+    pub statements: Vec<RustValueRef>,
+    pub final_expr: Option<RustValueRef>,
 }
 
 impl RustValue for EvalBlock {

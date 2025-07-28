@@ -1,11 +1,11 @@
 use crate::core::{RustValue, Value};
 use crate::eval::{EvalResult, Evaluator};
 
-use super::eval_ref::EvalRef;
+use crate::core::RustValueRef;
 
 #[derive(Debug, Clone)]
 pub struct EvalProgram {
-    pub statements: Vec<EvalRef>,
+    pub statements: Vec<RustValueRef>,
 }
 
 impl RustValue for EvalProgram {

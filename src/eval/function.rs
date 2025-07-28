@@ -1,5 +1,5 @@
 use super::{scope::ScopeRef, Params};
-use crate::{core::*, eval::Eval};
+use crate::core::*;
 use anyhow::anyhow;
 use std::path::PathBuf;
 
@@ -8,12 +8,12 @@ use super::{ControlFlow, ErrorKind, Evaluator};
 #[derive(Debug, Clone)]
 pub struct RustLeafFunction {
     params: Params,
-    body: Eval,
+    body: RustValueRef,
     closure_env: ScopeRef,
 }
 
 impl RustLeafFunction {
-    pub fn new(params: Params, body: Eval, closure_env: ScopeRef) -> Self {
+    pub fn new(params: Params, body: RustValueRef, closure_env: ScopeRef) -> Self {
         Self {
             params,
             body,

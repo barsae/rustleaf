@@ -1,12 +1,12 @@
 use crate::core::{RustValue, Value};
 use crate::eval::{EvalResult, Evaluator};
 
-use super::eval_ref::EvalRef;
+use crate::core::RustValueRef;
 
 #[derive(Debug, Clone)]
 pub struct EvalIs {
-    pub left: EvalRef,
-    pub right: EvalRef,
+    pub left: RustValueRef,
+    pub right: RustValueRef,
 }
 
 impl RustValue for EvalIs {

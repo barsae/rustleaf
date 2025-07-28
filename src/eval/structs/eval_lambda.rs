@@ -13,7 +13,7 @@ impl RustValue for EvalLambda {
         let params = Params::from_names(&self.data.params);
         let lambda_fn = RustLeafFunction::new(
             params,
-            self.data.body.as_ref().clone(),
+            self.data.body.clone(),
             evaluator.current_env.clone(),
         );
 
@@ -22,6 +22,6 @@ impl RustValue for EvalLambda {
 
     fn str(&self) -> String {
         let params_str = self.data.params.join(", ");
-        format!("fn({}) {}", params_str, self.data.body.0.str())
+        format!("fn({}) {}", params_str, self.data.body.str())
     }
 }
