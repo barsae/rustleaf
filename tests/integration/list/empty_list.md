@@ -80,37 +80,57 @@ Ok(
 # Eval
 ```rust
 Ok(
-    Program(
-        [
-            Declare(
-                "empty",
-                Some(
-                    List(
-                        [],
+    Eval(
+        EvalRef(
+            EvalProgram {
+                statements: [
+                    EvalRef(
+                        EvalDeclare {
+                            name: "empty",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalList {
+                                        elements: [],
+                                    },
+                                ),
+                            ),
+                        },
                     ),
-                ),
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Variable(
-                                "empty",
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
                             ),
-                            "op_eq",
-                        ),
-                        [
-                            List(
-                                [],
-                            ),
-                        ],
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "empty",
+                                                    },
+                                                ),
+                                                attr_name: "op_eq",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalList {
+                                                    elements: [],
+                                                },
+                                            ),
+                                        ],
+                                    },
+                                ),
+                            ],
+                        },
                     ),
                 ],
-            ),
-        ],
+            },
+        ),
     ),
 )
 ```

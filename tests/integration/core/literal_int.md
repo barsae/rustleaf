@@ -212,149 +212,227 @@ Ok(
 # Eval
 ```rust
 Ok(
-    Program(
-        [
-            Declare(
-                "num",
-                Some(
-                    Literal(
-                        Int(
-                            123,
-                        ),
-                    ),
-                ),
-            ),
-            Declare(
-                "zero",
-                Some(
-                    Literal(
-                        Int(
-                            0,
-                        ),
-                    ),
-                ),
-            ),
-            Declare(
-                "negative",
-                Some(
-                    Call(
-                        GetAttr(
-                            Literal(
-                                Int(
-                                    42,
-                                ),
-                            ),
-                            "op_neg",
-                        ),
-                        [],
-                    ),
-                ),
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Variable(
-                                "num",
-                            ),
-                            "op_eq",
-                        ),
-                        [
-                            Literal(
-                                Int(
-                                    123,
-                                ),
-                            ),
-                        ],
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Variable(
-                                "zero",
-                            ),
-                            "op_eq",
-                        ),
-                        [
-                            Literal(
-                                Int(
-                                    0,
-                                ),
-                            ),
-                        ],
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Variable(
-                                "negative",
-                            ),
-                            "op_eq",
-                        ),
-                        [
-                            Call(
-                                GetAttr(
-                                    Literal(
-                                        Int(
-                                            42,
+    Eval(
+        EvalRef(
+            EvalProgram {
+                statements: [
+                    EvalRef(
+                        EvalDeclare {
+                            name: "num",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: Int(
+                                            123,
                                         ),
-                                    ),
-                                    "op_neg",
+                                    },
                                 ),
-                                [],
                             ),
-                        ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalDeclare {
+                            name: "zero",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: Int(
+                                            0,
+                                        ),
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                    EvalRef(
+                        EvalDeclare {
+                            name: "negative",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalLiteral {
+                                                        value: Int(
+                                                            42,
+                                                        ),
+                                                    },
+                                                ),
+                                                attr_name: "op_neg",
+                                            },
+                                        ),
+                                        args: [],
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "num",
+                                                    },
+                                                ),
+                                                attr_name: "op_eq",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        123,
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "zero",
+                                                    },
+                                                ),
+                                                attr_name: "op_eq",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        0,
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "negative",
+                                                    },
+                                                ),
+                                                attr_name: "op_eq",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalCall {
+                                                    func_expr: EvalRef(
+                                                        EvalGetAttr {
+                                                            obj_expr: EvalRef(
+                                                                EvalLiteral {
+                                                                    value: Int(
+                                                                        42,
+                                                                    ),
+                                                                },
+                                                            ),
+                                                            attr_name: "op_neg",
+                                                        },
+                                                    ),
+                                                    args: [],
+                                                },
+                                            ),
+                                        ],
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalCall {
+                                                        func_expr: EvalRef(
+                                                            EvalGetAttr {
+                                                                obj_expr: EvalRef(
+                                                                    EvalVariable {
+                                                                        name: "num",
+                                                                    },
+                                                                ),
+                                                                attr_name: "op_add",
+                                                            },
+                                                        ),
+                                                        args: [
+                                                            EvalRef(
+                                                                EvalVariable {
+                                                                    name: "zero",
+                                                                },
+                                                            ),
+                                                        ],
+                                                    },
+                                                ),
+                                                attr_name: "op_eq",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        123,
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
+                                ),
+                            ],
+                        },
                     ),
                 ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Call(
-                                GetAttr(
-                                    Variable(
-                                        "num",
-                                    ),
-                                    "op_add",
-                                ),
-                                [
-                                    Variable(
-                                        "zero",
-                                    ),
-                                ],
-                            ),
-                            "op_eq",
-                        ),
-                        [
-                            Literal(
-                                Int(
-                                    123,
-                                ),
-                            ),
-                        ],
-                    ),
-                ],
-            ),
-        ],
+            },
+        ),
     ),
 )
 ```

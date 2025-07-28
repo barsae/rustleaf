@@ -118,66 +118,94 @@ Ok(
 # Eval
 ```rust
 Ok(
-    Program(
-        [
-            Import(
-                ImportData {
-                    module: "math",
-                    items: Specific(
-                        [
-                            ImportItem {
-                                name: "adder",
-                                alias: None,
+    Eval(
+        EvalRef(
+            EvalProgram {
+                statements: [
+                    EvalRef(
+                        EvalImport {
+                            data: ImportData {
+                                module: "math",
+                                items: Specific(
+                                    [
+                                        ImportItem {
+                                            name: "adder",
+                                            alias: None,
+                                        },
+                                    ],
+                                ),
                             },
-                        ],
+                        },
                     ),
-                },
-            ),
-            Declare(
-                "x",
-                Some(
-                    Call(
-                        Variable(
-                            "adder",
-                        ),
-                        [
-                            Literal(
-                                Int(
-                                    1,
+                    EvalRef(
+                        EvalDeclare {
+                            name: "x",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalVariable {
+                                                name: "adder",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        1,
+                                                    ),
+                                                },
+                                            ),
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        2,
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
                                 ),
                             ),
-                            Literal(
-                                Int(
-                                    2,
-                                ),
-                            ),
-                        ],
+                        },
                     ),
-                ),
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Variable(
-                                "x",
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
                             ),
-                            "op_eq",
-                        ),
-                        [
-                            Literal(
-                                Int(
-                                    3,
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "x",
+                                                    },
+                                                ),
+                                                attr_name: "op_eq",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        3,
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
                                 ),
-                            ),
-                        ],
+                            ],
+                        },
                     ),
                 ],
-            ),
-        ],
+            },
+        ),
     ),
 )
 ```

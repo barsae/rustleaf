@@ -204,143 +204,219 @@ Ok(
 # Eval
 ```rust
 Ok(
-    Program(
-        [
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            LogicalNot(
-                                Literal(
-                                    Bool(
-                                        true,
-                                    ),
-                                ),
+    Eval(
+        EvalRef(
+            EvalProgram {
+                statements: [
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
                             ),
-                            "op_eq",
-                        ),
-                        [
-                            Literal(
-                                Bool(
-                                    false,
-                                ),
-                            ),
-                        ],
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            LogicalNot(
-                                Literal(
-                                    Bool(
-                                        false,
-                                    ),
-                                ),
-                            ),
-                            "op_eq",
-                        ),
-                        [
-                            Literal(
-                                Bool(
-                                    true,
-                                ),
-                            ),
-                        ],
-                    ),
-                ],
-            ),
-            Declare(
-                "x",
-                Some(
-                    Literal(
-                        Int(
-                            5,
-                        ),
-                    ),
-                ),
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            LogicalNot(
-                                Call(
-                                    GetAttr(
-                                        Variable(
-                                            "x",
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalLogicalNot {
+                                                        expr: EvalRef(
+                                                            EvalLiteral {
+                                                                value: Bool(
+                                                                    true,
+                                                                ),
+                                                            },
+                                                        ),
+                                                    },
+                                                ),
+                                                attr_name: "op_eq",
+                                            },
                                         ),
-                                        "op_gt",
-                                    ),
-                                    [
-                                        Literal(
-                                            Int(
-                                                10,
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Bool(
+                                                        false,
+                                                    ),
+                                                },
                                             ),
-                                        ),
-                                    ],
+                                        ],
+                                    },
                                 ),
-                            ),
-                            "op_eq",
-                        ),
-                        [
-                            Literal(
-                                Bool(
-                                    true,
-                                ),
-                            ),
-                        ],
+                            ],
+                        },
                     ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            LogicalNot(
-                                Call(
-                                    GetAttr(
-                                        Variable(
-                                            "x",
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalLogicalNot {
+                                                        expr: EvalRef(
+                                                            EvalLiteral {
+                                                                value: Bool(
+                                                                    false,
+                                                                ),
+                                                            },
+                                                        ),
+                                                    },
+                                                ),
+                                                attr_name: "op_eq",
+                                            },
                                         ),
-                                        "op_lt",
-                                    ),
-                                    [
-                                        Literal(
-                                            Int(
-                                                3,
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Bool(
+                                                        true,
+                                                    ),
+                                                },
                                             ),
+                                        ],
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalDeclare {
+                            name: "x",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: Int(
+                                            5,
                                         ),
-                                    ],
+                                    },
                                 ),
                             ),
-                            "op_eq",
-                        ),
-                        [
-                            Literal(
-                                Bool(
-                                    true,
-                                ),
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
                             ),
-                        ],
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalLogicalNot {
+                                                        expr: EvalRef(
+                                                            EvalCall {
+                                                                func_expr: EvalRef(
+                                                                    EvalGetAttr {
+                                                                        obj_expr: EvalRef(
+                                                                            EvalVariable {
+                                                                                name: "x",
+                                                                            },
+                                                                        ),
+                                                                        attr_name: "op_gt",
+                                                                    },
+                                                                ),
+                                                                args: [
+                                                                    EvalRef(
+                                                                        EvalLiteral {
+                                                                            value: Int(
+                                                                                10,
+                                                                            ),
+                                                                        },
+                                                                    ),
+                                                                ],
+                                                            },
+                                                        ),
+                                                    },
+                                                ),
+                                                attr_name: "op_eq",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Bool(
+                                                        true,
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalLogicalNot {
+                                                        expr: EvalRef(
+                                                            EvalCall {
+                                                                func_expr: EvalRef(
+                                                                    EvalGetAttr {
+                                                                        obj_expr: EvalRef(
+                                                                            EvalVariable {
+                                                                                name: "x",
+                                                                            },
+                                                                        ),
+                                                                        attr_name: "op_lt",
+                                                                    },
+                                                                ),
+                                                                args: [
+                                                                    EvalRef(
+                                                                        EvalLiteral {
+                                                                            value: Int(
+                                                                                3,
+                                                                            ),
+                                                                        },
+                                                                    ),
+                                                                ],
+                                                            },
+                                                        ),
+                                                    },
+                                                ),
+                                                attr_name: "op_eq",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Bool(
+                                                        true,
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
+                                ),
+                            ],
+                        },
                     ),
                 ],
-            ),
-        ],
+            },
+        ),
     ),
 )
 ```

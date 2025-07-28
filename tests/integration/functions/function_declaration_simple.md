@@ -342,245 +342,361 @@ Ok(
 # Eval
 ```rust
 Ok(
-    Program(
-        [
-            Function(
-                FunctionData {
-                    name: "add",
-                    params: [
-                        (
-                            "x",
-                            None,
-                            Regular,
-                        ),
-                        (
-                            "y",
-                            None,
-                            Regular,
-                        ),
-                    ],
-                    body: Block(
-                        [],
-                        Some(
-                            Call(
-                                GetAttr(
-                                    Variable(
+    Eval(
+        EvalRef(
+            EvalProgram {
+                statements: [
+                    EvalRef(
+                        EvalFunction {
+                            data: FunctionData {
+                                name: "add",
+                                params: [
+                                    (
                                         "x",
+                                        None,
+                                        Regular,
                                     ),
-                                    "op_add",
-                                ),
-                                [
-                                    Variable(
+                                    (
                                         "y",
+                                        None,
+                                        Regular,
                                     ),
                                 ],
-                            ),
-                        ),
-                    ),
-                },
-            ),
-            Function(
-                FunctionData {
-                    name: "multiply",
-                    params: [
-                        (
-                            "a",
-                            None,
-                            Regular,
-                        ),
-                        (
-                            "b",
-                            None,
-                            Regular,
-                        ),
-                    ],
-                    body: Block(
-                        [],
-                        Some(
-                            Call(
-                                GetAttr(
-                                    Variable(
-                                        "a",
-                                    ),
-                                    "op_mul",
-                                ),
-                                [
-                                    Variable(
-                                        "b",
-                                    ),
-                                ],
-                            ),
-                        ),
-                    ),
-                },
-            ),
-            Declare(
-                "sum",
-                Some(
-                    Call(
-                        Variable(
-                            "add",
-                        ),
-                        [
-                            Literal(
-                                Int(
-                                    5,
-                                ),
-                            ),
-                            Literal(
-                                Int(
-                                    3,
-                                ),
-                            ),
-                        ],
-                    ),
-                ),
-            ),
-            Declare(
-                "product",
-                Some(
-                    Call(
-                        Variable(
-                            "multiply",
-                        ),
-                        [
-                            Literal(
-                                Int(
-                                    4,
-                                ),
-                            ),
-                            Literal(
-                                Int(
-                                    6,
-                                ),
-                            ),
-                        ],
-                    ),
-                ),
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Variable(
-                                "sum",
-                            ),
-                            "op_eq",
-                        ),
-                        [
-                            Literal(
-                                Int(
-                                    8,
-                                ),
-                            ),
-                        ],
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Variable(
-                                "product",
-                            ),
-                            "op_eq",
-                        ),
-                        [
-                            Literal(
-                                Int(
-                                    24,
-                                ),
-                            ),
-                        ],
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Call(
-                                Variable(
-                                    "add",
-                                ),
-                                [
-                                    Literal(
-                                        Int(
-                                            10,
-                                        ),
-                                    ),
-                                    Call(
-                                        GetAttr(
-                                            Literal(
-                                                Int(
-                                                    2,
+                                body: Eval(
+                                    EvalRef(
+                                        EvalBlock {
+                                            statements: [],
+                                            final_expr: Some(
+                                                EvalRef(
+                                                    EvalCall {
+                                                        func_expr: EvalRef(
+                                                            EvalGetAttr {
+                                                                obj_expr: EvalRef(
+                                                                    EvalVariable {
+                                                                        name: "x",
+                                                                    },
+                                                                ),
+                                                                attr_name: "op_add",
+                                                            },
+                                                        ),
+                                                        args: [
+                                                            EvalRef(
+                                                                EvalVariable {
+                                                                    name: "y",
+                                                                },
+                                                            ),
+                                                        ],
+                                                    },
                                                 ),
                                             ),
-                                            "op_neg",
-                                        ),
-                                        [],
+                                        },
+                                    ),
+                                ),
+                            },
+                        },
+                    ),
+                    EvalRef(
+                        EvalFunction {
+                            data: FunctionData {
+                                name: "multiply",
+                                params: [
+                                    (
+                                        "a",
+                                        None,
+                                        Regular,
+                                    ),
+                                    (
+                                        "b",
+                                        None,
+                                        Regular,
                                     ),
                                 ],
-                            ),
-                            "op_eq",
-                        ),
-                        [
-                            Literal(
-                                Int(
-                                    8,
+                                body: Eval(
+                                    EvalRef(
+                                        EvalBlock {
+                                            statements: [],
+                                            final_expr: Some(
+                                                EvalRef(
+                                                    EvalCall {
+                                                        func_expr: EvalRef(
+                                                            EvalGetAttr {
+                                                                obj_expr: EvalRef(
+                                                                    EvalVariable {
+                                                                        name: "a",
+                                                                    },
+                                                                ),
+                                                                attr_name: "op_mul",
+                                                            },
+                                                        ),
+                                                        args: [
+                                                            EvalRef(
+                                                                EvalVariable {
+                                                                    name: "b",
+                                                                },
+                                                            ),
+                                                        ],
+                                                    },
+                                                ),
+                                            ),
+                                        },
+                                    ),
+                                ),
+                            },
+                        },
+                    ),
+                    EvalRef(
+                        EvalDeclare {
+                            name: "sum",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalVariable {
+                                                name: "add",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        5,
+                                                    ),
+                                                },
+                                            ),
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        3,
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
                                 ),
                             ),
-                        ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalDeclare {
+                            name: "product",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalVariable {
+                                                name: "multiply",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        4,
+                                                    ),
+                                                },
+                                            ),
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        6,
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "sum",
+                                                    },
+                                                ),
+                                                attr_name: "op_eq",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        8,
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "product",
+                                                    },
+                                                ),
+                                                attr_name: "op_eq",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        24,
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalCall {
+                                                        func_expr: EvalRef(
+                                                            EvalVariable {
+                                                                name: "add",
+                                                            },
+                                                        ),
+                                                        args: [
+                                                            EvalRef(
+                                                                EvalLiteral {
+                                                                    value: Int(
+                                                                        10,
+                                                                    ),
+                                                                },
+                                                            ),
+                                                            EvalRef(
+                                                                EvalCall {
+                                                                    func_expr: EvalRef(
+                                                                        EvalGetAttr {
+                                                                            obj_expr: EvalRef(
+                                                                                EvalLiteral {
+                                                                                    value: Int(
+                                                                                        2,
+                                                                                    ),
+                                                                                },
+                                                                            ),
+                                                                            attr_name: "op_neg",
+                                                                        },
+                                                                    ),
+                                                                    args: [],
+                                                                },
+                                                            ),
+                                                        ],
+                                                    },
+                                                ),
+                                                attr_name: "op_eq",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        8,
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalCall {
+                                                        func_expr: EvalRef(
+                                                            EvalVariable {
+                                                                name: "multiply",
+                                                            },
+                                                        ),
+                                                        args: [
+                                                            EvalRef(
+                                                                EvalLiteral {
+                                                                    value: Int(
+                                                                        0,
+                                                                    ),
+                                                                },
+                                                            ),
+                                                            EvalRef(
+                                                                EvalLiteral {
+                                                                    value: Int(
+                                                                        100,
+                                                                    ),
+                                                                },
+                                                            ),
+                                                        ],
+                                                    },
+                                                ),
+                                                attr_name: "op_eq",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        0,
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
+                                ),
+                            ],
+                        },
                     ),
                 ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Call(
-                                Variable(
-                                    "multiply",
-                                ),
-                                [
-                                    Literal(
-                                        Int(
-                                            0,
-                                        ),
-                                    ),
-                                    Literal(
-                                        Int(
-                                            100,
-                                        ),
-                                    ),
-                                ],
-                            ),
-                            "op_eq",
-                        ),
-                        [
-                            Literal(
-                                Int(
-                                    0,
-                                ),
-                            ),
-                        ],
-                    ),
-                ],
-            ),
-        ],
+            },
+        ),
     ),
 )
 ```

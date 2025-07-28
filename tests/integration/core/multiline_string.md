@@ -138,85 +138,129 @@ Ok(
 # Eval
 ```rust
 Ok(
-    Program(
-        [
-            Declare(
-                "multiline",
-                Some(
-                    Literal(
-                        String(
-                            "This is a\nmultiline string\nwith multiple lines",
-                        ),
-                    ),
-                ),
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Variable(
-                                "multiline",
-                            ),
-                            "op_ne",
-                        ),
-                        [
-                            Literal(
-                                String(
-                                    "single line",
+    Eval(
+        EvalRef(
+            EvalProgram {
+                statements: [
+                    EvalRef(
+                        EvalDeclare {
+                            name: "multiline",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: String(
+                                            "This is a\nmultiline string\nwith multiple lines",
+                                        ),
+                                    },
                                 ),
                             ),
-                        ],
+                        },
                     ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Variable(
-                                "multiline",
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
                             ),
-                            "op_contains",
-                        ),
-                        [
-                            Literal(
-                                String(
-                                    "multiline",
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "multiline",
+                                                    },
+                                                ),
+                                                attr_name: "op_ne",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: String(
+                                                        "single line",
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
                                 ),
-                            ),
-                        ],
+                            ],
+                        },
                     ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Variable(
-                                "multiline",
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
                             ),
-                            "op_contains",
-                        ),
-                        [
-                            Literal(
-                                String(
-                                    "This is a",
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "multiline",
+                                                    },
+                                                ),
+                                                attr_name: "op_contains",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: String(
+                                                        "multiline",
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
                                 ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
                             ),
-                        ],
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "multiline",
+                                                    },
+                                                ),
+                                                attr_name: "op_contains",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: String(
+                                                        "This is a",
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
+                                ),
+                            ],
+                        },
                     ),
                 ],
-            ),
-        ],
+            },
+        ),
     ),
 )
 ```

@@ -272,151 +272,237 @@ Ok(
 # Eval
 ```rust
 Ok(
-    Program(
-        [
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    LogicalNot(
-                        Call(
-                            Variable(
-                                "is_unit",
+    Eval(
+        EvalRef(
+            EvalProgram {
+                statements: [
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
                             ),
-                            [
-                                Literal(
-                                    Int(
-                                        42,
-                                    ),
-                                ),
-                            ],
-                        ),
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    LogicalNot(
-                        Call(
-                            Variable(
-                                "is_unit",
-                            ),
-                            [
-                                Literal(
-                                    String(
-                                        "hello",
-                                    ),
-                                ),
-                            ],
-                        ),
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    LogicalNot(
-                        Call(
-                            Variable(
-                                "is_unit",
-                            ),
-                            [
-                                Literal(
-                                    Bool(
-                                        true,
-                                    ),
-                                ),
-                            ],
-                        ),
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    LogicalNot(
-                        Call(
-                            Variable(
-                                "is_unit",
-                            ),
-                            [
-                                List(
-                                    [],
-                                ),
-                            ],
-                        ),
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    LogicalNot(
-                        Call(
-                            Variable(
-                                "is_unit",
-                            ),
-                            [
-                                Dict(
-                                    [],
-                                ),
-                            ],
-                        ),
-                    ),
-                ],
-            ),
-            Function(
-                FunctionData {
-                    name: "side_effect",
-                    params: [],
-                    body: Block(
-                        [
-                            Declare(
-                                "x",
-                                Some(
-                                    Literal(
-                                        Int(
-                                            1,
+                            args: [
+                                EvalRef(
+                                    EvalLogicalNot {
+                                        expr: EvalRef(
+                                            EvalCall {
+                                                func_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "is_unit",
+                                                    },
+                                                ),
+                                                args: [
+                                                    EvalRef(
+                                                        EvalLiteral {
+                                                            value: Int(
+                                                                42,
+                                                            ),
+                                                        },
+                                                    ),
+                                                ],
+                                            },
                                         ),
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalLogicalNot {
+                                        expr: EvalRef(
+                                            EvalCall {
+                                                func_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "is_unit",
+                                                    },
+                                                ),
+                                                args: [
+                                                    EvalRef(
+                                                        EvalLiteral {
+                                                            value: String(
+                                                                "hello",
+                                                            ),
+                                                        },
+                                                    ),
+                                                ],
+                                            },
+                                        ),
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalLogicalNot {
+                                        expr: EvalRef(
+                                            EvalCall {
+                                                func_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "is_unit",
+                                                    },
+                                                ),
+                                                args: [
+                                                    EvalRef(
+                                                        EvalLiteral {
+                                                            value: Bool(
+                                                                true,
+                                                            ),
+                                                        },
+                                                    ),
+                                                ],
+                                            },
+                                        ),
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalLogicalNot {
+                                        expr: EvalRef(
+                                            EvalCall {
+                                                func_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "is_unit",
+                                                    },
+                                                ),
+                                                args: [
+                                                    EvalRef(
+                                                        EvalList {
+                                                            elements: [],
+                                                        },
+                                                    ),
+                                                ],
+                                            },
+                                        ),
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalLogicalNot {
+                                        expr: EvalRef(
+                                            EvalCall {
+                                                func_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "is_unit",
+                                                    },
+                                                ),
+                                                args: [
+                                                    EvalRef(
+                                                        EvalDict {
+                                                            pairs: [],
+                                                        },
+                                                    ),
+                                                ],
+                                            },
+                                        ),
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalFunction {
+                            data: FunctionData {
+                                name: "side_effect",
+                                params: [],
+                                body: Eval(
+                                    EvalRef(
+                                        EvalBlock {
+                                            statements: [
+                                                EvalRef(
+                                                    EvalDeclare {
+                                                        name: "x",
+                                                        init_expr: Some(
+                                                            EvalRef(
+                                                                EvalLiteral {
+                                                                    value: Int(
+                                                                        1,
+                                                                    ),
+                                                                },
+                                                            ),
+                                                        ),
+                                                    },
+                                                ),
+                                            ],
+                                            final_expr: None,
+                                        },
                                     ),
                                 ),
-                            ),
-                        ],
-                        None,
+                            },
+                        },
                     ),
-                },
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        Variable(
-                            "is_unit",
-                        ),
-                        [
-                            Call(
-                                Variable(
-                                    "side_effect",
-                                ),
-                                [],
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
                             ),
-                        ],
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalVariable {
+                                                name: "is_unit",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalCall {
+                                                    func_expr: EvalRef(
+                                                        EvalVariable {
+                                                            name: "side_effect",
+                                                        },
+                                                    ),
+                                                    args: [],
+                                                },
+                                            ),
+                                        ],
+                                    },
+                                ),
+                            ],
+                        },
                     ),
                 ],
-            ),
-        ],
+            },
+        ),
     ),
 )
 ```

@@ -9,8 +9,7 @@ print(e);
 
 # Output
 ```
-var a = 1;
-var b = 2;
+Program(2 statements)
 ```
 
 # Result
@@ -86,36 +85,54 @@ Ok(
 # Eval
 ```rust
 Ok(
-    Program(
-        [
-            Declare(
-                "e",
-                Some(
-                    Call(
-                        Variable(
-                            "parse",
-                        ),
-                        [
-                            Literal(
-                                String(
-                                    "var a = 1; var b = 2;",
+    Eval(
+        EvalRef(
+            EvalProgram {
+                statements: [
+                    EvalRef(
+                        EvalDeclare {
+                            name: "e",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalVariable {
+                                                name: "parse",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: String(
+                                                        "var a = 1; var b = 2;",
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
                                 ),
                             ),
-                        ],
+                        },
                     ),
-                ),
-            ),
-            Call(
-                Variable(
-                    "print",
-                ),
-                [
-                    Variable(
-                        "e",
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "print",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalVariable {
+                                        name: "e",
+                                    },
+                                ),
+                            ],
+                        },
                     ),
                 ],
-            ),
-        ],
+            },
+        ),
     ),
 )
 ```

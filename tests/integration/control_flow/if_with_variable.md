@@ -125,77 +125,113 @@ Ok(
 # Eval
 ```rust
 Ok(
-    Program(
-        [
-            Declare(
-                "x",
-                Some(
-                    Literal(
-                        Int(
-                            5,
-                        ),
+    Eval(
+        EvalRef(
+            EvalProgram {
+                statements: [
+                    EvalRef(
+                        EvalDeclare {
+                            name: "x",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: Int(
+                                            5,
+                                        ),
+                                    },
+                                ),
+                            ),
+                        },
                     ),
-                ),
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            If(
-                                Call(
-                                    GetAttr(
-                                        Variable(
-                                            "x",
-                                        ),
-                                        "op_gt",
-                                    ),
-                                    [
-                                        Literal(
-                                            Int(
-                                                0,
-                                            ),
-                                        ),
-                                    ],
-                                ),
-                                Block(
-                                    [],
-                                    Some(
-                                        Literal(
-                                            String(
-                                                "positive",
-                                            ),
-                                        ),
-                                    ),
-                                ),
-                                Some(
-                                    Block(
-                                        [],
-                                        Some(
-                                            Literal(
-                                                String(
-                                                    "zero or negative",
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalIf {
+                                                        condition: EvalRef(
+                                                            EvalCall {
+                                                                func_expr: EvalRef(
+                                                                    EvalGetAttr {
+                                                                        obj_expr: EvalRef(
+                                                                            EvalVariable {
+                                                                                name: "x",
+                                                                            },
+                                                                        ),
+                                                                        attr_name: "op_gt",
+                                                                    },
+                                                                ),
+                                                                args: [
+                                                                    EvalRef(
+                                                                        EvalLiteral {
+                                                                            value: Int(
+                                                                                0,
+                                                                            ),
+                                                                        },
+                                                                    ),
+                                                                ],
+                                                            },
+                                                        ),
+                                                        then_expr: EvalRef(
+                                                            EvalBlock {
+                                                                statements: [],
+                                                                final_expr: Some(
+                                                                    EvalRef(
+                                                                        EvalLiteral {
+                                                                            value: String(
+                                                                                "positive",
+                                                                            ),
+                                                                        },
+                                                                    ),
+                                                                ),
+                                                            },
+                                                        ),
+                                                        else_expr: Some(
+                                                            EvalRef(
+                                                                EvalBlock {
+                                                                    statements: [],
+                                                                    final_expr: Some(
+                                                                        EvalRef(
+                                                                            EvalLiteral {
+                                                                                value: String(
+                                                                                    "zero or negative",
+                                                                                ),
+                                                                            },
+                                                                        ),
+                                                                    ),
+                                                                },
+                                                            ),
+                                                        ),
+                                                    },
                                                 ),
-                                            ),
+                                                attr_name: "op_eq",
+                                            },
                                         ),
-                                    ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: String(
+                                                        "positive",
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
                                 ),
-                            ),
-                            "op_eq",
-                        ),
-                        [
-                            Literal(
-                                String(
-                                    "positive",
-                                ),
-                            ),
-                        ],
+                            ],
+                        },
                     ),
                 ],
-            ),
-        ],
+            },
+        ),
     ),
 )
 ```

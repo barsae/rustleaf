@@ -110,68 +110,102 @@ Ok(
 # Eval
 ```rust
 Ok(
-    Program(
-        [
-            Declare(
-                "name",
-                Some(
-                    Literal(
-                        String(
-                            "World",
-                        ),
+    Eval(
+        EvalRef(
+            EvalProgram {
+                statements: [
+                    EvalRef(
+                        EvalDeclare {
+                            name: "name",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: String(
+                                            "World",
+                                        ),
+                                    },
+                                ),
+                            ),
+                        },
                     ),
-                ),
-            ),
-            Declare(
-                "result",
-                Some(
-                    Call(
-                        GetAttr(
-                            Literal(
-                                String(
-                                    "Hello ",
+                    EvalRef(
+                        EvalDeclare {
+                            name: "result",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalLiteral {
+                                                        value: String(
+                                                            "Hello ",
+                                                        ),
+                                                    },
+                                                ),
+                                                attr_name: "op_add",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalCall {
+                                                    func_expr: EvalRef(
+                                                        EvalVariable {
+                                                            name: "str",
+                                                        },
+                                                    ),
+                                                    args: [
+                                                        EvalRef(
+                                                            EvalVariable {
+                                                                name: "name",
+                                                            },
+                                                        ),
+                                                    ],
+                                                },
+                                            ),
+                                        ],
+                                    },
                                 ),
                             ),
-                            "op_add",
-                        ),
-                        [
-                            Call(
-                                Variable(
-                                    "str",
-                                ),
-                                [
-                                    Variable(
-                                        "name",
-                                    ),
-                                ],
-                            ),
-                        ],
+                        },
                     ),
-                ),
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Variable(
-                                "result",
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
                             ),
-                            "op_eq",
-                        ),
-                        [
-                            Literal(
-                                String(
-                                    "Hello World",
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "result",
+                                                    },
+                                                ),
+                                                attr_name: "op_eq",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: String(
+                                                        "Hello World",
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
                                 ),
-                            ),
-                        ],
+                            ],
+                        },
                     ),
                 ],
-            ),
-        ],
+            },
+        ),
     ),
 )
 ```

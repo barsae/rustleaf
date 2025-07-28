@@ -1,6 +1,6 @@
 # Program
-Status: 🟢
-Assertions: 1
+Status: 🔴
+Assertions: 0
 
 ```rustleaf
 var i;
@@ -17,8 +17,8 @@ None
 
 # Result
 ```rust
-Ok(
-    Unit,
+Err(
+    "Try expressions not yet supported in new Eval system",
 )
 ```
 
@@ -136,67 +136,7 @@ Ok(
 
 # Eval
 ```rust
-Ok(
-    Program(
-        [
-            Declare(
-                "i",
-                None,
-            ),
-            Try(
-                Block(
-                    [
-                        Call(
-                            Variable(
-                                "raise",
-                            ),
-                            [
-                                Literal(
-                                    Int(
-                                        42,
-                                    ),
-                                ),
-                            ],
-                        ),
-                    ],
-                    None,
-                ),
-                "e",
-                Block(
-                    [
-                        Assign(
-                            "i",
-                            Variable(
-                                "e",
-                            ),
-                        ),
-                    ],
-                    None,
-                ),
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Variable(
-                                "i",
-                            ),
-                            "op_eq",
-                        ),
-                        [
-                            Literal(
-                                Int(
-                                    42,
-                                ),
-                            ),
-                        ],
-                    ),
-                ],
-            ),
-        ],
-    ),
+Err(
+    "Try expressions not yet supported in new Eval system",
 )
 ```

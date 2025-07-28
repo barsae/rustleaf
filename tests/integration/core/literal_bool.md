@@ -182,117 +182,179 @@ Ok(
 # Eval
 ```rust
 Ok(
-    Program(
-        [
-            Declare(
-                "t",
-                Some(
-                    Literal(
-                        Bool(
-                            true,
-                        ),
-                    ),
-                ),
-            ),
-            Declare(
-                "f",
-                Some(
-                    Literal(
-                        Bool(
-                            false,
-                        ),
-                    ),
-                ),
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Variable(
-                                "t",
-                            ),
-                            "op_eq",
-                        ),
-                        [
-                            Literal(
-                                Bool(
-                                    true,
+    Eval(
+        EvalRef(
+            EvalProgram {
+                statements: [
+                    EvalRef(
+                        EvalDeclare {
+                            name: "t",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: Bool(
+                                            true,
+                                        ),
+                                    },
                                 ),
                             ),
-                        ],
+                        },
                     ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Variable(
-                                "f",
-                            ),
-                            "op_eq",
-                        ),
-                        [
-                            Literal(
-                                Bool(
-                                    false,
+                    EvalRef(
+                        EvalDeclare {
+                            name: "f",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: Bool(
+                                            false,
+                                        ),
+                                    },
                                 ),
                             ),
-                        ],
+                        },
                     ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Variable(
-                                "t",
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
                             ),
-                            "op_ne",
-                        ),
-                        [
-                            Variable(
-                                "f",
-                            ),
-                        ],
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            LogicalNot(
-                                Variable(
-                                    "f",
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "t",
+                                                    },
+                                                ),
+                                                attr_name: "op_eq",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Bool(
+                                                        true,
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
                                 ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
                             ),
-                            "op_eq",
-                        ),
-                        [
-                            Literal(
-                                Bool(
-                                    true,
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "f",
+                                                    },
+                                                ),
+                                                attr_name: "op_eq",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Bool(
+                                                        false,
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
                                 ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
                             ),
-                        ],
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "t",
+                                                    },
+                                                ),
+                                                attr_name: "op_ne",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalVariable {
+                                                    name: "f",
+                                                },
+                                            ),
+                                        ],
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalLogicalNot {
+                                                        expr: EvalRef(
+                                                            EvalVariable {
+                                                                name: "f",
+                                                            },
+                                                        ),
+                                                    },
+                                                ),
+                                                attr_name: "op_eq",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Bool(
+                                                        true,
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
+                                ),
+                            ],
+                        },
                     ),
                 ],
-            ),
-        ],
+            },
+        ),
     ),
 )
 ```

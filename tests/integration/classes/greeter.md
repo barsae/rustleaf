@@ -195,117 +195,173 @@ Ok(
 # Eval
 ```rust
 Ok(
-    Program(
-        [
-            ClassDecl(
-                ClassDeclData {
-                    name: "Greeter",
-                    field_names: [
-                        "name",
-                    ],
-                    field_defaults: [
-                        None,
-                    ],
-                    methods: [
-                        ClassMethod {
-                            name: "greet",
-                            params: [
-                                "self",
-                            ],
-                            body: Block(
-                                [],
-                                Some(
-                                    Call(
-                                        GetAttr(
-                                            Literal(
-                                                String(
-                                                    "Hello, ",
-                                                ),
-                                            ),
-                                            "op_add",
-                                        ),
-                                        [
-                                            Call(
-                                                Variable(
-                                                    "str",
-                                                ),
-                                                [
-                                                    GetAttr(
-                                                        Variable(
-                                                            "self",
+    Eval(
+        EvalRef(
+            EvalProgram {
+                statements: [
+                    EvalRef(
+                        EvalClassDecl {
+                            data: ClassDeclData {
+                                name: "Greeter",
+                                field_names: [
+                                    "name",
+                                ],
+                                field_defaults: [
+                                    None,
+                                ],
+                                methods: [
+                                    ClassMethod {
+                                        name: "greet",
+                                        params: [
+                                            "self",
+                                        ],
+                                        body: Eval(
+                                            EvalRef(
+                                                EvalBlock {
+                                                    statements: [],
+                                                    final_expr: Some(
+                                                        EvalRef(
+                                                            EvalCall {
+                                                                func_expr: EvalRef(
+                                                                    EvalGetAttr {
+                                                                        obj_expr: EvalRef(
+                                                                            EvalLiteral {
+                                                                                value: String(
+                                                                                    "Hello, ",
+                                                                                ),
+                                                                            },
+                                                                        ),
+                                                                        attr_name: "op_add",
+                                                                    },
+                                                                ),
+                                                                args: [
+                                                                    EvalRef(
+                                                                        EvalCall {
+                                                                            func_expr: EvalRef(
+                                                                                EvalVariable {
+                                                                                    name: "str",
+                                                                                },
+                                                                            ),
+                                                                            args: [
+                                                                                EvalRef(
+                                                                                    EvalGetAttr {
+                                                                                        obj_expr: EvalRef(
+                                                                                            EvalVariable {
+                                                                                                name: "self",
+                                                                                            },
+                                                                                        ),
+                                                                                        attr_name: "name",
+                                                                                    },
+                                                                                ),
+                                                                            ],
+                                                                        },
+                                                                    ),
+                                                                ],
+                                                            },
                                                         ),
-                                                        "name",
                                                     ),
-                                                ],
+                                                },
+                                            ),
+                                        ),
+                                        is_static: false,
+                                    },
+                                ],
+                            },
+                        },
+                    ),
+                    EvalRef(
+                        EvalDeclare {
+                            name: "greeter",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalVariable {
+                                                name: "Greeter",
+                                            },
+                                        ),
+                                        args: [],
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                    EvalRef(
+                        EvalSetAttr {
+                            obj_expr: EvalRef(
+                                EvalVariable {
+                                    name: "greeter",
+                                },
+                            ),
+                            attr_name: "name",
+                            value_expr: EvalRef(
+                                EvalLiteral {
+                                    value: String(
+                                        "Eric",
+                                    ),
+                                },
+                            ),
+                        },
+                    ),
+                    EvalRef(
+                        EvalDeclare {
+                            name: "msg",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "greeter",
+                                                    },
+                                                ),
+                                                attr_name: "greet",
+                                            },
+                                        ),
+                                        args: [],
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "msg",
+                                                    },
+                                                ),
+                                                attr_name: "op_eq",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: String(
+                                                        "Hello, Eric",
+                                                    ),
+                                                },
                                             ),
                                         ],
-                                    ),
+                                    },
                                 ),
-                            ),
-                            is_static: false,
+                            ],
                         },
-                    ],
-                },
-            ),
-            Declare(
-                "greeter",
-                Some(
-                    Call(
-                        Variable(
-                            "Greeter",
-                        ),
-                        [],
-                    ),
-                ),
-            ),
-            SetAttr(
-                Variable(
-                    "greeter",
-                ),
-                "name",
-                Literal(
-                    String(
-                        "Eric",
-                    ),
-                ),
-            ),
-            Declare(
-                "msg",
-                Some(
-                    Call(
-                        GetAttr(
-                            Variable(
-                                "greeter",
-                            ),
-                            "greet",
-                        ),
-                        [],
-                    ),
-                ),
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Variable(
-                                "msg",
-                            ),
-                            "op_eq",
-                        ),
-                        [
-                            Literal(
-                                String(
-                                    "Hello, Eric",
-                                ),
-                            ),
-                        ],
                     ),
                 ],
-            ),
-        ],
+            },
+        ),
     ),
 )
 ```

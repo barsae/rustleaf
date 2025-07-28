@@ -1,6 +1,6 @@
 # Program
-Status: 🟢
-Assertions: 2
+Status: 🔴
+Assertions: 0
 
 ```rustleaf
 var user = {"name": "Alice", "age": 30};
@@ -14,8 +14,8 @@ None
 
 # Result
 ```rust
-Ok(
-    Unit,
+Err(
+    "Pattern declarations not yet supported in new Eval system",
 )
 ```
 
@@ -172,106 +172,7 @@ Ok(
 
 # Eval
 ```rust
-Ok(
-    Program(
-        [
-            Declare(
-                "user",
-                Some(
-                    Dict(
-                        [
-                            (
-                                Literal(
-                                    String(
-                                        "name",
-                                    ),
-                                ),
-                                Literal(
-                                    String(
-                                        "Alice",
-                                    ),
-                                ),
-                            ),
-                            (
-                                Literal(
-                                    String(
-                                        "age",
-                                    ),
-                                ),
-                                Literal(
-                                    Int(
-                                        30,
-                                    ),
-                                ),
-                            ),
-                        ],
-                    ),
-                ),
-            ),
-            DeclarePattern(
-                Dict(
-                    [
-                        EvalDictPattern {
-                            key: "name",
-                            alias: None,
-                        },
-                        EvalDictPattern {
-                            key: "age",
-                            alias: Some(
-                                "user_age",
-                            ),
-                        },
-                    ],
-                ),
-                Variable(
-                    "user",
-                ),
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Variable(
-                                "name",
-                            ),
-                            "op_eq",
-                        ),
-                        [
-                            Literal(
-                                String(
-                                    "Alice",
-                                ),
-                            ),
-                        ],
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Variable(
-                                "user_age",
-                            ),
-                            "op_eq",
-                        ),
-                        [
-                            Literal(
-                                Int(
-                                    30,
-                                ),
-                            ),
-                        ],
-                    ),
-                ],
-            ),
-        ],
-    ),
+Err(
+    "Pattern declarations not yet supported in new Eval system",
 )
 ```

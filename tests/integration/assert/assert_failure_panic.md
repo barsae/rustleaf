@@ -64,26 +64,38 @@ Ok(
 # Eval
 ```rust
 Ok(
-    Program(
-        [
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Literal(
-                        Bool(
-                            false,
-                        ),
-                    ),
-                    Literal(
-                        String(
-                            "This should fail",
-                        ),
+    Eval(
+        EvalRef(
+            EvalProgram {
+                statements: [
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: Bool(
+                                            false,
+                                        ),
+                                    },
+                                ),
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: String(
+                                            "This should fail",
+                                        ),
+                                    },
+                                ),
+                            ],
+                        },
                     ),
                 ],
-            ),
-        ],
+            },
+        ),
     ),
 )
 ```

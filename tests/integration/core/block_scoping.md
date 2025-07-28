@@ -188,98 +188,148 @@ Ok(
 # Eval
 ```rust
 Ok(
-    Program(
-        [
-            Declare(
-                "x",
-                Some(
-                    Literal(
-                        Int(
-                            1,
-                        ),
-                    ),
-                ),
-            ),
-            Declare(
-                "inner_x",
-                None,
-            ),
-            Declare(
-                "outer_x",
-                None,
-            ),
-            Block(
-                [
-                    Declare(
-                        "x",
-                        Some(
-                            Literal(
-                                Int(
-                                    2,
+    Eval(
+        EvalRef(
+            EvalProgram {
+                statements: [
+                    EvalRef(
+                        EvalDeclare {
+                            name: "x",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: Int(
+                                            1,
+                                        ),
+                                    },
                                 ),
                             ),
-                        ),
+                        },
                     ),
-                    Assign(
-                        "inner_x",
-                        Variable(
-                            "x",
-                        ),
+                    EvalRef(
+                        EvalDeclare {
+                            name: "inner_x",
+                            init_expr: None,
+                        },
                     ),
-                ],
-                None,
-            ),
-            Assign(
-                "outer_x",
-                Variable(
-                    "x",
-                ),
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Variable(
-                                "inner_x",
-                            ),
-                            "op_eq",
-                        ),
-                        [
-                            Literal(
-                                Int(
-                                    2,
+                    EvalRef(
+                        EvalDeclare {
+                            name: "outer_x",
+                            init_expr: None,
+                        },
+                    ),
+                    EvalRef(
+                        EvalBlock {
+                            statements: [
+                                EvalRef(
+                                    EvalDeclare {
+                                        name: "x",
+                                        init_expr: Some(
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        2,
+                                                    ),
+                                                },
+                                            ),
+                                        ),
+                                    },
                                 ),
-                            ),
-                        ],
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Variable(
-                                "outer_x",
-                            ),
-                            "op_eq",
-                        ),
-                        [
-                            Literal(
-                                Int(
-                                    1,
+                                EvalRef(
+                                    EvalAssign {
+                                        name: "inner_x",
+                                        expr: EvalRef(
+                                            EvalVariable {
+                                                name: "x",
+                                            },
+                                        ),
+                                    },
                                 ),
+                            ],
+                            final_expr: None,
+                        },
+                    ),
+                    EvalRef(
+                        EvalAssign {
+                            name: "outer_x",
+                            expr: EvalRef(
+                                EvalVariable {
+                                    name: "x",
+                                },
                             ),
-                        ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "inner_x",
+                                                    },
+                                                ),
+                                                attr_name: "op_eq",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        2,
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "outer_x",
+                                                    },
+                                                ),
+                                                attr_name: "op_eq",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        1,
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
+                                ),
+                            ],
+                        },
                     ),
                 ],
-            ),
-        ],
+            },
+        ),
     ),
 )
 ```

@@ -155,113 +155,171 @@ Ok(
 # Eval
 ```rust
 Ok(
-    Program(
-        [
-            Declare(
-                "a",
-                Some(
-                    Literal(
-                        Int(
-                            3,
-                        ),
-                    ),
-                ),
-            ),
-            Declare(
-                "b",
-                Some(
-                    Literal(
-                        Int(
-                            7,
-                        ),
-                    ),
-                ),
-            ),
-            Declare(
-                "result",
-                Some(
-                    Call(
-                        GetAttr(
-                            Call(
-                                Variable(
-                                    "str",
-                                ),
-                                [
-                                    Variable(
-                                        "a",
-                                    ),
-                                ],
-                            ),
-                            "op_add",
-                        ),
-                        [
-                            Literal(
-                                String(
-                                    " and ",
-                                ),
-                            ),
-                            Call(
-                                Variable(
-                                    "str",
-                                ),
-                                [
-                                    Variable(
-                                        "b",
-                                    ),
-                                ],
-                            ),
-                            Literal(
-                                String(
-                                    " equals ",
-                                ),
-                            ),
-                            Call(
-                                Variable(
-                                    "str",
-                                ),
-                                [
-                                    Call(
-                                        GetAttr(
-                                            Variable(
-                                                "a",
-                                            ),
-                                            "op_add",
+    Eval(
+        EvalRef(
+            EvalProgram {
+                statements: [
+                    EvalRef(
+                        EvalDeclare {
+                            name: "a",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: Int(
+                                            3,
                                         ),
-                                        [
-                                            Variable(
-                                                "b",
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                    EvalRef(
+                        EvalDeclare {
+                            name: "b",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: Int(
+                                            7,
+                                        ),
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                    EvalRef(
+                        EvalDeclare {
+                            name: "result",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalCall {
+                                                        func_expr: EvalRef(
+                                                            EvalVariable {
+                                                                name: "str",
+                                                            },
+                                                        ),
+                                                        args: [
+                                                            EvalRef(
+                                                                EvalVariable {
+                                                                    name: "a",
+                                                                },
+                                                            ),
+                                                        ],
+                                                    },
+                                                ),
+                                                attr_name: "op_add",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: String(
+                                                        " and ",
+                                                    ),
+                                                },
+                                            ),
+                                            EvalRef(
+                                                EvalCall {
+                                                    func_expr: EvalRef(
+                                                        EvalVariable {
+                                                            name: "str",
+                                                        },
+                                                    ),
+                                                    args: [
+                                                        EvalRef(
+                                                            EvalVariable {
+                                                                name: "b",
+                                                            },
+                                                        ),
+                                                    ],
+                                                },
+                                            ),
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: String(
+                                                        " equals ",
+                                                    ),
+                                                },
+                                            ),
+                                            EvalRef(
+                                                EvalCall {
+                                                    func_expr: EvalRef(
+                                                        EvalVariable {
+                                                            name: "str",
+                                                        },
+                                                    ),
+                                                    args: [
+                                                        EvalRef(
+                                                            EvalCall {
+                                                                func_expr: EvalRef(
+                                                                    EvalGetAttr {
+                                                                        obj_expr: EvalRef(
+                                                                            EvalVariable {
+                                                                                name: "a",
+                                                                            },
+                                                                        ),
+                                                                        attr_name: "op_add",
+                                                                    },
+                                                                ),
+                                                                args: [
+                                                                    EvalRef(
+                                                                        EvalVariable {
+                                                                            name: "b",
+                                                                        },
+                                                                    ),
+                                                                ],
+                                                            },
+                                                        ),
+                                                    ],
+                                                },
                                             ),
                                         ],
-                                    ),
-                                ],
-                            ),
-                        ],
-                    ),
-                ),
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Variable(
-                                "result",
-                            ),
-                            "op_eq",
-                        ),
-                        [
-                            Literal(
-                                String(
-                                    "3 and 7 equals 10",
+                                    },
                                 ),
                             ),
-                        ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "result",
+                                                    },
+                                                ),
+                                                attr_name: "op_eq",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: String(
+                                                        "3 and 7 equals 10",
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
+                                ),
+                            ],
+                        },
                     ),
                 ],
-            ),
-        ],
+            },
+        ),
     ),
 )
 ```

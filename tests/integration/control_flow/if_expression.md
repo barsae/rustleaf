@@ -311,217 +311,325 @@ Ok(
 # Eval
 ```rust
 Ok(
-    Program(
-        [
-            Declare(
-                "x",
-                Some(
-                    Literal(
-                        Int(
-                            1,
-                        ),
-                    ),
-                ),
-            ),
-            Declare(
-                "result",
-                Some(
-                    If(
-                        Call(
-                            GetAttr(
-                                Variable(
-                                    "x",
+    Eval(
+        EvalRef(
+            EvalProgram {
+                statements: [
+                    EvalRef(
+                        EvalDeclare {
+                            name: "x",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: Int(
+                                            1,
+                                        ),
+                                    },
                                 ),
-                                "op_gt",
                             ),
-                            [
-                                Literal(
-                                    Int(
-                                        0,
-                                    ),
+                        },
+                    ),
+                    EvalRef(
+                        EvalDeclare {
+                            name: "result",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalIf {
+                                        condition: EvalRef(
+                                            EvalCall {
+                                                func_expr: EvalRef(
+                                                    EvalGetAttr {
+                                                        obj_expr: EvalRef(
+                                                            EvalVariable {
+                                                                name: "x",
+                                                            },
+                                                        ),
+                                                        attr_name: "op_gt",
+                                                    },
+                                                ),
+                                                args: [
+                                                    EvalRef(
+                                                        EvalLiteral {
+                                                            value: Int(
+                                                                0,
+                                                            ),
+                                                        },
+                                                    ),
+                                                ],
+                                            },
+                                        ),
+                                        then_expr: EvalRef(
+                                            EvalBlock {
+                                                statements: [],
+                                                final_expr: Some(
+                                                    EvalRef(
+                                                        EvalLiteral {
+                                                            value: String(
+                                                                "positive",
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                        ),
+                                        else_expr: Some(
+                                            EvalRef(
+                                                EvalBlock {
+                                                    statements: [],
+                                                    final_expr: Some(
+                                                        EvalRef(
+                                                            EvalLiteral {
+                                                                value: String(
+                                                                    "zero or negative",
+                                                                ),
+                                                            },
+                                                        ),
+                                                    ),
+                                                },
+                                            ),
+                                        ),
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                    EvalRef(
+                        EvalDeclare {
+                            name: "y",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalLiteral {
+                                                        value: Int(
+                                                            5,
+                                                        ),
+                                                    },
+                                                ),
+                                                attr_name: "op_neg",
+                                            },
+                                        ),
+                                        args: [],
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                    EvalRef(
+                        EvalDeclare {
+                            name: "result2",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalIf {
+                                        condition: EvalRef(
+                                            EvalCall {
+                                                func_expr: EvalRef(
+                                                    EvalGetAttr {
+                                                        obj_expr: EvalRef(
+                                                            EvalVariable {
+                                                                name: "y",
+                                                            },
+                                                        ),
+                                                        attr_name: "op_gt",
+                                                    },
+                                                ),
+                                                args: [
+                                                    EvalRef(
+                                                        EvalLiteral {
+                                                            value: Int(
+                                                                0,
+                                                            ),
+                                                        },
+                                                    ),
+                                                ],
+                                            },
+                                        ),
+                                        then_expr: EvalRef(
+                                            EvalBlock {
+                                                statements: [],
+                                                final_expr: Some(
+                                                    EvalRef(
+                                                        EvalLiteral {
+                                                            value: String(
+                                                                "positive",
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                        ),
+                                        else_expr: Some(
+                                            EvalRef(
+                                                EvalBlock {
+                                                    statements: [],
+                                                    final_expr: Some(
+                                                        EvalRef(
+                                                            EvalLiteral {
+                                                                value: String(
+                                                                    "zero or negative",
+                                                                ),
+                                                            },
+                                                        ),
+                                                    ),
+                                                },
+                                            ),
+                                        ),
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "result",
+                                                    },
+                                                ),
+                                                attr_name: "op_eq",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: String(
+                                                        "positive",
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
                                 ),
                             ],
-                        ),
-                        Block(
-                            [],
-                            Some(
-                                Literal(
-                                    String(
-                                        "positive",
-                                    ),
-                                ),
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
                             ),
-                        ),
-                        Some(
-                            Block(
-                                [],
-                                Some(
-                                    Literal(
-                                        String(
-                                            "zero or negative",
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "result2",
+                                                    },
+                                                ),
+                                                attr_name: "op_eq",
+                                            },
                                         ),
-                                    ),
-                                ),
-                            ),
-                        ),
-                    ),
-                ),
-            ),
-            Declare(
-                "y",
-                Some(
-                    Call(
-                        GetAttr(
-                            Literal(
-                                Int(
-                                    5,
-                                ),
-                            ),
-                            "op_neg",
-                        ),
-                        [],
-                    ),
-                ),
-            ),
-            Declare(
-                "result2",
-                Some(
-                    If(
-                        Call(
-                            GetAttr(
-                                Variable(
-                                    "y",
-                                ),
-                                "op_gt",
-                            ),
-                            [
-                                Literal(
-                                    Int(
-                                        0,
-                                    ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: String(
+                                                        "zero or negative",
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
                                 ),
                             ],
-                        ),
-                        Block(
-                            [],
-                            Some(
-                                Literal(
-                                    String(
-                                        "positive",
-                                    ),
-                                ),
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
                             ),
-                        ),
-                        Some(
-                            Block(
-                                [],
-                                Some(
-                                    Literal(
-                                        String(
-                                            "zero or negative",
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "x",
+                                                    },
+                                                ),
+                                                attr_name: "op_eq",
+                                            },
                                         ),
-                                    ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        1,
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
                                 ),
-                            ),
-                        ),
+                            ],
+                        },
                     ),
-                ),
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Variable(
-                                "result",
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
                             ),
-                            "op_eq",
-                        ),
-                        [
-                            Literal(
-                                String(
-                                    "positive",
-                                ),
-                            ),
-                        ],
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Variable(
-                                "result2",
-                            ),
-                            "op_eq",
-                        ),
-                        [
-                            Literal(
-                                String(
-                                    "zero or negative",
-                                ),
-                            ),
-                        ],
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Variable(
-                                "x",
-                            ),
-                            "op_eq",
-                        ),
-                        [
-                            Literal(
-                                Int(
-                                    1,
-                                ),
-                            ),
-                        ],
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Variable(
-                                "y",
-                            ),
-                            "op_eq",
-                        ),
-                        [
-                            Call(
-                                GetAttr(
-                                    Literal(
-                                        Int(
-                                            5,
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "y",
+                                                    },
+                                                ),
+                                                attr_name: "op_eq",
+                                            },
                                         ),
-                                    ),
-                                    "op_neg",
+                                        args: [
+                                            EvalRef(
+                                                EvalCall {
+                                                    func_expr: EvalRef(
+                                                        EvalGetAttr {
+                                                            obj_expr: EvalRef(
+                                                                EvalLiteral {
+                                                                    value: Int(
+                                                                        5,
+                                                                    ),
+                                                                },
+                                                            ),
+                                                            attr_name: "op_neg",
+                                                        },
+                                                    ),
+                                                    args: [],
+                                                },
+                                            ),
+                                        ],
+                                    },
                                 ),
-                                [],
-                            ),
-                        ],
+                            ],
+                        },
                     ),
                 ],
-            ),
-        ],
+            },
+        ),
     ),
 )
 ```

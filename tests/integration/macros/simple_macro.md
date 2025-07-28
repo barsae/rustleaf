@@ -1,6 +1,6 @@
 # Program
-Status: 🟢
-Assertions: 1
+Status: 🔴
+Assertions: 0
 
 ```rustleaf
 #[macro]
@@ -23,8 +23,8 @@ None
 
 # Result
 ```rust
-Ok(
-    Unit,
+Err(
+    "Undefined variable: identity",
 )
 ```
 
@@ -168,99 +168,155 @@ Ok(
 # Eval
 ```rust
 Ok(
-    Program(
-        [
-            Macro(
-                MacroData {
-                    macro_fn: Variable(
-                        "macro",
+    Eval(
+        EvalRef(
+            EvalProgram {
+                statements: [
+                    EvalRef(
+                        EvalMacro {
+                            data: MacroData {
+                                macro_fn: Eval(
+                                    EvalRef(
+                                        EvalVariable {
+                                            name: "macro",
+                                        },
+                                    ),
+                                ),
+                                target: Eval(
+                                    EvalRef(
+                                        EvalFunction {
+                                            data: FunctionData {
+                                                name: "identity",
+                                                params: [
+                                                    (
+                                                        "eval_node",
+                                                        None,
+                                                        Regular,
+                                                    ),
+                                                ],
+                                                body: Eval(
+                                                    EvalRef(
+                                                        EvalBlock {
+                                                            statements: [],
+                                                            final_expr: Some(
+                                                                EvalRef(
+                                                                    EvalVariable {
+                                                                        name: "eval_node",
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                        },
+                                    ),
+                                ),
+                                args: [],
+                            },
+                        },
                     ),
-                    target: Function(
-                        FunctionData {
-                            name: "identity",
-                            params: [
-                                (
-                                    "eval_node",
-                                    None,
-                                    Regular,
+                    EvalRef(
+                        EvalMacro {
+                            data: MacroData {
+                                macro_fn: Eval(
+                                    EvalRef(
+                                        EvalVariable {
+                                            name: "identity",
+                                        },
+                                    ),
+                                ),
+                                target: Eval(
+                                    EvalRef(
+                                        EvalFunction {
+                                            data: FunctionData {
+                                                name: "test_func",
+                                                params: [],
+                                                body: Eval(
+                                                    EvalRef(
+                                                        EvalBlock {
+                                                            statements: [],
+                                                            final_expr: Some(
+                                                                EvalRef(
+                                                                    EvalLiteral {
+                                                                        value: Int(
+                                                                            42,
+                                                                        ),
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                        },
+                                    ),
+                                ),
+                                args: [],
+                            },
+                        },
+                    ),
+                    EvalRef(
+                        EvalDeclare {
+                            name: "result",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalVariable {
+                                                name: "test_func",
+                                            },
+                                        ),
+                                        args: [],
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "result",
+                                                    },
+                                                ),
+                                                attr_name: "op_eq",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        42,
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
+                                ),
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: String(
+                                            "identity macro should preserve function",
+                                        ),
+                                    },
                                 ),
                             ],
-                            body: Block(
-                                [],
-                                Some(
-                                    Variable(
-                                        "eval_node",
-                                    ),
-                                ),
-                            ),
                         },
-                    ),
-                    args: [],
-                },
-            ),
-            Macro(
-                MacroData {
-                    macro_fn: Variable(
-                        "identity",
-                    ),
-                    target: Function(
-                        FunctionData {
-                            name: "test_func",
-                            params: [],
-                            body: Block(
-                                [],
-                                Some(
-                                    Literal(
-                                        Int(
-                                            42,
-                                        ),
-                                    ),
-                                ),
-                            ),
-                        },
-                    ),
-                    args: [],
-                },
-            ),
-            Declare(
-                "result",
-                Some(
-                    Call(
-                        Variable(
-                            "test_func",
-                        ),
-                        [],
-                    ),
-                ),
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Variable(
-                                "result",
-                            ),
-                            "op_eq",
-                        ),
-                        [
-                            Literal(
-                                Int(
-                                    42,
-                                ),
-                            ),
-                        ],
-                    ),
-                    Literal(
-                        String(
-                            "identity macro should preserve function",
-                        ),
                     ),
                 ],
-            ),
-        ],
+            },
+        ),
     ),
 )
 ```

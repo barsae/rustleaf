@@ -416,291 +416,437 @@ Ok(
 # Eval
 ```rust
 Ok(
-    Program(
-        [
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Literal(
-                                String(
-                                    "hello world",
-                                ),
+    Eval(
+        EvalRef(
+            EvalProgram {
+                statements: [
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
                             ),
-                            "op_contains",
-                        ),
-                        [
-                            Literal(
-                                String(
-                                    "hello",
-                                ),
-                            ),
-                        ],
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    LogicalNot(
-                        Call(
-                            GetAttr(
-                                Literal(
-                                    String(
-                                        "hello world",
-                                    ),
-                                ),
-                                "op_contains",
-                            ),
-                            [
-                                Literal(
-                                    String(
-                                        "xyz",
-                                    ),
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalLiteral {
+                                                        value: String(
+                                                            "hello world",
+                                                        ),
+                                                    },
+                                                ),
+                                                attr_name: "op_contains",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: String(
+                                                        "hello",
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
                                 ),
                             ],
-                        ),
+                        },
                     ),
-                ],
-            ),
-            Declare(
-                "my_list",
-                Some(
-                    List(
-                        [
-                            Literal(
-                                Int(
-                                    1,
-                                ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
                             ),
-                            Literal(
-                                Int(
-                                    2,
-                                ),
-                            ),
-                            Literal(
-                                Int(
-                                    3,
-                                ),
-                            ),
-                            Literal(
-                                String(
-                                    "hello",
-                                ),
-                            ),
-                        ],
-                    ),
-                ),
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Variable(
-                                "my_list",
-                            ),
-                            "op_contains",
-                        ),
-                        [
-                            Literal(
-                                Int(
-                                    2,
-                                ),
-                            ),
-                        ],
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Variable(
-                                "my_list",
-                            ),
-                            "op_contains",
-                        ),
-                        [
-                            Literal(
-                                String(
-                                    "hello",
-                                ),
-                            ),
-                        ],
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    LogicalNot(
-                        Call(
-                            GetAttr(
-                                Variable(
-                                    "my_list",
-                                ),
-                                "op_contains",
-                            ),
-                            [
-                                Literal(
-                                    Int(
-                                        99,
-                                    ),
+                            args: [
+                                EvalRef(
+                                    EvalLogicalNot {
+                                        expr: EvalRef(
+                                            EvalCall {
+                                                func_expr: EvalRef(
+                                                    EvalGetAttr {
+                                                        obj_expr: EvalRef(
+                                                            EvalLiteral {
+                                                                value: String(
+                                                                    "hello world",
+                                                                ),
+                                                            },
+                                                        ),
+                                                        attr_name: "op_contains",
+                                                    },
+                                                ),
+                                                args: [
+                                                    EvalRef(
+                                                        EvalLiteral {
+                                                            value: String(
+                                                                "xyz",
+                                                            ),
+                                                        },
+                                                    ),
+                                                ],
+                                            },
+                                        ),
+                                    },
                                 ),
                             ],
-                        ),
+                        },
                     ),
-                ],
-            ),
-            Declare(
-                "my_dict",
-                Some(
-                    Dict(
-                        [
-                            (
-                                Literal(
-                                    String(
-                                        "a",
-                                    ),
-                                ),
-                                Literal(
-                                    Int(
-                                        1,
-                                    ),
-                                ),
-                            ),
-                            (
-                                Literal(
-                                    String(
-                                        "b",
-                                    ),
-                                ),
-                                Literal(
-                                    Int(
-                                        2,
-                                    ),
-                                ),
-                            ),
-                            (
-                                Literal(
-                                    Int(
-                                        3,
-                                    ),
-                                ),
-                                Literal(
-                                    String(
-                                        "three",
-                                    ),
+                    EvalRef(
+                        EvalDeclare {
+                            name: "my_list",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalList {
+                                        elements: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        1,
+                                                    ),
+                                                },
+                                            ),
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        2,
+                                                    ),
+                                                },
+                                            ),
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        3,
+                                                    ),
+                                                },
+                                            ),
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: String(
+                                                        "hello",
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
                                 ),
                             ),
-                        ],
+                        },
                     ),
-                ),
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Variable(
-                                "my_dict",
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
                             ),
-                            "op_contains",
-                        ),
-                        [
-                            Literal(
-                                String(
-                                    "a",
-                                ),
-                            ),
-                        ],
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Variable(
-                                "my_dict",
-                            ),
-                            "op_contains",
-                        ),
-                        [
-                            Literal(
-                                String(
-                                    "b",
-                                ),
-                            ),
-                        ],
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Variable(
-                                "my_dict",
-                            ),
-                            "op_contains",
-                        ),
-                        [
-                            Literal(
-                                Int(
-                                    3,
-                                ),
-                            ),
-                        ],
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    LogicalNot(
-                        Call(
-                            GetAttr(
-                                Variable(
-                                    "my_dict",
-                                ),
-                                "op_contains",
-                            ),
-                            [
-                                Literal(
-                                    String(
-                                        "z",
-                                    ),
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "my_list",
+                                                    },
+                                                ),
+                                                attr_name: "op_contains",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        2,
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
                                 ),
                             ],
-                        ),
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "my_list",
+                                                    },
+                                                ),
+                                                attr_name: "op_contains",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: String(
+                                                        "hello",
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalLogicalNot {
+                                        expr: EvalRef(
+                                            EvalCall {
+                                                func_expr: EvalRef(
+                                                    EvalGetAttr {
+                                                        obj_expr: EvalRef(
+                                                            EvalVariable {
+                                                                name: "my_list",
+                                                            },
+                                                        ),
+                                                        attr_name: "op_contains",
+                                                    },
+                                                ),
+                                                args: [
+                                                    EvalRef(
+                                                        EvalLiteral {
+                                                            value: Int(
+                                                                99,
+                                                            ),
+                                                        },
+                                                    ),
+                                                ],
+                                            },
+                                        ),
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalDeclare {
+                            name: "my_dict",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalDict {
+                                        pairs: [
+                                            (
+                                                EvalRef(
+                                                    EvalLiteral {
+                                                        value: String(
+                                                            "a",
+                                                        ),
+                                                    },
+                                                ),
+                                                EvalRef(
+                                                    EvalLiteral {
+                                                        value: Int(
+                                                            1,
+                                                        ),
+                                                    },
+                                                ),
+                                            ),
+                                            (
+                                                EvalRef(
+                                                    EvalLiteral {
+                                                        value: String(
+                                                            "b",
+                                                        ),
+                                                    },
+                                                ),
+                                                EvalRef(
+                                                    EvalLiteral {
+                                                        value: Int(
+                                                            2,
+                                                        ),
+                                                    },
+                                                ),
+                                            ),
+                                            (
+                                                EvalRef(
+                                                    EvalLiteral {
+                                                        value: Int(
+                                                            3,
+                                                        ),
+                                                    },
+                                                ),
+                                                EvalRef(
+                                                    EvalLiteral {
+                                                        value: String(
+                                                            "three",
+                                                        ),
+                                                    },
+                                                ),
+                                            ),
+                                        ],
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "my_dict",
+                                                    },
+                                                ),
+                                                attr_name: "op_contains",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: String(
+                                                        "a",
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "my_dict",
+                                                    },
+                                                ),
+                                                attr_name: "op_contains",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: String(
+                                                        "b",
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "my_dict",
+                                                    },
+                                                ),
+                                                attr_name: "op_contains",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        3,
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalLogicalNot {
+                                        expr: EvalRef(
+                                            EvalCall {
+                                                func_expr: EvalRef(
+                                                    EvalGetAttr {
+                                                        obj_expr: EvalRef(
+                                                            EvalVariable {
+                                                                name: "my_dict",
+                                                            },
+                                                        ),
+                                                        attr_name: "op_contains",
+                                                    },
+                                                ),
+                                                args: [
+                                                    EvalRef(
+                                                        EvalLiteral {
+                                                            value: String(
+                                                                "z",
+                                                            ),
+                                                        },
+                                                    ),
+                                                ],
+                                            },
+                                        ),
+                                    },
+                                ),
+                            ],
+                        },
                     ),
                 ],
-            ),
-        ],
+            },
+        ),
     ),
 )
 ```

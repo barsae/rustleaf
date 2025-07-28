@@ -1,6 +1,6 @@
 # Program
 Status: 🔴
-Assertions: 2
+Assertions: 0
 
 ```rustleaf
 #[macro]
@@ -49,14 +49,12 @@ assert(count == 11, "count");
 ```
 
 # Output
-```
-177
-```
+None
 
 # Result
 ```rust
 Err(
-    "Assertion failed: count",
+    "Undefined variable: memoize",
 )
 ```
 
@@ -203,11 +201,6 @@ Ok(
         Token(Int, "55"),
         Token(Comma),
         Token(String, "f"),
-        Token(RightParen),
-        Token(Semicolon),
-        Token(Ident, "print"),
-        Token(LeftParen),
-        Token(Ident, "count"),
         Token(RightParen),
         Token(Semicolon),
         Token(Ident, "assert"),
@@ -557,18 +550,6 @@ Ok(
             Expression(
                 FunctionCall(
                     Identifier(
-                        "print",
-                    ),
-                    [
-                        Identifier(
-                            "count",
-                        ),
-                    ],
-                ),
-            ),
-            Expression(
-                FunctionCall(
-                    Identifier(
                         "assert",
                     ),
                     [
@@ -598,462 +579,692 @@ Ok(
 # Eval
 ```rust
 Ok(
-    Program(
-        [
-            Macro(
-                MacroData {
-                    macro_fn: Variable(
-                        "macro",
-                    ),
-                    target: Function(
-                        FunctionData {
-                            name: "memoize",
-                            params: [
-                                (
-                                    "eval_node",
-                                    None,
-                                    Regular,
+    Eval(
+        EvalRef(
+            EvalProgram {
+                statements: [
+                    EvalRef(
+                        EvalMacro {
+                            data: MacroData {
+                                macro_fn: Eval(
+                                    EvalRef(
+                                        EvalVariable {
+                                            name: "macro",
+                                        },
+                                    ),
                                 ),
-                            ],
-                            body: Block(
-                                [
-                                    If(
-                                        LogicalNot(
-                                            Is(
-                                                Variable(
-                                                    "eval_node",
-                                                ),
-                                                GetAttr(
-                                                    Variable(
-                                                        "Eval",
-                                                    ),
-                                                    "Function",
-                                                ),
-                                            ),
-                                        ),
-                                        Block(
-                                            [
-                                                Call(
-                                                    Variable(
-                                                        "raise",
-                                                    ),
-                                                    [
-                                                        Literal(
-                                                            String(
-                                                                "#[memoize] can only be applied to functions",
-                                                            ),
-                                                        ),
-                                                    ],
-                                                ),
-                                            ],
-                                            None,
-                                        ),
-                                        None,
-                                    ),
-                                    Declare(
-                                        "func",
-                                        Some(
-                                            Variable(
-                                                "eval_node",
-                                            ),
-                                        ),
-                                    ),
-                                    Declare(
-                                        "param_list",
-                                        Some(
-                                            Call(
-                                                Variable(
-                                                    "join",
-                                                ),
-                                                [
-                                                    GetAttr(
-                                                        Variable(
-                                                            "func",
-                                                        ),
-                                                        "params",
-                                                    ),
-                                                    Literal(
-                                                        String(
-                                                            ", ",
-                                                        ),
+                                target: Eval(
+                                    EvalRef(
+                                        EvalFunction {
+                                            data: FunctionData {
+                                                name: "memoize",
+                                                params: [
+                                                    (
+                                                        "eval_node",
+                                                        None,
+                                                        Regular,
                                                     ),
                                                 ],
-                                            ),
-                                        ),
-                                    ),
-                                ],
-                                Some(
-                                    Call(
-                                        Variable(
-                                            "parse",
-                                        ),
-                                        [
-                                            Call(
-                                                GetAttr(
-                                                    Literal(
-                                                        String(
-                                                            "fn ",
-                                                        ),
+                                                body: Eval(
+                                                    EvalRef(
+                                                        EvalBlock {
+                                                            statements: [
+                                                                EvalRef(
+                                                                    EvalIf {
+                                                                        condition: EvalRef(
+                                                                            EvalLogicalNot {
+                                                                                expr: EvalRef(
+                                                                                    EvalIs {
+                                                                                        left: EvalRef(
+                                                                                            EvalVariable {
+                                                                                                name: "eval_node",
+                                                                                            },
+                                                                                        ),
+                                                                                        right: EvalRef(
+                                                                                            EvalGetAttr {
+                                                                                                obj_expr: EvalRef(
+                                                                                                    EvalVariable {
+                                                                                                        name: "Eval",
+                                                                                                    },
+                                                                                                ),
+                                                                                                attr_name: "Function",
+                                                                                            },
+                                                                                        ),
+                                                                                    },
+                                                                                ),
+                                                                            },
+                                                                        ),
+                                                                        then_expr: EvalRef(
+                                                                            EvalBlock {
+                                                                                statements: [
+                                                                                    EvalRef(
+                                                                                        EvalCall {
+                                                                                            func_expr: EvalRef(
+                                                                                                EvalVariable {
+                                                                                                    name: "raise",
+                                                                                                },
+                                                                                            ),
+                                                                                            args: [
+                                                                                                EvalRef(
+                                                                                                    EvalLiteral {
+                                                                                                        value: String(
+                                                                                                            "#[memoize] can only be applied to functions",
+                                                                                                        ),
+                                                                                                    },
+                                                                                                ),
+                                                                                            ],
+                                                                                        },
+                                                                                    ),
+                                                                                ],
+                                                                                final_expr: None,
+                                                                            },
+                                                                        ),
+                                                                        else_expr: None,
+                                                                    },
+                                                                ),
+                                                                EvalRef(
+                                                                    EvalDeclare {
+                                                                        name: "func",
+                                                                        init_expr: Some(
+                                                                            EvalRef(
+                                                                                EvalVariable {
+                                                                                    name: "eval_node",
+                                                                                },
+                                                                            ),
+                                                                        ),
+                                                                    },
+                                                                ),
+                                                                EvalRef(
+                                                                    EvalDeclare {
+                                                                        name: "param_list",
+                                                                        init_expr: Some(
+                                                                            EvalRef(
+                                                                                EvalCall {
+                                                                                    func_expr: EvalRef(
+                                                                                        EvalVariable {
+                                                                                            name: "join",
+                                                                                        },
+                                                                                    ),
+                                                                                    args: [
+                                                                                        EvalRef(
+                                                                                            EvalGetAttr {
+                                                                                                obj_expr: EvalRef(
+                                                                                                    EvalVariable {
+                                                                                                        name: "func",
+                                                                                                    },
+                                                                                                ),
+                                                                                                attr_name: "params",
+                                                                                            },
+                                                                                        ),
+                                                                                        EvalRef(
+                                                                                            EvalLiteral {
+                                                                                                value: String(
+                                                                                                    ", ",
+                                                                                                ),
+                                                                                            },
+                                                                                        ),
+                                                                                    ],
+                                                                                },
+                                                                            ),
+                                                                        ),
+                                                                    },
+                                                                ),
+                                                            ],
+                                                            final_expr: Some(
+                                                                EvalRef(
+                                                                    EvalCall {
+                                                                        func_expr: EvalRef(
+                                                                            EvalVariable {
+                                                                                name: "parse",
+                                                                            },
+                                                                        ),
+                                                                        args: [
+                                                                            EvalRef(
+                                                                                EvalCall {
+                                                                                    func_expr: EvalRef(
+                                                                                        EvalGetAttr {
+                                                                                            obj_expr: EvalRef(
+                                                                                                EvalLiteral {
+                                                                                                    value: String(
+                                                                                                        "fn ",
+                                                                                                    ),
+                                                                                                },
+                                                                                            ),
+                                                                                            attr_name: "op_add",
+                                                                                        },
+                                                                                    ),
+                                                                                    args: [
+                                                                                        EvalRef(
+                                                                                            EvalCall {
+                                                                                                func_expr: EvalRef(
+                                                                                                    EvalVariable {
+                                                                                                        name: "str",
+                                                                                                    },
+                                                                                                ),
+                                                                                                args: [
+                                                                                                    EvalRef(
+                                                                                                        EvalGetAttr {
+                                                                                                            obj_expr: EvalRef(
+                                                                                                                EvalVariable {
+                                                                                                                    name: "func",
+                                                                                                                },
+                                                                                                            ),
+                                                                                                            attr_name: "name",
+                                                                                                        },
+                                                                                                    ),
+                                                                                                ],
+                                                                                            },
+                                                                                        ),
+                                                                                        EvalRef(
+                                                                                            EvalLiteral {
+                                                                                                value: String(
+                                                                                                    "(",
+                                                                                                ),
+                                                                                            },
+                                                                                        ),
+                                                                                        EvalRef(
+                                                                                            EvalCall {
+                                                                                                func_expr: EvalRef(
+                                                                                                    EvalVariable {
+                                                                                                        name: "str",
+                                                                                                    },
+                                                                                                ),
+                                                                                                args: [
+                                                                                                    EvalRef(
+                                                                                                        EvalVariable {
+                                                                                                            name: "param_list",
+                                                                                                        },
+                                                                                                    ),
+                                                                                                ],
+                                                                                            },
+                                                                                        ),
+                                                                                        EvalRef(
+                                                                                            EvalLiteral {
+                                                                                                value: String(
+                                                                                                    ") {\n        var cache = {};\n\n        fn original(",
+                                                                                                ),
+                                                                                            },
+                                                                                        ),
+                                                                                        EvalRef(
+                                                                                            EvalCall {
+                                                                                                func_expr: EvalRef(
+                                                                                                    EvalVariable {
+                                                                                                        name: "str",
+                                                                                                    },
+                                                                                                ),
+                                                                                                args: [
+                                                                                                    EvalRef(
+                                                                                                        EvalVariable {
+                                                                                                            name: "param_list",
+                                                                                                        },
+                                                                                                    ),
+                                                                                                ],
+                                                                                            },
+                                                                                        ),
+                                                                                        EvalRef(
+                                                                                            EvalLiteral {
+                                                                                                value: String(
+                                                                                                    ") ",
+                                                                                                ),
+                                                                                            },
+                                                                                        ),
+                                                                                        EvalRef(
+                                                                                            EvalCall {
+                                                                                                func_expr: EvalRef(
+                                                                                                    EvalVariable {
+                                                                                                        name: "str",
+                                                                                                    },
+                                                                                                ),
+                                                                                                args: [
+                                                                                                    EvalRef(
+                                                                                                        EvalGetAttr {
+                                                                                                            obj_expr: EvalRef(
+                                                                                                                EvalVariable {
+                                                                                                                    name: "func",
+                                                                                                                },
+                                                                                                            ),
+                                                                                                            attr_name: "body",
+                                                                                                        },
+                                                                                                    ),
+                                                                                                ],
+                                                                                            },
+                                                                                        ),
+                                                                                        EvalRef(
+                                                                                            EvalLiteral {
+                                                                                                value: String(
+                                                                                                    "\n\n        fn cached(",
+                                                                                                ),
+                                                                                            },
+                                                                                        ),
+                                                                                        EvalRef(
+                                                                                            EvalCall {
+                                                                                                func_expr: EvalRef(
+                                                                                                    EvalVariable {
+                                                                                                        name: "str",
+                                                                                                    },
+                                                                                                ),
+                                                                                                args: [
+                                                                                                    EvalRef(
+                                                                                                        EvalVariable {
+                                                                                                            name: "param_list",
+                                                                                                        },
+                                                                                                    ),
+                                                                                                ],
+                                                                                            },
+                                                                                        ),
+                                                                                        EvalRef(
+                                                                                            EvalLiteral {
+                                                                                                value: String(
+                                                                                                    ") {\n            var args_key = str(",
+                                                                                                ),
+                                                                                            },
+                                                                                        ),
+                                                                                        EvalRef(
+                                                                                            EvalCall {
+                                                                                                func_expr: EvalRef(
+                                                                                                    EvalVariable {
+                                                                                                        name: "str",
+                                                                                                    },
+                                                                                                ),
+                                                                                                args: [
+                                                                                                    EvalRef(
+                                                                                                        EvalVariable {
+                                                                                                            name: "param_list",
+                                                                                                        },
+                                                                                                    ),
+                                                                                                ],
+                                                                                            },
+                                                                                        ),
+                                                                                        EvalRef(
+                                                                                            EvalLiteral {
+                                                                                                value: String(
+                                                                                                    ");\n            if args_key in cache {\n                cache[args_key]\n            } else {\n                var result = original(",
+                                                                                                ),
+                                                                                            },
+                                                                                        ),
+                                                                                        EvalRef(
+                                                                                            EvalCall {
+                                                                                                func_expr: EvalRef(
+                                                                                                    EvalVariable {
+                                                                                                        name: "str",
+                                                                                                    },
+                                                                                                ),
+                                                                                                args: [
+                                                                                                    EvalRef(
+                                                                                                        EvalVariable {
+                                                                                                            name: "param_list",
+                                                                                                        },
+                                                                                                    ),
+                                                                                                ],
+                                                                                            },
+                                                                                        ),
+                                                                                        EvalRef(
+                                                                                            EvalLiteral {
+                                                                                                value: String(
+                                                                                                    ");\n                cache[args_key] = result;\n                result\n            }\n        }\n\n        cached(",
+                                                                                                ),
+                                                                                            },
+                                                                                        ),
+                                                                                        EvalRef(
+                                                                                            EvalCall {
+                                                                                                func_expr: EvalRef(
+                                                                                                    EvalVariable {
+                                                                                                        name: "str",
+                                                                                                    },
+                                                                                                ),
+                                                                                                args: [
+                                                                                                    EvalRef(
+                                                                                                        EvalVariable {
+                                                                                                            name: "param_list",
+                                                                                                        },
+                                                                                                    ),
+                                                                                                ],
+                                                                                            },
+                                                                                        ),
+                                                                                        EvalRef(
+                                                                                            EvalLiteral {
+                                                                                                value: String(
+                                                                                                    ")\n    }",
+                                                                                                ),
+                                                                                            },
+                                                                                        ),
+                                                                                    ],
+                                                                                },
+                                                                            ),
+                                                                        ],
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
                                                     ),
-                                                    "op_add",
                                                 ),
-                                                [
-                                                    Call(
-                                                        Variable(
-                                                            "str",
-                                                        ),
-                                                        [
-                                                            GetAttr(
-                                                                Variable(
-                                                                    "func",
-                                                                ),
-                                                                "name",
-                                                            ),
-                                                        ],
-                                                    ),
-                                                    Literal(
-                                                        String(
-                                                            "(",
-                                                        ),
-                                                    ),
-                                                    Call(
-                                                        Variable(
-                                                            "str",
-                                                        ),
-                                                        [
-                                                            Variable(
-                                                                "param_list",
-                                                            ),
-                                                        ],
-                                                    ),
-                                                    Literal(
-                                                        String(
-                                                            ") {\n        var cache = {};\n\n        fn original(",
-                                                        ),
-                                                    ),
-                                                    Call(
-                                                        Variable(
-                                                            "str",
-                                                        ),
-                                                        [
-                                                            Variable(
-                                                                "param_list",
-                                                            ),
-                                                        ],
-                                                    ),
-                                                    Literal(
-                                                        String(
-                                                            ") ",
-                                                        ),
-                                                    ),
-                                                    Call(
-                                                        Variable(
-                                                            "str",
-                                                        ),
-                                                        [
-                                                            GetAttr(
-                                                                Variable(
-                                                                    "func",
-                                                                ),
-                                                                "body",
-                                                            ),
-                                                        ],
-                                                    ),
-                                                    Literal(
-                                                        String(
-                                                            "\n\n        fn cached(",
-                                                        ),
-                                                    ),
-                                                    Call(
-                                                        Variable(
-                                                            "str",
-                                                        ),
-                                                        [
-                                                            Variable(
-                                                                "param_list",
-                                                            ),
-                                                        ],
-                                                    ),
-                                                    Literal(
-                                                        String(
-                                                            ") {\n            var args_key = str(",
-                                                        ),
-                                                    ),
-                                                    Call(
-                                                        Variable(
-                                                            "str",
-                                                        ),
-                                                        [
-                                                            Variable(
-                                                                "param_list",
-                                                            ),
-                                                        ],
-                                                    ),
-                                                    Literal(
-                                                        String(
-                                                            ");\n            if args_key in cache {\n                cache[args_key]\n            } else {\n                var result = original(",
-                                                        ),
-                                                    ),
-                                                    Call(
-                                                        Variable(
-                                                            "str",
-                                                        ),
-                                                        [
-                                                            Variable(
-                                                                "param_list",
-                                                            ),
-                                                        ],
-                                                    ),
-                                                    Literal(
-                                                        String(
-                                                            ");\n                cache[args_key] = result;\n                result\n            }\n        }\n\n        cached(",
-                                                        ),
-                                                    ),
-                                                    Call(
-                                                        Variable(
-                                                            "str",
-                                                        ),
-                                                        [
-                                                            Variable(
-                                                                "param_list",
-                                                            ),
-                                                        ],
-                                                    ),
-                                                    Literal(
-                                                        String(
-                                                            ")\n    }",
-                                                        ),
+                                            },
+                                        },
+                                    ),
+                                ),
+                                args: [],
+                            },
+                        },
+                    ),
+                    EvalRef(
+                        EvalDeclare {
+                            name: "count",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: Int(
+                                            0,
+                                        ),
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                    EvalRef(
+                        EvalMacro {
+                            data: MacroData {
+                                macro_fn: Eval(
+                                    EvalRef(
+                                        EvalVariable {
+                                            name: "memoize",
+                                        },
+                                    ),
+                                ),
+                                target: Eval(
+                                    EvalRef(
+                                        EvalFunction {
+                                            data: FunctionData {
+                                                name: "fibonacci",
+                                                params: [
+                                                    (
+                                                        "n",
+                                                        None,
+                                                        Regular,
                                                     ),
                                                 ],
+                                                body: Eval(
+                                                    EvalRef(
+                                                        EvalBlock {
+                                                            statements: [
+                                                                EvalRef(
+                                                                    EvalAssign {
+                                                                        name: "count",
+                                                                        expr: EvalRef(
+                                                                            EvalCall {
+                                                                                func_expr: EvalRef(
+                                                                                    EvalGetAttr {
+                                                                                        obj_expr: EvalRef(
+                                                                                            EvalVariable {
+                                                                                                name: "count",
+                                                                                            },
+                                                                                        ),
+                                                                                        attr_name: "op_add",
+                                                                                    },
+                                                                                ),
+                                                                                args: [
+                                                                                    EvalRef(
+                                                                                        EvalLiteral {
+                                                                                            value: Int(
+                                                                                                1,
+                                                                                            ),
+                                                                                        },
+                                                                                    ),
+                                                                                ],
+                                                                            },
+                                                                        ),
+                                                                    },
+                                                                ),
+                                                            ],
+                                                            final_expr: Some(
+                                                                EvalRef(
+                                                                    EvalIf {
+                                                                        condition: EvalRef(
+                                                                            EvalCall {
+                                                                                func_expr: EvalRef(
+                                                                                    EvalGetAttr {
+                                                                                        obj_expr: EvalRef(
+                                                                                            EvalVariable {
+                                                                                                name: "n",
+                                                                                            },
+                                                                                        ),
+                                                                                        attr_name: "op_le",
+                                                                                    },
+                                                                                ),
+                                                                                args: [
+                                                                                    EvalRef(
+                                                                                        EvalLiteral {
+                                                                                            value: Int(
+                                                                                                1,
+                                                                                            ),
+                                                                                        },
+                                                                                    ),
+                                                                                ],
+                                                                            },
+                                                                        ),
+                                                                        then_expr: EvalRef(
+                                                                            EvalBlock {
+                                                                                statements: [],
+                                                                                final_expr: Some(
+                                                                                    EvalRef(
+                                                                                        EvalVariable {
+                                                                                            name: "n",
+                                                                                        },
+                                                                                    ),
+                                                                                ),
+                                                                            },
+                                                                        ),
+                                                                        else_expr: Some(
+                                                                            EvalRef(
+                                                                                EvalBlock {
+                                                                                    statements: [],
+                                                                                    final_expr: Some(
+                                                                                        EvalRef(
+                                                                                            EvalCall {
+                                                                                                func_expr: EvalRef(
+                                                                                                    EvalGetAttr {
+                                                                                                        obj_expr: EvalRef(
+                                                                                                            EvalCall {
+                                                                                                                func_expr: EvalRef(
+                                                                                                                    EvalVariable {
+                                                                                                                        name: "fibonacci",
+                                                                                                                    },
+                                                                                                                ),
+                                                                                                                args: [
+                                                                                                                    EvalRef(
+                                                                                                                        EvalCall {
+                                                                                                                            func_expr: EvalRef(
+                                                                                                                                EvalGetAttr {
+                                                                                                                                    obj_expr: EvalRef(
+                                                                                                                                        EvalVariable {
+                                                                                                                                            name: "n",
+                                                                                                                                        },
+                                                                                                                                    ),
+                                                                                                                                    attr_name: "op_sub",
+                                                                                                                                },
+                                                                                                                            ),
+                                                                                                                            args: [
+                                                                                                                                EvalRef(
+                                                                                                                                    EvalLiteral {
+                                                                                                                                        value: Int(
+                                                                                                                                            1,
+                                                                                                                                        ),
+                                                                                                                                    },
+                                                                                                                                ),
+                                                                                                                            ],
+                                                                                                                        },
+                                                                                                                    ),
+                                                                                                                ],
+                                                                                                            },
+                                                                                                        ),
+                                                                                                        attr_name: "op_add",
+                                                                                                    },
+                                                                                                ),
+                                                                                                args: [
+                                                                                                    EvalRef(
+                                                                                                        EvalCall {
+                                                                                                            func_expr: EvalRef(
+                                                                                                                EvalVariable {
+                                                                                                                    name: "fibonacci",
+                                                                                                                },
+                                                                                                            ),
+                                                                                                            args: [
+                                                                                                                EvalRef(
+                                                                                                                    EvalCall {
+                                                                                                                        func_expr: EvalRef(
+                                                                                                                            EvalGetAttr {
+                                                                                                                                obj_expr: EvalRef(
+                                                                                                                                    EvalVariable {
+                                                                                                                                        name: "n",
+                                                                                                                                    },
+                                                                                                                                ),
+                                                                                                                                attr_name: "op_sub",
+                                                                                                                            },
+                                                                                                                        ),
+                                                                                                                        args: [
+                                                                                                                            EvalRef(
+                                                                                                                                EvalLiteral {
+                                                                                                                                    value: Int(
+                                                                                                                                        2,
+                                                                                                                                    ),
+                                                                                                                                },
+                                                                                                                            ),
+                                                                                                                        ],
+                                                                                                                    },
+                                                                                                                ),
+                                                                                                            ],
+                                                                                                        },
+                                                                                                    ),
+                                                                                                ],
+                                                                                            },
+                                                                                        ),
+                                                                                    ),
+                                                                                },
+                                                                            ),
+                                                                        ),
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                        },
+                                    ),
+                                ),
+                                args: [],
+                            },
+                        },
+                    ),
+                    EvalRef(
+                        EvalDeclare {
+                            name: "f",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalVariable {
+                                                name: "fibonacci",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        10,
+                                                    ),
+                                                },
                                             ),
                                         ],
-                                    ),
+                                    },
                                 ),
                             ),
                         },
                     ),
-                    args: [],
-                },
-            ),
-            Declare(
-                "count",
-                Some(
-                    Literal(
-                        Int(
-                            0,
-                        ),
-                    ),
-                ),
-            ),
-            Macro(
-                MacroData {
-                    macro_fn: Variable(
-                        "memoize",
-                    ),
-                    target: Function(
-                        FunctionData {
-                            name: "fibonacci",
-                            params: [
-                                (
-                                    "n",
-                                    None,
-                                    Regular,
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "f",
+                                                    },
+                                                ),
+                                                attr_name: "op_eq",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        55,
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
+                                ),
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: String(
+                                            "f",
+                                        ),
+                                    },
                                 ),
                             ],
-                            body: Block(
-                                [
-                                    Assign(
-                                        "count",
-                                        Call(
-                                            GetAttr(
-                                                Variable(
-                                                    "count",
-                                                ),
-                                                "op_add",
-                                            ),
-                                            [
-                                                Literal(
-                                                    Int(
-                                                        1,
-                                                    ),
-                                                ),
-                                            ],
-                                        ),
-                                    ),
-                                ],
-                                Some(
-                                    If(
-                                        Call(
-                                            GetAttr(
-                                                Variable(
-                                                    "n",
-                                                ),
-                                                "op_le",
-                                            ),
-                                            [
-                                                Literal(
-                                                    Int(
-                                                        1,
-                                                    ),
-                                                ),
-                                            ],
-                                        ),
-                                        Block(
-                                            [],
-                                            Some(
-                                                Variable(
-                                                    "n",
-                                                ),
-                                            ),
-                                        ),
-                                        Some(
-                                            Block(
-                                                [],
-                                                Some(
-                                                    Call(
-                                                        GetAttr(
-                                                            Call(
-                                                                Variable(
-                                                                    "fibonacci",
-                                                                ),
-                                                                [
-                                                                    Call(
-                                                                        GetAttr(
-                                                                            Variable(
-                                                                                "n",
-                                                                            ),
-                                                                            "op_sub",
-                                                                        ),
-                                                                        [
-                                                                            Literal(
-                                                                                Int(
-                                                                                    1,
-                                                                                ),
-                                                                            ),
-                                                                        ],
-                                                                    ),
-                                                                ],
-                                                            ),
-                                                            "op_add",
-                                                        ),
-                                                        [
-                                                            Call(
-                                                                Variable(
-                                                                    "fibonacci",
-                                                                ),
-                                                                [
-                                                                    Call(
-                                                                        GetAttr(
-                                                                            Variable(
-                                                                                "n",
-                                                                            ),
-                                                                            "op_sub",
-                                                                        ),
-                                                                        [
-                                                                            Literal(
-                                                                                Int(
-                                                                                    2,
-                                                                                ),
-                                                                            ),
-                                                                        ],
-                                                                    ),
-                                                                ],
-                                                            ),
-                                                        ],
-                                                    ),
-                                                ),
-                                            ),
-                                        ),
-                                    ),
-                                ),
-                            ),
                         },
                     ),
-                    args: [],
-                },
-            ),
-            Declare(
-                "f",
-                Some(
-                    Call(
-                        Variable(
-                            "fibonacci",
-                        ),
-                        [
-                            Literal(
-                                Int(
-                                    10,
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "count",
+                                                    },
+                                                ),
+                                                attr_name: "op_eq",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        11,
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
                                 ),
-                            ),
-                        ],
-                    ),
-                ),
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Variable(
-                                "f",
-                            ),
-                            "op_eq",
-                        ),
-                        [
-                            Literal(
-                                Int(
-                                    55,
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: String(
+                                            "count",
+                                        ),
+                                    },
                                 ),
-                            ),
-                        ],
-                    ),
-                    Literal(
-                        String(
-                            "f",
-                        ),
+                            ],
+                        },
                     ),
                 ],
-            ),
-            Call(
-                Variable(
-                    "print",
-                ),
-                [
-                    Variable(
-                        "count",
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Variable(
-                                "count",
-                            ),
-                            "op_eq",
-                        ),
-                        [
-                            Literal(
-                                Int(
-                                    11,
-                                ),
-                            ),
-                        ],
-                    ),
-                    Literal(
-                        String(
-                            "count",
-                        ),
-                    ),
-                ],
-            ),
-        ],
+            },
+        ),
     ),
 )
 ```

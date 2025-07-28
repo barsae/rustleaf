@@ -79,32 +79,50 @@ Ok(
 # Eval
 ```rust
 Ok(
-    Program(
-        [
-            Declare(
-                "x",
-                Some(
-                    Dict(
-                        [],
+    Eval(
+        EvalRef(
+            EvalProgram {
+                statements: [
+                    EvalRef(
+                        EvalDeclare {
+                            name: "x",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalDict {
+                                        pairs: [],
+                                    },
+                                ),
+                            ),
+                        },
                     ),
-                ),
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Is(
-                        Variable(
-                            "x",
-                        ),
-                        Variable(
-                            "Dict",
-                        ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalIs {
+                                        left: EvalRef(
+                                            EvalVariable {
+                                                name: "x",
+                                            },
+                                        ),
+                                        right: EvalRef(
+                                            EvalVariable {
+                                                name: "Dict",
+                                            },
+                                        ),
+                                    },
+                                ),
+                            ],
+                        },
                     ),
                 ],
-            ),
-        ],
+            },
+        ),
     ),
 )
 ```

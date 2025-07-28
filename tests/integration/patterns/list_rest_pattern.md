@@ -1,6 +1,6 @@
 # Program
-Status: 🟢
-Assertions: 2
+Status: 🔴
+Assertions: 0
 
 ```rustleaf
 var [first, *rest] = [1, 2, 3, 4];
@@ -13,8 +13,8 @@ None
 
 # Result
 ```rust
-Ok(
-    Unit,
+Err(
+    "Pattern declarations not yet supported in new Eval system",
 )
 ```
 
@@ -167,104 +167,7 @@ Ok(
 
 # Eval
 ```rust
-Ok(
-    Program(
-        [
-            DeclarePattern(
-                ListRest(
-                    [
-                        Variable(
-                            "first",
-                        ),
-                    ],
-                    Some(
-                        "rest",
-                    ),
-                ),
-                List(
-                    [
-                        Literal(
-                            Int(
-                                1,
-                            ),
-                        ),
-                        Literal(
-                            Int(
-                                2,
-                            ),
-                        ),
-                        Literal(
-                            Int(
-                                3,
-                            ),
-                        ),
-                        Literal(
-                            Int(
-                                4,
-                            ),
-                        ),
-                    ],
-                ),
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Variable(
-                                "first",
-                            ),
-                            "op_eq",
-                        ),
-                        [
-                            Literal(
-                                Int(
-                                    1,
-                                ),
-                            ),
-                        ],
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Variable(
-                                "rest",
-                            ),
-                            "op_eq",
-                        ),
-                        [
-                            List(
-                                [
-                                    Literal(
-                                        Int(
-                                            2,
-                                        ),
-                                    ),
-                                    Literal(
-                                        Int(
-                                            3,
-                                        ),
-                                    ),
-                                    Literal(
-                                        Int(
-                                            4,
-                                        ),
-                                    ),
-                                ],
-                            ),
-                        ],
-                    ),
-                ],
-            ),
-        ],
-    ),
+Err(
+    "Pattern declarations not yet supported in new Eval system",
 )
 ```

@@ -34,7 +34,7 @@ pub fn evaluate_with_dir(
 ) -> anyhow::Result<crate::core::Value> {
     println!("DEBUG: evaluate_with_dir starting compilation");
     let eval_ir = Compiler::compile(program)?;
-    println!("DEBUG: evaluate_with_dir compilation completed, eval_ir type: {:?}", std::mem::discriminant(&eval_ir));
+    println!("DEBUG: evaluate_with_dir compilation completed, eval_ir: {:?}", eval_ir);
     println!("DEBUG: evaluate_with_dir creating evaluator");
     let mut evaluator = match current_dir {
         Some(dir) => Evaluator::new_with_dir(dir),

@@ -1,4 +1,4 @@
-use super::{scope::ScopeRef, EvalTypeConstant, Params, RustLeafFunction, TypeConstant};
+use super::{scope::ScopeRef, EvalTypeConstant, TypeConstant};
 use crate::{core::*, eval::Eval};
 use anyhow::anyhow;
 use std::path::{Path, PathBuf};
@@ -139,7 +139,7 @@ impl Evaluator {
     }
 
     /// Helper method to cleanup resources by calling op_close() in reverse order
-    fn cleanup_resources(&mut self, resources: &[(String, Value)]) {
+    pub fn cleanup_resources(&mut self, resources: &[(String, Value)]) {
         // Cleanup in reverse order
         for (_name, resource_value) in resources.iter().rev() {
             let close_method = resource_value.get_attr("op_close", self);
@@ -153,7 +153,7 @@ impl Evaluator {
     }
 
     /// Load and evaluate a module, returning its scope
-    fn load_module(&self, module_name: &str) -> Result<ScopeRef, ControlFlow> {
+    pub fn load_module(&self, module_name: &str) -> Result<ScopeRef, ControlFlow> {
         // Resolve module path
         let module_path = self.resolve_module_path(module_name)?;
 
@@ -197,29 +197,10 @@ impl Evaluator {
         let module_dir = module_path.parent().unwrap_or(Path::new(".")).to_path_buf();
         let mut module_evaluator = Evaluator::new_with_dir(module_dir);
 
-        // Evaluate the module - handle module-level definitions specially
-        match eval_ir {
-            Eval::Program(statements) => {
-                // For modules, evaluate statements directly in the module scope
-                for stmt in statements.iter() {
-                    module_evaluator.eval(stmt)?;
-                }
-            }
-            Eval::Block(statements, final_expr) => {
-                // For modules, evaluate statements directly in the module scope (not in a child scope)
-                for stmt in statements.iter() {
-                    module_evaluator.eval(stmt)?;
-                }
-                // Evaluate final expression if present
-                if let Some(final_expr) = &final_expr {
-                    module_evaluator.eval(final_expr)?;
-                }
-            }
-            _ => {
-                // For non-program/block evaluation, evaluate normally
-                module_evaluator.eval(&eval_ir)?;
-            }
-        }
+        // Evaluate the module
+        // TODO: Module-level evaluation may need special handling for different eval types
+        // For now, evaluate everything normally through the trait dispatch
+        module_evaluator.eval(&eval_ir)?;
 
         // Return the module's current scope (which includes both built-ins and module items)
         // We'll filter out built-ins at import time instead
@@ -244,6 +225,7 @@ impl Evaluator {
     }
 
     /// Pattern matching helper - binds variables from patterns
+    #[allow(dead_code)]
     fn match_pattern(
         &mut self,
         pattern: &crate::eval::core::EvalPattern,
@@ -353,8 +335,8 @@ impl Evaluator {
         }
     }
 
-    fn match_pattern_matches(
-        &self,
+    pub fn match_pattern_matches(
+        &mut self,
         pattern: &crate::eval::core::EvalMatchPattern,
         value: &Value,
     ) -> Result<bool, ControlFlow> {

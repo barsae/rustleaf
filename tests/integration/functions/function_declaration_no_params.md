@@ -284,181 +284,277 @@ Ok(
 # Eval
 ```rust
 Ok(
-    Program(
-        [
-            Function(
-                FunctionData {
-                    name: "hello",
-                    params: [],
-                    body: Block(
-                        [],
-                        Some(
-                            Literal(
-                                Int(
-                                    42,
+    Eval(
+        EvalRef(
+            EvalProgram {
+                statements: [
+                    EvalRef(
+                        EvalFunction {
+                            data: FunctionData {
+                                name: "hello",
+                                params: [],
+                                body: Eval(
+                                    EvalRef(
+                                        EvalBlock {
+                                            statements: [],
+                                            final_expr: Some(
+                                                EvalRef(
+                                                    EvalLiteral {
+                                                        value: Int(
+                                                            42,
+                                                        ),
+                                                    },
+                                                ),
+                                            ),
+                                        },
+                                    ),
+                                ),
+                            },
+                        },
+                    ),
+                    EvalRef(
+                        EvalFunction {
+                            data: FunctionData {
+                                name: "get_pi",
+                                params: [],
+                                body: Eval(
+                                    EvalRef(
+                                        EvalBlock {
+                                            statements: [],
+                                            final_expr: Some(
+                                                EvalRef(
+                                                    EvalLiteral {
+                                                        value: Float(
+                                                            3.14,
+                                                        ),
+                                                    },
+                                                ),
+                                            ),
+                                        },
+                                    ),
+                                ),
+                            },
+                        },
+                    ),
+                    EvalRef(
+                        EvalFunction {
+                            data: FunctionData {
+                                name: "get_greeting",
+                                params: [],
+                                body: Eval(
+                                    EvalRef(
+                                        EvalBlock {
+                                            statements: [],
+                                            final_expr: Some(
+                                                EvalRef(
+                                                    EvalLiteral {
+                                                        value: String(
+                                                            "Hello, World!",
+                                                        ),
+                                                    },
+                                                ),
+                                            ),
+                                        },
+                                    ),
+                                ),
+                            },
+                        },
+                    ),
+                    EvalRef(
+                        EvalDeclare {
+                            name: "result1",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalVariable {
+                                                name: "hello",
+                                            },
+                                        ),
+                                        args: [],
+                                    },
                                 ),
                             ),
-                        ),
+                        },
                     ),
-                },
-            ),
-            Function(
-                FunctionData {
-                    name: "get_pi",
-                    params: [],
-                    body: Block(
-                        [],
-                        Some(
-                            Literal(
-                                Float(
-                                    3.14,
+                    EvalRef(
+                        EvalDeclare {
+                            name: "result2",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalVariable {
+                                                name: "get_pi",
+                                            },
+                                        ),
+                                        args: [],
+                                    },
                                 ),
                             ),
-                        ),
+                        },
                     ),
-                },
-            ),
-            Function(
-                FunctionData {
-                    name: "get_greeting",
-                    params: [],
-                    body: Block(
-                        [],
-                        Some(
-                            Literal(
-                                String(
-                                    "Hello, World!",
+                    EvalRef(
+                        EvalDeclare {
+                            name: "result3",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalVariable {
+                                                name: "get_greeting",
+                                            },
+                                        ),
+                                        args: [],
+                                    },
                                 ),
                             ),
-                        ),
+                        },
                     ),
-                },
-            ),
-            Declare(
-                "result1",
-                Some(
-                    Call(
-                        Variable(
-                            "hello",
-                        ),
-                        [],
-                    ),
-                ),
-            ),
-            Declare(
-                "result2",
-                Some(
-                    Call(
-                        Variable(
-                            "get_pi",
-                        ),
-                        [],
-                    ),
-                ),
-            ),
-            Declare(
-                "result3",
-                Some(
-                    Call(
-                        Variable(
-                            "get_greeting",
-                        ),
-                        [],
-                    ),
-                ),
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Variable(
-                                "result1",
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
                             ),
-                            "op_eq",
-                        ),
-                        [
-                            Literal(
-                                Int(
-                                    42,
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "result1",
+                                                    },
+                                                ),
+                                                attr_name: "op_eq",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        42,
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
                                 ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
                             ),
-                        ],
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "result2",
+                                                    },
+                                                ),
+                                                attr_name: "op_eq",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Float(
+                                                        3.14,
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalVariable {
+                                                        name: "result3",
+                                                    },
+                                                ),
+                                                attr_name: "op_eq",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: String(
+                                                        "Hello, World!",
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalCall {
+                                                        func_expr: EvalRef(
+                                                            EvalVariable {
+                                                                name: "hello",
+                                                            },
+                                                        ),
+                                                        args: [],
+                                                    },
+                                                ),
+                                                attr_name: "op_eq",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        42,
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
+                                ),
+                            ],
+                        },
                     ),
                 ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Variable(
-                                "result2",
-                            ),
-                            "op_eq",
-                        ),
-                        [
-                            Literal(
-                                Float(
-                                    3.14,
-                                ),
-                            ),
-                        ],
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Variable(
-                                "result3",
-                            ),
-                            "op_eq",
-                        ),
-                        [
-                            Literal(
-                                String(
-                                    "Hello, World!",
-                                ),
-                            ),
-                        ],
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Call(
-                                Variable(
-                                    "hello",
-                                ),
-                                [],
-                            ),
-                            "op_eq",
-                        ),
-                        [
-                            Literal(
-                                Int(
-                                    42,
-                                ),
-                            ),
-                        ],
-                    ),
-                ],
-            ),
-        ],
+            },
+        ),
     ),
 )
 ```

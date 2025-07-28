@@ -1086,674 +1086,1052 @@ Ok(
 # Eval
 ```rust
 Ok(
-    Program(
-        [
-            Declare(
-                "int_val",
-                Some(
-                    Literal(
-                        Int(
-                            42,
-                        ),
-                    ),
-                ),
-            ),
-            Declare(
-                "float_val",
-                Some(
-                    Literal(
-                        Float(
-                            3.14,
-                        ),
-                    ),
-                ),
-            ),
-            Declare(
-                "string_val",
-                Some(
-                    Literal(
-                        String(
-                            "hello",
-                        ),
-                    ),
-                ),
-            ),
-            Declare(
-                "bool_val",
-                Some(
-                    Literal(
-                        Bool(
-                            true,
-                        ),
-                    ),
-                ),
-            ),
-            Declare(
-                "list_val",
-                Some(
-                    List(
-                        [
-                            Literal(
-                                Int(
-                                    1,
-                                ),
-                            ),
-                            Literal(
-                                Int(
-                                    2,
-                                ),
-                            ),
-                            Literal(
-                                Int(
-                                    3,
-                                ),
-                            ),
-                        ],
-                    ),
-                ),
-            ),
-            Declare(
-                "dict_val",
-                Some(
-                    Dict(
-                        [
-                            (
-                                Literal(
-                                    String(
-                                        "key",
-                                    ),
-                                ),
-                                Literal(
-                                    String(
-                                        "value",
-                                    ),
-                                ),
-                            ),
-                        ],
-                    ),
-                ),
-            ),
-            Declare(
-                "range_val",
-                Some(
-                    Literal(
-                        Range(
-                            Range {
-                                start: 1,
-                                end: 10,
-                                inclusive: false,
-                            },
-                        ),
-                    ),
-                ),
-            ),
-            Declare(
-                "lambda_val",
-                Some(
-                    Lambda(
-                        LambdaData {
-                            params: [
-                                "x",
-                            ],
-                            body: Call(
-                                GetAttr(
-                                    Variable(
-                                        "x",
-                                    ),
-                                    "op_add",
-                                ),
-                                [
-                                    Literal(
-                                        Int(
-                                            1,
+    Eval(
+        EvalRef(
+            EvalProgram {
+                statements: [
+                    EvalRef(
+                        EvalDeclare {
+                            name: "int_val",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: Int(
+                                            42,
                                         ),
-                                    ),
-                                ],
+                                    },
+                                ),
                             ),
                         },
                     ),
-                ),
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Is(
-                        Variable(
-                            "int_val",
-                        ),
-                        Variable(
-                            "Int",
-                        ),
-                    ),
-                    Literal(
-                        String(
-                            "int_val should be Int",
-                        ),
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Is(
-                        Variable(
-                            "float_val",
-                        ),
-                        Variable(
-                            "Float",
-                        ),
-                    ),
-                    Literal(
-                        String(
-                            "float_val should be Float",
-                        ),
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Is(
-                        Variable(
-                            "string_val",
-                        ),
-                        Variable(
-                            "String",
-                        ),
-                    ),
-                    Literal(
-                        String(
-                            "string_val should be String",
-                        ),
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Is(
-                        Variable(
-                            "bool_val",
-                        ),
-                        Variable(
-                            "Bool",
-                        ),
-                    ),
-                    Literal(
-                        String(
-                            "bool_val should be Bool",
-                        ),
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Is(
-                        Variable(
-                            "list_val",
-                        ),
-                        Variable(
-                            "List",
-                        ),
-                    ),
-                    Literal(
-                        String(
-                            "list_val should be List",
-                        ),
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Is(
-                        Variable(
-                            "dict_val",
-                        ),
-                        Variable(
-                            "Dict",
-                        ),
-                    ),
-                    Literal(
-                        String(
-                            "dict_val should be Dict",
-                        ),
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Is(
-                        Variable(
-                            "range_val",
-                        ),
-                        Variable(
-                            "Range",
-                        ),
-                    ),
-                    Literal(
-                        String(
-                            "range_val should be Range",
-                        ),
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Is(
-                        Variable(
-                            "lambda_val",
-                        ),
-                        Variable(
-                            "Function",
-                        ),
-                    ),
-                    Literal(
-                        String(
-                            "lambda_val should be Function",
-                        ),
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    LogicalNot(
-                        Is(
-                            Variable(
-                                "int_val",
-                            ),
-                            Variable(
-                                "String",
-                            ),
-                        ),
-                    ),
-                    Literal(
-                        String(
-                            "int_val should not be String",
-                        ),
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    LogicalNot(
-                        Is(
-                            Variable(
-                                "float_val",
-                            ),
-                            Variable(
-                                "Int",
-                            ),
-                        ),
-                    ),
-                    Literal(
-                        String(
-                            "float_val should not be Int",
-                        ),
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    LogicalNot(
-                        Is(
-                            Variable(
-                                "string_val",
-                            ),
-                            Variable(
-                                "Bool",
-                            ),
-                        ),
-                    ),
-                    Literal(
-                        String(
-                            "string_val should not be Bool",
-                        ),
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    LogicalNot(
-                        Is(
-                            Variable(
-                                "bool_val",
-                            ),
-                            Variable(
-                                "List",
-                            ),
-                        ),
-                    ),
-                    Literal(
-                        String(
-                            "bool_val should not be List",
-                        ),
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    LogicalNot(
-                        Is(
-                            Variable(
-                                "list_val",
-                            ),
-                            Variable(
-                                "Dict",
-                            ),
-                        ),
-                    ),
-                    Literal(
-                        String(
-                            "list_val should not be Dict",
-                        ),
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    LogicalNot(
-                        Is(
-                            Variable(
-                                "dict_val",
-                            ),
-                            Variable(
-                                "Range",
-                            ),
-                        ),
-                    ),
-                    Literal(
-                        String(
-                            "dict_val should not be Range",
-                        ),
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    LogicalNot(
-                        Is(
-                            Variable(
-                                "range_val",
-                            ),
-                            Variable(
-                                "Function",
-                            ),
-                        ),
-                    ),
-                    Literal(
-                        String(
-                            "range_val should not be Function",
-                        ),
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    LogicalNot(
-                        Is(
-                            Variable(
-                                "lambda_val",
-                            ),
-                            Variable(
-                                "Int",
-                            ),
-                        ),
-                    ),
-                    Literal(
-                        String(
-                            "lambda_val should not be Int",
-                        ),
-                    ),
-                ],
-            ),
-            Function(
-                FunctionData {
-                    name: "f",
-                    params: [],
-                    body: Block(
-                        [],
-                        None,
-                    ),
-                },
-            ),
-            Declare(
-                "unit",
-                Some(
-                    Call(
-                        Variable(
-                            "f",
-                        ),
-                        [],
-                    ),
-                ),
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Is(
-                        Literal(
-                            Null,
-                        ),
-                        Variable(
-                            "Null",
-                        ),
-                    ),
-                    Literal(
-                        String(
-                            "null should be Null",
-                        ),
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Is(
-                        Variable(
-                            "unit",
-                        ),
-                        Variable(
-                            "Unit",
-                        ),
-                    ),
-                    Literal(
-                        String(
-                            "unit should be Unit",
-                        ),
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    LogicalNot(
-                        Is(
-                            Literal(
-                                Null,
-                            ),
-                            Variable(
-                                "Unit",
-                            ),
-                        ),
-                    ),
-                    Literal(
-                        String(
-                            "null should not be Unit",
-                        ),
-                    ),
-                ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    LogicalNot(
-                        Is(
-                            Variable(
-                                "unit",
-                            ),
-                            Variable(
-                                "Null",
-                            ),
-                        ),
-                    ),
-                    Literal(
-                        String(
-                            "unit should not be Null",
-                        ),
-                    ),
-                ],
-            ),
-            Declare(
-                "list1",
-                Some(
-                    List(
-                        [
-                            Literal(
-                                Int(
-                                    1,
+                    EvalRef(
+                        EvalDeclare {
+                            name: "float_val",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: Float(
+                                            3.14,
+                                        ),
+                                    },
                                 ),
                             ),
-                            Literal(
-                                Int(
-                                    2,
-                                ),
-                            ),
-                            Literal(
-                                Int(
-                                    3,
-                                ),
-                            ),
-                        ],
+                        },
                     ),
-                ),
-            ),
-            Declare(
-                "list2",
-                Some(
-                    List(
-                        [
-                            Literal(
-                                Int(
-                                    1,
+                    EvalRef(
+                        EvalDeclare {
+                            name: "string_val",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: String(
+                                            "hello",
+                                        ),
+                                    },
                                 ),
                             ),
-                            Literal(
-                                Int(
-                                    2,
+                        },
+                    ),
+                    EvalRef(
+                        EvalDeclare {
+                            name: "bool_val",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: Bool(
+                                            true,
+                                        ),
+                                    },
                                 ),
                             ),
-                            Literal(
-                                Int(
-                                    3,
+                        },
+                    ),
+                    EvalRef(
+                        EvalDeclare {
+                            name: "list_val",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalList {
+                                        elements: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        1,
+                                                    ),
+                                                },
+                                            ),
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        2,
+                                                    ),
+                                                },
+                                            ),
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        3,
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
                                 ),
                             ),
-                        ],
+                        },
                     ),
-                ),
-            ),
-            Declare(
-                "list3",
-                Some(
-                    Variable(
-                        "list1",
-                    ),
-                ),
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    LogicalNot(
-                        Is(
-                            Variable(
-                                "list1",
+                    EvalRef(
+                        EvalDeclare {
+                            name: "dict_val",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalDict {
+                                        pairs: [
+                                            (
+                                                EvalRef(
+                                                    EvalLiteral {
+                                                        value: String(
+                                                            "key",
+                                                        ),
+                                                    },
+                                                ),
+                                                EvalRef(
+                                                    EvalLiteral {
+                                                        value: String(
+                                                            "value",
+                                                        ),
+                                                    },
+                                                ),
+                                            ),
+                                        ],
+                                    },
+                                ),
                             ),
-                            Variable(
-                                "list2",
-                            ),
-                        ),
+                        },
                     ),
-                    Literal(
-                        String(
-                            "list1 should not be identical to list2 (different objects)",
-                        ),
+                    EvalRef(
+                        EvalDeclare {
+                            name: "range_val",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: Range(
+                                            Range {
+                                                start: 0,
+                                                end: 10,
+                                                inclusive: false,
+                                            },
+                                        ),
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                    EvalRef(
+                        EvalDeclare {
+                            name: "lambda_val",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalLambda {
+                                        data: LambdaData {
+                                            params: [
+                                                "x",
+                                            ],
+                                            body: Eval(
+                                                EvalRef(
+                                                    EvalCall {
+                                                        func_expr: EvalRef(
+                                                            EvalGetAttr {
+                                                                obj_expr: EvalRef(
+                                                                    EvalVariable {
+                                                                        name: "x",
+                                                                    },
+                                                                ),
+                                                                attr_name: "op_add",
+                                                            },
+                                                        ),
+                                                        args: [
+                                                            EvalRef(
+                                                                EvalLiteral {
+                                                                    value: Int(
+                                                                        1,
+                                                                    ),
+                                                                },
+                                                            ),
+                                                        ],
+                                                    },
+                                                ),
+                                            ),
+                                        },
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalIs {
+                                        left: EvalRef(
+                                            EvalVariable {
+                                                name: "int_val",
+                                            },
+                                        ),
+                                        right: EvalRef(
+                                            EvalVariable {
+                                                name: "Int",
+                                            },
+                                        ),
+                                    },
+                                ),
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: String(
+                                            "int_val should be Int",
+                                        ),
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalIs {
+                                        left: EvalRef(
+                                            EvalVariable {
+                                                name: "float_val",
+                                            },
+                                        ),
+                                        right: EvalRef(
+                                            EvalVariable {
+                                                name: "Float",
+                                            },
+                                        ),
+                                    },
+                                ),
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: String(
+                                            "float_val should be Float",
+                                        ),
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalIs {
+                                        left: EvalRef(
+                                            EvalVariable {
+                                                name: "string_val",
+                                            },
+                                        ),
+                                        right: EvalRef(
+                                            EvalVariable {
+                                                name: "String",
+                                            },
+                                        ),
+                                    },
+                                ),
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: String(
+                                            "string_val should be String",
+                                        ),
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalIs {
+                                        left: EvalRef(
+                                            EvalVariable {
+                                                name: "bool_val",
+                                            },
+                                        ),
+                                        right: EvalRef(
+                                            EvalVariable {
+                                                name: "Bool",
+                                            },
+                                        ),
+                                    },
+                                ),
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: String(
+                                            "bool_val should be Bool",
+                                        ),
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalIs {
+                                        left: EvalRef(
+                                            EvalVariable {
+                                                name: "list_val",
+                                            },
+                                        ),
+                                        right: EvalRef(
+                                            EvalVariable {
+                                                name: "List",
+                                            },
+                                        ),
+                                    },
+                                ),
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: String(
+                                            "list_val should be List",
+                                        ),
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalIs {
+                                        left: EvalRef(
+                                            EvalVariable {
+                                                name: "dict_val",
+                                            },
+                                        ),
+                                        right: EvalRef(
+                                            EvalVariable {
+                                                name: "Dict",
+                                            },
+                                        ),
+                                    },
+                                ),
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: String(
+                                            "dict_val should be Dict",
+                                        ),
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalIs {
+                                        left: EvalRef(
+                                            EvalVariable {
+                                                name: "range_val",
+                                            },
+                                        ),
+                                        right: EvalRef(
+                                            EvalVariable {
+                                                name: "Range",
+                                            },
+                                        ),
+                                    },
+                                ),
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: String(
+                                            "range_val should be Range",
+                                        ),
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalIs {
+                                        left: EvalRef(
+                                            EvalVariable {
+                                                name: "lambda_val",
+                                            },
+                                        ),
+                                        right: EvalRef(
+                                            EvalVariable {
+                                                name: "Function",
+                                            },
+                                        ),
+                                    },
+                                ),
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: String(
+                                            "lambda_val should be Function",
+                                        ),
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalLogicalNot {
+                                        expr: EvalRef(
+                                            EvalIs {
+                                                left: EvalRef(
+                                                    EvalVariable {
+                                                        name: "int_val",
+                                                    },
+                                                ),
+                                                right: EvalRef(
+                                                    EvalVariable {
+                                                        name: "String",
+                                                    },
+                                                ),
+                                            },
+                                        ),
+                                    },
+                                ),
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: String(
+                                            "int_val should not be String",
+                                        ),
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalLogicalNot {
+                                        expr: EvalRef(
+                                            EvalIs {
+                                                left: EvalRef(
+                                                    EvalVariable {
+                                                        name: "float_val",
+                                                    },
+                                                ),
+                                                right: EvalRef(
+                                                    EvalVariable {
+                                                        name: "Int",
+                                                    },
+                                                ),
+                                            },
+                                        ),
+                                    },
+                                ),
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: String(
+                                            "float_val should not be Int",
+                                        ),
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalLogicalNot {
+                                        expr: EvalRef(
+                                            EvalIs {
+                                                left: EvalRef(
+                                                    EvalVariable {
+                                                        name: "string_val",
+                                                    },
+                                                ),
+                                                right: EvalRef(
+                                                    EvalVariable {
+                                                        name: "Bool",
+                                                    },
+                                                ),
+                                            },
+                                        ),
+                                    },
+                                ),
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: String(
+                                            "string_val should not be Bool",
+                                        ),
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalLogicalNot {
+                                        expr: EvalRef(
+                                            EvalIs {
+                                                left: EvalRef(
+                                                    EvalVariable {
+                                                        name: "bool_val",
+                                                    },
+                                                ),
+                                                right: EvalRef(
+                                                    EvalVariable {
+                                                        name: "List",
+                                                    },
+                                                ),
+                                            },
+                                        ),
+                                    },
+                                ),
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: String(
+                                            "bool_val should not be List",
+                                        ),
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalLogicalNot {
+                                        expr: EvalRef(
+                                            EvalIs {
+                                                left: EvalRef(
+                                                    EvalVariable {
+                                                        name: "list_val",
+                                                    },
+                                                ),
+                                                right: EvalRef(
+                                                    EvalVariable {
+                                                        name: "Dict",
+                                                    },
+                                                ),
+                                            },
+                                        ),
+                                    },
+                                ),
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: String(
+                                            "list_val should not be Dict",
+                                        ),
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalLogicalNot {
+                                        expr: EvalRef(
+                                            EvalIs {
+                                                left: EvalRef(
+                                                    EvalVariable {
+                                                        name: "dict_val",
+                                                    },
+                                                ),
+                                                right: EvalRef(
+                                                    EvalVariable {
+                                                        name: "Range",
+                                                    },
+                                                ),
+                                            },
+                                        ),
+                                    },
+                                ),
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: String(
+                                            "dict_val should not be Range",
+                                        ),
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalLogicalNot {
+                                        expr: EvalRef(
+                                            EvalIs {
+                                                left: EvalRef(
+                                                    EvalVariable {
+                                                        name: "range_val",
+                                                    },
+                                                ),
+                                                right: EvalRef(
+                                                    EvalVariable {
+                                                        name: "Function",
+                                                    },
+                                                ),
+                                            },
+                                        ),
+                                    },
+                                ),
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: String(
+                                            "range_val should not be Function",
+                                        ),
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalLogicalNot {
+                                        expr: EvalRef(
+                                            EvalIs {
+                                                left: EvalRef(
+                                                    EvalVariable {
+                                                        name: "lambda_val",
+                                                    },
+                                                ),
+                                                right: EvalRef(
+                                                    EvalVariable {
+                                                        name: "Int",
+                                                    },
+                                                ),
+                                            },
+                                        ),
+                                    },
+                                ),
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: String(
+                                            "lambda_val should not be Int",
+                                        ),
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalFunction {
+                            data: FunctionData {
+                                name: "f",
+                                params: [],
+                                body: Eval(
+                                    EvalRef(
+                                        EvalBlock {
+                                            statements: [],
+                                            final_expr: None,
+                                        },
+                                    ),
+                                ),
+                            },
+                        },
+                    ),
+                    EvalRef(
+                        EvalDeclare {
+                            name: "unit",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalVariable {
+                                                name: "f",
+                                            },
+                                        ),
+                                        args: [],
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalIs {
+                                        left: EvalRef(
+                                            EvalLiteral {
+                                                value: Null,
+                                            },
+                                        ),
+                                        right: EvalRef(
+                                            EvalVariable {
+                                                name: "Null",
+                                            },
+                                        ),
+                                    },
+                                ),
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: String(
+                                            "null should be Null",
+                                        ),
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalIs {
+                                        left: EvalRef(
+                                            EvalVariable {
+                                                name: "unit",
+                                            },
+                                        ),
+                                        right: EvalRef(
+                                            EvalVariable {
+                                                name: "Unit",
+                                            },
+                                        ),
+                                    },
+                                ),
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: String(
+                                            "unit should be Unit",
+                                        ),
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalLogicalNot {
+                                        expr: EvalRef(
+                                            EvalIs {
+                                                left: EvalRef(
+                                                    EvalLiteral {
+                                                        value: Null,
+                                                    },
+                                                ),
+                                                right: EvalRef(
+                                                    EvalVariable {
+                                                        name: "Unit",
+                                                    },
+                                                ),
+                                            },
+                                        ),
+                                    },
+                                ),
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: String(
+                                            "null should not be Unit",
+                                        ),
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalLogicalNot {
+                                        expr: EvalRef(
+                                            EvalIs {
+                                                left: EvalRef(
+                                                    EvalVariable {
+                                                        name: "unit",
+                                                    },
+                                                ),
+                                                right: EvalRef(
+                                                    EvalVariable {
+                                                        name: "Null",
+                                                    },
+                                                ),
+                                            },
+                                        ),
+                                    },
+                                ),
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: String(
+                                            "unit should not be Null",
+                                        ),
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalDeclare {
+                            name: "list1",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalList {
+                                        elements: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        1,
+                                                    ),
+                                                },
+                                            ),
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        2,
+                                                    ),
+                                                },
+                                            ),
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        3,
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                    EvalRef(
+                        EvalDeclare {
+                            name: "list2",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalList {
+                                        elements: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        1,
+                                                    ),
+                                                },
+                                            ),
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        2,
+                                                    ),
+                                                },
+                                            ),
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        3,
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                    EvalRef(
+                        EvalDeclare {
+                            name: "list3",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalVariable {
+                                        name: "list1",
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalLogicalNot {
+                                        expr: EvalRef(
+                                            EvalIs {
+                                                left: EvalRef(
+                                                    EvalVariable {
+                                                        name: "list1",
+                                                    },
+                                                ),
+                                                right: EvalRef(
+                                                    EvalVariable {
+                                                        name: "list2",
+                                                    },
+                                                ),
+                                            },
+                                        ),
+                                    },
+                                ),
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: String(
+                                            "list1 should not be identical to list2 (different objects)",
+                                        ),
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalIs {
+                                        left: EvalRef(
+                                            EvalVariable {
+                                                name: "list1",
+                                            },
+                                        ),
+                                        right: EvalRef(
+                                            EvalVariable {
+                                                name: "list3",
+                                            },
+                                        ),
+                                    },
+                                ),
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: String(
+                                            "list1 should be identical to list3 (same object reference)",
+                                        ),
+                                    },
+                                ),
+                            ],
+                        },
                     ),
                 ],
-            ),
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Is(
-                        Variable(
-                            "list1",
-                        ),
-                        Variable(
-                            "list3",
-                        ),
-                    ),
-                    Literal(
-                        String(
-                            "list1 should be identical to list3 (same object reference)",
-                        ),
-                    ),
-                ],
-            ),
-        ],
+            },
+        ),
     ),
 )
 ```

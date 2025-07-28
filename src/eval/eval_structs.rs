@@ -89,7 +89,7 @@ impl RustValue for EvalCall {
                     Ok(val) => {
                         // Convert back to old Eval for compatibility
                         // TODO: Remove this conversion once we fully migrate
-                        arg_evals.push(crate::eval::Eval::Literal(val));
+                        arg_evals.push(crate::eval::Eval::literal(val));
                     },
                     Err(e) => return Ok(Err(e)),
                 }
@@ -763,5 +763,270 @@ impl RustValue for EvalDict {
     
     fn str(&self) -> String {
         format!("Dict({} pairs)", self.pairs.len())
+    }
+}
+
+// Advanced evaluation structs
+
+#[derive(Debug, Clone)]
+pub struct EvalFunction {
+    pub data: crate::eval::core::FunctionData,
+}
+
+impl RustValue for EvalFunction {
+    fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
+        use crate::eval::{RustLeafFunction, Params};
+        
+        let params = Params::from_vec(self.data.params.clone());
+        let function = RustLeafFunction::new(
+            params,
+            self.data.body.as_ref().clone(),
+            evaluator.current_env.clone(),
+        );
+        
+        let function_value = Value::from_rust(function);
+        evaluator.current_env.define(&self.data.name, function_value);
+        Ok(Ok(Value::Unit))
+    }
+    
+    fn str(&self) -> String {
+        format!("Function({}, {} params)", self.data.name, self.data.params.len())
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct EvalLambda {
+    pub data: crate::eval::core::LambdaData,
+}
+
+impl RustValue for EvalLambda {
+    fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
+        use crate::eval::{RustLeafFunction, Params};
+        
+        let params = Params::from_names(&self.data.params);
+        let lambda_fn = RustLeafFunction::new(
+            params,
+            self.data.body.as_ref().clone(),
+            evaluator.current_env.clone(),
+        );
+        
+        Ok(Ok(Value::from_rust(lambda_fn)))
+    }
+    
+    fn str(&self) -> String {
+        format!("Lambda({} params)", self.data.params.len())
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct EvalClassDecl {
+    pub data: crate::eval::core::ClassDeclData,
+}
+
+impl RustValue for EvalClassDecl {
+    fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
+        use crate::eval::Class;
+        
+        let class = Class {
+            name: self.data.name.clone(),
+            field_names: self.data.field_names.clone(),
+            field_defaults: self.data.field_defaults.clone(),
+            methods: self.data.methods.clone(),
+        };
+        
+        let class_value = Value::new_class(class);
+        evaluator.current_env.define(&self.data.name, class_value);
+        Ok(Ok(Value::Unit))
+    }
+    
+    fn str(&self) -> String {
+        format!("ClassDecl({}, {} fields)", self.data.name, self.data.field_names.len())
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct EvalImport {
+    pub data: crate::eval::core::ImportData,
+}
+
+impl RustValue for EvalImport {
+    fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
+        use crate::core::ImportItems;
+        
+        match evaluator.load_module(&self.data.module) {
+            Ok(module_scope) => {
+                match &self.data.items {
+                    ImportItems::All => {
+                        // Import all public items from module
+                        let module_vars = module_scope.iter();
+                        for (name, value) in module_vars {
+                            // Skip built-in functions (they start with certain patterns)
+                            if !name.starts_with("__") {
+                                evaluator.current_env.define(&name, value);
+                            }
+                        }
+                    }
+                    ImportItems::Specific(items) => {
+                        // Import only selected items
+                        for import_item in items {
+                            let item_name = &import_item.name;
+                            if let Some(value) = module_scope.get(item_name) {
+                                let local_name = import_item.alias.as_ref().unwrap_or(item_name);
+                                evaluator.current_env.define(local_name, value);
+                            } else {
+                                return Ok(Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(
+                                    "Item '{}' not found in module '{}'",
+                                    item_name,
+                                    self.data.module
+                                )))));
+                            }
+                        }
+                    }
+                }
+                Ok(Ok(Value::Unit))
+            }
+            Err(e) => Ok(Err(e)),
+        }
+    }
+    
+    fn str(&self) -> String {
+        format!("Import({})", self.data.module)
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct EvalMatch {
+    pub data: crate::eval::core::MatchData,
+}
+
+impl RustValue for EvalMatch {
+    fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
+        // Evaluate the match expression
+        let match_value = match self.data.expr.eval(evaluator)? {
+            Ok(val) => val,
+            Err(e) => return Ok(Err(e)),
+        };
+        
+        // Try each case in order
+        for case in &self.data.cases {
+            // Check if pattern matches
+            match evaluator.match_pattern_matches(&case.pattern, &match_value) {
+                Ok(true) => {
+                    // Check guard condition if present
+                    if let Some(guard) = &case.guard {
+                        let guard_result = match guard.eval(evaluator)? {
+                            Ok(val) => val,
+                            Err(e) => return Ok(Err(e)),
+                        };
+                        if !guard_result.is_truthy() {
+                            continue;
+                        }
+                    }
+                    
+                    // Pattern matches (and guard passes), execute body
+                    // For Variable patterns, bind the variable
+                    if let crate::eval::core::EvalMatchPattern::Variable(var_name) = &case.pattern {
+                        evaluator.current_env.define(var_name.clone(), match_value);
+                    }
+                    
+                    return case.body.eval(evaluator);
+                }
+                Ok(false) => continue,
+                Err(e) => return Ok(Err(e)),
+            }
+        }
+        
+        // No pattern matched
+        Ok(Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(
+            "No pattern matched in match expression"
+        )))))
+    }
+    
+    fn str(&self) -> String {
+        format!("Match({} cases)", self.data.cases.len())
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct EvalMacro {
+    pub data: crate::eval::core::MacroData,
+}
+
+impl RustValue for EvalMacro {
+    fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
+        // Get the macro function
+        let macro_fn_result = self.data.macro_fn.eval(evaluator)?;
+        let macro_fn = match macro_fn_result {
+            Ok(val) => val,
+            Err(e) => return Ok(Err(e)),
+        };
+        
+        // Evaluate macro arguments
+        let mut arg_values = Vec::new();
+        for arg in &self.data.args {
+            let arg_result = arg.eval(evaluator)?;
+            match arg_result {
+                Ok(val) => arg_values.push(val),
+                Err(e) => return Ok(Err(e)),
+            }
+        }
+        
+        // Add the target Eval as a special argument
+        let target_eval_value = Value::from_rust(crate::eval::EvalTypeConstant::new());
+        arg_values.insert(0, target_eval_value);
+        
+        // Call the macro function
+        let args_obj = crate::core::Args::positional(arg_values);
+        match macro_fn.call(args_obj) {
+            Ok(result) => {
+                // For now, just return the result directly
+                // TODO: Properly handle macro expansion when EvalTypeConstant is enhanced
+                Ok(Ok(result))
+            }
+            Err(e) => Ok(Err(ControlFlow::Error(ErrorKind::SystemError(e)))),
+        }
+    }
+    
+    fn str(&self) -> String {
+        format!("Macro({} args)", self.data.args.len())
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct EvalWith {
+    pub data: crate::eval::core::WithData,
+}
+
+impl RustValue for EvalWith {
+    fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
+        let mut resources = Vec::new();
+        
+        // Acquire all resources
+        for (resource_name, resource_expr) in &self.data.resources {
+            let resource_value = match resource_expr.eval(evaluator)? {
+                Ok(val) => val,
+                Err(e) => {
+                    // Cleanup any already acquired resources
+                    evaluator.cleanup_resources(&resources);
+                    return Ok(Err(e));
+                }
+            };
+            
+            // Define the resource in current scope
+            evaluator.current_env.define(resource_name.clone(), resource_value.clone());
+            resources.push((resource_name.clone(), resource_value));
+        }
+        
+        // Execute the body
+        let body_result = self.data.body.eval(evaluator)?;
+        
+        // Always cleanup resources
+        evaluator.cleanup_resources(&resources);
+        
+        Ok(body_result)
+    }
+    
+    fn str(&self) -> String {
+        format!("With({} resources)", self.data.resources.len())
     }
 }

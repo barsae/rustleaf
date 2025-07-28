@@ -1,5 +1,5 @@
 # Program
-Status: 🟡
+Status: 🔴
 Assertions: 0
 
 ```rustleaf
@@ -25,8 +25,8 @@ None
 
 # Result
 ```rust
-Ok(
-    Unit,
+Err(
+    "Undefined variable: count",
 )
 ```
 
@@ -163,83 +163,133 @@ Ok(
 # Eval
 ```rust
 Ok(
-    Program(
-        [
-            Declare(
-                "counter",
-                Some(
-                    Literal(
-                        Int(
-                            0,
-                        ),
-                    ),
-                ),
-            ),
-            Macro(
-                MacroData {
-                    macro_fn: Variable(
-                        "macro",
-                    ),
-                    target: Function(
-                        FunctionData {
-                            name: "count",
-                            params: [
-                                (
-                                    "ast",
-                                    None,
-                                    Regular,
+    Eval(
+        EvalRef(
+            EvalProgram {
+                statements: [
+                    EvalRef(
+                        EvalDeclare {
+                            name: "counter",
+                            init_expr: Some(
+                                EvalRef(
+                                    EvalLiteral {
+                                        value: Int(
+                                            0,
+                                        ),
+                                    },
                                 ),
-                            ],
-                            body: Block(
-                                [],
-                                Some(
-                                    Variable(
-                                        "ast",
+                            ),
+                        },
+                    ),
+                    EvalRef(
+                        EvalMacro {
+                            data: MacroData {
+                                macro_fn: Eval(
+                                    EvalRef(
+                                        EvalVariable {
+                                            name: "macro",
+                                        },
                                     ),
                                 ),
-                            ),
+                                target: Eval(
+                                    EvalRef(
+                                        EvalFunction {
+                                            data: FunctionData {
+                                                name: "count",
+                                                params: [
+                                                    (
+                                                        "ast",
+                                                        None,
+                                                        Regular,
+                                                    ),
+                                                ],
+                                                body: Eval(
+                                                    EvalRef(
+                                                        EvalBlock {
+                                                            statements: [],
+                                                            final_expr: Some(
+                                                                EvalRef(
+                                                                    EvalVariable {
+                                                                        name: "ast",
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                        },
+                                    ),
+                                ),
+                                args: [],
+                            },
                         },
                     ),
-                    args: [],
-                },
-            ),
-            Macro(
-                MacroData {
-                    macro_fn: Variable(
-                        "count",
-                    ),
-                    target: Function(
-                        FunctionData {
-                            name: "test",
-                            params: [],
-                            body: Block(
-                                [],
-                                None,
-                            ),
+                    EvalRef(
+                        EvalMacro {
+                            data: MacroData {
+                                macro_fn: Eval(
+                                    EvalRef(
+                                        EvalVariable {
+                                            name: "count",
+                                        },
+                                    ),
+                                ),
+                                target: Eval(
+                                    EvalRef(
+                                        EvalFunction {
+                                            data: FunctionData {
+                                                name: "test",
+                                                params: [],
+                                                body: Eval(
+                                                    EvalRef(
+                                                        EvalBlock {
+                                                            statements: [],
+                                                            final_expr: None,
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                        },
+                                    ),
+                                ),
+                                args: [],
+                            },
                         },
                     ),
-                    args: [],
-                },
-            ),
-            Call(
-                Variable(
-                    "test",
-                ),
-                [],
-            ),
-            Call(
-                Variable(
-                    "test",
-                ),
-                [],
-            ),
-            Call(
-                Variable(
-                    "test",
-                ),
-                [],
-            ),
-        ],
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "test",
+                                },
+                            ),
+                            args: [],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "test",
+                                },
+                            ),
+                            args: [],
+                        },
+                    ),
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "test",
+                                },
+                            ),
+                            args: [],
+                        },
+                    ),
+                ],
+            },
+        ),
     ),
 )
 ```

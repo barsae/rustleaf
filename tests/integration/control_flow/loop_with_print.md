@@ -86,44 +86,66 @@ Ok(
 # Eval
 ```rust
 Ok(
-    Program(
-        [
-            Call(
-                Variable(
-                    "assert",
-                ),
-                [
-                    Call(
-                        GetAttr(
-                            Loop(
-                                Block(
-                                    [
-                                        Break(
-                                            Some(
-                                                Literal(
-                                                    Int(
+    Eval(
+        EvalRef(
+            EvalProgram {
+                statements: [
+                    EvalRef(
+                        EvalCall {
+                            func_expr: EvalRef(
+                                EvalVariable {
+                                    name: "assert",
+                                },
+                            ),
+                            args: [
+                                EvalRef(
+                                    EvalCall {
+                                        func_expr: EvalRef(
+                                            EvalGetAttr {
+                                                obj_expr: EvalRef(
+                                                    EvalLoop {
+                                                        body: EvalRef(
+                                                            EvalBlock {
+                                                                statements: [
+                                                                    EvalRef(
+                                                                        EvalBreak {
+                                                                            expr: Some(
+                                                                                EvalRef(
+                                                                                    EvalLiteral {
+                                                                                        value: Int(
+                                                                                            42,
+                                                                                        ),
+                                                                                    },
+                                                                                ),
+                                                                            ),
+                                                                        },
+                                                                    ),
+                                                                ],
+                                                                final_expr: None,
+                                                            },
+                                                        ),
+                                                    },
+                                                ),
+                                                attr_name: "op_eq",
+                                            },
+                                        ),
+                                        args: [
+                                            EvalRef(
+                                                EvalLiteral {
+                                                    value: Int(
                                                         42,
                                                     ),
-                                                ),
+                                                },
                                             ),
-                                        ),
-                                    ],
-                                    None,
+                                        ],
+                                    },
                                 ),
-                            ),
-                            "op_eq",
-                        ),
-                        [
-                            Literal(
-                                Int(
-                                    42,
-                                ),
-                            ),
-                        ],
+                            ],
+                        },
                     ),
                 ],
-            ),
-        ],
+            },
+        ),
     ),
 )
 ```

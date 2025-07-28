@@ -126,6 +126,36 @@ impl Eval {
         let pair_refs = pairs.into_iter().map(|(k, v)| (k.0, v.0)).collect();
         Self::new(crate::eval::EvalDict { pairs: pair_refs })
     }
+    
+    // Advanced constructors
+    
+    pub fn function(data: FunctionData) -> Self {
+        Self::new(crate::eval::EvalFunction { data })
+    }
+    
+    pub fn lambda(data: LambdaData) -> Self {
+        Self::new(crate::eval::EvalLambda { data })
+    }
+    
+    pub fn class_decl(data: ClassDeclData) -> Self {
+        Self::new(crate::eval::EvalClassDecl { data })
+    }
+    
+    pub fn import(data: ImportData) -> Self {
+        Self::new(crate::eval::EvalImport { data })
+    }
+    
+    pub fn match_expr(data: MatchData) -> Self {
+        Self::new(crate::eval::EvalMatch { data })
+    }
+    
+    pub fn macro_expr(data: MacroData) -> Self {
+        Self::new(crate::eval::EvalMacro { data })
+    }
+    
+    pub fn with_expr(data: WithData) -> Self {
+        Self::new(crate::eval::EvalWith { data })
+    }
 }
 
 impl PartialEq for Eval {
