@@ -4,18 +4,13 @@ Assertions: 0
 
 ```rustleaf
 #[macro]
-fn memoize(eval_node) {
-    if eval_node is not Eval.Function {
-        raise("#[memoize] can only be applied to functions");
-    }
-    var func = eval_node;
+fn memoize(f) {
+    var param_list = join(f.params, ", ");
 
-    var param_list = join(func.params, ", ");
-
-    parse("fn ${func.name}(${param_list}) {
+    parse("fn ${f.name}(${param_list}) {
         var cache = {};
 
-        fn original(${param_list}) ${func.body}
+        fn original(${param_list}) ${f.body}
 
         fn cached(${param_list}) {
             var args_key = str(${param_list});
