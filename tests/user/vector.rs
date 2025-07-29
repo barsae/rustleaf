@@ -1,6 +1,5 @@
 use anyhow::{anyhow, Result};
-use rustleaf::core::{Args, RustValue, Value};
-use rustleaf::rust_value_any;
+use rustleaf::core::{Args, BoundMethod, RustValue, Value};
 use std::fmt;
 
 /// A Vector2 struct that demonstrates how a library user would extend RustLeaf
@@ -25,20 +24,37 @@ impl Vector2 {
         self.x * other.x + self.y * other.y
     }
 
-    // RustLeaf wrapper methods - handle Args parsing and Value conversion
-    pub fn rustleaf_magnitude(&self, mut args: Args) -> Result<Value> {
-        args.set_function_name("magnitude");
-        args.complete()?;
-        Ok(Value::Float(self.magnitude()))
+    pub fn normalize(&mut self) {
+        let mag = self.magnitude();
+        if mag > 0.0 {
+            self.x /= mag;
+            self.y /= mag;
+        }
     }
 
-    pub fn rustleaf_dot(&self, mut args: Args) -> Result<Value> {
+    // RustLeaf wrapper methods - handle Args parsing and Value conversion
+    pub fn rustleaf_magnitude(self_value: &Value, mut args: Args) -> Result<Value> {
+        args.set_function_name("magnitude");
+        args.complete()?;
+
+        let vector = self_value
+            .downcast_rust_value::<Vector2>()
+            .ok_or_else(|| anyhow!("magnitude() called on non-Vector2 value"))?;
+
+        Ok(Value::Float(vector.magnitude()))
+    }
+
+    pub fn rustleaf_dot(self_value: &Value, mut args: Args) -> Result<Value> {
         args.set_function_name("dot");
         let other_val = args.expect("other")?;
         args.complete()?;
 
+        let vector = self_value
+            .downcast_rust_value::<Vector2>()
+            .ok_or_else(|| anyhow!("dot() called on non-Vector2 value"))?;
+
         let result = if let Some(other_vec_ref) = other_val.downcast_rust_value::<Vector2>() {
-            Ok(Value::Float(self.dot(&*other_vec_ref)))
+            Ok(Value::Float(vector.dot(&*other_vec_ref)))
         } else {
             Err(anyhow!(
                 "dot() requires another Vector2, got {:?}",
@@ -46,6 +62,18 @@ impl Vector2 {
             ))
         };
         result
+    }
+
+    pub fn rustleaf_normalize(self_value: &Value, mut args: Args) -> Result<Value> {
+        args.set_function_name("normalize");
+        args.complete()?;
+
+        let mut vector = self_value
+            .downcast_rust_value_mut::<Vector2>()
+            .ok_or_else(|| anyhow!("normalize() called on non-Vector2 value"))?;
+
+        vector.normalize();
+        Ok(Value::Unit)
     }
 }
 
@@ -62,46 +90,20 @@ impl RustValue for Vector2 {
         match name {
             "x" => Some(Value::Float(self.x)),
             "y" => Some(Value::Float(self.y)),
-            "magnitude" => Some(Value::from_rust(
-                VectorMethod::new(Vector2::rustleaf_magnitude).bind(self.clone()),
-            )),
-            "dot" => Some(Value::from_rust(
-                VectorMethod::new(Vector2::rustleaf_dot).bind(self.clone()),
-            )),
+            "magnitude" => Some(Value::from_rust(BoundMethod::new(
+                &Value::from_rust(self.clone()),
+                Vector2::rustleaf_magnitude,
+            ))),
+            "dot" => Some(Value::from_rust(BoundMethod::new(
+                &Value::from_rust(self.clone()),
+                Vector2::rustleaf_dot,
+            ))),
+            "normalize" => Some(Value::from_rust(BoundMethod::new(
+                &Value::from_rust(self.clone()),
+                Vector2::rustleaf_normalize,
+            ))),
             _ => None,
         }
-    }
-}
-
-/// Helper struct for Vector2 methods
-#[derive(Debug, Clone)]
-pub struct VectorMethod {
-    instance: Vector2,
-    func: fn(&Vector2, Args) -> Result<Value>,
-}
-
-impl VectorMethod {
-    pub fn new(func: fn(&Vector2, Args) -> Result<Value>) -> Self {
-        // This constructor is used to create an unbound method template
-        // The actual bound method will be created with `bind`
-        Self {
-            instance: Vector2::new(0.0, 0.0), // Placeholder
-            func,
-        }
-    }
-
-    pub fn bind(&self, instance: Vector2) -> Self {
-        Self {
-            instance,
-            func: self.func,
-        }
-    }
-}
-
-#[rust_value_any]
-impl RustValue for VectorMethod {
-    fn call(&self, args: Args) -> Result<Value> {
-        (self.func)(&self.instance, args)
     }
 }
 
@@ -135,31 +137,24 @@ mod tests {
 
     #[test]
     fn test_vector2_user_experience() {
-        let mut evaluator = Evaluator::new();
-        register_vector2(&mut evaluator);
+        let mut e = Evaluator::new();
+        register_vector2(&mut e);
 
-        // Test that we can create vectors
-        let _code = r#"
-            let v1 = Vector2(3.0, 4.0);
-            let v2 = Vector2(1.0, 2.0);
+        // Test that we can create vectors and use their methods
+        let code = r#"
+            var v1 = Vector2(3.0, 4.0);
+            var v2 = Vector2(1.0, 2.0);
+
+            assert(v1.x == 3.0);
+            assert(v1.y == 4.0);
+            assert(v1.magnitude() == 5.0);
+            assert(v1.dot(v2) == 11.0);
+            var v3 = Vector2(3.0, 4.0);
+            // v3.normalize();
+            // assert(v3.magnitude() > 0.99);
+            // assert(v3.magnitude() < 1.01);
         "#;
 
-        // In a real implementation, we would:
-        // 1. Parse and compile the code
-        // 2. Evaluate it with our custom evaluator
-        // 3. Test that vector operations work as expected
-        //
-        // For now, this demonstrates the API design
-
-        // Test basic properties
-        let v1 = Vector2::new(3.0, 4.0);
-        assert_eq!(v1.x, 3.0);
-        assert_eq!(v1.y, 4.0);
-        assert_eq!(v1.magnitude(), 5.0);
-
-        // Test dot product
-        let v2 = Vector2::new(1.0, 2.0);
-        let dot_product = v1.dot(&v2);
-        assert_eq!(dot_product, 11.0); // 3*1 + 4*2 = 11
+        e.eval_str(code).unwrap();
     }
 }

@@ -106,6 +106,31 @@ impl Evaluator {
         }
     }
 
+    pub fn eval_str(&mut self, source: &str) -> anyhow::Result<Value> {
+        // Parsing (includes lexical analysis)
+        let ast = crate::parser::Parser::parse_str(source)?;
+
+        // Compilation to evaluation IR
+        let eval_ir = crate::eval::Compiler::compile(ast)?;
+
+        // Evaluation
+        self.eval(&eval_ir).map_err(|control_flow| {
+            match control_flow {
+                ControlFlow::Error(ErrorKind::SystemError(err)) => err,
+                ControlFlow::Error(ErrorKind::RaisedError(value)) => {
+                    // Convert raised value to string for error display
+                    match value {
+                        Value::String(s) => anyhow::anyhow!("{}", s),
+                        _ => anyhow::anyhow!("{:?}", value),
+                    }
+                }
+                ControlFlow::Return(val) => anyhow::anyhow!("Unexpected return: {:?}", val),
+                ControlFlow::Break(val) => anyhow::anyhow!("Unexpected break: {:?}", val),
+                ControlFlow::Continue => anyhow::anyhow!("Unexpected continue"),
+            }
+        })
+    }
+
     /// Handle class constructor calls by evaluating default field expressions
     pub fn handle_class_constructor(
         &mut self,
