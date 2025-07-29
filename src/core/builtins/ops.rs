@@ -3,7 +3,7 @@ use crate::core::{RustValue, Value};
 use anyhow::{anyhow, Result};
 
 // Helper struct that captures the self value for bound methods
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct BoundMethod {
     self_value: Value,
     method_func: fn(&Value, Args) -> Result<Value>,
@@ -20,6 +20,10 @@ impl BoundMethod {
 
 #[crate::rust_value_any]
 impl RustValue for BoundMethod {
+    fn dyn_clone(&self) -> Box<dyn RustValue> {
+        Box::new(self.clone())
+    }
+
     fn call(&self, args: Args) -> Result<Value> {
         (self.method_func)(&self.self_value, args)
     }

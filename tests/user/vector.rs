@@ -1,6 +1,8 @@
 use anyhow::{anyhow, Result};
 use rustleaf::core::{Args, BoundMethod, RustValue, Value};
+use std::cell::RefCell;
 use std::fmt;
+use std::rc::Rc;
 
 /// A Vector2 struct that demonstrates how a library user would extend RustLeaf
 /// with their own custom types that integrate seamlessly with the language.
@@ -37,11 +39,12 @@ impl Vector2 {
         args.set_function_name("magnitude");
         args.complete()?;
 
-        let vector = self_value
-            .downcast_rust_value::<Vector2>()
+        let vector_ref = self_value
+            .downcast_rust_value::<Vector2Ref>()
             .ok_or_else(|| anyhow!("magnitude() called on non-Vector2 value"))?;
 
-        Ok(Value::Float(vector.magnitude()))
+        let magnitude = vector_ref.borrow().magnitude();
+        Ok(Value::Float(magnitude))
     }
 
     pub fn rustleaf_dot(self_value: &Value, mut args: Args) -> Result<Value> {
@@ -49,12 +52,13 @@ impl Vector2 {
         let other_val = args.expect("other")?;
         args.complete()?;
 
-        let vector = self_value
-            .downcast_rust_value::<Vector2>()
+        let vector_ref = self_value
+            .downcast_rust_value::<Vector2Ref>()
             .ok_or_else(|| anyhow!("dot() called on non-Vector2 value"))?;
 
-        let result = if let Some(other_vec_ref) = other_val.downcast_rust_value::<Vector2>() {
-            Ok(Value::Float(vector.dot(&*other_vec_ref)))
+        let result = if let Some(other_ref) = other_val.downcast_rust_value::<Vector2Ref>() {
+            let dot_result = vector_ref.borrow().dot(&*other_ref.borrow());
+            Ok(Value::Float(dot_result))
         } else {
             Err(anyhow!(
                 "dot() requires another Vector2, got {:?}",
@@ -68,11 +72,11 @@ impl Vector2 {
         args.set_function_name("normalize");
         args.complete()?;
 
-        let mut vector = self_value
-            .downcast_rust_value_mut::<Vector2>()
+        let vector_ref = self_value
+            .downcast_rust_value::<Vector2Ref>()
             .ok_or_else(|| anyhow!("normalize() called on non-Vector2 value"))?;
 
-        vector.normalize();
+        vector_ref.borrow_mut().normalize();
         Ok(Value::Unit)
     }
 }
@@ -83,27 +87,62 @@ impl fmt::Display for Vector2 {
     }
 }
 
-/// Implementation of RustValue trait allows Vector2 to be used directly in RustLeaf
+/// Vector2Ref wraps Rc<RefCell<Vector2>> and implements RustValue
+#[derive(Debug, Clone)]
+pub struct Vector2Ref(Rc<RefCell<Vector2>>);
+
+impl Vector2Ref {
+    pub fn new(vector: Vector2) -> Self {
+        Self(Rc::new(RefCell::new(vector)))
+    }
+
+    pub fn borrow(&self) -> std::cell::Ref<Vector2> {
+        self.0.borrow()
+    }
+
+    pub fn borrow_mut(&self) -> std::cell::RefMut<Vector2> {
+        self.0.borrow_mut()
+    }
+}
+
 #[rustleaf::rust_value_any]
-impl RustValue for Vector2 {
+impl RustValue for Vector2Ref {
+    fn dyn_clone(&self) -> Box<dyn RustValue> {
+        Box::new(self.clone())
+    }
+
     fn get_attr(&self, name: &str) -> Option<Value> {
+        let borrowed = self.borrow();
         match name {
-            "x" => Some(Value::Float(self.x)),
-            "y" => Some(Value::Float(self.y)),
-            "magnitude" => Some(Value::from_rust(BoundMethod::new(
-                &Value::from_rust(self.clone()),
-                Vector2::rustleaf_magnitude,
-            ))),
-            "dot" => Some(Value::from_rust(BoundMethod::new(
-                &Value::from_rust(self.clone()),
-                Vector2::rustleaf_dot,
-            ))),
-            "normalize" => Some(Value::from_rust(BoundMethod::new(
-                &Value::from_rust(self.clone()),
-                Vector2::rustleaf_normalize,
-            ))),
+            "x" => Some(Value::Float(borrowed.x)),
+            "y" => Some(Value::Float(borrowed.y)),
+            "magnitude" => {
+                drop(borrowed); // Release borrow before cloning
+                Some(Value::from_rust(BoundMethod::new(
+                    &Value::rust_value(self.dyn_clone()),
+                    Vector2::rustleaf_magnitude,
+                )))
+            }
+            "dot" => {
+                drop(borrowed); // Release borrow before cloning
+                Some(Value::from_rust(BoundMethod::new(
+                    &Value::rust_value(self.dyn_clone()),
+                    Vector2::rustleaf_dot,
+                )))
+            }
+            "normalize" => {
+                drop(borrowed); // Release borrow before cloning
+                Some(Value::from_rust(BoundMethod::new(
+                    &Value::rust_value(self.dyn_clone()),
+                    Vector2::rustleaf_normalize,
+                )))
+            }
             _ => None,
         }
+    }
+
+    fn str(&self) -> String {
+        format!("Vector2({}, {})", self.borrow().x, self.borrow().y)
     }
 }
 
@@ -122,7 +161,7 @@ pub fn vector2_constructor(mut args: Args) -> Result<Value> {
         .as_f64()
         .ok_or_else(|| anyhow!("Vector2 y coordinate must be a number, got {:?}", y_val))?;
 
-    Ok(Value::from_rust(Vector2::new(x, y)))
+    Ok(Value::from_rust(Vector2Ref::new(Vector2::new(x, y))))
 }
 
 /// Function to register Vector2 type with a RustLeaf evaluator
@@ -150,9 +189,9 @@ mod tests {
             assert(v1.magnitude() == 5.0);
             assert(v1.dot(v2) == 11.0);
             var v3 = Vector2(3.0, 4.0);
-            // v3.normalize();
-            // assert(v3.magnitude() > 0.99);
-            // assert(v3.magnitude() < 1.01);
+            v3.normalize();
+            assert(v3.magnitude() > 0.99);
+            assert(v3.magnitude() < 1.01);
         "#;
 
         e.eval_str(code).unwrap();

@@ -61,6 +61,92 @@ impl ClassRef {
 #[derive(Clone)]
 pub struct RustValueRef(Rc<RefCell<Box<dyn RustValue>>>);
 
+// Wrapper for user types that handles Rc<RefCell<>> automatically
+#[derive(Clone)]
+pub struct RustValueWrapper<T: 'static>(Rc<RefCell<T>>);
+
+// Trait for user types that can be wrapped
+pub trait RustValueImpl: fmt::Debug + 'static {
+    fn get_attr(&self, name: &str, wrapper: &RustValueWrapper<Self>) -> Option<Value>
+    where
+        Self: Sized;
+
+    fn set_attr(&mut self, _name: &str, _value: Value) -> Result<(), String> {
+        Err("Cannot set attributes on this type".to_string())
+    }
+
+    fn call(&self, _args: Args) -> Result<Value> {
+        Err(anyhow!("This type is not callable"))
+    }
+
+    fn str(&self) -> String {
+        format!("{:?}", self)
+    }
+
+    fn op_iter(&self) -> Result<Value> {
+        Err(anyhow!("This type is not iterable"))
+    }
+
+    fn op_next(&mut self) -> Result<Option<Value>> {
+        Err(anyhow!("This type is not an iterator"))
+    }
+
+    fn eval(&self, _evaluator: &mut crate::eval::Evaluator) -> Result<crate::eval::EvalResult> {
+        Err(anyhow!("This type cannot be evaluated"))
+    }
+}
+
+impl<T: 'static> RustValueWrapper<T> {
+    pub fn new(value: T) -> Self {
+        Self(Rc::new(RefCell::new(value)))
+    }
+
+    pub fn borrow(&self) -> std::cell::Ref<T> {
+        self.0.borrow()
+    }
+
+    pub fn borrow_mut(&self) -> std::cell::RefMut<T> {
+        self.0.borrow_mut()
+    }
+}
+
+impl<T: RustValueImpl> fmt::Debug for RustValueWrapper<T> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        self.0.borrow().fmt(f)
+    }
+}
+
+#[crate::rust_value_any]
+impl<T: RustValueImpl> RustValue for RustValueWrapper<T> {
+    fn get_attr(&self, name: &str) -> Option<Value> {
+        self.0.borrow().get_attr(name, self)
+    }
+
+    fn set_attr(&mut self, name: &str, value: Value) -> Result<(), String> {
+        self.0.borrow_mut().set_attr(name, value)
+    }
+
+    fn call(&self, args: Args) -> Result<Value> {
+        self.0.borrow().call(args)
+    }
+
+    fn str(&self) -> String {
+        self.0.borrow().str()
+    }
+
+    fn op_iter(&self) -> Result<Value> {
+        self.0.borrow().op_iter()
+    }
+
+    fn op_next(&mut self) -> Result<Option<Value>> {
+        self.0.borrow_mut().op_next()
+    }
+
+    fn eval(&self, evaluator: &mut crate::eval::Evaluator) -> Result<crate::eval::EvalResult> {
+        self.0.borrow().eval(evaluator)
+    }
+}
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct Range {
     pub start: i64,
@@ -144,6 +230,10 @@ impl PartialEq for Value {
 pub trait RustValue: fmt::Debug + 'static {
     fn as_any(&self) -> &dyn std::any::Any;
     fn as_any_mut(&mut self) -> &mut dyn std::any::Any;
+
+    fn dyn_clone(&self) -> Box<dyn RustValue> {
+        panic!("dyn_clone not implemented for this type")
+    }
 
     fn get_attr(&self, _name: &str) -> Option<Value> {
         None

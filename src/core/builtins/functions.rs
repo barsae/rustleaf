@@ -10,6 +10,7 @@ thread_local! {
     static ASSERTION_COUNT: RefCell<Option<u32>> = const { RefCell::new(None) };
 }
 
+#[derive(Clone)]
 pub struct RustFunction {
     name: &'static str,
     func: fn(Args) -> Result<Value>,
@@ -31,6 +32,10 @@ impl std::fmt::Debug for RustFunction {
 
 #[crate::rust_value_any]
 impl RustValue for RustFunction {
+    fn dyn_clone(&self) -> Box<dyn RustValue> {
+        Box::new(self.clone())
+    }
+
     fn call(&self, args: Args) -> Result<Value> {
         (self.func)(args)
     }
