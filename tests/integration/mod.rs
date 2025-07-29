@@ -1,6 +1,6 @@
 // Integration tests using RustLeaf macro
 
-use rustleaf_macros::rustleaf_tests;
+use rustleaf_macros_internal::rustleaf_tests;
 
 // Assertions
 #[rustleaf_tests("tests/integration/assert")]

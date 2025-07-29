@@ -291,12 +291,12 @@ dependencies = [
  "clap",
  "indexmap",
  "regex",
- "rustleaf-macros",
+ "rustleaf-macros-internal",
  "tempfile",
 ]
 
 [[package]]
-name = "rustleaf-macros"
+name = "rustleaf-macros-internal"
 version = "0.1.0"
 dependencies = [
  "proc-macro2",
