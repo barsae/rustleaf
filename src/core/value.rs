@@ -359,6 +359,43 @@ impl Value {
         Ok(result.into())
     }
 
+    /// Helper for implementing no-argument mutating RustValue methods
+    pub fn with_rust_value_no_args_mut<T, R, F>(
+        &mut self,
+        method_name: &str,
+        expected_type: &str,
+        mut args: crate::core::Args,
+        f: F,
+    ) -> Result<Value>
+    where
+        T: RustValue + 'static,
+        R: Into<Value>,
+        F: FnOnce(&mut T) -> Result<R>,
+    {
+        args.no_args(method_name)?;
+        let type_name = self.type_name().to_string(); // Get type name before borrowing
+
+        if let Value::RustValue(rust_val) = self {
+            let downcasted = rust_val.as_any_mut().downcast_mut::<T>().ok_or_else(|| {
+                anyhow!(
+                    "{}() called on {}, expected {}",
+                    method_name,
+                    type_name,
+                    expected_type
+                )
+            })?;
+            let result = f(downcasted)?;
+            Ok(result.into())
+        } else {
+            Err(anyhow!(
+                "{}() called on {}, expected {}",
+                method_name,
+                type_name,
+                expected_type
+            ))
+        }
+    }
+
     /// Helper for implementing RustValue methods that take another RustValue of the same type
     pub fn with_rust_value_same_type<T, R, F>(
         &self,
