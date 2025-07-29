@@ -1,6 +1,8 @@
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::{parse_macro_input, DeriveInput, ImplItem, ImplItemFn, ItemImpl, ReturnType};
+use syn::{
+    parse_macro_input, DeriveInput, ImplItem, ImplItemFn, Item, ItemImpl, ItemStruct, ReturnType,
+};
 
 #[proc_macro_derive(RustValue)]
 pub fn derive_rust_value(input: TokenStream) -> TokenStream {
@@ -69,6 +71,43 @@ pub fn rust_value_any(_args: TokenStream, input: TokenStream) -> TokenStream {
                 #as_any_methods
 
                 #(#items)*
+            }
+        }
+    };
+
+    TokenStream::from(expanded)
+}
+
+#[proc_macro_derive(RustLeafWrapper, attributes(core_type))]
+pub fn derive_rustleaf_wrapper(input: TokenStream) -> TokenStream {
+    let input = parse_macro_input!(input as DeriveInput);
+    let wrapper_name = &input.ident;
+
+    // Extract the core type from the #[core_type(Type)] attribute
+    let core_type = input
+        .attrs
+        .iter()
+        .find_map(|attr| {
+            if attr.path().is_ident("core_type") {
+                attr.parse_args::<syn::Type>().ok()
+            } else {
+                None
+            }
+        })
+        .expect("RustLeafWrapper requires #[core_type(Type)] attribute");
+
+    let expanded = quote! {
+        impl #wrapper_name {
+            pub fn new(inner: #core_type) -> Self {
+                Self(std::rc::Rc::new(std::cell::RefCell::new(inner)))
+            }
+
+            pub fn borrow(&self) -> std::cell::Ref<#core_type> {
+                self.0.borrow()
+            }
+
+            pub fn borrow_mut(&self) -> std::cell::RefMut<#core_type> {
+                self.0.borrow_mut()
             }
         }
     };
@@ -159,6 +198,148 @@ pub fn rustleaf_methods(_args: TokenStream, input: TokenStream) -> TokenStream {
     };
 
     TokenStream::from(expanded)
+}
+
+#[proc_macro_attribute]
+pub fn rustleaf(_args: TokenStream, input: TokenStream) -> TokenStream {
+    let input = parse_macro_input!(input as Item);
+
+    match input {
+        Item::Struct(item_struct) => rustleaf_struct(item_struct),
+        Item::Impl(item_impl) => rustleaf_impl(item_impl),
+        _ => panic!("rustleaf attribute can only be applied to structs and impl blocks"),
+    }
+}
+
+fn rustleaf_struct(input: ItemStruct) -> TokenStream {
+    let struct_name = &input.ident;
+    let ref_name = quote::format_ident!("{}Ref", struct_name);
+
+    // Generate the original struct unchanged
+    let original_struct = quote! {
+        #input
+    };
+
+    // Generate the wrapper struct with RustLeafWrapper derive
+    let wrapper_struct = quote! {
+        /// Generated wrapper for RustLeaf integration
+        #[derive(Debug, Clone, RustLeafWrapper)]
+        #[core_type(#struct_name)]
+        pub struct #ref_name(std::rc::Rc<std::cell::RefCell<#struct_name>>);
+    };
+
+    let expanded = quote! {
+        #original_struct
+
+        #wrapper_struct
+    };
+
+    TokenStream::from(expanded)
+}
+
+fn rustleaf_impl(input: ItemImpl) -> TokenStream {
+    // Extract the struct name from the impl block
+    let struct_name = if let syn::Type::Path(type_path) = &*input.self_ty {
+        &type_path.path.segments.last().unwrap().ident
+    } else {
+        panic!("rustleaf impl blocks must be for named types");
+    };
+
+    let ref_name = quote::format_ident!("{}Ref", struct_name);
+
+    // Generate wrapper methods for the Ref type
+    let mut wrapper_methods = Vec::new();
+
+    for item in &input.items {
+        if let ImplItem::Fn(method) = item {
+            // Skip constructors and private methods
+            if method.sig.ident == "new" {
+                continue;
+            }
+
+            let wrapper_method = generate_rustleaf_wrapper_method(method);
+            wrapper_methods.push(wrapper_method);
+        }
+    }
+
+    let expanded = quote! {
+        // Keep the original impl block unchanged
+        #input
+
+        // Generate the wrapper methods for the Ref type
+        impl #ref_name {
+            #(#wrapper_methods)*
+        }
+    };
+
+    TokenStream::from(expanded)
+}
+
+fn generate_rustleaf_wrapper_method(method: &ImplItemFn) -> proc_macro2::TokenStream {
+    let method_name = &method.sig.ident;
+    let wrapper_name = quote::format_ident!("rustleaf_{}", method_name);
+    let method_name_str = method_name.to_string();
+
+    // Analyze the method signature
+    let has_self_mut =
+        method.sig.inputs.iter().any(
+            |arg| matches!(arg, syn::FnArg::Receiver(receiver) if receiver.mutability.is_some()),
+        );
+
+    let param_count = method.sig.inputs.len();
+
+    if param_count == 1 {
+        // No-argument method (just &self or &mut self)
+        if has_self_mut {
+            quote! {
+                pub fn #wrapper_name(self_value: &rustleaf::core::Value, args: rustleaf::core::Args) -> anyhow::Result<rustleaf::core::Value> {
+                    self_value.with_rust_value_no_args::<Self, _, _>(
+                        #method_name_str,
+                        stringify!(Self),
+                        args,
+                        |wrapper| {
+                            wrapper.borrow_mut().#method_name();
+                            Ok(())
+                        },
+                    )
+                }
+            }
+        } else {
+            quote! {
+                pub fn #wrapper_name(self_value: &rustleaf::core::Value, args: rustleaf::core::Args) -> anyhow::Result<rustleaf::core::Value> {
+                    self_value.with_rust_value_no_args::<Self, _, _>(
+                        #method_name_str,
+                        stringify!(Self),
+                        args,
+                        |wrapper| Ok(wrapper.borrow().#method_name()),
+                    )
+                }
+            }
+        }
+    } else if param_count == 2 {
+        // Single-argument method - assume same type for now
+        quote! {
+            pub fn #wrapper_name(self_value: &rustleaf::core::Value, args: rustleaf::core::Args) -> anyhow::Result<rustleaf::core::Value> {
+                self_value.with_rust_value_same_type::<Self, _, _>(
+                    #method_name_str,
+                    stringify!(Self),
+                    "other",
+                    args,
+                    |wrapper, other_wrapper| {
+                        Ok(wrapper.borrow().#method_name(&*other_wrapper.borrow()))
+                    },
+                )
+            }
+        }
+    } else {
+        // More complex methods - generate basic stub for now
+        quote! {
+            pub fn #wrapper_name(self_value: &rustleaf::core::Value, args: rustleaf::core::Args) -> anyhow::Result<rustleaf::core::Value> {
+                // TODO: Complex method wrapper generation not yet implemented
+                Err(anyhow::anyhow!("Method {} not yet supported", #method_name_str))
+            }
+        }
+    }
 }
 
 fn generate_method_wrapper(method: &ImplItemFn, is_mutating: bool) -> proc_macro2::TokenStream {
