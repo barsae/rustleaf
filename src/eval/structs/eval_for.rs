@@ -11,6 +11,7 @@ pub struct EvalFor {
 }
 
 impl RustValue for EvalFor {
+    crate::impl_rust_value_any!(Self);
     fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
         let iter_value = match self.iter_expr.eval(evaluator)? {
             Ok(val) => val,

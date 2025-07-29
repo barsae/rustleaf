@@ -10,6 +10,7 @@ pub struct EvalBlock {
 }
 
 impl RustValue for EvalBlock {
+    crate::impl_rust_value_any!(Self);
     fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
         let block_scope = evaluator.current_env.child();
         let previous_env = std::mem::replace(&mut evaluator.current_env, block_scope);

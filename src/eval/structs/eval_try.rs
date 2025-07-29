@@ -11,6 +11,7 @@ pub struct EvalTry {
 }
 
 impl RustValue for EvalTry {
+    crate::impl_rust_value_any!(Self);
     fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
         // Try to execute the main body
         match self.body.eval(evaluator)? {

@@ -6,6 +6,20 @@ use std::rc::Rc;
 
 use crate::core::Args;
 
+/// Macro to implement the as_any methods for RustValue types
+#[macro_export]
+macro_rules! impl_rust_value_any {
+    ($type:ty) => {
+        fn as_any(&self) -> &dyn std::any::Any {
+            self
+        }
+
+        fn as_any_mut(&mut self) -> &mut dyn std::any::Any {
+            self
+        }
+    };
+}
+
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ListRef(Rc<RefCell<Vec<Value>>>);
 
@@ -141,7 +155,10 @@ impl PartialEq for Value {
     }
 }
 
-pub trait RustValue: fmt::Debug {
+pub trait RustValue: fmt::Debug + 'static {
+    fn as_any(&self) -> &dyn std::any::Any;
+    fn as_any_mut(&mut self) -> &mut dyn std::any::Any;
+
     fn get_attr(&self, _name: &str) -> Option<Value> {
         None
     }
@@ -245,9 +262,26 @@ impl Value {
         Value::from_rust(BoundMethod::new(self, method_func))
     }
 
+    /// Try to downcast a RustValue to a concrete type
+    pub fn downcast_rust_value<T: RustValue + 'static>(&self) -> Option<std::cell::Ref<T>> {
+        if let Value::RustValue(rust_ref) = self {
+            let borrowed = rust_ref.borrow();
+            if borrowed.as_any().is::<T>() {
+                Some(std::cell::Ref::map(borrowed, |b| {
+                    b.as_any().downcast_ref::<T>().unwrap()
+                }))
+            } else {
+                None
+            }
+        } else {
+            None
+        }
+    }
+
     pub fn get_attr(&self, name: &str, eval: &mut crate::eval::Evaluator) -> Option<Value> {
         match self {
             Value::RustValue(rv) => rv.0.borrow().get_attr(name),
+            // TODO: move to a get_class_attr
             Value::ClassInstance(ci) => {
                 let borrowed = ci.borrow();
 

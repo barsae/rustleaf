@@ -14,6 +14,7 @@ impl ListIter {
 }
 
 impl RustValue for ListIter {
+    crate::impl_rust_value_any!(Self);
     fn op_next(&mut self) -> Result<Option<Value>> {
         let list = self.list.borrow();
         if self.index < list.len() {
@@ -45,6 +46,7 @@ impl DictIter {
 }
 
 impl RustValue for DictIter {
+    crate::impl_rust_value_any!(Self);
     fn op_next(&mut self) -> Result<Option<Value>> {
         while self.index < self.keys.len() {
             let key = &self.keys[self.index];
@@ -78,6 +80,7 @@ impl RangeIter {
 }
 
 impl RustValue for RangeIter {
+    crate::impl_rust_value_any!(Self);
     fn op_next(&mut self) -> Result<Option<Value>> {
         let should_continue = if self.inclusive {
             self.current <= self.end

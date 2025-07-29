@@ -15,6 +15,7 @@ impl TypeConstant {
 }
 
 impl RustValue for TypeConstant {
+    crate::impl_rust_value_any!(Self);
     fn call(&self, _args: Args) -> anyhow::Result<Value> {
         Err(anyhow!("Type constants are not callable"))
     }

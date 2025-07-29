@@ -27,6 +27,7 @@ impl RustLeafFunction {
 }
 
 impl RustValue for RustLeafFunction {
+    crate::impl_rust_value_any!(Self);
     fn call(&self, mut args: Args) -> anyhow::Result<Value> {
         // Analyze parameter structure
         let regular_params: Vec<_> = self

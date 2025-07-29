@@ -11,6 +11,7 @@ pub struct EvalIf {
 }
 
 impl RustValue for EvalIf {
+    crate::impl_rust_value_any!(Self);
     fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
         let condition_result = self.condition.eval(evaluator)?;
         let condition_val = match condition_result {

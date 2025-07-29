@@ -1,5 +1,5 @@
 [workspace]
-members = [".", "rustleaf-macros-internal"]
+members = [".", "rustleaf-macros-internal", "rustleaf-macros"]
 
 [package]
 name = "rustleaf"
@@ -20,6 +20,7 @@ clap = { version = "4.0", features = ["derive"] }
 indexmap = "2"
 regex = "1"
 rustleaf-macros-internal = { path = "rustleaf-macros-internal" }
+rustleaf-macros = { path = "rustleaf-macros" }
 
 [dev-dependencies]
 tempfile = "3.0"

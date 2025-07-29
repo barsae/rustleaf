@@ -8,6 +8,7 @@ pub struct EvalVariable {
 }
 
 impl RustValue for EvalVariable {
+    crate::impl_rust_value_any!(Self);
     fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
         let result = evaluator.current_env.get(&self.name).ok_or_else(|| {
             ControlFlow::Error(ErrorKind::SystemError(anyhow!(

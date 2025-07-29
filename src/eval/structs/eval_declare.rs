@@ -10,6 +10,7 @@ pub struct EvalDeclare {
 }
 
 impl RustValue for EvalDeclare {
+    crate::impl_rust_value_any!(Self);
     fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
         let value = match &self.init_expr {
             Some(expr) => match expr.eval(evaluator)? {

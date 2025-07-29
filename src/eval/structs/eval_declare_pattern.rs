@@ -10,6 +10,7 @@ pub struct EvalDeclarePattern {
 }
 
 impl RustValue for EvalDeclarePattern {
+    crate::impl_rust_value_any!(Self);
     fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
         // Evaluate the initialization expression
         let init_value = match self.init_expr.eval(evaluator)? {

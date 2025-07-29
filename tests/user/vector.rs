@@ -53,65 +53,84 @@ impl fmt::Display for Vector2 {
 
 /// Implementation of RustValue trait allows Vector2 to be used directly in RustLeaf
 impl RustValue for Vector2 {
+    rustleaf::impl_rust_value_any!(Vector2);
+
     fn get_attr(&self, name: &str) -> Option<Value> {
         match name {
             "x" => Some(Value::Float(self.x)),
             "y" => Some(Value::Float(self.y)),
-            "magnitude" => Some(Value::from_rust(VectorMethod::new(
-                "magnitude",
-                |vec, mut args| {
+            "magnitude" => Some(Value::from_rust(
+                VectorMethod::new("magnitude", |vec, mut args| {
                     args.set_function_name("magnitude");
                     args.complete()?;
                     Ok(Value::Float(vec.magnitude()))
-                },
-            ))),
-            "normalize" => Some(Value::from_rust(VectorMethod::new(
-                "normalize",
-                |vec, mut args| {
+                })
+                .bind(self.clone()),
+            )),
+            "normalize" => Some(Value::from_rust(
+                VectorMethod::new("normalize", |vec, mut args| {
                     args.set_function_name("normalize");
                     args.complete()?;
                     Ok(Value::from_rust(vec.normalize()))
-                },
-            ))),
-            "dot" => Some(Value::from_rust(VectorMethod::new(
-                "dot",
-                |vec, mut args| {
+                })
+                .bind(self.clone()),
+            )),
+            "dot" => Some(Value::from_rust(
+                VectorMethod::new("dot", |vec, mut args| {
                     args.set_function_name("dot");
-                    let _other_val = args.expect("other")?;
+                    let other_val = args.expect("other")?;
                     args.complete()?;
 
-                    // TODO: Implement proper downcasting without using Any
-                    // For now, return a placeholder result
-                    Ok(Value::Float(vec.dot(&Vector2::new(1.0, 0.0))))
-                },
-            ))),
-            "op_add" => Some(Value::from_rust(VectorMethod::new(
-                "op_add",
-                |vec, mut args| {
+                    let result =
+                        if let Some(other_vec_ref) = other_val.downcast_rust_value::<Vector2>() {
+                            let result = vec.dot(&*other_vec_ref);
+                            Ok(Value::Float(result))
+                        } else {
+                            Err(anyhow!(
+                                "dot() requires another Vector2, got {:?}",
+                                other_val
+                            ))
+                        };
+                    result
+                })
+                .bind(self.clone()),
+            )),
+            "op_add" => Some(Value::from_rust(
+                VectorMethod::new("op_add", |vec, mut args| {
                     args.set_function_name("op_add");
-                    let _other_val = args.expect("other")?;
+                    let other_val = args.expect("other")?;
                     args.complete()?;
 
-                    // TODO: Implement proper downcasting without using Any
-                    // For now, return a placeholder result
-                    Ok(Value::from_rust(vec.add(&Vector2::new(1.0, 1.0))))
-                },
-            ))),
-            "op_sub" => Some(Value::from_rust(VectorMethod::new(
-                "op_sub",
-                |vec, mut args| {
+                    let result =
+                        if let Some(other_vec_ref) = other_val.downcast_rust_value::<Vector2>() {
+                            let result = vec.add(&*other_vec_ref);
+                            Ok(Value::from_rust(result))
+                        } else {
+                            Err(anyhow!("Cannot add {:?} to Vector2", other_val))
+                        };
+                    result
+                })
+                .bind(self.clone()),
+            )),
+            "op_sub" => Some(Value::from_rust(
+                VectorMethod::new("op_sub", |vec, mut args| {
                     args.set_function_name("op_sub");
-                    let _other_val = args.expect("other")?;
+                    let other_val = args.expect("other")?;
                     args.complete()?;
 
-                    // TODO: Implement proper downcasting without using Any
-                    // For now, return a placeholder result
-                    Ok(Value::from_rust(vec.sub(&Vector2::new(1.0, 1.0))))
-                },
-            ))),
-            "op_mul" => Some(Value::from_rust(VectorMethod::new(
-                "op_mul",
-                |vec, mut args| {
+                    let result =
+                        if let Some(other_vec_ref) = other_val.downcast_rust_value::<Vector2>() {
+                            let result = vec.sub(&*other_vec_ref);
+                            Ok(Value::from_rust(result))
+                        } else {
+                            Err(anyhow!("Cannot subtract {:?} from Vector2", other_val))
+                        };
+                    result
+                })
+                .bind(self.clone()),
+            )),
+            "op_mul" => Some(Value::from_rust(
+                VectorMethod::new("op_mul", |vec, mut args| {
                     args.set_function_name("op_mul");
                     let other_val = args.expect("scalar")?;
                     args.complete()?;
@@ -124,46 +143,64 @@ impl RustValue for Vector2 {
                             other_val
                         )),
                     }
-                },
-            ))),
-            "op_eq" => Some(Value::from_rust(VectorMethod::new(
-                "op_eq",
-                |vec, mut args| {
+                })
+                .bind(self.clone()),
+            )),
+            "op_eq" => Some(Value::from_rust(
+                VectorMethod::new("op_eq", |vec, mut args| {
                     args.set_function_name("op_eq");
-                    let _other_val = args.expect("other")?;
+                    let other_val = args.expect("other")?;
                     args.complete()?;
 
-                    // TODO: Implement proper downcasting without using Any
-                    // For now, return a placeholder result
-                    Ok(Value::Bool(vec == &Vector2::new(3.0, 4.0)))
-                },
-            ))),
+                    let result =
+                        if let Some(other_vec_ref) = other_val.downcast_rust_value::<Vector2>() {
+                            let result = vec == &*other_vec_ref;
+                            Ok(Value::Bool(result))
+                        } else {
+                            Ok(Value::Bool(false)) // Different types are not equal
+                        };
+                    result
+                })
+                .bind(self.clone()),
+            )),
             _ => None,
         }
     }
 }
 
-/// Helper struct for Vector2 methods
-#[derive(Debug)]
-#[allow(dead_code)]
+/// Helper struct for Vector2 methods  
+#[derive(Debug, Clone)]
 pub struct VectorMethod {
+    instance: Vector2,
     name: &'static str,
     func: fn(&Vector2, Args) -> Result<Value>,
 }
 
 impl VectorMethod {
     pub fn new(name: &'static str, func: fn(&Vector2, Args) -> Result<Value>) -> Self {
-        Self { name, func }
+        // This constructor is used to create an unbound method template
+        // The actual bound method will be created with `bind`
+        Self {
+            instance: Vector2::new(0.0, 0.0), // Placeholder
+            name,
+            func,
+        }
+    }
+
+    pub fn bind(&self, instance: Vector2) -> Self {
+        Self {
+            instance,
+            name: self.name,
+            func: self.func,
+        }
     }
 }
 
 impl RustValue for VectorMethod {
-    fn call(&self, _args: Args) -> Result<Value> {
-        // This is a bound method, so we expect the first argument to be the Vector2 instance
-        // In practice, this would be handled by the evaluator's method binding system
-        Err(anyhow!(
-            "VectorMethod should be bound to a Vector2 instance"
-        ))
+    rustleaf::impl_rust_value_any!(VectorMethod);
+
+    fn call(&self, args: Args) -> Result<Value> {
+        (self.func)(&self.instance, args)
     }
 }
 

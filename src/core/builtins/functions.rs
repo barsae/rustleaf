@@ -30,6 +30,7 @@ impl std::fmt::Debug for RustFunction {
 }
 
 impl RustValue for RustFunction {
+    crate::impl_rust_value_any!(Self);
     fn call(&self, args: Args) -> Result<Value> {
         (self.func)(args)
     }

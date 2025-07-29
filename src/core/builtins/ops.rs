@@ -19,6 +19,8 @@ impl BoundMethod {
 }
 
 impl RustValue for BoundMethod {
+    crate::impl_rust_value_any!(BoundMethod);
+
     fn call(&self, args: Args) -> Result<Value> {
         (self.method_func)(&self.self_value, args)
     }

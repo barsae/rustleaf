@@ -10,6 +10,7 @@ pub struct EvalWhile {
 }
 
 impl RustValue for EvalWhile {
+    crate::impl_rust_value_any!(Self);
     fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
         loop {
             let condition_val = match self.condition.eval(evaluator)? {

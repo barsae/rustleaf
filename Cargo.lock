@@ -291,8 +291,18 @@ dependencies = [
  "clap",
  "indexmap",
  "regex",
+ "rustleaf-macros",
  "rustleaf-macros-internal",
  "tempfile",
+]
+
+[[package]]
+name = "rustleaf-macros"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]

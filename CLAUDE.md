@@ -10,7 +10,9 @@ Try your hardest to complete the work you are assigned.
 
 The specifications live at `./specs/*.md`. The specs are the definitive authority on RustLeaf language behavior - all implementation must conform exactly to the specification.
 
-RULE **CRITICAL**: Using `Any` for downcasting is forbidden. Ask for help instead.
+RULE **CRITICAL**: Using `Any` for downcasting is forbidden in the core language implementation. 
+
+**EXCEPTION**: `Any` is allowed and encouraged for user-defined types that implement `RustValue`. This is the standard Rust pattern for recovering concrete types from trait objects at library boundaries.
 
 ## Development and Testing
 

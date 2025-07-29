@@ -9,6 +9,7 @@ pub struct EvalWith {
 }
 
 impl RustValue for EvalWith {
+    crate::impl_rust_value_any!(Self);
     fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
         let mut resources = Vec::new();
 

@@ -8,6 +8,7 @@ pub struct EvalImport {
 }
 
 impl RustValue for EvalImport {
+    crate::impl_rust_value_any!(Self);
     fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
         match evaluator.load_module(&self.data.module) {
             Ok(module_scope) => {
