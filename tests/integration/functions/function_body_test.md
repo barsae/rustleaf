@@ -94,50 +94,72 @@ Ok(
 # Eval
 ```rust
 Ok(
-    EvalProgram {
-        statements: [
-            EvalFunction {
-                data: FunctionData {
-                    name: "greet",
-                    params: [],
-                    body: EvalBlock {
-                        statements: [],
-                        final_expr: Some(
-                            EvalLiteral {
-                                value: String(
-                                    "hello",
-                                ),
+    RustValue(
+        EvalProgram {
+            statements: [
+                RustValue(
+                    EvalFunction {
+                        data: FunctionData {
+                            name: "greet",
+                            params: [],
+                            body: RustValue(
+                                EvalBlock {
+                                    statements: [],
+                                    final_expr: Some(
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: String(
+                                                    "hello",
+                                                ),
+                                            },
+                                        ),
+                                    ),
+                                },
+                            ),
+                        },
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
                             },
                         ),
-                    },
-                },
-            },
-            EvalCall {
-                func_expr: EvalVariable {
-                    name: "assert",
-                },
-                args: [
-                    EvalCall {
-                        func_expr: EvalGetAttr {
-                            obj_expr: EvalCall {
-                                func_expr: EvalVariable {
-                                    name: "greet",
-                                },
-                                args: [],
-                            },
-                            attr_name: "op_eq",
-                        },
                         args: [
-                            EvalLiteral {
-                                value: String(
-                                    "hello",
-                                ),
-                            },
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalCall {
+                                                    func_expr: RustValue(
+                                                        EvalVariable {
+                                                            name: "greet",
+                                                        },
+                                                    ),
+                                                    args: [],
+                                                },
+                                            ),
+                                            attr_name: "op_eq",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: String(
+                                                    "hello",
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
                         ],
                     },
-                ],
-            },
-        ],
-    },
+                ),
+            ],
+        },
+    ),
 )
 ```

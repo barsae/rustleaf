@@ -1,16 +1,17 @@
 use crate::core::{RustValue, Value};
 use crate::eval::{EvalResult, Evaluator};
 
-use crate::core::RustValueRef;
-
 #[derive(Debug, Clone)]
 pub struct EvalIs {
-    pub left: RustValueRef,
-    pub right: RustValueRef,
+    pub left: Value,
+    pub right: Value,
 }
 
 #[crate::rust_value_any]
 impl RustValue for EvalIs {
+    fn dyn_clone(&self) -> Box<dyn RustValue> {
+        Box::new(self.clone())
+    }
     fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
         let left_val = match self.left.eval(evaluator)? {
             Ok(val) => val,
@@ -22,8 +23,7 @@ impl RustValue for EvalIs {
         };
 
         if let Value::RustValue(rust_val_ref) = &right_val {
-            let rust_val = rust_val_ref.borrow();
-            if let Ok(result) = rust_val.op_is(&left_val) {
+            if let Ok(result) = rust_val_ref.op_is(&left_val) {
                 return Ok(Ok(result));
             }
         }

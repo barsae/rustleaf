@@ -8,6 +8,10 @@ pub struct EvalLiteral {
 
 #[crate::rust_value_any]
 impl RustValue for EvalLiteral {
+    fn dyn_clone(&self) -> Box<dyn RustValue> {
+        Box::new(self.clone())
+    }
+
     fn eval(&self, _evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
         Ok(Ok(self.value.clone()))
     }

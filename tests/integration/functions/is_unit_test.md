@@ -272,151 +272,233 @@ Ok(
 # Eval
 ```rust
 Ok(
-    EvalProgram {
-        statements: [
-            EvalCall {
-                func_expr: EvalVariable {
-                    name: "assert",
-                },
-                args: [
-                    EvalLogicalNot {
-                        expr: EvalCall {
-                            func_expr: EvalVariable {
-                                name: "is_unit",
-                            },
-                            args: [
-                                EvalLiteral {
-                                    value: Int(
-                                        42,
-                                    ),
-                                },
-                            ],
-                        },
-                    },
-                ],
-            },
-            EvalCall {
-                func_expr: EvalVariable {
-                    name: "assert",
-                },
-                args: [
-                    EvalLogicalNot {
-                        expr: EvalCall {
-                            func_expr: EvalVariable {
-                                name: "is_unit",
-                            },
-                            args: [
-                                EvalLiteral {
-                                    value: String(
-                                        "hello",
-                                    ),
-                                },
-                            ],
-                        },
-                    },
-                ],
-            },
-            EvalCall {
-                func_expr: EvalVariable {
-                    name: "assert",
-                },
-                args: [
-                    EvalLogicalNot {
-                        expr: EvalCall {
-                            func_expr: EvalVariable {
-                                name: "is_unit",
-                            },
-                            args: [
-                                EvalLiteral {
-                                    value: Bool(
-                                        true,
-                                    ),
-                                },
-                            ],
-                        },
-                    },
-                ],
-            },
-            EvalCall {
-                func_expr: EvalVariable {
-                    name: "assert",
-                },
-                args: [
-                    EvalLogicalNot {
-                        expr: EvalCall {
-                            func_expr: EvalVariable {
-                                name: "is_unit",
-                            },
-                            args: [
-                                EvalList {
-                                    elements: [],
-                                },
-                            ],
-                        },
-                    },
-                ],
-            },
-            EvalCall {
-                func_expr: EvalVariable {
-                    name: "assert",
-                },
-                args: [
-                    EvalLogicalNot {
-                        expr: EvalCall {
-                            func_expr: EvalVariable {
-                                name: "is_unit",
-                            },
-                            args: [
-                                EvalDict {
-                                    pairs: [],
-                                },
-                            ],
-                        },
-                    },
-                ],
-            },
-            EvalFunction {
-                data: FunctionData {
-                    name: "side_effect",
-                    params: [],
-                    body: EvalBlock {
-                        statements: [
-                            EvalDeclare {
-                                name: "x",
-                                init_expr: Some(
-                                    EvalLiteral {
-                                        value: Int(
-                                            1,
-                                        ),
-                                    },
-                                ),
-                            },
-                        ],
-                        final_expr: None,
-                    },
-                },
-            },
-            EvalCall {
-                func_expr: EvalVariable {
-                    name: "assert",
-                },
-                args: [
+    RustValue(
+        EvalProgram {
+            statements: [
+                RustValue(
                     EvalCall {
-                        func_expr: EvalVariable {
-                            name: "is_unit",
-                        },
-                        args: [
-                            EvalCall {
-                                func_expr: EvalVariable {
-                                    name: "side_effect",
-                                },
-                                args: [],
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
                             },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalLogicalNot {
+                                    expr: RustValue(
+                                        EvalCall {
+                                            func_expr: RustValue(
+                                                EvalVariable {
+                                                    name: "is_unit",
+                                                },
+                                            ),
+                                            args: [
+                                                RustValue(
+                                                    EvalLiteral {
+                                                        value: Int(
+                                                            42,
+                                                        ),
+                                                    },
+                                                ),
+                                            ],
+                                        },
+                                    ),
+                                },
+                            ),
                         ],
                     },
-                ],
-            },
-        ],
-    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalLogicalNot {
+                                    expr: RustValue(
+                                        EvalCall {
+                                            func_expr: RustValue(
+                                                EvalVariable {
+                                                    name: "is_unit",
+                                                },
+                                            ),
+                                            args: [
+                                                RustValue(
+                                                    EvalLiteral {
+                                                        value: String(
+                                                            "hello",
+                                                        ),
+                                                    },
+                                                ),
+                                            ],
+                                        },
+                                    ),
+                                },
+                            ),
+                        ],
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalLogicalNot {
+                                    expr: RustValue(
+                                        EvalCall {
+                                            func_expr: RustValue(
+                                                EvalVariable {
+                                                    name: "is_unit",
+                                                },
+                                            ),
+                                            args: [
+                                                RustValue(
+                                                    EvalLiteral {
+                                                        value: Bool(
+                                                            true,
+                                                        ),
+                                                    },
+                                                ),
+                                            ],
+                                        },
+                                    ),
+                                },
+                            ),
+                        ],
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalLogicalNot {
+                                    expr: RustValue(
+                                        EvalCall {
+                                            func_expr: RustValue(
+                                                EvalVariable {
+                                                    name: "is_unit",
+                                                },
+                                            ),
+                                            args: [
+                                                RustValue(
+                                                    EvalList {
+                                                        elements: [],
+                                                    },
+                                                ),
+                                            ],
+                                        },
+                                    ),
+                                },
+                            ),
+                        ],
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalLogicalNot {
+                                    expr: RustValue(
+                                        EvalCall {
+                                            func_expr: RustValue(
+                                                EvalVariable {
+                                                    name: "is_unit",
+                                                },
+                                            ),
+                                            args: [
+                                                RustValue(
+                                                    EvalDict {
+                                                        pairs: [],
+                                                    },
+                                                ),
+                                            ],
+                                        },
+                                    ),
+                                },
+                            ),
+                        ],
+                    },
+                ),
+                RustValue(
+                    EvalFunction {
+                        data: FunctionData {
+                            name: "side_effect",
+                            params: [],
+                            body: RustValue(
+                                EvalBlock {
+                                    statements: [
+                                        RustValue(
+                                            EvalDeclare {
+                                                name: "x",
+                                                init_expr: Some(
+                                                    RustValue(
+                                                        EvalLiteral {
+                                                            value: Int(
+                                                                1,
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                    final_expr: None,
+                                },
+                            ),
+                        },
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalVariable {
+                                            name: "is_unit",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalCall {
+                                                func_expr: RustValue(
+                                                    EvalVariable {
+                                                        name: "side_effect",
+                                                    },
+                                                ),
+                                                args: [],
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ],
+                    },
+                ),
+            ],
+        },
+    ),
 )
 ```

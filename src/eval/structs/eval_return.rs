@@ -1,15 +1,16 @@
 use crate::core::{RustValue, Value};
 use crate::eval::{ControlFlow, EvalResult, Evaluator};
 
-use crate::core::RustValueRef;
-
 #[derive(Debug, Clone)]
 pub struct EvalReturn {
-    pub expr: Option<RustValueRef>,
+    pub expr: Option<Value>,
 }
 
 #[crate::rust_value_any]
 impl RustValue for EvalReturn {
+    fn dyn_clone(&self) -> Box<dyn RustValue> {
+        Box::new(self.clone())
+    }
     fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
         let value = match &self.expr {
             Some(e) => match e.eval(evaluator)? {

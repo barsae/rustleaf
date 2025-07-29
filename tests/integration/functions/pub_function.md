@@ -178,115 +178,167 @@ Ok(
 # Eval
 ```rust
 Ok(
-    EvalProgram {
-        statements: [
-            EvalFunction {
-                data: FunctionData {
-                    name: "greet",
-                    params: [
-                        (
-                            "name",
-                            None,
-                            Regular,
-                        ),
-                    ],
-                    body: EvalBlock {
-                        statements: [
-                            EvalReturn {
-                                expr: Some(
-                                    EvalCall {
-                                        func_expr: EvalGetAttr {
-                                            obj_expr: EvalLiteral {
-                                                value: String(
-                                                    "Hello, ",
+    RustValue(
+        EvalProgram {
+            statements: [
+                RustValue(
+                    EvalFunction {
+                        data: FunctionData {
+                            name: "greet",
+                            params: [
+                                (
+                                    "name",
+                                    None,
+                                    Regular,
+                                ),
+                            ],
+                            body: RustValue(
+                                EvalBlock {
+                                    statements: [
+                                        RustValue(
+                                            EvalReturn {
+                                                expr: Some(
+                                                    RustValue(
+                                                        EvalCall {
+                                                            func_expr: RustValue(
+                                                                EvalGetAttr {
+                                                                    obj_expr: RustValue(
+                                                                        EvalLiteral {
+                                                                            value: String(
+                                                                                "Hello, ",
+                                                                            ),
+                                                                        },
+                                                                    ),
+                                                                    attr_name: "op_add",
+                                                                },
+                                                            ),
+                                                            args: [
+                                                                RustValue(
+                                                                    EvalVariable {
+                                                                        name: "name",
+                                                                    },
+                                                                ),
+                                                            ],
+                                                        },
+                                                    ),
                                                 ),
                                             },
-                                            attr_name: "op_add",
-                                        },
-                                        args: [
-                                            EvalVariable {
-                                                name: "name",
-                                            },
-                                        ],
-                                    },
-                                ),
-                            },
-                        ],
-                        final_expr: None,
-                    },
-                },
-            },
-            EvalDeclare {
-                name: "result",
-                init_expr: Some(
-                    EvalCall {
-                        func_expr: EvalVariable {
-                            name: "greet",
+                                        ),
+                                    ],
+                                    final_expr: None,
+                                },
+                            ),
                         },
-                        args: [
-                            EvalLiteral {
-                                value: String(
-                                    "World",
-                                ),
+                    },
+                ),
+                RustValue(
+                    EvalDeclare {
+                        name: "result",
+                        init_expr: Some(
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalVariable {
+                                            name: "greet",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: String(
+                                                    "World",
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ),
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
                             },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalVariable {
+                                                    name: "result",
+                                                },
+                                            ),
+                                            attr_name: "op_eq",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: String(
+                                                    "Hello, World",
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
                         ],
                     },
                 ),
-            },
-            EvalCall {
-                func_expr: EvalVariable {
-                    name: "assert",
-                },
-                args: [
+                RustValue(
                     EvalCall {
-                        func_expr: EvalGetAttr {
-                            obj_expr: EvalVariable {
-                                name: "result",
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
                             },
-                            attr_name: "op_eq",
-                        },
+                        ),
                         args: [
-                            EvalLiteral {
-                                value: String(
-                                    "Hello, World",
-                                ),
-                            },
-                        ],
-                    },
-                ],
-            },
-            EvalCall {
-                func_expr: EvalVariable {
-                    name: "assert",
-                },
-                args: [
-                    EvalCall {
-                        func_expr: EvalGetAttr {
-                            obj_expr: EvalCall {
-                                func_expr: EvalVariable {
-                                    name: "greet",
-                                },
-                                args: [
-                                    EvalLiteral {
-                                        value: String(
-                                            "Alice",
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalCall {
+                                                    func_expr: RustValue(
+                                                        EvalVariable {
+                                                            name: "greet",
+                                                        },
+                                                    ),
+                                                    args: [
+                                                        RustValue(
+                                                            EvalLiteral {
+                                                                value: String(
+                                                                    "Alice",
+                                                                ),
+                                                            },
+                                                        ),
+                                                    ],
+                                                },
+                                            ),
+                                            attr_name: "op_eq",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: String(
+                                                    "Hello, Alice",
+                                                ),
+                                            },
                                         ),
-                                    },
-                                ],
-                            },
-                            attr_name: "op_eq",
-                        },
-                        args: [
-                            EvalLiteral {
-                                value: String(
-                                    "Hello, Alice",
-                                ),
-                            },
+                                    ],
+                                },
+                            ),
                         ],
                     },
-                ],
-            },
-        ],
-    },
+                ),
+            ],
+        },
+    ),
 )
 ```

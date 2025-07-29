@@ -231,181 +231,277 @@ Ok(
 # Eval
 ```rust
 Ok(
-    EvalProgram {
-        statements: [
-            EvalDeclare {
-                name: "positive",
-                init_expr: Some(
-                    EvalLiteral {
-                        value: Int(
-                            42,
+    RustValue(
+        EvalProgram {
+            statements: [
+                RustValue(
+                    EvalDeclare {
+                        name: "positive",
+                        init_expr: Some(
+                            RustValue(
+                                EvalLiteral {
+                                    value: Int(
+                                        42,
+                                    ),
+                                },
+                            ),
                         ),
                     },
                 ),
-            },
-            EvalDeclare {
-                name: "negative",
-                init_expr: Some(
-                    EvalCall {
-                        func_expr: EvalGetAttr {
-                            obj_expr: EvalVariable {
-                                name: "positive",
-                            },
-                            attr_name: "op_neg",
-                        },
-                        args: [],
-                    },
-                ),
-            },
-            EvalDeclare {
-                name: "double_neg",
-                init_expr: Some(
-                    EvalCall {
-                        func_expr: EvalGetAttr {
-                            obj_expr: EvalVariable {
-                                name: "negative",
-                            },
-                            attr_name: "op_neg",
-                        },
-                        args: [],
-                    },
-                ),
-            },
-            EvalCall {
-                func_expr: EvalVariable {
-                    name: "assert",
-                },
-                args: [
-                    EvalCall {
-                        func_expr: EvalGetAttr {
-                            obj_expr: EvalVariable {
-                                name: "negative",
-                            },
-                            attr_name: "op_eq",
-                        },
-                        args: [
-                            EvalCall {
-                                func_expr: EvalGetAttr {
-                                    obj_expr: EvalLiteral {
-                                        value: Int(
-                                            42,
-                                        ),
-                                    },
-                                    attr_name: "op_neg",
-                                },
-                                args: [],
-                            },
-                        ],
-                    },
-                ],
-            },
-            EvalCall {
-                func_expr: EvalVariable {
-                    name: "assert",
-                },
-                args: [
-                    EvalCall {
-                        func_expr: EvalGetAttr {
-                            obj_expr: EvalVariable {
-                                name: "double_neg",
-                            },
-                            attr_name: "op_eq",
-                        },
-                        args: [
-                            EvalLiteral {
-                                value: Int(
-                                    42,
-                                ),
-                            },
-                        ],
-                    },
-                ],
-            },
-            EvalCall {
-                func_expr: EvalVariable {
-                    name: "assert",
-                },
-                args: [
-                    EvalCall {
-                        func_expr: EvalGetAttr {
-                            obj_expr: EvalCall {
-                                func_expr: EvalGetAttr {
-                                    obj_expr: EvalLiteral {
-                                        value: Int(
-                                            100,
-                                        ),
-                                    },
-                                    attr_name: "op_neg",
-                                },
-                                args: [],
-                            },
-                            attr_name: "op_eq",
-                        },
-                        args: [
-                            EvalCall {
-                                func_expr: EvalGetAttr {
-                                    obj_expr: EvalLiteral {
-                                        value: Int(
-                                            100,
-                                        ),
-                                    },
-                                    attr_name: "op_neg",
-                                },
-                                args: [],
-                            },
-                        ],
-                    },
-                ],
-            },
-            EvalCall {
-                func_expr: EvalVariable {
-                    name: "assert",
-                },
-                args: [
-                    EvalCall {
-                        func_expr: EvalGetAttr {
-                            obj_expr: EvalCall {
-                                func_expr: EvalGetAttr {
-                                    obj_expr: EvalCall {
-                                        func_expr: EvalGetAttr {
-                                            obj_expr: EvalLiteral {
-                                                value: Int(
-                                                    5,
-                                                ),
-                                            },
-                                            attr_name: "op_add",
+                RustValue(
+                    EvalDeclare {
+                        name: "negative",
+                        init_expr: Some(
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalVariable {
+                                                    name: "positive",
+                                                },
+                                            ),
+                                            attr_name: "op_neg",
                                         },
-                                        args: [
+                                    ),
+                                    args: [],
+                                },
+                            ),
+                        ),
+                    },
+                ),
+                RustValue(
+                    EvalDeclare {
+                        name: "double_neg",
+                        init_expr: Some(
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalVariable {
+                                                    name: "negative",
+                                                },
+                                            ),
+                                            attr_name: "op_neg",
+                                        },
+                                    ),
+                                    args: [],
+                                },
+                            ),
+                        ),
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalVariable {
+                                                    name: "negative",
+                                                },
+                                            ),
+                                            attr_name: "op_eq",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalCall {
+                                                func_expr: RustValue(
+                                                    EvalGetAttr {
+                                                        obj_expr: RustValue(
+                                                            EvalLiteral {
+                                                                value: Int(
+                                                                    42,
+                                                                ),
+                                                            },
+                                                        ),
+                                                        attr_name: "op_neg",
+                                                    },
+                                                ),
+                                                args: [],
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ],
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalVariable {
+                                                    name: "double_neg",
+                                                },
+                                            ),
+                                            attr_name: "op_eq",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
                                             EvalLiteral {
                                                 value: Int(
-                                                    3,
+                                                    42,
                                                 ),
                                             },
-                                        ],
-                                    },
-                                    attr_name: "op_neg",
-                                },
-                                args: [],
-                            },
-                            attr_name: "op_eq",
-                        },
-                        args: [
-                            EvalCall {
-                                func_expr: EvalGetAttr {
-                                    obj_expr: EvalLiteral {
-                                        value: Int(
-                                            8,
                                         ),
-                                    },
-                                    attr_name: "op_neg",
+                                    ],
                                 },
-                                args: [],
-                            },
+                            ),
                         ],
                     },
-                ],
-            },
-        ],
-    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalCall {
+                                                    func_expr: RustValue(
+                                                        EvalGetAttr {
+                                                            obj_expr: RustValue(
+                                                                EvalLiteral {
+                                                                    value: Int(
+                                                                        100,
+                                                                    ),
+                                                                },
+                                                            ),
+                                                            attr_name: "op_neg",
+                                                        },
+                                                    ),
+                                                    args: [],
+                                                },
+                                            ),
+                                            attr_name: "op_eq",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalCall {
+                                                func_expr: RustValue(
+                                                    EvalGetAttr {
+                                                        obj_expr: RustValue(
+                                                            EvalLiteral {
+                                                                value: Int(
+                                                                    100,
+                                                                ),
+                                                            },
+                                                        ),
+                                                        attr_name: "op_neg",
+                                                    },
+                                                ),
+                                                args: [],
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ],
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalCall {
+                                                    func_expr: RustValue(
+                                                        EvalGetAttr {
+                                                            obj_expr: RustValue(
+                                                                EvalCall {
+                                                                    func_expr: RustValue(
+                                                                        EvalGetAttr {
+                                                                            obj_expr: RustValue(
+                                                                                EvalLiteral {
+                                                                                    value: Int(
+                                                                                        5,
+                                                                                    ),
+                                                                                },
+                                                                            ),
+                                                                            attr_name: "op_add",
+                                                                        },
+                                                                    ),
+                                                                    args: [
+                                                                        RustValue(
+                                                                            EvalLiteral {
+                                                                                value: Int(
+                                                                                    3,
+                                                                                ),
+                                                                            },
+                                                                        ),
+                                                                    ],
+                                                                },
+                                                            ),
+                                                            attr_name: "op_neg",
+                                                        },
+                                                    ),
+                                                    args: [],
+                                                },
+                                            ),
+                                            attr_name: "op_eq",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalCall {
+                                                func_expr: RustValue(
+                                                    EvalGetAttr {
+                                                        obj_expr: RustValue(
+                                                            EvalLiteral {
+                                                                value: Int(
+                                                                    8,
+                                                                ),
+                                                            },
+                                                        ),
+                                                        attr_name: "op_neg",
+                                                    },
+                                                ),
+                                                args: [],
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ],
+                    },
+                ),
+            ],
+        },
+    ),
 )
 ```

@@ -58,95 +58,6 @@ impl ClassRef {
     }
 }
 
-#[derive(Clone)]
-pub struct RustValueRef(Rc<RefCell<Box<dyn RustValue>>>);
-
-// Wrapper for user types that handles Rc<RefCell<>> automatically
-#[derive(Clone)]
-pub struct RustValueWrapper<T: 'static>(Rc<RefCell<T>>);
-
-// Trait for user types that can be wrapped
-pub trait RustValueImpl: fmt::Debug + 'static {
-    fn get_attr(&self, name: &str, wrapper: &RustValueWrapper<Self>) -> Option<Value>
-    where
-        Self: Sized;
-
-    fn set_attr(&mut self, _name: &str, _value: Value) -> Result<(), String> {
-        Err("Cannot set attributes on this type".to_string())
-    }
-
-    fn call(&self, _args: Args) -> Result<Value> {
-        Err(anyhow!("This type is not callable"))
-    }
-
-    fn str(&self) -> String {
-        format!("{:?}", self)
-    }
-
-    fn op_iter(&self) -> Result<Value> {
-        Err(anyhow!("This type is not iterable"))
-    }
-
-    fn op_next(&mut self) -> Result<Option<Value>> {
-        Err(anyhow!("This type is not an iterator"))
-    }
-
-    fn eval(&self, _evaluator: &mut crate::eval::Evaluator) -> Result<crate::eval::EvalResult> {
-        Err(anyhow!("This type cannot be evaluated"))
-    }
-}
-
-impl<T: 'static> RustValueWrapper<T> {
-    pub fn new(value: T) -> Self {
-        Self(Rc::new(RefCell::new(value)))
-    }
-
-    pub fn borrow(&self) -> std::cell::Ref<T> {
-        self.0.borrow()
-    }
-
-    pub fn borrow_mut(&self) -> std::cell::RefMut<T> {
-        self.0.borrow_mut()
-    }
-}
-
-impl<T: RustValueImpl> fmt::Debug for RustValueWrapper<T> {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        self.0.borrow().fmt(f)
-    }
-}
-
-#[crate::rust_value_any]
-impl<T: RustValueImpl> RustValue for RustValueWrapper<T> {
-    fn get_attr(&self, name: &str) -> Option<Value> {
-        self.0.borrow().get_attr(name, self)
-    }
-
-    fn set_attr(&mut self, name: &str, value: Value) -> Result<(), String> {
-        self.0.borrow_mut().set_attr(name, value)
-    }
-
-    fn call(&self, args: Args) -> Result<Value> {
-        self.0.borrow().call(args)
-    }
-
-    fn str(&self) -> String {
-        self.0.borrow().str()
-    }
-
-    fn op_iter(&self) -> Result<Value> {
-        self.0.borrow().op_iter()
-    }
-
-    fn op_next(&mut self) -> Result<Option<Value>> {
-        self.0.borrow_mut().op_next()
-    }
-
-    fn eval(&self, evaluator: &mut crate::eval::Evaluator) -> Result<crate::eval::EvalResult> {
-        self.0.borrow().eval(evaluator)
-    }
-}
-
 #[derive(Clone, Debug, PartialEq)]
 pub struct Range {
     pub start: i64,
@@ -154,42 +65,7 @@ pub struct Range {
     pub inclusive: bool,
 }
 
-impl RustValueRef {
-    pub fn new(val: Rc<RefCell<Box<dyn RustValue>>>) -> Self {
-        Self(val)
-    }
-
-    pub fn borrow(&self) -> std::cell::Ref<Box<dyn RustValue>> {
-        self.0.borrow()
-    }
-
-    pub fn borrow_mut(&self) -> std::cell::RefMut<Box<dyn RustValue>> {
-        self.0.borrow_mut()
-    }
-
-    pub fn eval(
-        &self,
-        evaluator: &mut crate::eval::Evaluator,
-    ) -> anyhow::Result<crate::eval::EvalResult> {
-        self.0.borrow().eval(evaluator)
-    }
-
-    pub fn str(&self) -> String {
-        self.0.borrow().str()
-    }
-
-    pub fn as_rust_value(&self) -> Rc<RefCell<Box<dyn RustValue>>> {
-        self.0.clone()
-    }
-}
-
-impl fmt::Debug for RustValueRef {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        self.0.borrow().fmt(f)
-    }
-}
-
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 pub enum Value {
     Null,
     Unit,
@@ -202,8 +78,28 @@ pub enum Value {
     Class(ClassRef),
     ClassInstance(ClassInstanceRef),
     Range(Range),
-    RustValue(RustValueRef),
+    RustValue(Box<dyn RustValue>),
     Raised(Box<Value>),
+}
+
+impl Clone for Value {
+    fn clone(&self) -> Self {
+        match self {
+            Value::Null => Value::Null,
+            Value::Unit => Value::Unit,
+            Value::Bool(b) => Value::Bool(*b),
+            Value::Int(i) => Value::Int(*i),
+            Value::Float(f) => Value::Float(*f),
+            Value::String(s) => Value::String(s.clone()),
+            Value::List(list) => Value::List(list.clone()),
+            Value::Dict(dict) => Value::Dict(dict.clone()),
+            Value::Class(class) => Value::Class(class.clone()),
+            Value::ClassInstance(instance) => Value::ClassInstance(instance.clone()),
+            Value::Range(range) => Value::Range(range.clone()),
+            Value::RustValue(rust_val) => Value::RustValue(rust_val.dyn_clone()),
+            Value::Raised(raised) => Value::Raised(raised.clone()),
+        }
+    }
 }
 
 impl PartialEq for Value {
@@ -220,7 +116,7 @@ impl PartialEq for Value {
             (Value::Class(a), Value::Class(b)) => Rc::ptr_eq(&a.0, &b.0),
             (Value::ClassInstance(a), Value::ClassInstance(b)) => Rc::ptr_eq(&a.0, &b.0),
             (Value::Range(a), Value::Range(b)) => a == b,
-            (Value::RustValue(a), Value::RustValue(b)) => Rc::ptr_eq(&a.0, &b.0),
+            (Value::RustValue(a), Value::RustValue(b)) => std::ptr::eq(a.as_ref(), b.as_ref()),
             (Value::Raised(a), Value::Raised(b)) => a == b,
             _ => false,
         }
@@ -231,9 +127,7 @@ pub trait RustValue: fmt::Debug + 'static {
     fn as_any(&self) -> &dyn std::any::Any;
     fn as_any_mut(&mut self) -> &mut dyn std::any::Any;
 
-    fn dyn_clone(&self) -> Box<dyn RustValue> {
-        panic!("dyn_clone not implemented for this type")
-    }
+    fn dyn_clone(&self) -> Box<dyn RustValue>;
 
     fn get_attr(&self, _name: &str) -> Option<Value> {
         None
@@ -277,10 +171,7 @@ impl Value {
             Value::Int(i) => i.to_string(),
             Value::Float(f) => f.to_string(),
             Value::String(s) => s.clone(),
-            Value::RustValue(rust_val_ref) => {
-                let rust_val = rust_val_ref.borrow();
-                rust_val.str()
-            }
+            Value::RustValue(rust_val) => rust_val.str(),
             _ => format!("{:?}", self), // Fallback to debug representation for other types
         }
     }
@@ -332,11 +223,11 @@ impl Value {
     }
 
     pub fn rust_value(val: Box<dyn RustValue>) -> Self {
-        Value::RustValue(RustValueRef(Rc::new(RefCell::new(val))))
+        Value::RustValue(val)
     }
 
     pub fn from_rust<T: RustValue + 'static>(val: T) -> Self {
-        Value::RustValue(RustValueRef(Rc::new(RefCell::new(Box::new(val)))))
+        Value::RustValue(Box::new(val))
     }
 
     pub fn bind_method(
@@ -348,32 +239,18 @@ impl Value {
     }
 
     /// Try to downcast a RustValue to a concrete type
-    pub fn downcast_rust_value<T: RustValue + 'static>(&self) -> Option<std::cell::Ref<T>> {
-        if let Value::RustValue(rust_ref) = self {
-            let borrowed = rust_ref.borrow();
-            if borrowed.as_any().is::<T>() {
-                Some(std::cell::Ref::map(borrowed, |b| {
-                    b.as_any().downcast_ref::<T>().unwrap()
-                }))
-            } else {
-                None
-            }
+    pub fn downcast_rust_value<T: RustValue + 'static>(&self) -> Option<&T> {
+        if let Value::RustValue(b) = self {
+            Some(b.as_any().downcast_ref::<T>().unwrap())
         } else {
             None
         }
     }
 
     /// Try to downcast a RustValue to a concrete type with mutable access
-    pub fn downcast_rust_value_mut<T: RustValue + 'static>(&self) -> Option<std::cell::RefMut<T>> {
-        if let Value::RustValue(rust_ref) = self {
-            let borrowed = rust_ref.borrow_mut();
-            if borrowed.as_any().is::<T>() {
-                Some(std::cell::RefMut::map(borrowed, |b| {
-                    b.as_any_mut().downcast_mut::<T>().unwrap()
-                }))
-            } else {
-                None
-            }
+    pub fn downcast_rust_value_mut<T: RustValue + 'static>(&mut self) -> Option<&mut T> {
+        if let Value::RustValue(rust_val) = self {
+            rust_val.as_any_mut().downcast_mut::<T>()
         } else {
             None
         }
@@ -381,7 +258,7 @@ impl Value {
 
     pub fn get_attr(&self, name: &str, eval: &mut crate::eval::Evaluator) -> Option<Value> {
         match self {
-            Value::RustValue(rv) => rv.0.borrow().get_attr(name),
+            Value::RustValue(rv) => rv.get_attr(name),
             // TODO: move to a get_class_attr
             Value::ClassInstance(ci) => {
                 let borrowed = ci.borrow();
@@ -418,9 +295,9 @@ impl Value {
         }
     }
 
-    pub fn set_attr(&self, name: &str, value: Value) -> Result<(), String> {
+    pub fn set_attr(&mut self, name: &str, value: Value) -> Result<(), String> {
         match self {
-            Value::RustValue(rv) => rv.0.borrow_mut().set_attr(name, value),
+            Value::RustValue(rv) => rv.set_attr(name, value),
             Value::ClassInstance(ci) => {
                 // Allow setting fields on class instances
                 ci.borrow_mut().fields.insert(name.to_string(), value);
@@ -432,7 +309,7 @@ impl Value {
 
     pub fn call(&self, args: Args) -> Result<Value> {
         match self {
-            Value::RustValue(rv) => rv.0.borrow().call(args),
+            Value::RustValue(rv) => rv.call(args),
             Value::Class(_) => {
                 // Class constructor calls should be handled by the evaluator
                 // This method shouldn't be called directly for classes
@@ -449,14 +326,14 @@ impl Value {
             Value::List(list) => Ok(Value::from_rust(crate::core::ListIter::new(list.clone()))),
             Value::Dict(dict) => Ok(Value::from_rust(crate::core::DictIter::new(dict.clone()))),
             Value::Range(range) => Ok(Value::from_rust(crate::core::RangeIter::new(range.clone()))),
-            Value::RustValue(rv) => rv.0.borrow().op_iter(),
+            Value::RustValue(rv) => rv.op_iter(),
             _ => Err(anyhow!("Value is not iterable: {:?}", self)),
         }
     }
 
     pub fn op_next(&mut self) -> Result<Option<Value>> {
         match self {
-            Value::RustValue(rv) => rv.0.borrow_mut().op_next(),
+            Value::RustValue(rv) => rv.op_next(),
             _ => Err(anyhow!("Value is not an iterator: {:?}", self)),
         }
     }
@@ -617,6 +494,16 @@ impl Value {
             "op_eq" => Some(self.bind_method(op_eq)),
             "op_ne" => Some(self.bind_method(op_ne)),
             _ => None,
+        }
+    }
+
+    pub fn eval(
+        &self,
+        evaluator: &mut crate::eval::Evaluator,
+    ) -> anyhow::Result<crate::eval::EvalResult> {
+        match self {
+            Value::RustValue(rust_val) => rust_val.eval(evaluator),
+            _ => Err(anyhow!("Cannot evaluate this value type: {:?}", self)),
         }
     }
 }

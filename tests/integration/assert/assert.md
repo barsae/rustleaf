@@ -131,86 +131,126 @@ Ok(
 # Eval
 ```rust
 Ok(
-    EvalProgram {
-        statements: [
-            EvalCall {
-                func_expr: EvalVariable {
-                    name: "assert",
-                },
-                args: [
-                    EvalLiteral {
-                        value: Bool(
-                            true,
+    RustValue(
+        EvalProgram {
+            statements: [
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
                         ),
-                    },
-                ],
-            },
-            EvalCall {
-                func_expr: EvalVariable {
-                    name: "assert",
-                },
-                args: [
-                    EvalCall {
-                        func_expr: EvalGetAttr {
-                            obj_expr: EvalLiteral {
-                                value: Int(
-                                    1,
-                                ),
-                            },
-                            attr_name: "op_eq",
-                        },
                         args: [
-                            EvalLiteral {
-                                value: Int(
-                                    1,
-                                ),
-                            },
-                        ],
-                    },
-                ],
-            },
-            EvalCall {
-                func_expr: EvalVariable {
-                    name: "assert",
-                },
-                args: [
-                    EvalCall {
-                        func_expr: EvalGetAttr {
-                            obj_expr: EvalCall {
-                                func_expr: EvalGetAttr {
-                                    obj_expr: EvalLiteral {
-                                        value: Int(
-                                            10,
-                                        ),
-                                    },
-                                    attr_name: "op_add",
+                            RustValue(
+                                EvalLiteral {
+                                    value: Bool(
+                                        true,
+                                    ),
                                 },
-                                args: [
-                                    EvalLiteral {
-                                        value: Int(
-                                            5,
-                                        ),
-                                    },
-                                ],
-                            },
-                            attr_name: "op_eq",
-                        },
-                        args: [
-                            EvalLiteral {
-                                value: Int(
-                                    15,
-                                ),
-                            },
+                            ),
                         ],
                     },
-                    EvalLiteral {
-                        value: String(
-                            "Math should work",
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
                         ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        1,
+                                                    ),
+                                                },
+                                            ),
+                                            attr_name: "op_eq",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Int(
+                                                    1,
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ],
                     },
-                ],
-            },
-        ],
-    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalCall {
+                                                    func_expr: RustValue(
+                                                        EvalGetAttr {
+                                                            obj_expr: RustValue(
+                                                                EvalLiteral {
+                                                                    value: Int(
+                                                                        10,
+                                                                    ),
+                                                                },
+                                                            ),
+                                                            attr_name: "op_add",
+                                                        },
+                                                    ),
+                                                    args: [
+                                                        RustValue(
+                                                            EvalLiteral {
+                                                                value: Int(
+                                                                    5,
+                                                                ),
+                                                            },
+                                                        ),
+                                                    ],
+                                                },
+                                            ),
+                                            attr_name: "op_eq",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Int(
+                                                    15,
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                            RustValue(
+                                EvalLiteral {
+                                    value: String(
+                                        "Math should work",
+                                    ),
+                                },
+                            ),
+                        ],
+                    },
+                ),
+            ],
+        },
+    ),
 )
 ```

@@ -188,98 +188,146 @@ Ok(
 # Eval
 ```rust
 Ok(
-    EvalProgram {
-        statements: [
-            EvalDeclare {
-                name: "x",
-                init_expr: Some(
-                    EvalLiteral {
-                        value: Int(
-                            1,
-                        ),
-                    },
-                ),
-            },
-            EvalDeclare {
-                name: "inner_x",
-                init_expr: None,
-            },
-            EvalDeclare {
-                name: "outer_x",
-                init_expr: None,
-            },
-            EvalBlock {
-                statements: [
+    RustValue(
+        EvalProgram {
+            statements: [
+                RustValue(
                     EvalDeclare {
                         name: "x",
                         init_expr: Some(
-                            EvalLiteral {
-                                value: Int(
-                                    2,
-                                ),
+                            RustValue(
+                                EvalLiteral {
+                                    value: Int(
+                                        1,
+                                    ),
+                                },
+                            ),
+                        ),
+                    },
+                ),
+                RustValue(
+                    EvalDeclare {
+                        name: "inner_x",
+                        init_expr: None,
+                    },
+                ),
+                RustValue(
+                    EvalDeclare {
+                        name: "outer_x",
+                        init_expr: None,
+                    },
+                ),
+                RustValue(
+                    EvalBlock {
+                        statements: [
+                            RustValue(
+                                EvalDeclare {
+                                    name: "x",
+                                    init_expr: Some(
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Int(
+                                                    2,
+                                                ),
+                                            },
+                                        ),
+                                    ),
+                                },
+                            ),
+                            RustValue(
+                                EvalAssign {
+                                    name: "inner_x",
+                                    expr: RustValue(
+                                        EvalVariable {
+                                            name: "x",
+                                        },
+                                    ),
+                                },
+                            ),
+                        ],
+                        final_expr: None,
+                    },
+                ),
+                RustValue(
+                    EvalAssign {
+                        name: "outer_x",
+                        expr: RustValue(
+                            EvalVariable {
+                                name: "x",
                             },
                         ),
                     },
-                    EvalAssign {
-                        name: "inner_x",
-                        expr: EvalVariable {
-                            name: "x",
-                        },
-                    },
-                ],
-                final_expr: None,
-            },
-            EvalAssign {
-                name: "outer_x",
-                expr: EvalVariable {
-                    name: "x",
-                },
-            },
-            EvalCall {
-                func_expr: EvalVariable {
-                    name: "assert",
-                },
-                args: [
+                ),
+                RustValue(
                     EvalCall {
-                        func_expr: EvalGetAttr {
-                            obj_expr: EvalVariable {
-                                name: "inner_x",
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
                             },
-                            attr_name: "op_eq",
-                        },
+                        ),
                         args: [
-                            EvalLiteral {
-                                value: Int(
-                                    2,
-                                ),
-                            },
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalVariable {
+                                                    name: "inner_x",
+                                                },
+                                            ),
+                                            attr_name: "op_eq",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Int(
+                                                    2,
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
                         ],
                     },
-                ],
-            },
-            EvalCall {
-                func_expr: EvalVariable {
-                    name: "assert",
-                },
-                args: [
+                ),
+                RustValue(
                     EvalCall {
-                        func_expr: EvalGetAttr {
-                            obj_expr: EvalVariable {
-                                name: "outer_x",
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
                             },
-                            attr_name: "op_eq",
-                        },
+                        ),
                         args: [
-                            EvalLiteral {
-                                value: Int(
-                                    1,
-                                ),
-                            },
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalVariable {
+                                                    name: "outer_x",
+                                                },
+                                            ),
+                                            attr_name: "op_eq",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Int(
+                                                    1,
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
                         ],
                     },
-                ],
-            },
-        ],
-    },
+                ),
+            ],
+        },
+    ),
 )
 ```

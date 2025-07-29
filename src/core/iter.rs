@@ -1,7 +1,7 @@
 use super::{DictRef, ListRef, Range, RustValue, Value};
 use anyhow::Result;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct ListIter {
     list: ListRef,
     index: usize,
@@ -15,6 +15,9 @@ impl ListIter {
 
 #[crate::rust_value_any]
 impl RustValue for ListIter {
+    fn dyn_clone(&self) -> Box<dyn RustValue> {
+        Box::new(self.clone())
+    }
     fn op_next(&mut self) -> Result<Option<Value>> {
         let list = self.list.borrow();
         if self.index < list.len() {
@@ -27,7 +30,7 @@ impl RustValue for ListIter {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct DictIter {
     dict: DictRef,
     keys: Vec<String>,
@@ -47,6 +50,9 @@ impl DictIter {
 
 #[crate::rust_value_any]
 impl RustValue for DictIter {
+    fn dyn_clone(&self) -> Box<dyn RustValue> {
+        Box::new(self.clone())
+    }
     fn op_next(&mut self) -> Result<Option<Value>> {
         while self.index < self.keys.len() {
             let key = &self.keys[self.index];
@@ -62,7 +68,7 @@ impl RustValue for DictIter {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct RangeIter {
     current: i64,
     end: i64,
@@ -81,6 +87,9 @@ impl RangeIter {
 
 #[crate::rust_value_any]
 impl RustValue for RangeIter {
+    fn dyn_clone(&self) -> Box<dyn RustValue> {
+        Box::new(self.clone())
+    }
     fn op_next(&mut self) -> Result<Option<Value>> {
         let should_continue = if self.inclusive {
             self.current <= self.end

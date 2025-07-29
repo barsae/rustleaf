@@ -9,6 +9,9 @@ pub struct EvalMacro {
 
 #[crate::rust_value_any]
 impl RustValue for EvalMacro {
+    fn dyn_clone(&self) -> Box<dyn RustValue> {
+        Box::new(self.clone())
+    }
     fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
         // Get the macro function
         let macro_fn_result = self.data.macro_fn.eval(evaluator)?;
@@ -28,7 +31,7 @@ impl RustValue for EvalMacro {
         }
 
         // Add the target Eval as a special argument
-        let target_eval_value = Value::RustValue(self.data.target.clone());
+        let target_eval_value = self.data.target.clone();
         arg_values.insert(0, target_eval_value);
 
         // Call the macro function
@@ -38,9 +41,8 @@ impl RustValue for EvalMacro {
                 // The macro should return an Eval node - extract it and execute it
                 match result {
                     Value::RustValue(rust_val_ref) => {
-                        let rust_val = rust_val_ref.borrow();
                         // Execute the generated Eval node
-                        rust_val.eval(evaluator)
+                        rust_val_ref.eval(evaluator)
                     }
                     _ => Ok(Err(ControlFlow::Error(ErrorKind::SystemError(anyhow!(
                         "Macro must return an Eval node, got {:?}",

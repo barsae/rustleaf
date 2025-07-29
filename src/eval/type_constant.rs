@@ -16,6 +16,9 @@ impl TypeConstant {
 
 #[crate::rust_value_any]
 impl RustValue for TypeConstant {
+    fn dyn_clone(&self) -> Box<dyn RustValue> {
+        Box::new(self.clone())
+    }
     fn call(&self, _args: Args) -> anyhow::Result<Value> {
         Err(anyhow!("Type constants are not callable"))
     }

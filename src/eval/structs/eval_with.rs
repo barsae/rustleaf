@@ -10,6 +10,9 @@ pub struct EvalWith {
 
 #[crate::rust_value_any]
 impl RustValue for EvalWith {
+    fn dyn_clone(&self) -> Box<dyn RustValue> {
+        Box::new(self.clone())
+    }
     fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
         let mut resources = Vec::new();
 

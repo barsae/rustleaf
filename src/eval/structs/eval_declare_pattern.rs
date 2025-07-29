@@ -1,16 +1,17 @@
 use crate::core::{RustValue, Value};
 use crate::eval::{EvalResult, Evaluator};
 
-use crate::core::RustValueRef;
-
 #[derive(Debug, Clone)]
 pub struct EvalDeclarePattern {
     pub pattern: super::eval_ref::EvalPattern,
-    pub init_expr: RustValueRef,
+    pub init_expr: Value,
 }
 
 #[crate::rust_value_any]
 impl RustValue for EvalDeclarePattern {
+    fn dyn_clone(&self) -> Box<dyn RustValue> {
+        Box::new(self.clone())
+    }
     fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
         // Evaluate the initialization expression
         let init_value = match self.init_expr.eval(evaluator)? {

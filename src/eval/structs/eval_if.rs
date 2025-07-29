@@ -1,17 +1,18 @@
 use crate::core::{RustValue, Value};
 use crate::eval::{EvalResult, Evaluator};
 
-use crate::core::RustValueRef;
-
 #[derive(Debug, Clone)]
 pub struct EvalIf {
-    pub condition: RustValueRef,
-    pub then_expr: RustValueRef,
-    pub else_expr: Option<RustValueRef>,
+    pub condition: Value,
+    pub then_expr: Value,
+    pub else_expr: Option<Value>,
 }
 
 #[crate::rust_value_any]
 impl RustValue for EvalIf {
+    fn dyn_clone(&self) -> Box<dyn RustValue> {
+        Box::new(self.clone())
+    }
     fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
         let condition_result = self.condition.eval(evaluator)?;
         let condition_val = match condition_result {

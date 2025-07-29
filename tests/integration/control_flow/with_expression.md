@@ -352,226 +352,326 @@ Ok(
 # Eval
 ```rust
 Ok(
-    EvalProgram {
-        statements: [
-            EvalClassDecl {
-                data: ClassDeclData {
-                    name: "File",
-                    field_names: [
-                        "opened",
-                        "closed",
-                    ],
-                    field_defaults: [
-                        None,
-                        None,
-                    ],
-                    methods: [
-                        ClassMethod {
-                            name: "op_open",
-                            params: [
-                                "self",
-                            ],
-                            body: EvalBlock {
-                                statements: [
-                                    EvalSetAttr {
-                                        obj_expr: EvalVariable {
-                                            name: "self",
-                                        },
-                                        attr_name: "opened",
-                                        value_expr: EvalCall {
-                                            func_expr: EvalGetAttr {
-                                                obj_expr: EvalGetAttr {
-                                                    obj_expr: EvalVariable {
-                                                        name: "self",
-                                                    },
-                                                    attr_name: "opened",
-                                                },
-                                                attr_name: "op_add",
-                                            },
-                                            args: [
-                                                EvalLiteral {
-                                                    value: Int(
-                                                        1,
-                                                    ),
-                                                },
-                                            ],
-                                        },
-                                    },
-                                ],
-                                final_expr: None,
-                            },
-                            is_static: false,
-                        },
-                        ClassMethod {
-                            name: "op_close",
-                            params: [
-                                "self",
-                            ],
-                            body: EvalBlock {
-                                statements: [
-                                    EvalSetAttr {
-                                        obj_expr: EvalVariable {
-                                            name: "self",
-                                        },
-                                        attr_name: "closed",
-                                        value_expr: EvalCall {
-                                            func_expr: EvalGetAttr {
-                                                obj_expr: EvalGetAttr {
-                                                    obj_expr: EvalVariable {
-                                                        name: "self",
-                                                    },
-                                                    attr_name: "closed",
-                                                },
-                                                attr_name: "op_add",
-                                            },
-                                            args: [
-                                                EvalLiteral {
-                                                    value: Int(
-                                                        1,
-                                                    ),
-                                                },
-                                            ],
-                                        },
-                                    },
-                                ],
-                                final_expr: None,
-                            },
-                            is_static: false,
-                        },
-                        ClassMethod {
-                            name: "read",
-                            params: [
-                                "self",
-                            ],
-                            body: EvalBlock {
-                                statements: [],
-                                final_expr: None,
-                            },
-                            is_static: false,
-                        },
-                    ],
-                },
-            },
-            EvalDeclare {
-                name: "f",
-                init_expr: Some(
-                    EvalCall {
-                        func_expr: EvalVariable {
+    RustValue(
+        EvalProgram {
+            statements: [
+                RustValue(
+                    EvalClassDecl {
+                        data: ClassDeclData {
                             name: "File",
+                            field_names: [
+                                "opened",
+                                "closed",
+                            ],
+                            field_defaults: [
+                                None,
+                                None,
+                            ],
+                            methods: [
+                                ClassMethod {
+                                    name: "op_open",
+                                    params: [
+                                        "self",
+                                    ],
+                                    body: RustValue(
+                                        EvalBlock {
+                                            statements: [
+                                                RustValue(
+                                                    EvalSetAttr {
+                                                        obj_expr: RustValue(
+                                                            EvalVariable {
+                                                                name: "self",
+                                                            },
+                                                        ),
+                                                        attr_name: "opened",
+                                                        value_expr: RustValue(
+                                                            EvalCall {
+                                                                func_expr: RustValue(
+                                                                    EvalGetAttr {
+                                                                        obj_expr: RustValue(
+                                                                            EvalGetAttr {
+                                                                                obj_expr: RustValue(
+                                                                                    EvalVariable {
+                                                                                        name: "self",
+                                                                                    },
+                                                                                ),
+                                                                                attr_name: "opened",
+                                                                            },
+                                                                        ),
+                                                                        attr_name: "op_add",
+                                                                    },
+                                                                ),
+                                                                args: [
+                                                                    RustValue(
+                                                                        EvalLiteral {
+                                                                            value: Int(
+                                                                                1,
+                                                                            ),
+                                                                        },
+                                                                    ),
+                                                                ],
+                                                            },
+                                                        ),
+                                                    },
+                                                ),
+                                            ],
+                                            final_expr: None,
+                                        },
+                                    ),
+                                    is_static: false,
+                                },
+                                ClassMethod {
+                                    name: "op_close",
+                                    params: [
+                                        "self",
+                                    ],
+                                    body: RustValue(
+                                        EvalBlock {
+                                            statements: [
+                                                RustValue(
+                                                    EvalSetAttr {
+                                                        obj_expr: RustValue(
+                                                            EvalVariable {
+                                                                name: "self",
+                                                            },
+                                                        ),
+                                                        attr_name: "closed",
+                                                        value_expr: RustValue(
+                                                            EvalCall {
+                                                                func_expr: RustValue(
+                                                                    EvalGetAttr {
+                                                                        obj_expr: RustValue(
+                                                                            EvalGetAttr {
+                                                                                obj_expr: RustValue(
+                                                                                    EvalVariable {
+                                                                                        name: "self",
+                                                                                    },
+                                                                                ),
+                                                                                attr_name: "closed",
+                                                                            },
+                                                                        ),
+                                                                        attr_name: "op_add",
+                                                                    },
+                                                                ),
+                                                                args: [
+                                                                    RustValue(
+                                                                        EvalLiteral {
+                                                                            value: Int(
+                                                                                1,
+                                                                            ),
+                                                                        },
+                                                                    ),
+                                                                ],
+                                                            },
+                                                        ),
+                                                    },
+                                                ),
+                                            ],
+                                            final_expr: None,
+                                        },
+                                    ),
+                                    is_static: false,
+                                },
+                                ClassMethod {
+                                    name: "read",
+                                    params: [
+                                        "self",
+                                    ],
+                                    body: RustValue(
+                                        EvalBlock {
+                                            statements: [],
+                                            final_expr: None,
+                                        },
+                                    ),
+                                    is_static: false,
+                                },
+                            ],
                         },
-                        args: [],
                     },
                 ),
-            },
-            EvalSetAttr {
-                obj_expr: EvalVariable {
-                    name: "f",
-                },
-                attr_name: "opened",
-                value_expr: EvalLiteral {
-                    value: Int(
-                        0,
-                    ),
-                },
-            },
-            EvalSetAttr {
-                obj_expr: EvalVariable {
-                    name: "f",
-                },
-                attr_name: "closed",
-                value_expr: EvalLiteral {
-                    value: Int(
-                        0,
-                    ),
-                },
-            },
-            EvalWith {
-                data: WithData {
-                    resources: [
-                        (
-                            "f",
+                RustValue(
+                    EvalDeclare {
+                        name: "f",
+                        init_expr: Some(
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalVariable {
+                                            name: "File",
+                                        },
+                                    ),
+                                    args: [],
+                                },
+                            ),
+                        ),
+                    },
+                ),
+                RustValue(
+                    EvalSetAttr {
+                        obj_expr: RustValue(
                             EvalVariable {
                                 name: "f",
                             },
                         ),
-                    ],
-                    body: EvalBlock {
-                        statements: [
-                            EvalCall {
-                                func_expr: EvalGetAttr {
-                                    obj_expr: EvalVariable {
-                                        name: "f",
-                                    },
-                                    attr_name: "read",
-                                },
-                                args: [],
-                            },
-                        ],
-                        final_expr: None,
-                    },
-                },
-            },
-            EvalCall {
-                func_expr: EvalVariable {
-                    name: "assert",
-                },
-                args: [
-                    EvalCall {
-                        func_expr: EvalGetAttr {
-                            obj_expr: EvalGetAttr {
-                                obj_expr: EvalVariable {
-                                    name: "f",
-                                },
-                                attr_name: "opened",
-                            },
-                            attr_name: "op_eq",
-                        },
-                        args: [
+                        attr_name: "opened",
+                        value_expr: RustValue(
                             EvalLiteral {
                                 value: Int(
-                                    1,
+                                    0,
                                 ),
                             },
-                        ],
-                    },
-                    EvalLiteral {
-                        value: String(
-                            "opened should be 1",
                         ),
                     },
-                ],
-            },
-            EvalCall {
-                func_expr: EvalVariable {
-                    name: "assert",
-                },
-                args: [
-                    EvalCall {
-                        func_expr: EvalGetAttr {
-                            obj_expr: EvalGetAttr {
-                                obj_expr: EvalVariable {
-                                    name: "f",
-                                },
-                                attr_name: "closed",
+                ),
+                RustValue(
+                    EvalSetAttr {
+                        obj_expr: RustValue(
+                            EvalVariable {
+                                name: "f",
                             },
-                            attr_name: "op_eq",
-                        },
-                        args: [
+                        ),
+                        attr_name: "closed",
+                        value_expr: RustValue(
                             EvalLiteral {
                                 value: Int(
-                                    1,
+                                    0,
                                 ),
                             },
-                        ],
-                    },
-                    EvalLiteral {
-                        value: String(
-                            "closed should be 1",
                         ),
                     },
-                ],
-            },
-        ],
-    },
+                ),
+                RustValue(
+                    EvalWith {
+                        data: WithData {
+                            resources: [
+                                (
+                                    "f",
+                                    RustValue(
+                                        EvalVariable {
+                                            name: "f",
+                                        },
+                                    ),
+                                ),
+                            ],
+                            body: RustValue(
+                                EvalBlock {
+                                    statements: [
+                                        RustValue(
+                                            EvalCall {
+                                                func_expr: RustValue(
+                                                    EvalGetAttr {
+                                                        obj_expr: RustValue(
+                                                            EvalVariable {
+                                                                name: "f",
+                                                            },
+                                                        ),
+                                                        attr_name: "read",
+                                                    },
+                                                ),
+                                                args: [],
+                                            },
+                                        ),
+                                    ],
+                                    final_expr: None,
+                                },
+                            ),
+                        },
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalGetAttr {
+                                                    obj_expr: RustValue(
+                                                        EvalVariable {
+                                                            name: "f",
+                                                        },
+                                                    ),
+                                                    attr_name: "opened",
+                                                },
+                                            ),
+                                            attr_name: "op_eq",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Int(
+                                                    1,
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                            RustValue(
+                                EvalLiteral {
+                                    value: String(
+                                        "opened should be 1",
+                                    ),
+                                },
+                            ),
+                        ],
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalGetAttr {
+                                                    obj_expr: RustValue(
+                                                        EvalVariable {
+                                                            name: "f",
+                                                        },
+                                                    ),
+                                                    attr_name: "closed",
+                                                },
+                                            ),
+                                            attr_name: "op_eq",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Int(
+                                                    1,
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                            RustValue(
+                                EvalLiteral {
+                                    value: String(
+                                        "closed should be 1",
+                                    ),
+                                },
+                            ),
+                        ],
+                    },
+                ),
+            ],
+        },
+    ),
 )
 ```

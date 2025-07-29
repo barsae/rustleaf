@@ -1,17 +1,18 @@
-use crate::core::RustValue;
+use crate::core::{RustValue, Value};
 use crate::eval::{ControlFlow, ErrorKind, EvalResult, Evaluator};
-
-use crate::core::RustValueRef;
 
 #[derive(Debug, Clone)]
 pub struct EvalTry {
-    pub body: RustValueRef,
+    pub body: Value,
     pub catch_pattern: super::eval_ref::EvalPattern,
-    pub catch_body: RustValueRef,
+    pub catch_body: Value,
 }
 
 #[crate::rust_value_any]
 impl RustValue for EvalTry {
+    fn dyn_clone(&self) -> Box<dyn RustValue> {
+        Box::new(self.clone())
+    }
     fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
         // Try to execute the main body
         match self.body.eval(evaluator)? {

@@ -1,15 +1,16 @@
 use crate::core::{RustValue, Value};
 use crate::eval::{EvalResult, Evaluator};
 
-use crate::core::RustValueRef;
-
 #[derive(Debug, Clone)]
 pub struct EvalProgram {
-    pub statements: Vec<RustValueRef>,
+    pub statements: Vec<Value>,
 }
 
 #[crate::rust_value_any]
 impl RustValue for EvalProgram {
+    fn dyn_clone(&self) -> Box<dyn RustValue> {
+        Box::new(self.clone())
+    }
     fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
         for stmt in &self.statements {
             match stmt.eval(evaluator)? {

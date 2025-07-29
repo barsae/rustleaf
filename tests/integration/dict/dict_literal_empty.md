@@ -79,32 +79,48 @@ Ok(
 # Eval
 ```rust
 Ok(
-    EvalProgram {
-        statements: [
-            EvalDeclare {
-                name: "x",
-                init_expr: Some(
-                    EvalDict {
-                        pairs: [],
+    RustValue(
+        EvalProgram {
+            statements: [
+                RustValue(
+                    EvalDeclare {
+                        name: "x",
+                        init_expr: Some(
+                            RustValue(
+                                EvalDict {
+                                    pairs: [],
+                                },
+                            ),
+                        ),
                     },
                 ),
-            },
-            EvalCall {
-                func_expr: EvalVariable {
-                    name: "assert",
-                },
-                args: [
-                    EvalIs {
-                        left: EvalVariable {
-                            name: "x",
-                        },
-                        right: EvalVariable {
-                            name: "Dict",
-                        },
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalIs {
+                                    left: RustValue(
+                                        EvalVariable {
+                                            name: "x",
+                                        },
+                                    ),
+                                    right: RustValue(
+                                        EvalVariable {
+                                            name: "Dict",
+                                        },
+                                    ),
+                                },
+                            ),
+                        ],
                     },
-                ],
-            },
-        ],
-    },
+                ),
+            ],
+        },
+    ),
 )
 ```

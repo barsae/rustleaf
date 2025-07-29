@@ -86,44 +86,64 @@ Ok(
 # Eval
 ```rust
 Ok(
-    EvalProgram {
-        statements: [
-            EvalCall {
-                func_expr: EvalVariable {
-                    name: "assert",
-                },
-                args: [
+    RustValue(
+        EvalProgram {
+            statements: [
+                RustValue(
                     EvalCall {
-                        func_expr: EvalGetAttr {
-                            obj_expr: EvalLoop {
-                                body: EvalBlock {
-                                    statements: [
-                                        EvalBreak {
-                                            expr: Some(
-                                                EvalLiteral {
-                                                    value: Int(
-                                                        42,
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalLoop {
+                                                    body: RustValue(
+                                                        EvalBlock {
+                                                            statements: [
+                                                                RustValue(
+                                                                    EvalBreak {
+                                                                        expr: Some(
+                                                                            RustValue(
+                                                                                EvalLiteral {
+                                                                                    value: Int(
+                                                                                        42,
+                                                                                    ),
+                                                                                },
+                                                                            ),
+                                                                        ),
+                                                                    },
+                                                                ),
+                                                            ],
+                                                            final_expr: None,
+                                                        },
                                                     ),
                                                 },
                                             ),
+                                            attr_name: "op_eq",
                                         },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Int(
+                                                    42,
+                                                ),
+                                            },
+                                        ),
                                     ],
-                                    final_expr: None,
                                 },
-                            },
-                            attr_name: "op_eq",
-                        },
-                        args: [
-                            EvalLiteral {
-                                value: Int(
-                                    42,
-                                ),
-                            },
+                            ),
                         ],
                     },
-                ],
-            },
-        ],
-    },
+                ),
+            ],
+        },
+    ),
 )
 ```

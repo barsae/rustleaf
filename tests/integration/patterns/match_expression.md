@@ -468,297 +468,401 @@ Ok(
 # Eval
 ```rust
 Ok(
-    EvalProgram {
-        statements: [
-            EvalDeclare {
-                name: "x",
-                init_expr: Some(
-                    EvalLiteral {
-                        value: Int(
-                            1,
+    RustValue(
+        EvalProgram {
+            statements: [
+                RustValue(
+                    EvalDeclare {
+                        name: "x",
+                        init_expr: Some(
+                            RustValue(
+                                EvalLiteral {
+                                    value: Int(
+                                        1,
+                                    ),
+                                },
+                            ),
                         ),
                     },
                 ),
-            },
-            EvalDeclare {
-                name: "result",
-                init_expr: Some(
-                    EvalMatch {
-                        data: MatchData {
-                            expr: EvalVariable {
-                                name: "x",
-                            },
-                            cases: [
-                                EvalMatchCase {
-                                    pattern: Literal(
-                                        Int(
-                                            0,
-                                        ),
-                                    ),
-                                    guard: None,
-                                    body: EvalBlock {
-                                        statements: [],
-                                        final_expr: Some(
-                                            EvalLiteral {
-                                                value: String(
-                                                    "zero",
-                                                ),
+                RustValue(
+                    EvalDeclare {
+                        name: "result",
+                        init_expr: Some(
+                            RustValue(
+                                EvalMatch {
+                                    data: MatchData {
+                                        expr: RustValue(
+                                            EvalVariable {
+                                                name: "x",
                                             },
                                         ),
+                                        cases: [
+                                            EvalMatchCase {
+                                                pattern: Literal(
+                                                    Int(
+                                                        0,
+                                                    ),
+                                                ),
+                                                guard: None,
+                                                body: RustValue(
+                                                    EvalBlock {
+                                                        statements: [],
+                                                        final_expr: Some(
+                                                            RustValue(
+                                                                EvalLiteral {
+                                                                    value: String(
+                                                                        "zero",
+                                                                    ),
+                                                                },
+                                                            ),
+                                                        ),
+                                                    },
+                                                ),
+                                            },
+                                            EvalMatchCase {
+                                                pattern: Literal(
+                                                    Int(
+                                                        1,
+                                                    ),
+                                                ),
+                                                guard: None,
+                                                body: RustValue(
+                                                    EvalBlock {
+                                                        statements: [],
+                                                        final_expr: Some(
+                                                            RustValue(
+                                                                EvalLiteral {
+                                                                    value: String(
+                                                                        "one",
+                                                                    ),
+                                                                },
+                                                            ),
+                                                        ),
+                                                    },
+                                                ),
+                                            },
+                                            EvalMatchCase {
+                                                pattern: Wildcard,
+                                                guard: None,
+                                                body: RustValue(
+                                                    EvalBlock {
+                                                        statements: [],
+                                                        final_expr: Some(
+                                                            RustValue(
+                                                                EvalLiteral {
+                                                                    value: String(
+                                                                        "other",
+                                                                    ),
+                                                                },
+                                                            ),
+                                                        ),
+                                                    },
+                                                ),
+                                            },
+                                        ],
                                     },
                                 },
-                                EvalMatchCase {
-                                    pattern: Literal(
-                                        Int(
-                                            1,
-                                        ),
+                            ),
+                        ),
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalVariable {
+                                                    name: "result",
+                                                },
+                                            ),
+                                            attr_name: "op_eq",
+                                        },
                                     ),
-                                    guard: None,
-                                    body: EvalBlock {
-                                        statements: [],
-                                        final_expr: Some(
+                                    args: [
+                                        RustValue(
                                             EvalLiteral {
                                                 value: String(
                                                     "one",
                                                 ),
                                             },
                                         ),
+                                    ],
+                                },
+                            ),
+                        ],
+                    },
+                ),
+                RustValue(
+                    EvalDeclare {
+                        name: "y",
+                        init_expr: Some(
+                            RustValue(
+                                EvalLiteral {
+                                    value: Int(
+                                        42,
+                                    ),
+                                },
+                            ),
+                        ),
+                    },
+                ),
+                RustValue(
+                    EvalDeclare {
+                        name: "result2",
+                        init_expr: Some(
+                            RustValue(
+                                EvalMatch {
+                                    data: MatchData {
+                                        expr: RustValue(
+                                            EvalVariable {
+                                                name: "y",
+                                            },
+                                        ),
+                                        cases: [
+                                            EvalMatchCase {
+                                                pattern: Literal(
+                                                    Int(
+                                                        0,
+                                                    ),
+                                                ),
+                                                guard: None,
+                                                body: RustValue(
+                                                    EvalBlock {
+                                                        statements: [],
+                                                        final_expr: Some(
+                                                            RustValue(
+                                                                EvalLiteral {
+                                                                    value: String(
+                                                                        "zero",
+                                                                    ),
+                                                                },
+                                                            ),
+                                                        ),
+                                                    },
+                                                ),
+                                            },
+                                            EvalMatchCase {
+                                                pattern: Literal(
+                                                    Int(
+                                                        1,
+                                                    ),
+                                                ),
+                                                guard: None,
+                                                body: RustValue(
+                                                    EvalBlock {
+                                                        statements: [],
+                                                        final_expr: Some(
+                                                            RustValue(
+                                                                EvalLiteral {
+                                                                    value: String(
+                                                                        "one",
+                                                                    ),
+                                                                },
+                                                            ),
+                                                        ),
+                                                    },
+                                                ),
+                                            },
+                                            EvalMatchCase {
+                                                pattern: Wildcard,
+                                                guard: None,
+                                                body: RustValue(
+                                                    EvalBlock {
+                                                        statements: [],
+                                                        final_expr: Some(
+                                                            RustValue(
+                                                                EvalLiteral {
+                                                                    value: String(
+                                                                        "other",
+                                                                    ),
+                                                                },
+                                                            ),
+                                                        ),
+                                                    },
+                                                ),
+                                            },
+                                        ],
                                     },
                                 },
-                                EvalMatchCase {
-                                    pattern: Wildcard,
-                                    guard: None,
-                                    body: EvalBlock {
-                                        statements: [],
-                                        final_expr: Some(
+                            ),
+                        ),
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalVariable {
+                                                    name: "result2",
+                                                },
+                                            ),
+                                            attr_name: "op_eq",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
                                             EvalLiteral {
                                                 value: String(
                                                     "other",
                                                 ),
                                             },
                                         ),
-                                    },
+                                    ],
                                 },
-                            ],
-                        },
-                    },
-                ),
-            },
-            EvalCall {
-                func_expr: EvalVariable {
-                    name: "assert",
-                },
-                args: [
-                    EvalCall {
-                        func_expr: EvalGetAttr {
-                            obj_expr: EvalVariable {
-                                name: "result",
-                            },
-                            attr_name: "op_eq",
-                        },
-                        args: [
-                            EvalLiteral {
-                                value: String(
-                                    "one",
-                                ),
-                            },
+                            ),
                         ],
                     },
-                ],
-            },
-            EvalDeclare {
-                name: "y",
-                init_expr: Some(
-                    EvalLiteral {
-                        value: Int(
-                            42,
+                ),
+                RustValue(
+                    EvalDeclare {
+                        name: "z",
+                        init_expr: Some(
+                            RustValue(
+                                EvalLiteral {
+                                    value: Int(
+                                        0,
+                                    ),
+                                },
+                            ),
                         ),
                     },
                 ),
-            },
-            EvalDeclare {
-                name: "result2",
-                init_expr: Some(
-                    EvalMatch {
-                        data: MatchData {
-                            expr: EvalVariable {
-                                name: "y",
-                            },
-                            cases: [
-                                EvalMatchCase {
-                                    pattern: Literal(
-                                        Int(
-                                            0,
+                RustValue(
+                    EvalDeclare {
+                        name: "result3",
+                        init_expr: Some(
+                            RustValue(
+                                EvalMatch {
+                                    data: MatchData {
+                                        expr: RustValue(
+                                            EvalVariable {
+                                                name: "z",
+                                            },
                                         ),
+                                        cases: [
+                                            EvalMatchCase {
+                                                pattern: Literal(
+                                                    Int(
+                                                        0,
+                                                    ),
+                                                ),
+                                                guard: None,
+                                                body: RustValue(
+                                                    EvalBlock {
+                                                        statements: [],
+                                                        final_expr: Some(
+                                                            RustValue(
+                                                                EvalLiteral {
+                                                                    value: String(
+                                                                        "zero",
+                                                                    ),
+                                                                },
+                                                            ),
+                                                        ),
+                                                    },
+                                                ),
+                                            },
+                                            EvalMatchCase {
+                                                pattern: Literal(
+                                                    Int(
+                                                        1,
+                                                    ),
+                                                ),
+                                                guard: None,
+                                                body: RustValue(
+                                                    EvalBlock {
+                                                        statements: [],
+                                                        final_expr: Some(
+                                                            RustValue(
+                                                                EvalLiteral {
+                                                                    value: String(
+                                                                        "one",
+                                                                    ),
+                                                                },
+                                                            ),
+                                                        ),
+                                                    },
+                                                ),
+                                            },
+                                            EvalMatchCase {
+                                                pattern: Wildcard,
+                                                guard: None,
+                                                body: RustValue(
+                                                    EvalBlock {
+                                                        statements: [],
+                                                        final_expr: Some(
+                                                            RustValue(
+                                                                EvalLiteral {
+                                                                    value: String(
+                                                                        "other",
+                                                                    ),
+                                                                },
+                                                            ),
+                                                        ),
+                                                    },
+                                                ),
+                                            },
+                                        ],
+                                    },
+                                },
+                            ),
+                        ),
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalVariable {
+                                                    name: "result3",
+                                                },
+                                            ),
+                                            attr_name: "op_eq",
+                                        },
                                     ),
-                                    guard: None,
-                                    body: EvalBlock {
-                                        statements: [],
-                                        final_expr: Some(
+                                    args: [
+                                        RustValue(
                                             EvalLiteral {
                                                 value: String(
                                                     "zero",
                                                 ),
                                             },
                                         ),
-                                    },
+                                    ],
                                 },
-                                EvalMatchCase {
-                                    pattern: Literal(
-                                        Int(
-                                            1,
-                                        ),
-                                    ),
-                                    guard: None,
-                                    body: EvalBlock {
-                                        statements: [],
-                                        final_expr: Some(
-                                            EvalLiteral {
-                                                value: String(
-                                                    "one",
-                                                ),
-                                            },
-                                        ),
-                                    },
-                                },
-                                EvalMatchCase {
-                                    pattern: Wildcard,
-                                    guard: None,
-                                    body: EvalBlock {
-                                        statements: [],
-                                        final_expr: Some(
-                                            EvalLiteral {
-                                                value: String(
-                                                    "other",
-                                                ),
-                                            },
-                                        ),
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                ),
-            },
-            EvalCall {
-                func_expr: EvalVariable {
-                    name: "assert",
-                },
-                args: [
-                    EvalCall {
-                        func_expr: EvalGetAttr {
-                            obj_expr: EvalVariable {
-                                name: "result2",
-                            },
-                            attr_name: "op_eq",
-                        },
-                        args: [
-                            EvalLiteral {
-                                value: String(
-                                    "other",
-                                ),
-                            },
+                            ),
                         ],
                     },
-                ],
-            },
-            EvalDeclare {
-                name: "z",
-                init_expr: Some(
-                    EvalLiteral {
-                        value: Int(
-                            0,
-                        ),
-                    },
                 ),
-            },
-            EvalDeclare {
-                name: "result3",
-                init_expr: Some(
-                    EvalMatch {
-                        data: MatchData {
-                            expr: EvalVariable {
-                                name: "z",
-                            },
-                            cases: [
-                                EvalMatchCase {
-                                    pattern: Literal(
-                                        Int(
-                                            0,
-                                        ),
-                                    ),
-                                    guard: None,
-                                    body: EvalBlock {
-                                        statements: [],
-                                        final_expr: Some(
-                                            EvalLiteral {
-                                                value: String(
-                                                    "zero",
-                                                ),
-                                            },
-                                        ),
-                                    },
-                                },
-                                EvalMatchCase {
-                                    pattern: Literal(
-                                        Int(
-                                            1,
-                                        ),
-                                    ),
-                                    guard: None,
-                                    body: EvalBlock {
-                                        statements: [],
-                                        final_expr: Some(
-                                            EvalLiteral {
-                                                value: String(
-                                                    "one",
-                                                ),
-                                            },
-                                        ),
-                                    },
-                                },
-                                EvalMatchCase {
-                                    pattern: Wildcard,
-                                    guard: None,
-                                    body: EvalBlock {
-                                        statements: [],
-                                        final_expr: Some(
-                                            EvalLiteral {
-                                                value: String(
-                                                    "other",
-                                                ),
-                                            },
-                                        ),
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                ),
-            },
-            EvalCall {
-                func_expr: EvalVariable {
-                    name: "assert",
-                },
-                args: [
-                    EvalCall {
-                        func_expr: EvalGetAttr {
-                            obj_expr: EvalVariable {
-                                name: "result3",
-                            },
-                            attr_name: "op_eq",
-                        },
-                        args: [
-                            EvalLiteral {
-                                value: String(
-                                    "zero",
-                                ),
-                            },
-                        ],
-                    },
-                ],
-            },
-        ],
-    },
+            ],
+        },
+    ),
 )
 ```

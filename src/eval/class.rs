@@ -2,14 +2,14 @@ use anyhow::Result;
 use std::collections::HashMap;
 
 use super::{scope::ScopeRef, structs::ClassMethod};
-use crate::core::{Args, RustValue, RustValueRef, Value};
+use crate::core::{Args, RustValue, Value};
 
 /// A class definition - the "type" that can be called as a constructor
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Class {
     pub name: String,
     pub field_names: Vec<String>,
-    pub field_defaults: Vec<Option<RustValueRef>>,
+    pub field_defaults: Vec<Option<Value>>,
     pub methods: Vec<ClassMethod>,
 }
 
@@ -17,7 +17,7 @@ impl Class {
     pub fn new(
         name: String,
         field_names: Vec<String>,
-        field_defaults: Vec<Option<RustValueRef>>,
+        field_defaults: Vec<Option<Value>>,
         methods: Vec<ClassMethod>,
     ) -> Self {
         Self {
@@ -41,6 +41,9 @@ impl Class {
 
 #[crate::rust_value_any]
 impl RustValue for Class {
+    fn dyn_clone(&self) -> Box<dyn RustValue> {
+        Box::new(self.clone())
+    }
     fn get_attr(&self, name: &str) -> Option<Value> {
         // Allow access to static methods
         self.find_static_method(name).map(|method| {
@@ -94,6 +97,9 @@ pub struct BoundMethod {
 
 #[crate::rust_value_any]
 impl RustValue for BoundMethod {
+    fn dyn_clone(&self) -> Box<dyn RustValue> {
+        Box::new(self.clone())
+    }
     fn call(&self, mut args: Args) -> Result<Value> {
         use super::evaluator::{ControlFlow, ErrorKind, Evaluator};
         use anyhow::anyhow;
@@ -154,7 +160,7 @@ impl RustValue for BoundMethod {
 }
 
 /// A static method bound to a class
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct StaticMethod {
     pub class_name: String,
     pub method: ClassMethod,
@@ -162,6 +168,9 @@ pub struct StaticMethod {
 
 #[crate::rust_value_any]
 impl RustValue for StaticMethod {
+    fn dyn_clone(&self) -> Box<dyn RustValue> {
+        Box::new(self.clone())
+    }
     fn call(&self, _args: Args) -> Result<Value> {
         // This will need to be implemented by the evaluator
         // as it needs to execute the method body

@@ -1,16 +1,17 @@
 use crate::core::{Args, RustValue, Value};
 use crate::eval::{ControlFlow, ErrorKind, EvalResult, Evaluator};
 
-use crate::core::RustValueRef;
-
 #[derive(Debug, Clone)]
 pub struct EvalCall {
-    pub func_expr: RustValueRef,
-    pub args: Vec<RustValueRef>,
+    pub func_expr: Value,
+    pub args: Vec<Value>,
 }
 
 #[crate::rust_value_any]
 impl RustValue for EvalCall {
+    fn dyn_clone(&self) -> Box<dyn RustValue> {
+        Box::new(self.clone())
+    }
     fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
         // Get the function value
         let func_result = self.func_expr.eval(evaluator)?;

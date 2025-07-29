@@ -8,6 +8,9 @@ pub struct EvalFunction {
 
 #[crate::rust_value_any]
 impl RustValue for EvalFunction {
+    fn dyn_clone(&self) -> Box<dyn RustValue> {
+        Box::new(self.clone())
+    }
     fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
         use crate::eval::{Params, RustLeafFunction};
 
@@ -40,7 +43,7 @@ impl RustValue for EvalFunction {
             }
             "body" => {
                 // Return the actual body Eval object
-                Some(Value::RustValue(self.data.body.clone()))
+                Some(self.data.body.clone())
             }
             _ => None,
         }

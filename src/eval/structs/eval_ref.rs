@@ -1,11 +1,11 @@
 /// Data structures for evaluation AST nodes
-use crate::core::{ImportItems, ParameterKind, RustValueRef, Value};
+use crate::core::{ImportItems, ParameterKind, Value};
 
 #[derive(Debug, Clone)]
 pub struct ClassMethod {
     pub name: String,
     pub params: Vec<String>,
-    pub body: RustValueRef,
+    pub body: Value,
     pub is_static: bool,
 }
 
@@ -13,7 +13,7 @@ pub struct ClassMethod {
 pub struct ClassDeclData {
     pub name: String,
     pub field_names: Vec<String>,
-    pub field_defaults: Vec<Option<RustValueRef>>,
+    pub field_defaults: Vec<Option<Value>>,
     pub methods: Vec<ClassMethod>,
 }
 
@@ -25,34 +25,34 @@ pub struct ImportData {
 
 #[derive(Debug, Clone)]
 pub struct MatchData {
-    pub expr: RustValueRef,
+    pub expr: Value,
     pub cases: Vec<EvalMatchCase>,
 }
 
 #[derive(Debug, Clone)]
 pub struct MacroData {
-    pub macro_fn: RustValueRef,  // The macro function to call
-    pub target: RustValueRef,    // The Eval node to transform
-    pub args: Vec<RustValueRef>, // Macro arguments
+    pub macro_fn: Value,  // The macro function to call
+    pub target: Value,    // The Eval node to transform
+    pub args: Vec<Value>, // Macro arguments
 }
 
 #[derive(Debug, Clone)]
 pub struct FunctionData {
     pub name: String,
     pub params: Vec<(String, Option<Value>, ParameterKind)>,
-    pub body: RustValueRef,
+    pub body: Value,
 }
 
 #[derive(Debug, Clone)]
 pub struct LambdaData {
     pub params: Vec<String>,
-    pub body: RustValueRef,
+    pub body: Value,
 }
 
 #[derive(Debug, Clone)]
 pub struct WithData {
-    pub resources: Vec<(String, RustValueRef)>,
-    pub body: RustValueRef,
+    pub resources: Vec<(String, Value)>,
+    pub body: Value,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -72,8 +72,8 @@ pub struct EvalDictPattern {
 #[derive(Debug, Clone)]
 pub struct EvalMatchCase {
     pub pattern: EvalMatchPattern,
-    pub guard: Option<RustValueRef>,
-    pub body: RustValueRef,
+    pub guard: Option<Value>,
+    pub body: Value,
 }
 
 #[derive(Debug, Clone, PartialEq)]

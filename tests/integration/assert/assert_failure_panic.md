@@ -64,26 +64,36 @@ Ok(
 # Eval
 ```rust
 Ok(
-    EvalProgram {
-        statements: [
-            EvalCall {
-                func_expr: EvalVariable {
-                    name: "assert",
-                },
-                args: [
-                    EvalLiteral {
-                        value: Bool(
-                            false,
+    RustValue(
+        EvalProgram {
+            statements: [
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
                         ),
+                        args: [
+                            RustValue(
+                                EvalLiteral {
+                                    value: Bool(
+                                        false,
+                                    ),
+                                },
+                            ),
+                            RustValue(
+                                EvalLiteral {
+                                    value: String(
+                                        "This should fail",
+                                    ),
+                                },
+                            ),
+                        ],
                     },
-                    EvalLiteral {
-                        value: String(
-                            "This should fail",
-                        ),
-                    },
-                ],
-            },
-        ],
-    },
+                ),
+            ],
+        },
+    ),
 )
 ```

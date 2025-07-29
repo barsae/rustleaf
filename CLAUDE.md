@@ -10,7 +10,7 @@ Try your hardest to complete the work you are assigned.
 
 The specifications live at `./specs/*.md`. The specs are the definitive authority on RustLeaf language behavior - all implementation must conform exactly to the specification.
 
-RULE **CRITICAL**: Using `Any` for downcasting is forbidden in the core language implementation. 
+RULE **CRITICAL**: Using `Any` for downcasting is forbidden in the core language implementation.
 
 **EXCEPTION**: `Any` is allowed and encouraged for user-defined types that implement `RustValue`. This is the standard Rust pattern for recovering concrete types from trait objects at library boundaries.
 
@@ -56,3 +56,4 @@ Running `just test` will automatically:
 ### Test Discovery
 
 The `#[rustleaf_tests]` macro automatically discovers `.md` files and generates individual test functions. Add new test directories to `tests/integration/mod.rs`.
+

@@ -99,7 +99,7 @@ impl Evaluator {
         self.globals.define(name, rust_fn);
     }
 
-    pub fn eval(&mut self, eval: &RustValueRef) -> EvalResult {
+    pub fn eval(&mut self, eval: &Value) -> EvalResult {
         match eval.eval(self) {
             Ok(result) => result,
             Err(e) => Err(ControlFlow::Error(ErrorKind::SystemError(e))),
@@ -135,7 +135,7 @@ impl Evaluator {
     pub fn handle_class_constructor(
         &mut self,
         class: &crate::eval::Class,
-        args: &[RustValueRef],
+        args: &[Value],
     ) -> EvalResult {
         use std::collections::HashMap;
 

@@ -125,77 +125,111 @@ Ok(
 # Eval
 ```rust
 Ok(
-    EvalProgram {
-        statements: [
-            EvalDeclare {
-                name: "x",
-                init_expr: Some(
-                    EvalLiteral {
-                        value: Int(
-                            5,
+    RustValue(
+        EvalProgram {
+            statements: [
+                RustValue(
+                    EvalDeclare {
+                        name: "x",
+                        init_expr: Some(
+                            RustValue(
+                                EvalLiteral {
+                                    value: Int(
+                                        5,
+                                    ),
+                                },
+                            ),
                         ),
                     },
                 ),
-            },
-            EvalCall {
-                func_expr: EvalVariable {
-                    name: "assert",
-                },
-                args: [
+                RustValue(
                     EvalCall {
-                        func_expr: EvalGetAttr {
-                            obj_expr: EvalIf {
-                                condition: EvalCall {
-                                    func_expr: EvalGetAttr {
-                                        obj_expr: EvalVariable {
-                                            name: "x",
-                                        },
-                                        attr_name: "op_gt",
-                                    },
-                                    args: [
-                                        EvalLiteral {
-                                            value: Int(
-                                                0,
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalIf {
+                                                    condition: RustValue(
+                                                        EvalCall {
+                                                            func_expr: RustValue(
+                                                                EvalGetAttr {
+                                                                    obj_expr: RustValue(
+                                                                        EvalVariable {
+                                                                            name: "x",
+                                                                        },
+                                                                    ),
+                                                                    attr_name: "op_gt",
+                                                                },
+                                                            ),
+                                                            args: [
+                                                                RustValue(
+                                                                    EvalLiteral {
+                                                                        value: Int(
+                                                                            0,
+                                                                        ),
+                                                                    },
+                                                                ),
+                                                            ],
+                                                        },
+                                                    ),
+                                                    then_expr: RustValue(
+                                                        EvalBlock {
+                                                            statements: [],
+                                                            final_expr: Some(
+                                                                RustValue(
+                                                                    EvalLiteral {
+                                                                        value: String(
+                                                                            "positive",
+                                                                        ),
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                    else_expr: Some(
+                                                        RustValue(
+                                                            EvalBlock {
+                                                                statements: [],
+                                                                final_expr: Some(
+                                                                    RustValue(
+                                                                        EvalLiteral {
+                                                                            value: String(
+                                                                                "zero or negative",
+                                                                            ),
+                                                                        },
+                                                                    ),
+                                                                ),
+                                                            },
+                                                        ),
+                                                    ),
+                                                },
                                             ),
-                                        },
-                                    ],
-                                },
-                                then_expr: EvalBlock {
-                                    statements: [],
-                                    final_expr: Some(
-                                        EvalLiteral {
-                                            value: String(
-                                                "positive",
-                                            ),
+                                            attr_name: "op_eq",
                                         },
                                     ),
-                                },
-                                else_expr: Some(
-                                    EvalBlock {
-                                        statements: [],
-                                        final_expr: Some(
+                                    args: [
+                                        RustValue(
                                             EvalLiteral {
                                                 value: String(
-                                                    "zero or negative",
+                                                    "positive",
                                                 ),
                                             },
                                         ),
-                                    },
-                                ),
-                            },
-                            attr_name: "op_eq",
-                        },
-                        args: [
-                            EvalLiteral {
-                                value: String(
-                                    "positive",
-                                ),
-                            },
+                                    ],
+                                },
+                            ),
                         ],
                     },
-                ],
-            },
-        ],
-    },
+                ),
+            ],
+        },
+    ),
 )
 ```

@@ -8,12 +8,12 @@ use super::{ControlFlow, ErrorKind, Evaluator};
 #[derive(Debug, Clone)]
 pub struct RustLeafFunction {
     params: Params,
-    body: RustValueRef,
+    body: Value,
     closure_env: ScopeRef,
 }
 
 impl RustLeafFunction {
-    pub fn new(params: Params, body: RustValueRef, closure_env: ScopeRef) -> Self {
+    pub fn new(params: Params, body: Value, closure_env: ScopeRef) -> Self {
         Self {
             params,
             body,
@@ -28,6 +28,9 @@ impl RustLeafFunction {
 
 #[crate::rust_value_any]
 impl RustValue for RustLeafFunction {
+    fn dyn_clone(&self) -> Box<dyn RustValue> {
+        Box::new(self.clone())
+    }
     fn call(&self, mut args: Args) -> anyhow::Result<Value> {
         // Analyze parameter structure
         let regular_params: Vec<_> = self

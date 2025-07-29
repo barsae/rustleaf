@@ -173,105 +173,147 @@ Ok(
 # Eval
 ```rust
 Ok(
-    EvalProgram {
-        statements: [
-            EvalDeclare {
-                name: "user",
-                init_expr: Some(
-                    EvalDict {
-                        pairs: [
-                            (
-                                EvalLiteral {
-                                    value: String(
-                                        "name",
-                                    ),
-                                },
-                                EvalLiteral {
-                                    value: String(
-                                        "Alice",
-                                    ),
+    RustValue(
+        EvalProgram {
+            statements: [
+                RustValue(
+                    EvalDeclare {
+                        name: "user",
+                        init_expr: Some(
+                            RustValue(
+                                EvalDict {
+                                    pairs: [
+                                        (
+                                            RustValue(
+                                                EvalLiteral {
+                                                    value: String(
+                                                        "name",
+                                                    ),
+                                                },
+                                            ),
+                                            RustValue(
+                                                EvalLiteral {
+                                                    value: String(
+                                                        "Alice",
+                                                    ),
+                                                },
+                                            ),
+                                        ),
+                                        (
+                                            RustValue(
+                                                EvalLiteral {
+                                                    value: String(
+                                                        "age",
+                                                    ),
+                                                },
+                                            ),
+                                            RustValue(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        30,
+                                                    ),
+                                                },
+                                            ),
+                                        ),
+                                    ],
                                 },
                             ),
-                            (
-                                EvalLiteral {
-                                    value: String(
-                                        "age",
+                        ),
+                    },
+                ),
+                RustValue(
+                    EvalDeclarePattern {
+                        pattern: Dict(
+                            [
+                                EvalDictPattern {
+                                    key: "name",
+                                    alias: None,
+                                },
+                                EvalDictPattern {
+                                    key: "age",
+                                    alias: Some(
+                                        "user_age",
                                     ),
                                 },
-                                EvalLiteral {
-                                    value: Int(
-                                        30,
+                            ],
+                        ),
+                        init_expr: RustValue(
+                            EvalVariable {
+                                name: "user",
+                            },
+                        ),
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalVariable {
+                                                    name: "name",
+                                                },
+                                            ),
+                                            attr_name: "op_eq",
+                                        },
                                     ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: String(
+                                                    "Alice",
+                                                ),
+                                            },
+                                        ),
+                                    ],
                                 },
                             ),
                         ],
                     },
                 ),
-            },
-            EvalDeclarePattern {
-                pattern: Dict(
-                    [
-                        EvalDictPattern {
-                            key: "name",
-                            alias: None,
-                        },
-                        EvalDictPattern {
-                            key: "age",
-                            alias: Some(
-                                "user_age",
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalVariable {
+                                                    name: "user_age",
+                                                },
+                                            ),
+                                            attr_name: "op_eq",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Int(
+                                                    30,
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
                             ),
-                        },
-                    ],
+                        ],
+                    },
                 ),
-                init_expr: EvalVariable {
-                    name: "user",
-                },
-            },
-            EvalCall {
-                func_expr: EvalVariable {
-                    name: "assert",
-                },
-                args: [
-                    EvalCall {
-                        func_expr: EvalGetAttr {
-                            obj_expr: EvalVariable {
-                                name: "name",
-                            },
-                            attr_name: "op_eq",
-                        },
-                        args: [
-                            EvalLiteral {
-                                value: String(
-                                    "Alice",
-                                ),
-                            },
-                        ],
-                    },
-                ],
-            },
-            EvalCall {
-                func_expr: EvalVariable {
-                    name: "assert",
-                },
-                args: [
-                    EvalCall {
-                        func_expr: EvalGetAttr {
-                            obj_expr: EvalVariable {
-                                name: "user_age",
-                            },
-                            attr_name: "op_eq",
-                        },
-                        args: [
-                            EvalLiteral {
-                                value: Int(
-                                    30,
-                                ),
-                            },
-                        ],
-                    },
-                ],
-            },
-        ],
-    },
+            ],
+        },
+    ),
 )
 ```

@@ -416,291 +416,435 @@ Ok(
 # Eval
 ```rust
 Ok(
-    EvalProgram {
-        statements: [
-            EvalCall {
-                func_expr: EvalVariable {
-                    name: "assert",
-                },
-                args: [
+    RustValue(
+        EvalProgram {
+            statements: [
+                RustValue(
                     EvalCall {
-                        func_expr: EvalGetAttr {
-                            obj_expr: EvalLiteral {
-                                value: String(
-                                    "hello world",
-                                ),
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
                             },
-                            attr_name: "op_contains",
-                        },
+                        ),
                         args: [
-                            EvalLiteral {
-                                value: String(
-                                    "hello",
-                                ),
-                            },
-                        ],
-                    },
-                ],
-            },
-            EvalCall {
-                func_expr: EvalVariable {
-                    name: "assert",
-                },
-                args: [
-                    EvalLogicalNot {
-                        expr: EvalCall {
-                            func_expr: EvalGetAttr {
-                                obj_expr: EvalLiteral {
-                                    value: String(
-                                        "hello world",
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalLiteral {
+                                                    value: String(
+                                                        "hello world",
+                                                    ),
+                                                },
+                                            ),
+                                            attr_name: "op_contains",
+                                        },
                                     ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: String(
+                                                    "hello",
+                                                ),
+                                            },
+                                        ),
+                                    ],
                                 },
-                                attr_name: "op_contains",
-                            },
-                            args: [
-                                EvalLiteral {
-                                    value: String(
-                                        "xyz",
-                                    ),
-                                },
-                            ],
-                        },
-                    },
-                ],
-            },
-            EvalDeclare {
-                name: "my_list",
-                init_expr: Some(
-                    EvalList {
-                        elements: [
-                            EvalLiteral {
-                                value: Int(
-                                    1,
-                                ),
-                            },
-                            EvalLiteral {
-                                value: Int(
-                                    2,
-                                ),
-                            },
-                            EvalLiteral {
-                                value: Int(
-                                    3,
-                                ),
-                            },
-                            EvalLiteral {
-                                value: String(
-                                    "hello",
-                                ),
-                            },
+                            ),
                         ],
                     },
                 ),
-            },
-            EvalCall {
-                func_expr: EvalVariable {
-                    name: "assert",
-                },
-                args: [
+                RustValue(
                     EvalCall {
-                        func_expr: EvalGetAttr {
-                            obj_expr: EvalVariable {
-                                name: "my_list",
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
                             },
-                            attr_name: "op_contains",
-                        },
+                        ),
                         args: [
-                            EvalLiteral {
-                                value: Int(
-                                    2,
-                                ),
-                            },
-                        ],
-                    },
-                ],
-            },
-            EvalCall {
-                func_expr: EvalVariable {
-                    name: "assert",
-                },
-                args: [
-                    EvalCall {
-                        func_expr: EvalGetAttr {
-                            obj_expr: EvalVariable {
-                                name: "my_list",
-                            },
-                            attr_name: "op_contains",
-                        },
-                        args: [
-                            EvalLiteral {
-                                value: String(
-                                    "hello",
-                                ),
-                            },
-                        ],
-                    },
-                ],
-            },
-            EvalCall {
-                func_expr: EvalVariable {
-                    name: "assert",
-                },
-                args: [
-                    EvalLogicalNot {
-                        expr: EvalCall {
-                            func_expr: EvalGetAttr {
-                                obj_expr: EvalVariable {
-                                    name: "my_list",
-                                },
-                                attr_name: "op_contains",
-                            },
-                            args: [
-                                EvalLiteral {
-                                    value: Int(
-                                        99,
-                                    ),
-                                },
-                            ],
-                        },
-                    },
-                ],
-            },
-            EvalDeclare {
-                name: "my_dict",
-                init_expr: Some(
-                    EvalDict {
-                        pairs: [
-                            (
-                                EvalLiteral {
-                                    value: String(
-                                        "a",
-                                    ),
-                                },
-                                EvalLiteral {
-                                    value: Int(
-                                        1,
-                                    ),
-                                },
-                            ),
-                            (
-                                EvalLiteral {
-                                    value: String(
-                                        "b",
-                                    ),
-                                },
-                                EvalLiteral {
-                                    value: Int(
-                                        2,
-                                    ),
-                                },
-                            ),
-                            (
-                                EvalLiteral {
-                                    value: Int(
-                                        3,
-                                    ),
-                                },
-                                EvalLiteral {
-                                    value: String(
-                                        "three",
+                            RustValue(
+                                EvalLogicalNot {
+                                    expr: RustValue(
+                                        EvalCall {
+                                            func_expr: RustValue(
+                                                EvalGetAttr {
+                                                    obj_expr: RustValue(
+                                                        EvalLiteral {
+                                                            value: String(
+                                                                "hello world",
+                                                            ),
+                                                        },
+                                                    ),
+                                                    attr_name: "op_contains",
+                                                },
+                                            ),
+                                            args: [
+                                                RustValue(
+                                                    EvalLiteral {
+                                                        value: String(
+                                                            "xyz",
+                                                        ),
+                                                    },
+                                                ),
+                                            ],
+                                        },
                                     ),
                                 },
                             ),
                         ],
                     },
                 ),
-            },
-            EvalCall {
-                func_expr: EvalVariable {
-                    name: "assert",
-                },
-                args: [
-                    EvalCall {
-                        func_expr: EvalGetAttr {
-                            obj_expr: EvalVariable {
-                                name: "my_dict",
-                            },
-                            attr_name: "op_contains",
-                        },
-                        args: [
-                            EvalLiteral {
-                                value: String(
-                                    "a",
-                                ),
-                            },
-                        ],
-                    },
-                ],
-            },
-            EvalCall {
-                func_expr: EvalVariable {
-                    name: "assert",
-                },
-                args: [
-                    EvalCall {
-                        func_expr: EvalGetAttr {
-                            obj_expr: EvalVariable {
-                                name: "my_dict",
-                            },
-                            attr_name: "op_contains",
-                        },
-                        args: [
-                            EvalLiteral {
-                                value: String(
-                                    "b",
-                                ),
-                            },
-                        ],
-                    },
-                ],
-            },
-            EvalCall {
-                func_expr: EvalVariable {
-                    name: "assert",
-                },
-                args: [
-                    EvalCall {
-                        func_expr: EvalGetAttr {
-                            obj_expr: EvalVariable {
-                                name: "my_dict",
-                            },
-                            attr_name: "op_contains",
-                        },
-                        args: [
-                            EvalLiteral {
-                                value: Int(
-                                    3,
-                                ),
-                            },
-                        ],
-                    },
-                ],
-            },
-            EvalCall {
-                func_expr: EvalVariable {
-                    name: "assert",
-                },
-                args: [
-                    EvalLogicalNot {
-                        expr: EvalCall {
-                            func_expr: EvalGetAttr {
-                                obj_expr: EvalVariable {
-                                    name: "my_dict",
+                RustValue(
+                    EvalDeclare {
+                        name: "my_list",
+                        init_expr: Some(
+                            RustValue(
+                                EvalList {
+                                    elements: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Int(
+                                                    1,
+                                                ),
+                                            },
+                                        ),
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Int(
+                                                    2,
+                                                ),
+                                            },
+                                        ),
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Int(
+                                                    3,
+                                                ),
+                                            },
+                                        ),
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: String(
+                                                    "hello",
+                                                ),
+                                            },
+                                        ),
+                                    ],
                                 },
-                                attr_name: "op_contains",
+                            ),
+                        ),
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
                             },
-                            args: [
-                                EvalLiteral {
-                                    value: String(
-                                        "z",
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalVariable {
+                                                    name: "my_list",
+                                                },
+                                            ),
+                                            attr_name: "op_contains",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Int(
+                                                    2,
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ],
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalVariable {
+                                                    name: "my_list",
+                                                },
+                                            ),
+                                            attr_name: "op_contains",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: String(
+                                                    "hello",
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ],
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalLogicalNot {
+                                    expr: RustValue(
+                                        EvalCall {
+                                            func_expr: RustValue(
+                                                EvalGetAttr {
+                                                    obj_expr: RustValue(
+                                                        EvalVariable {
+                                                            name: "my_list",
+                                                        },
+                                                    ),
+                                                    attr_name: "op_contains",
+                                                },
+                                            ),
+                                            args: [
+                                                RustValue(
+                                                    EvalLiteral {
+                                                        value: Int(
+                                                            99,
+                                                        ),
+                                                    },
+                                                ),
+                                            ],
+                                        },
                                     ),
                                 },
-                            ],
-                        },
+                            ),
+                        ],
                     },
-                ],
-            },
-        ],
-    },
+                ),
+                RustValue(
+                    EvalDeclare {
+                        name: "my_dict",
+                        init_expr: Some(
+                            RustValue(
+                                EvalDict {
+                                    pairs: [
+                                        (
+                                            RustValue(
+                                                EvalLiteral {
+                                                    value: String(
+                                                        "a",
+                                                    ),
+                                                },
+                                            ),
+                                            RustValue(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        1,
+                                                    ),
+                                                },
+                                            ),
+                                        ),
+                                        (
+                                            RustValue(
+                                                EvalLiteral {
+                                                    value: String(
+                                                        "b",
+                                                    ),
+                                                },
+                                            ),
+                                            RustValue(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        2,
+                                                    ),
+                                                },
+                                            ),
+                                        ),
+                                        (
+                                            RustValue(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        3,
+                                                    ),
+                                                },
+                                            ),
+                                            RustValue(
+                                                EvalLiteral {
+                                                    value: String(
+                                                        "three",
+                                                    ),
+                                                },
+                                            ),
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ),
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalVariable {
+                                                    name: "my_dict",
+                                                },
+                                            ),
+                                            attr_name: "op_contains",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: String(
+                                                    "a",
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ],
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalVariable {
+                                                    name: "my_dict",
+                                                },
+                                            ),
+                                            attr_name: "op_contains",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: String(
+                                                    "b",
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ],
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalVariable {
+                                                    name: "my_dict",
+                                                },
+                                            ),
+                                            attr_name: "op_contains",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Int(
+                                                    3,
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ],
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalLogicalNot {
+                                    expr: RustValue(
+                                        EvalCall {
+                                            func_expr: RustValue(
+                                                EvalGetAttr {
+                                                    obj_expr: RustValue(
+                                                        EvalVariable {
+                                                            name: "my_dict",
+                                                        },
+                                                    ),
+                                                    attr_name: "op_contains",
+                                                },
+                                            ),
+                                            args: [
+                                                RustValue(
+                                                    EvalLiteral {
+                                                        value: String(
+                                                            "z",
+                                                        ),
+                                                    },
+                                                ),
+                                            ],
+                                        },
+                                    ),
+                                },
+                            ),
+                        ],
+                    },
+                ),
+            ],
+        },
+    ),
 )
 ```

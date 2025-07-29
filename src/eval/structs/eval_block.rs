@@ -1,16 +1,17 @@
 use crate::core::{RustValue, Value};
 use crate::eval::{EvalResult, Evaluator};
 
-use crate::core::RustValueRef;
-
 #[derive(Debug, Clone)]
 pub struct EvalBlock {
-    pub statements: Vec<RustValueRef>,
-    pub final_expr: Option<RustValueRef>,
+    pub statements: Vec<Value>,
+    pub final_expr: Option<Value>,
 }
 
 #[crate::rust_value_any]
 impl RustValue for EvalBlock {
+    fn dyn_clone(&self) -> Box<dyn RustValue> {
+        Box::new(self.clone())
+    }
     fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
         let block_scope = evaluator.current_env.child();
         let previous_env = std::mem::replace(&mut evaluator.current_env, block_scope);

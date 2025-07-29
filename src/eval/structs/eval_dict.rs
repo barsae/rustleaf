@@ -2,15 +2,16 @@ use crate::core::{RustValue, Value};
 use crate::eval::{ControlFlow, ErrorKind, EvalResult, Evaluator};
 use anyhow::anyhow;
 
-use crate::core::RustValueRef;
-
 #[derive(Debug, Clone)]
 pub struct EvalDict {
-    pub pairs: Vec<(RustValueRef, RustValueRef)>,
+    pub pairs: Vec<(Value, Value)>,
 }
 
 #[crate::rust_value_any]
 impl RustValue for EvalDict {
+    fn dyn_clone(&self) -> Box<dyn RustValue> {
+        Box::new(self.clone())
+    }
     fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
         let mut dict_map = indexmap::IndexMap::new();
         for (key_expr, value_expr) in &self.pairs {

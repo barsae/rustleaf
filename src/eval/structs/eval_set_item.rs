@@ -2,17 +2,18 @@ use crate::core::{Args, RustValue, Value};
 use crate::eval::{ControlFlow, ErrorKind, EvalResult, Evaluator};
 use anyhow::anyhow;
 
-use crate::core::RustValueRef;
-
 #[derive(Debug, Clone)]
 pub struct EvalSetItem {
-    pub obj_expr: RustValueRef,
-    pub index_expr: RustValueRef,
-    pub value_expr: RustValueRef,
+    pub obj_expr: Value,
+    pub index_expr: Value,
+    pub value_expr: Value,
 }
 
 #[crate::rust_value_any]
 impl RustValue for EvalSetItem {
+    fn dyn_clone(&self) -> Box<dyn RustValue> {
+        Box::new(self.clone())
+    }
     fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
         let obj_value = match self.obj_expr.eval(evaluator)? {
             Ok(val) => val,
