@@ -280,66 +280,175 @@ fn generate_rustleaf_wrapper_method(method: &ImplItemFn) -> proc_macro2::TokenSt
     let wrapper_name = quote::format_ident!("rustleaf_{}", method_name);
     let method_name_str = method_name.to_string();
 
-    // Analyze the method signature
-    let has_self_mut =
-        method.sig.inputs.iter().any(
-            |arg| matches!(arg, syn::FnArg::Receiver(receiver) if receiver.mutability.is_some()),
-        );
+    // Analyze parameters (skip self)
+    let mut parameters = Vec::new();
+    let mut has_self_mut = false;
 
-    let param_count = method.sig.inputs.len();
-
-    if param_count == 1 {
-        // No-argument method (just &self or &mut self)
-        if has_self_mut {
-            quote! {
-                pub fn #wrapper_name(self_value: &rustleaf::core::Value, args: rustleaf::core::Args) -> anyhow::Result<rustleaf::core::Value> {
-                    self_value.with_rust_value_no_args::<Self, _, _>(
-                        #method_name_str,
-                        stringify!(Self),
-                        args,
-                        |wrapper| {
-                            wrapper.borrow_mut().#method_name();
-                            Ok(())
-                        },
-                    )
-                }
+    for input in &method.sig.inputs {
+        match input {
+            syn::FnArg::Receiver(receiver) => {
+                has_self_mut = receiver.mutability.is_some();
             }
-        } else {
-            quote! {
-                pub fn #wrapper_name(self_value: &rustleaf::core::Value, args: rustleaf::core::Args) -> anyhow::Result<rustleaf::core::Value> {
-                    self_value.with_rust_value_no_args::<Self, _, _>(
-                        #method_name_str,
-                        stringify!(Self),
-                        args,
-                        |wrapper| Ok(wrapper.borrow().#method_name()),
-                    )
+            syn::FnArg::Typed(typed) => {
+                if let syn::Pat::Ident(ident) = &*typed.pat {
+                    parameters.push(ParameterInfo {
+                        name: ident.ident.clone(),
+                        type_: &typed.ty,
+                    });
                 }
             }
         }
-    } else if param_count == 2 {
-        // Single-argument method - assume same type for now
+    }
+
+    // Generate wrapper based on parameters
+    if parameters.is_empty() {
+        generate_no_args_wrapper(&wrapper_name, method_name, &method_name_str, has_self_mut)
+    } else {
+        generate_args_wrapper(
+            &wrapper_name,
+            method_name,
+            &method_name_str,
+            &parameters,
+            has_self_mut,
+        )
+    }
+}
+
+struct ParameterInfo<'a> {
+    name: syn::Ident,
+    type_: &'a syn::Type,
+}
+
+fn generate_no_args_wrapper(
+    wrapper_name: &syn::Ident,
+    method_name: &syn::Ident,
+    method_name_str: &str,
+    has_self_mut: bool,
+) -> proc_macro2::TokenStream {
+    if has_self_mut {
         quote! {
             pub fn #wrapper_name(self_value: &rustleaf::core::Value, args: rustleaf::core::Args) -> anyhow::Result<rustleaf::core::Value> {
-                self_value.with_rust_value_same_type::<Self, _, _>(
+                self_value.with_rust_value_no_args::<Self, _, _>(
                     #method_name_str,
                     stringify!(Self),
-                    "other",
                     args,
-                    |wrapper, other_wrapper| {
-                        Ok(wrapper.borrow().#method_name(&*other_wrapper.borrow()))
+                    |wrapper| {
+                        wrapper.borrow_mut().#method_name();
+                        Ok(())
                     },
                 )
             }
         }
     } else {
-        // More complex methods - generate basic stub for now
         quote! {
             pub fn #wrapper_name(self_value: &rustleaf::core::Value, args: rustleaf::core::Args) -> anyhow::Result<rustleaf::core::Value> {
-                // TODO: Complex method wrapper generation not yet implemented
-                Err(anyhow::anyhow!("Method {} not yet supported", #method_name_str))
+                self_value.with_rust_value_no_args::<Self, _, _>(
+                    #method_name_str,
+                    stringify!(Self),
+                    args,
+                    |wrapper| Ok(wrapper.borrow().#method_name()),
+                )
             }
         }
     }
+}
+
+fn generate_args_wrapper(
+    wrapper_name: &syn::Ident,
+    method_name: &syn::Ident,
+    method_name_str: &str,
+    parameters: &[ParameterInfo],
+    _has_self_mut: bool,
+) -> proc_macro2::TokenStream {
+    // Generate argument extraction code
+    let mut arg_extractions = Vec::new();
+    let mut arg_names = Vec::new();
+
+    for (i, param) in parameters.iter().enumerate() {
+        let param_name = &param.name;
+        let param_name_str = param_name.to_string();
+        let temp_var = quote::format_ident!("arg_{}", i);
+
+        // For now, we'll handle common types. This can be extended.
+        let extraction = if is_same_type_as_self(param.type_) {
+            quote! {
+                let #temp_var = args.expect(#param_name_str)?;
+                let #param_name = #temp_var.expect_rust_value::<Self>(#method_name_str, stringify!(Self))?;
+            }
+        } else if is_f64_type(param.type_) {
+            quote! {
+                let #temp_var = args.expect(#param_name_str)?;
+                let #param_name = #temp_var.expect_f64(#method_name_str, #param_name_str)?;
+            }
+        } else if is_i64_type(param.type_) {
+            quote! {
+                let #temp_var = args.expect(#param_name_str)?;
+                let #param_name = #temp_var.expect_i64(#method_name_str, #param_name_str)?;
+            }
+        } else {
+            // Generic fallback - try to extract as the same type
+            quote! {
+                let #temp_var = args.expect(#param_name_str)?;
+                let #param_name = #temp_var.expect_rust_value::<Self>(#method_name_str, stringify!(Self))?;
+            }
+        };
+
+        arg_extractions.push(extraction);
+        arg_names.push(param_name);
+    }
+
+    // Generate method call arguments
+    let method_args = if parameters.len() == 1 && is_same_type_as_self(parameters[0].type_) {
+        let param_name = &parameters[0].name;
+        quote! { &*#param_name.borrow() }
+    } else {
+        quote! { #(#arg_names),* }
+    };
+
+    quote! {
+        pub fn #wrapper_name(self_value: &rustleaf::core::Value, mut args: rustleaf::core::Args) -> anyhow::Result<rustleaf::core::Value> {
+            args.set_function_name(#method_name_str);
+
+            #(#arg_extractions)*
+
+            args.complete()?;
+
+            let wrapper = self_value.expect_rust_value::<Self>(#method_name_str, stringify!(Self))?;
+            let result = wrapper.borrow().#method_name(#method_args);
+            Ok(result.into())
+        }
+    }
+}
+
+fn is_same_type_as_self(ty: &syn::Type) -> bool {
+    // This is a simplified check - in a real implementation you'd want more sophisticated type analysis
+    if let syn::Type::Reference(type_ref) = ty {
+        if let syn::Type::Path(type_path) = &*type_ref.elem {
+            if let Some(segment) = type_path.path.segments.last() {
+                // For Vector2, we expect &Vector2 parameters to be same-type
+                return segment.ident.to_string().contains("Vector2");
+            }
+        }
+    }
+    false
+}
+
+fn is_f64_type(ty: &syn::Type) -> bool {
+    if let syn::Type::Path(type_path) = ty {
+        if let Some(segment) = type_path.path.segments.last() {
+            return segment.ident == "f64";
+        }
+    }
+    false
+}
+
+fn is_i64_type(ty: &syn::Type) -> bool {
+    if let syn::Type::Path(type_path) = ty {
+        if let Some(segment) = type_path.path.segments.last() {
+            return segment.ident == "i64";
+        }
+    }
+    false
 }
 
 fn generate_method_wrapper(method: &ImplItemFn, is_mutating: bool) -> proc_macro2::TokenStream {
