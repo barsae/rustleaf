@@ -6,8 +6,8 @@ pub struct EvalFunction {
     pub data: super::eval_ref::FunctionData,
 }
 
+#[crate::rust_value_any]
 impl RustValue for EvalFunction {
-    crate::impl_rust_value_any!(Self);
     fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
         use crate::eval::{Params, RustLeafFunction};
 

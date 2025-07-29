@@ -39,8 +39,8 @@ impl Class {
     }
 }
 
+#[crate::rust_value_any]
 impl RustValue for Class {
-    crate::impl_rust_value_any!(Self);
     fn get_attr(&self, name: &str) -> Option<Value> {
         // Allow access to static methods
         self.find_static_method(name).map(|method| {
@@ -92,8 +92,8 @@ pub struct BoundMethod {
     pub closure_env: ScopeRef, // Environment where the method can execute
 }
 
+#[crate::rust_value_any]
 impl RustValue for BoundMethod {
-    crate::impl_rust_value_any!(Self);
     fn call(&self, mut args: Args) -> Result<Value> {
         use super::evaluator::{ControlFlow, ErrorKind, Evaluator};
         use anyhow::anyhow;
@@ -160,8 +160,8 @@ pub struct StaticMethod {
     pub method: ClassMethod,
 }
 
+#[crate::rust_value_any]
 impl RustValue for StaticMethod {
-    crate::impl_rust_value_any!(Self);
     fn call(&self, _args: Args) -> Result<Value> {
         // This will need to be implemented by the evaluator
         // as it needs to execute the method body

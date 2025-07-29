@@ -8,8 +8,8 @@ pub struct EvalWith {
     pub data: WithData,
 }
 
+#[crate::rust_value_any]
 impl RustValue for EvalWith {
-    crate::impl_rust_value_any!(Self);
     fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
         let mut resources = Vec::new();
 

@@ -9,8 +9,8 @@ pub struct EvalDict {
     pub pairs: Vec<(RustValueRef, RustValueRef)>,
 }
 
+#[crate::rust_value_any]
 impl RustValue for EvalDict {
-    crate::impl_rust_value_any!(Self);
     fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
         let mut dict_map = indexmap::IndexMap::new();
         for (key_expr, value_expr) in &self.pairs {

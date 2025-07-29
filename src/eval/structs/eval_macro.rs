@@ -7,8 +7,8 @@ pub struct EvalMacro {
     pub data: super::eval_ref::MacroData,
 }
 
+#[crate::rust_value_any]
 impl RustValue for EvalMacro {
-    crate::impl_rust_value_any!(Self);
     fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
         // Get the macro function
         let macro_fn_result = self.data.macro_fn.eval(evaluator)?;

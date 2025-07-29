@@ -4,6 +4,9 @@ pub mod eval;
 pub mod lexer;
 pub mod parser;
 
+// Re-export proc macros
+pub use rustleaf_macros::rust_value_any;
+
 use anyhow::Result;
 use std::fs;
 use std::path::Path;

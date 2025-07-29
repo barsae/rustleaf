@@ -7,8 +7,8 @@ pub struct EvalImport {
     pub data: super::eval_ref::ImportData,
 }
 
+#[crate::rust_value_any]
 impl RustValue for EvalImport {
-    crate::impl_rust_value_any!(Self);
     fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
         match evaluator.load_module(&self.data.module) {
             Ok(module_scope) => {

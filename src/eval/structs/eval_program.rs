@@ -8,8 +8,8 @@ pub struct EvalProgram {
     pub statements: Vec<RustValueRef>,
 }
 
+#[crate::rust_value_any]
 impl RustValue for EvalProgram {
-    crate::impl_rust_value_any!(Self);
     fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
         for stmt in &self.statements {
             match stmt.eval(evaluator)? {

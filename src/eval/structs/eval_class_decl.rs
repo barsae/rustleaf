@@ -6,8 +6,8 @@ pub struct EvalClassDecl {
     pub data: super::eval_ref::ClassDeclData,
 }
 
+#[crate::rust_value_any]
 impl RustValue for EvalClassDecl {
-    crate::impl_rust_value_any!(Self);
     fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
         use crate::eval::Class;
 

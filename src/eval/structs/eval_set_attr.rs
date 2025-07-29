@@ -11,8 +11,8 @@ pub struct EvalSetAttr {
     pub value_expr: RustValueRef,
 }
 
+#[crate::rust_value_any]
 impl RustValue for EvalSetAttr {
-    crate::impl_rust_value_any!(Self);
     fn eval(&self, evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
         let obj_value = match self.obj_expr.eval(evaluator)? {
             Ok(val) => val,

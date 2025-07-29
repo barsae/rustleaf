@@ -6,8 +6,8 @@ pub struct EvalLiteral {
     pub value: Value,
 }
 
+#[crate::rust_value_any]
 impl RustValue for EvalLiteral {
-    crate::impl_rust_value_any!(Self);
     fn eval(&self, _evaluator: &mut Evaluator) -> anyhow::Result<EvalResult> {
         Ok(Ok(self.value.clone()))
     }
