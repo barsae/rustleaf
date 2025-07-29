@@ -1,4 +1,4 @@
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 use rustleaf::core::{Args, BoundMethod, RustValue, Value};
 use std::cell::RefCell;
 use std::fmt;
@@ -35,49 +35,35 @@ impl Vector2 {
     }
 
     // RustLeaf wrapper methods - handle Args parsing and Value conversion
-    pub fn rustleaf_magnitude(self_value: &Value, mut args: Args) -> Result<Value> {
-        args.set_function_name("magnitude");
-        args.complete()?;
-
-        let vector_ref = self_value
-            .downcast_rust_value::<Vector2Ref>()
-            .ok_or_else(|| anyhow!("magnitude() called on non-Vector2 value"))?;
-
-        let magnitude = vector_ref.borrow().magnitude();
-        Ok(Value::Float(magnitude))
+    pub fn rustleaf_magnitude(self_value: &Value, args: Args) -> Result<Value> {
+        self_value.with_rust_value_no_args::<Vector2Ref, f64, _>(
+            "magnitude",
+            "Vector2",
+            args,
+            |vector_ref| Ok(vector_ref.borrow().magnitude()),
+        )
     }
 
-    pub fn rustleaf_dot(self_value: &Value, mut args: Args) -> Result<Value> {
-        args.set_function_name("dot");
-        let other_val = args.expect("other")?;
-        args.complete()?;
-
-        let vector_ref = self_value
-            .downcast_rust_value::<Vector2Ref>()
-            .ok_or_else(|| anyhow!("dot() called on non-Vector2 value"))?;
-
-        let result = if let Some(other_ref) = other_val.downcast_rust_value::<Vector2Ref>() {
-            let dot_result = vector_ref.borrow().dot(&*other_ref.borrow());
-            Ok(Value::Float(dot_result))
-        } else {
-            Err(anyhow!(
-                "dot() requires another Vector2, got {:?}",
-                other_val
-            ))
-        };
-        result
+    pub fn rustleaf_dot(self_value: &Value, args: Args) -> Result<Value> {
+        self_value.with_rust_value_same_type::<Vector2Ref, f64, _>(
+            "dot",
+            "Vector2",
+            "other",
+            args,
+            |vector_ref, other_ref| Ok(vector_ref.borrow().dot(&*other_ref.borrow())),
+        )
     }
 
-    pub fn rustleaf_normalize(self_value: &Value, mut args: Args) -> Result<Value> {
-        args.set_function_name("normalize");
-        args.complete()?;
-
-        let vector_ref = self_value
-            .downcast_rust_value::<Vector2Ref>()
-            .ok_or_else(|| anyhow!("normalize() called on non-Vector2 value"))?;
-
-        vector_ref.borrow_mut().normalize();
-        Ok(Value::Unit)
+    pub fn rustleaf_normalize(self_value: &Value, args: Args) -> Result<Value> {
+        self_value.with_rust_value_no_args::<Vector2Ref, (), _>(
+            "normalize",
+            "Vector2",
+            args,
+            |vector_ref| {
+                vector_ref.borrow_mut().normalize();
+                Ok(())
+            },
+        )
     }
 }
 
@@ -148,19 +134,7 @@ impl RustValue for Vector2Ref {
 
 /// Constructor function for Vector2 that can be registered as a builtin
 pub fn vector2_constructor(mut args: Args) -> Result<Value> {
-    args.set_function_name("Vector2");
-    let x_val = args.expect("x")?;
-    let y_val = args.expect("y")?;
-    args.complete()?;
-
-    let x = x_val
-        .as_f64()
-        .ok_or_else(|| anyhow!("Vector2 x coordinate must be a number, got {:?}", x_val))?;
-
-    let y = y_val
-        .as_f64()
-        .ok_or_else(|| anyhow!("Vector2 y coordinate must be a number, got {:?}", y_val))?;
-
+    let (x, y) = args.two_f64("Vector2", "x", "y")?;
     Ok(Value::from_rust(Vector2Ref::new(Vector2::new(x, y))))
 }
 

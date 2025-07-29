@@ -129,6 +129,11 @@ pub trait RustValue: fmt::Debug + 'static {
 
     fn dyn_clone(&self) -> Box<dyn RustValue>;
 
+    /// Get the type name for this RustValue
+    fn type_name(&self) -> Option<&str> {
+        None
+    }
+
     fn get_attr(&self, _name: &str) -> Option<Value> {
         None
     }
@@ -198,6 +203,78 @@ impl Value {
         }
     }
 
+    /// Convert Value to i64 if it's an integer
+    pub fn as_i64(&self) -> Option<i64> {
+        match self {
+            Value::Int(n) => Some(*n),
+            _ => None,
+        }
+    }
+
+    /// Convert Value to bool if it's a boolean
+    pub fn as_bool(&self) -> Option<bool> {
+        match self {
+            Value::Bool(b) => Some(*b),
+            _ => None,
+        }
+    }
+
+    /// Convert Value to String if it's a string
+    pub fn as_string(&self) -> Option<&str> {
+        match self {
+            Value::String(s) => Some(s),
+            _ => None,
+        }
+    }
+
+    /// Extract f64 with error message for method calls
+    pub fn expect_f64(&self, method_name: &str, arg_name: &str) -> Result<f64> {
+        self.as_f64().ok_or_else(|| {
+            anyhow!(
+                "{}(): {} must be a number, got {}",
+                method_name,
+                arg_name,
+                self.type_name()
+            )
+        })
+    }
+
+    /// Extract i64 with error message for method calls  
+    pub fn expect_i64(&self, method_name: &str, arg_name: &str) -> Result<i64> {
+        self.as_i64().ok_or_else(|| {
+            anyhow!(
+                "{}(): {} must be an integer, got {}",
+                method_name,
+                arg_name,
+                self.type_name()
+            )
+        })
+    }
+
+    /// Extract bool with error message for method calls
+    pub fn expect_bool(&self, method_name: &str, arg_name: &str) -> Result<bool> {
+        self.as_bool().ok_or_else(|| {
+            anyhow!(
+                "{}(): {} must be a boolean, got {}",
+                method_name,
+                arg_name,
+                self.type_name()
+            )
+        })
+    }
+
+    /// Extract string with error message for method calls
+    pub fn expect_string(&self, method_name: &str, arg_name: &str) -> Result<&str> {
+        self.as_string().ok_or_else(|| {
+            anyhow!(
+                "{}(): {} must be a string, got {}",
+                method_name,
+                arg_name,
+                self.type_name()
+            )
+        })
+    }
+
     pub fn new_list() -> Self {
         Value::List(ListRef::default())
     }
@@ -244,6 +321,110 @@ impl Value {
             Some(b.as_any().downcast_ref::<T>().unwrap())
         } else {
             None
+        }
+    }
+
+    /// Downcast a RustValue with better error messages for method calls
+    pub fn expect_rust_value<T: RustValue + 'static>(
+        &self,
+        method_name: &str,
+        expected_type: &str,
+    ) -> Result<&T> {
+        self.downcast_rust_value::<T>().ok_or_else(|| {
+            anyhow!(
+                "{}() called on {}, expected {}",
+                method_name,
+                self.type_name(),
+                expected_type
+            )
+        })
+    }
+
+    /// Helper for implementing no-argument RustValue methods
+    pub fn with_rust_value_no_args<T, R, F>(
+        &self,
+        method_name: &str,
+        expected_type: &str,
+        mut args: crate::core::Args,
+        f: F,
+    ) -> Result<Value>
+    where
+        T: RustValue + 'static,
+        R: Into<Value>,
+        F: FnOnce(&T) -> Result<R>,
+    {
+        args.no_args(method_name)?;
+        let rust_val = self.expect_rust_value::<T>(method_name, expected_type)?;
+        let result = f(rust_val)?;
+        Ok(result.into())
+    }
+
+    /// Helper for implementing RustValue methods that take another RustValue of the same type
+    pub fn with_rust_value_same_type<T, R, F>(
+        &self,
+        method_name: &str,
+        expected_type: &str,
+        arg_name: &str,
+        mut args: crate::core::Args,
+        f: F,
+    ) -> Result<Value>
+    where
+        T: RustValue + 'static,
+        R: Into<Value>,
+        F: FnOnce(&T, &T) -> Result<R>,
+    {
+        args.set_function_name(method_name);
+        let arg_value = args.expect(arg_name)?;
+        args.complete()?;
+
+        let rust_val = self.expect_rust_value::<T>(method_name, expected_type)?;
+        let other_rust_val = arg_value.expect_rust_value::<T>(method_name, expected_type)?;
+
+        let result = f(rust_val, other_rust_val)?;
+        Ok(result.into())
+    }
+
+    /// Helper for implementing RustValue methods that take an f64 argument
+    pub fn with_rust_value_f64_arg<T, R, F>(
+        &self,
+        method_name: &str,
+        expected_type: &str,
+        arg_name: &str,
+        mut args: crate::core::Args,
+        f: F,
+    ) -> Result<Value>
+    where
+        T: RustValue + 'static,
+        R: Into<Value>,
+        F: FnOnce(&T, f64) -> Result<R>,
+    {
+        args.set_function_name(method_name);
+        let arg_value = args.expect(arg_name)?;
+        args.complete()?;
+
+        let rust_val = self.expect_rust_value::<T>(method_name, expected_type)?;
+        let f64_arg = arg_value.expect_f64(method_name, arg_name)?;
+
+        let result = f(rust_val, f64_arg)?;
+        Ok(result.into())
+    }
+
+    /// Get the type name for better error messages
+    pub fn type_name(&self) -> &str {
+        match self {
+            Value::Null => "null",
+            Value::Unit => "unit",
+            Value::Bool(_) => "bool",
+            Value::Int(_) => "int",
+            Value::Float(_) => "float",
+            Value::String(_) => "string",
+            Value::List(_) => "list",
+            Value::Dict(_) => "dict",
+            Value::Range(_) => "range",
+            Value::Class(_) => "class",
+            Value::ClassInstance(_) => "class_instance",
+            Value::RustValue(rv) => rv.type_name().unwrap_or("rust_value"),
+            Value::Raised(_) => "raised",
         }
     }
 
@@ -505,5 +686,42 @@ impl Value {
             Value::RustValue(rust_val) => rust_val.eval(evaluator),
             _ => Err(anyhow!("Cannot evaluate this value type: {:?}", self)),
         }
+    }
+}
+
+// Convenient Into<Value> implementations for common types
+impl From<f64> for Value {
+    fn from(f: f64) -> Self {
+        Value::Float(f)
+    }
+}
+
+impl From<i64> for Value {
+    fn from(i: i64) -> Self {
+        Value::Int(i)
+    }
+}
+
+impl From<bool> for Value {
+    fn from(b: bool) -> Self {
+        Value::Bool(b)
+    }
+}
+
+impl From<String> for Value {
+    fn from(s: String) -> Self {
+        Value::String(s)
+    }
+}
+
+impl From<&str> for Value {
+    fn from(s: &str) -> Self {
+        Value::String(s.to_string())
+    }
+}
+
+impl From<()> for Value {
+    fn from(_: ()) -> Self {
+        Value::Unit
     }
 }

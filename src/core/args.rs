@@ -1,7 +1,7 @@
 use anyhow::Result;
 use indexmap::IndexMap;
 
-use super::Value;
+use super::{RustValue, Value};
 
 /// Arguments for function calls with fluent API for easy consumption
 #[derive(Debug, Clone)]
@@ -150,5 +150,78 @@ impl Args {
 impl From<Vec<Value>> for Args {
     fn from(positional: Vec<Value>) -> Self {
         Self::positional(positional)
+    }
+}
+
+/// Helper functions for common Args patterns in RustValue implementations
+impl Args {
+    /// Handle no-argument methods - sets function name and validates no args
+    pub fn no_args(&mut self, function_name: &str) -> Result<()> {
+        self.set_function_name(function_name);
+        self.complete()
+    }
+
+    /// Handle single f64 argument methods
+    pub fn single_f64(&mut self, function_name: &str, arg_name: &str) -> Result<f64> {
+        self.set_function_name(function_name);
+        let value = self.expect(arg_name)?;
+        self.complete()?;
+        value.expect_f64(function_name, arg_name)
+    }
+
+    /// Handle single i64 argument methods
+    pub fn single_i64(&mut self, function_name: &str, arg_name: &str) -> Result<i64> {
+        self.set_function_name(function_name);
+        let value = self.expect(arg_name)?;
+        self.complete()?;
+        value.expect_i64(function_name, arg_name)
+    }
+
+    /// Handle single bool argument methods
+    pub fn single_bool(&mut self, function_name: &str, arg_name: &str) -> Result<bool> {
+        self.set_function_name(function_name);
+        let value = self.expect(arg_name)?;
+        self.complete()?;
+        value.expect_bool(function_name, arg_name)
+    }
+
+    /// Handle single string argument methods  
+    pub fn single_string(&mut self, function_name: &str, arg_name: &str) -> Result<String> {
+        self.set_function_name(function_name);
+        let value = self.expect(arg_name)?;
+        self.complete()?;
+        Ok(value.expect_string(function_name, arg_name)?.to_string())
+    }
+
+    /// Handle single RustValue argument methods with type checking
+    pub fn single_rust_value<T: RustValue + 'static>(
+        &mut self,
+        function_name: &str,
+        arg_name: &str,
+        expected_type: &str,
+    ) -> Result<Value> {
+        self.set_function_name(function_name);
+        let value = self.expect(arg_name)?;
+        self.complete()?;
+
+        // Validate that it's the expected RustValue type
+        value.expect_rust_value::<T>(function_name, expected_type)?;
+        Ok(value)
+    }
+
+    /// Handle two f64 argument methods
+    pub fn two_f64(
+        &mut self,
+        function_name: &str,
+        arg1_name: &str,
+        arg2_name: &str,
+    ) -> Result<(f64, f64)> {
+        self.set_function_name(function_name);
+        let value1 = self.expect(arg1_name)?;
+        let value2 = self.expect(arg2_name)?;
+        self.complete()?;
+        let arg1 = value1.expect_f64(function_name, arg1_name)?;
+        let arg2 = value2.expect_f64(function_name, arg2_name)?;
+        Ok((arg1, arg2))
     }
 }
