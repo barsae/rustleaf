@@ -42,6 +42,10 @@ mod list_tests {}
 #[rustleaf_tests("tests/integration/macros")]
 mod macro_tests {}
 
+// Math functions
+#[rustleaf_tests("tests/integration/math")]
+mod math_tests {}
+
 // Operators
 #[rustleaf_tests("tests/integration/operators")]
 mod operator_tests {}

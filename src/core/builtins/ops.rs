@@ -1,5 +1,5 @@
-use super::{RustValue, Value};
 use crate::core::Args;
+use crate::core::{RustValue, Value};
 use anyhow::{anyhow, Result};
 
 // Helper struct that captures the self value for bound methods

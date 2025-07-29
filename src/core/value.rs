@@ -241,7 +241,7 @@ impl Value {
         &self,
         method_func: fn(&Value, crate::core::Args) -> anyhow::Result<Value>,
     ) -> Self {
-        use crate::core::builtin_ops::BoundMethod;
+        use crate::core::builtins::BoundMethod;
         Value::from_rust(BoundMethod::new(self, method_func))
     }
 
@@ -328,7 +328,7 @@ impl Value {
 
     // Operator method implementations for built-in types
     fn get_int_attr(&self, name: &str) -> Option<Value> {
-        use crate::core::builtin_ops::*;
+        use crate::core::builtins::*;
 
         match name {
             "op_add" => Some(self.bind_method(op_add)),
@@ -355,7 +355,7 @@ impl Value {
     }
 
     fn get_float_attr(&self, name: &str) -> Option<Value> {
-        use crate::core::builtin_ops::*;
+        use crate::core::builtins::*;
 
         match name {
             "op_add" => Some(self.bind_method(op_add)),
@@ -376,7 +376,7 @@ impl Value {
     }
 
     fn get_string_attr(&self, name: &str) -> Option<Value> {
-        use crate::core::builtin_ops::*;
+        use crate::core::builtins::*;
 
         match name {
             "op_add" => Some(self.bind_method(op_add)), // String concatenation
@@ -392,7 +392,7 @@ impl Value {
     }
 
     fn get_bool_attr(&self, name: &str) -> Option<Value> {
-        use crate::core::builtin_ops::*;
+        use crate::core::builtins::*;
 
         match name {
             "op_eq" => Some(self.bind_method(op_eq)),
@@ -402,7 +402,7 @@ impl Value {
     }
 
     fn get_list_attr(&self, name: &str) -> Option<Value> {
-        use crate::core::builtin_ops::*;
+        use crate::core::builtins::*;
 
         match name {
             "length" => {
@@ -422,7 +422,7 @@ impl Value {
     }
 
     fn get_dict_attr(&self, name: &str) -> Option<Value> {
-        use crate::core::builtin_ops::*;
+        use crate::core::builtins::*;
 
         match name {
             "op_contains" => Some(self.bind_method(op_contains)),
@@ -434,7 +434,7 @@ impl Value {
     }
 
     fn get_range_attr(&self, name: &str) -> Option<Value> {
-        use crate::core::builtin_ops::*;
+        use crate::core::builtins::*;
 
         match name {
             "start" => {
@@ -466,7 +466,7 @@ impl Value {
     }
 
     fn get_unit_attr(&self, name: &str) -> Option<Value> {
-        use crate::core::builtin_ops::*;
+        use crate::core::builtins::*;
 
         match name {
             "op_eq" => Some(self.bind_method(op_eq)),
@@ -476,7 +476,7 @@ impl Value {
     }
 
     fn get_null_attr(&self, name: &str) -> Option<Value> {
-        use crate::core::builtin_ops::*;
+        use crate::core::builtins::*;
 
         match name {
             "op_eq" => Some(self.bind_method(op_eq)),

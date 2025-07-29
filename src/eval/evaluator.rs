@@ -59,6 +59,9 @@ impl Evaluator {
         self.register_builtin_fn("macro", crate::core::macro_identity_builtin);
         self.register_builtin_fn("join", crate::core::join_builtin);
 
+        // Register math functions
+        crate::core::register_math(self);
+
         // Register type constants for `is` operator
         self.register_type_constants();
     }
@@ -87,13 +90,16 @@ impl Evaluator {
             .define("Function", Value::from_rust(TypeConstant::new("Function")));
     }
 
-    fn register_builtin_fn(&mut self, name: &'static str, func: fn(Args) -> anyhow::Result<Value>) {
+    pub fn register_builtin_fn(
+        &mut self,
+        name: &'static str,
+        func: fn(Args) -> anyhow::Result<Value>,
+    ) {
         let rust_fn = Value::from_rust(RustFunction::new(name, func));
         self.globals.define(name, rust_fn);
     }
 
     pub fn eval(&mut self, eval: &RustValueRef) -> EvalResult {
-        // New trait-based dispatch - eliminates the massive match statement!
         match eval.eval(self) {
             Ok(result) => result,
             Err(e) => Err(ControlFlow::Error(ErrorKind::SystemError(e))),

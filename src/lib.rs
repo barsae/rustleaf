@@ -5,6 +5,19 @@ pub mod lexer;
 pub mod parser;
 
 use anyhow::Result;
+use std::fs;
+use std::path::Path;
+
+/// Evaluate a RustLeaf expression from a string and return the result
+pub fn eval_str(source: &str) -> Result<core::Value> {
+    run(source.to_string())
+}
+
+/// Evaluate a RustLeaf file and return the result
+pub fn eval_file<P: AsRef<Path>>(path: P) -> Result<core::Value> {
+    let source = fs::read_to_string(path)?;
+    run(source)
+}
 
 /// Run a RustLeaf program from source code
 pub fn run(source: String) -> Result<core::Value> {
