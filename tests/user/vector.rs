@@ -135,13 +135,13 @@ impl RustValue for Vector2 {
                     let other_val = args.expect("scalar")?;
                     args.complete()?;
 
-                    match other_val {
-                        Value::Int(n) => Ok(Value::from_rust(vec.scale(n as f64))),
-                        Value::Float(f) => Ok(Value::from_rust(vec.scale(f))),
-                        _ => Err(anyhow!(
+                    if let Some(scalar) = other_val.as_f64() {
+                        Ok(Value::from_rust(vec.scale(scalar)))
+                    } else {
+                        Err(anyhow!(
                             "Can only multiply Vector2 by numbers, got {:?}",
                             other_val
-                        )),
+                        ))
                     }
                 })
                 .bind(self.clone()),
@@ -211,27 +211,13 @@ pub fn vector2_constructor(mut args: Args) -> Result<Value> {
     let y_val = args.expect("y")?;
     args.complete()?;
 
-    let x = match x_val {
-        Value::Int(n) => n as f64,
-        Value::Float(f) => f,
-        _ => {
-            return Err(anyhow!(
-                "Vector2 x coordinate must be a number, got {:?}",
-                x_val
-            ))
-        }
-    };
+    let x = x_val
+        .as_f64()
+        .ok_or_else(|| anyhow!("Vector2 x coordinate must be a number, got {:?}", x_val))?;
 
-    let y = match y_val {
-        Value::Int(n) => n as f64,
-        Value::Float(f) => f,
-        _ => {
-            return Err(anyhow!(
-                "Vector2 y coordinate must be a number, got {:?}",
-                y_val
-            ))
-        }
-    };
+    let y = y_val
+        .as_f64()
+        .ok_or_else(|| anyhow!("Vector2 y coordinate must be a number, got {:?}", y_val))?;
 
     Ok(Value::from_rust(Vector2::new(x, y)))
 }

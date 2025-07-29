@@ -222,6 +222,15 @@ impl Value {
         }
     }
 
+    /// Convert Value to f64 if it's a numeric type
+    pub fn as_f64(&self) -> Option<f64> {
+        match self {
+            Value::Int(n) => Some(*n as f64),
+            Value::Float(f) => Some(*f),
+            _ => None,
+        }
+    }
+
     pub fn new_list() -> Self {
         Value::List(ListRef::default())
     }
