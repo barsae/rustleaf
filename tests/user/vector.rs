@@ -35,48 +35,6 @@ impl Vector2 {
     }
 }
 
-impl RustValue for Vector2Ref {
-    fn as_any(&self) -> &dyn std::any::Any {
-        self
-    }
-
-    fn as_any_mut(&mut self) -> &mut dyn std::any::Any {
-        self
-    }
-
-    fn dyn_clone(&self) -> Box<dyn RustValue> {
-        Box::new(self.clone())
-    }
-
-    fn str(&self) -> String {
-        format!("Vector2({}, {})", self.borrow().x, self.borrow().y)
-    }
-
-    fn type_name(&self) -> Option<&str> {
-        Some("Vector2")
-    }
-
-    fn get_attr(&self, name: &str) -> Option<Value> {
-        match name {
-            "x" => Some(Value::Float(self.borrow().x)),
-            "y" => Some(Value::Float(self.borrow().y)),
-            "magnitude" => Some(Value::from_rust(rustleaf::core::BoundMethod::new(
-                &Value::rust_value(self.dyn_clone()),
-                Self::rustleaf_magnitude,
-            ))),
-            "dot" => Some(Value::from_rust(rustleaf::core::BoundMethod::new(
-                &Value::rust_value(self.dyn_clone()),
-                Self::rustleaf_dot,
-            ))),
-            "normalize" => Some(Value::from_rust(rustleaf::core::BoundMethod::new(
-                &Value::rust_value(self.dyn_clone()),
-                Self::rustleaf_normalize,
-            ))),
-            _ => None,
-        }
-    }
-}
-
 /// Constructor function for Vector2 that can be registered as a builtin
 pub fn vector2_constructor(mut args: Args) -> Result<Value> {
     let (x, y) = args.two_f64("Vector2", "x", "y")?;

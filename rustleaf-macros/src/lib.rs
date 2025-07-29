@@ -228,13 +228,133 @@ fn rustleaf_struct(input: ItemStruct) -> TokenStream {
         pub struct #ref_name(std::rc::Rc<std::cell::RefCell<#struct_name>>);
     };
 
+    // Generate trivial RustValue methods
+    let rust_value_impl = generate_trivial_rust_value_impl(&ref_name, struct_name);
+
+    // Generate get_property helper for struct fields
+    let get_property_impl = generate_get_property_impl(&ref_name, &input);
+
     let expanded = quote! {
         #original_struct
 
         #wrapper_struct
+
+        #rust_value_impl
+
+        #get_property_impl
     };
 
     TokenStream::from(expanded)
+}
+
+fn generate_trivial_rust_value_impl(
+    ref_name: &syn::Ident,
+    struct_name: &syn::Ident,
+) -> proc_macro2::TokenStream {
+    let struct_name_str = struct_name.to_string();
+
+    quote! {
+        impl rustleaf::core::RustValue for #ref_name {
+            fn as_any(&self) -> &dyn std::any::Any {
+                self
+            }
+
+            fn as_any_mut(&mut self) -> &mut dyn std::any::Any {
+                self
+            }
+
+            fn dyn_clone(&self) -> Box<dyn rustleaf::core::RustValue> {
+                Box::new(self.clone())
+            }
+
+            fn type_name(&self) -> Option<&str> {
+                Some(#struct_name_str)
+            }
+
+            fn str(&self) -> String {
+                // Simple default implementation - can be improved later
+                format!("{:?}", self.borrow())
+            }
+
+            fn get_attr(&self, name: &str) -> Option<rustleaf::core::Value> {
+                // Try properties first (struct fields)
+                if let Some(value) = self.get_property(name) {
+                    return Some(value);
+                }
+
+                // Then try methods (from impl blocks)
+                self.get_method(name)
+            }
+        }
+    }
+}
+
+fn generate_get_property_impl(
+    ref_name: &syn::Ident,
+    input: &ItemStruct,
+) -> proc_macro2::TokenStream {
+    let mut field_arms = Vec::new();
+
+    // Analyze struct fields
+    if let syn::Fields::Named(named_fields) = &input.fields {
+        for field in &named_fields.named {
+            if let Some(field_name) = &field.ident {
+                // Only generate for public fields
+                if matches!(field.vis, syn::Visibility::Public(_)) {
+                    let field_name_str = field_name.to_string();
+                    let field_access = field_type_to_value_conversion(
+                        &field.ty,
+                        quote! { self.borrow().#field_name },
+                    );
+
+                    field_arms.push(quote! {
+                        #field_name_str => Some(#field_access),
+                    });
+                }
+            }
+        }
+    }
+
+    quote! {
+        impl #ref_name {
+            /// Generated helper for accessing struct fields
+            pub fn get_property(&self, name: &str) -> Option<rustleaf::core::Value> {
+                match name {
+                    #(#field_arms)*
+                    _ => None,
+                }
+            }
+        }
+    }
+}
+
+fn field_type_to_value_conversion(
+    field_type: &syn::Type,
+    field_access: proc_macro2::TokenStream,
+) -> proc_macro2::TokenStream {
+    // Handle common field types and convert to appropriate Value variants
+    if let syn::Type::Path(type_path) = field_type {
+        if let Some(segment) = type_path.path.segments.last() {
+            match segment.ident.to_string().as_str() {
+                "f64" => return quote! { rustleaf::core::Value::Float(#field_access) },
+                "f32" => return quote! { rustleaf::core::Value::Float(#field_access as f64) },
+                "i64" => return quote! { rustleaf::core::Value::Int(#field_access) },
+                "i32" => return quote! { rustleaf::core::Value::Int(#field_access as i64) },
+                "bool" => return quote! { rustleaf::core::Value::Bool(#field_access) },
+                "String" => return quote! { rustleaf::core::Value::String(#field_access) },
+                _ => {}
+            }
+        }
+    }
+
+    // Handle string slice
+    if matches!(field_type, syn::Type::Reference(_)) {
+        // This is a simplified check - in practice you'd want more sophisticated analysis
+        return quote! { rustleaf::core::Value::String(#field_access.to_string()) };
+    }
+
+    // Default fallback - try to convert with Into<Value>
+    quote! { (#field_access).into() }
 }
 
 fn rustleaf_impl(input: ItemImpl) -> TokenStream {
@@ -247,8 +367,9 @@ fn rustleaf_impl(input: ItemImpl) -> TokenStream {
 
     let ref_name = quote::format_ident!("{}Ref", struct_name);
 
-    // Generate wrapper methods for the Ref type
+    // Generate wrapper methods for the Ref type and track method names
     let mut wrapper_methods = Vec::new();
+    let mut method_names = Vec::new();
 
     for item in &input.items {
         if let ImplItem::Fn(method) = item {
@@ -259,8 +380,12 @@ fn rustleaf_impl(input: ItemImpl) -> TokenStream {
 
             let wrapper_method = generate_rustleaf_wrapper_method(method);
             wrapper_methods.push(wrapper_method);
+            method_names.push(method.sig.ident.to_string());
         }
     }
+
+    // Generate get_method helper
+    let get_method_impl = generate_get_method_impl(&ref_name, &method_names);
 
     let expanded = quote! {
         // Keep the original impl block unchanged
@@ -270,9 +395,42 @@ fn rustleaf_impl(input: ItemImpl) -> TokenStream {
         impl #ref_name {
             #(#wrapper_methods)*
         }
+
+        // Generate get_method helper
+        #get_method_impl
     };
 
     TokenStream::from(expanded)
+}
+
+fn generate_get_method_impl(
+    ref_name: &syn::Ident,
+    method_names: &[String],
+) -> proc_macro2::TokenStream {
+    let mut method_arms = Vec::new();
+
+    for method_name in method_names {
+        let wrapper_name = quote::format_ident!("rustleaf_{}", method_name);
+
+        method_arms.push(quote! {
+            #method_name => Some(rustleaf::core::Value::from_rust(rustleaf::core::BoundMethod::new(
+                &rustleaf::core::Value::rust_value(self.dyn_clone()),
+                Self::#wrapper_name,
+            ))),
+        });
+    }
+
+    quote! {
+        impl #ref_name {
+            /// Generated helper for accessing wrapper methods
+            pub fn get_method(&self, name: &str) -> Option<rustleaf::core::Value> {
+                match name {
+                    #(#method_arms)*
+                    _ => None,
+                }
+            }
+        }
+    }
 }
 
 fn generate_rustleaf_wrapper_method(method: &ImplItemFn) -> proc_macro2::TokenStream {
