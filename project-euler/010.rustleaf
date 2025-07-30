@@ -1,2 +1,51 @@
 // <p>The sum of the primes below $10$ is $2 + 3 + 5 + 7 = 17$.</p>
 // <p>Find the sum of all the primes below two million.</p>
+
+fn sieve_of_eratosthenes(limit) {
+    // Create boolean array "prime[0..limit]" and initialize
+    // all entries as true. A value in prime[i] will be false
+    // if i is not a prime, else true.
+    var is_prime = [];
+    for i in range(limit + 1) {
+        is_prime.append(i >= 2);
+    }
+    
+    var p = 2;
+    while p * p <= limit {
+        if is_prime[p] {
+            // Update all multiples of p
+            var i = p * p;
+            while i <= limit {
+                is_prime[i] = false;
+                i += p;
+            }
+        }
+        p += 1;
+    }
+    
+    // Collect all prime numbers
+    var primes = [];
+    for i in range(2, limit + 1) {
+        if is_prime[i] {
+            primes.append(i);
+        }
+    }
+    primes
+}
+
+fn solve_euler_010(limit) {
+    var primes = sieve_of_eratosthenes(limit - 1);
+    primes.reduce(|a, b| a + b, 0)
+}
+
+// Test with the example (primes below 10)
+var test_primes = sieve_of_eratosthenes(9);
+assert(test_primes == [2, 3, 5, 7]);
+
+var test_result = solve_euler_010(10);
+assert(test_result == 17);
+
+// Solve the actual problem (primes below 2 million)
+var result = solve_euler_010(2000000);
+print("The sum of all primes below 2 million is: ${result}");
+assert(result == 142913828922);

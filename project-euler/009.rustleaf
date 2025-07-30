@@ -2,3 +2,44 @@
 // $$a^2 + b^2 = c^2.$$</p>
 // <p>For example, $3^2 + 4^2 = 9 + 16 = 25 = 5^2$.</p>
 // <p>There exists exactly one Pythagorean triplet for which $a + b + c = 1000$.<br>Find the product $abc$.</p>
+
+fn solve_euler_009(target_sum) {
+    // For a < b < c and a + b + c = target_sum
+    // We know c = target_sum - a - b
+    // And a^2 + b^2 = c^2
+    // So a^2 + b^2 = (target_sum - a - b)^2
+    
+    for a in range(1, target_sum / 3) {
+        for b in range(a + 1, (target_sum - a) / 2) {
+            var c = target_sum - a - b;
+            
+            if a * a + b * b == c * c {
+                return [a, b, c, a * b * c];
+            }
+        }
+    }
+    
+    // Should not reach here if a solution exists
+    [0, 0, 0, 0]
+}
+
+// Test with the example (3, 4, 5 triplet)
+assert(3 * 3 + 4 * 4 == 5 * 5);
+assert(3 + 4 + 5 == 12); // This sums to 12, not 1000
+
+// Test our function with a smaller case
+// Find triplet that sums to 12
+var test_result = solve_euler_009(12);
+assert(test_result[0] == 3);
+assert(test_result[1] == 4);
+assert(test_result[2] == 5);
+assert(test_result[3] == 60);
+
+// Solve the actual problem (sum = 1000)
+var result = solve_euler_009(1000);
+print("The Pythagorean triplet with sum 1000 is: ${result[0]}, ${result[1]}, ${result[2]}");
+print("The product abc is: ${result[3]}");
+assert(result[0] == 200);
+assert(result[1] == 375);
+assert(result[2] == 425);
+assert(result[3] == 31875000);

@@ -1,2 +1,53 @@
 // <p>A palindromic number reads the same both ways. The largest palindrome made from the product of two $2$-digit numbers is $9009 = 91 \times 99$.</p>
 // <p>Find the largest palindrome made from the product of two $3$-digit numbers.</p>
+
+fn is_palindrome(n) {
+    var s = str(n);
+    var chars = s.to_list();
+    var len = chars.len();
+    
+    for i in range(len / 2) {
+        if chars[i] != chars[len - 1 - i] {
+            return false;
+        }
+    }
+    true
+}
+
+fn solve_euler_004(min_digits, max_digits) {
+    var largest_palindrome = 0;
+    var found_a = 0;
+    var found_b = 0;
+    
+    // Start from the largest numbers and work down
+    for a in range(max_digits, min_digits - 1, -1) {
+        for b in range(a, min_digits - 1, -1) {
+            var product = a * b;
+            
+            // Early termination: if product is smaller than current best, skip
+            if product <= largest_palindrome {
+                break;
+            }
+            
+            if is_palindrome(product) {
+                largest_palindrome = product;
+                found_a = a;
+                found_b = b;
+            }
+        }
+    }
+    
+    [largest_palindrome, found_a, found_b]
+}
+
+// Test with 2-digit numbers
+var test_result = solve_euler_004(10, 99);
+assert(test_result[0] == 9009);
+assert(test_result[1] == 99);
+assert(test_result[2] == 91);
+
+// Solve the actual problem with 3-digit numbers
+var result = solve_euler_004(100, 999);
+print("The largest palindrome made from the product of two 3-digit numbers is: ${result[0]}");
+print("It is the product of ${result[1]} x ${result[2]}");
+assert(result[0] == 906609);

@@ -4,3 +4,34 @@
 // $$(1 + 2 + ... + 10)^2 = 55^2 = 3025.$$
 // <p>Hence the difference between the sum of the squares of the first ten natural numbers and the square of the sum is $3025 - 385 = 2640$.</p>
 // <p>Find the difference between the sum of the squares of the first one hundred natural numbers and the square of the sum.</p>
+
+fn solve_euler_006(n) {
+    // Sum of squares: 1^2 + 2^2 + ... + n^2
+    var sum_of_squares = range(1, n + 1)
+        .map(|x| x * x)
+        .reduce(|a, b| a + b, 0);
+    
+    // Square of sum: (1 + 2 + ... + n)^2
+    var sum = range(1, n + 1)
+        .reduce(|a, b| a + b, 0);
+    var square_of_sum = sum * sum;
+    
+    // Return the difference
+    square_of_sum - sum_of_squares
+}
+
+// Test with the example (first 10 natural numbers)
+var test_sum_of_squares = range(1, 11).map(|x| x * x).reduce(|a, b| a + b, 0);
+assert(test_sum_of_squares == 385);
+
+var test_sum = range(1, 11).reduce(|a, b| a + b, 0);
+assert(test_sum == 55);
+assert(test_sum * test_sum == 3025);
+
+var test_result = solve_euler_006(10);
+assert(test_result == 2640);
+
+// Solve the actual problem (first 100 natural numbers)
+var result = solve_euler_006(100);
+print("The difference between the sum of squares and square of sum for first 100 numbers is: ${result}");
+assert(result == 25164150);

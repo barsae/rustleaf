@@ -1,2 +1,54 @@
 // <p>By listing the first six prime numbers: $2, 3, 5, 7, 11$, and $13$, we can see that the $6$th prime is $13$.</p>
 // <p>What is the $10\,001$st prime number?</p>
+
+fn is_prime(n) {
+    if n < 2 {
+        false
+    } else if n == 2 {
+        true
+    } else if n % 2 == 0 {
+        false
+    } else {
+        var limit = int(float(n) ** 0.5) + 1;
+        for i in range(3, limit, 2) {
+            if n % i == 0 {
+                return false;
+            }
+        }
+        true
+    }
+}
+
+fn solve_euler_007(target_index) {
+    if target_index == 1 {
+        return 2;
+    }
+    
+    var count = 1; // Start with 2 as the first prime
+    var candidate = 3; // Start checking odd numbers from 3
+    
+    while count < target_index {
+        if is_prime(candidate) {
+            count += 1;
+        }
+        candidate += 2; // Only check odd numbers
+    }
+    
+    candidate - 2 // Back up to the last prime we found
+}
+
+// Test with the example (6th prime should be 13)
+var test_result = solve_euler_007(6);
+assert(test_result == 13);
+
+// Test a few more cases
+assert(solve_euler_007(1) == 2);
+assert(solve_euler_007(2) == 3);
+assert(solve_euler_007(3) == 5);
+assert(solve_euler_007(4) == 7);
+assert(solve_euler_007(5) == 11);
+
+// Solve the actual problem (10,001st prime)
+var result = solve_euler_007(10001);
+print("The 10,001st prime number is: ${result}");
+assert(result == 104743);

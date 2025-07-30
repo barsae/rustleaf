@@ -11,8 +11,6 @@ fn solve_euler_002(limit) {
         : sum()
 }
 
-
-
 // Test with the example sequence: 1, 2, 3, 5, 8, 13, 21, 34, 55, 89
 // Even values under 100: 2, 8, 34 = 44
 var test_result = solve_euler_002(100);
