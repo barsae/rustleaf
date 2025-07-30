@@ -207,3 +207,256 @@ pub fn join_builtin(mut args: Args) -> Result<Value> {
         _ => Err(anyhow!("join() expects a list as first argument")),
     }
 }
+
+pub fn int(mut args: Args) -> Result<Value> {
+    args.set_function_name("int");
+    let value = args.expect("value")?;
+    args.complete()?;
+
+    match value {
+        Value::Int(i) => Ok(Value::Int(i)),
+        Value::Float(f) => Ok(Value::Int(f.trunc() as i64)),
+        _ => Err(anyhow!("Cannot convert {:?} to int", value.type_name())),
+    }
+}
+
+pub fn float(mut args: Args) -> Result<Value> {
+    args.set_function_name("float");
+    let value = args.expect("value")?;
+    args.complete()?;
+
+    match value {
+        Value::Float(f) => Ok(Value::Float(f)),
+        Value::Int(i) => Ok(Value::Float(i as f64)),
+        _ => Err(anyhow!("Cannot convert {:?} to float", value.type_name())),
+    }
+}
+
+pub fn range(mut args: Args) -> Result<Value> {
+    args.set_function_name("range");
+
+    // Handle different argument patterns:
+    // range(start, end, step=1) → list
+    // range(start) → list (shorthand for range(0, start))
+
+    let first_arg = args.expect("start")?;
+    let start_val = first_arg.expect_i64("range", "start")?;
+
+    // Check if we have a second argument (end)
+    let (start, end, step) = if let Ok(second_arg) = args.expect("end") {
+        // Two or three argument form: range(start, end) or range(start, end, step)
+        let end_val = second_arg.expect_i64("range", "end")?;
+        let step_val = if let Ok(third_arg) = args.expect("step") {
+            third_arg.expect_i64("range", "step")?
+        } else {
+            1i64
+        };
+        args.complete()?;
+        (start_val, end_val, step_val)
+    } else {
+        // Single argument form: range(start) is shorthand for range(0, start)
+        args.complete()?;
+        (0i64, start_val, 1i64)
+    };
+
+    // Validate step != 0
+    if step == 0 {
+        return Err(anyhow!("range() step argument must not be zero"));
+    }
+
+    // Generate the range
+    let mut values = Vec::new();
+
+    if step > 0 {
+        // Positive step: start < end
+        let mut current = start;
+        while current < end {
+            values.push(Value::Int(current));
+            current += step;
+        }
+    } else {
+        // Negative step: start > end
+        let mut current = start;
+        while current > end {
+            values.push(Value::Int(current));
+            current += step;
+        }
+    }
+
+    Ok(Value::new_list_with_values(values))
+}
+
+pub fn sum(mut args: Args) -> Result<Value> {
+    args.set_function_name("sum");
+    let iterable = args.expect("iterable")?;
+    args.complete()?;
+
+    match iterable {
+        Value::List(list_ref) => {
+            let list = list_ref.borrow();
+
+            if list.is_empty() {
+                return Ok(Value::Int(0));
+            }
+
+            let mut sum = list[0].clone();
+
+            for item in list.iter().skip(1) {
+                // Use op_add by calling the bound method directly
+                sum = crate::core::builtins::op_add(
+                    &sum,
+                    crate::core::Args::positional(vec![item.clone()]),
+                )?;
+            }
+
+            Ok(sum)
+        }
+        _ => Err(anyhow!("sum() expects a list or iterable")),
+    }
+}
+
+pub fn filter(mut args: Args) -> Result<Value> {
+    args.set_function_name("filter");
+    let iterable = args.expect("iterable")?;
+    let predicate = args.expect("predicate")?;
+    args.complete()?;
+
+    match iterable {
+        Value::List(list_ref) => {
+            let list = list_ref.borrow();
+            let mut filtered = Vec::new();
+
+            for item in list.iter() {
+                // Call the predicate function with the item
+                let predicate_args = crate::core::Args::positional(vec![item.clone()]);
+                let result = predicate.call(predicate_args)?;
+
+                // Check if result is truthy
+                if result.is_truthy() {
+                    filtered.push(item.clone());
+                }
+            }
+
+            Ok(Value::new_list_with_values(filtered))
+        }
+        Value::RustValue(rust_value) => {
+            // Handle iterators with op_next() method
+            let mut filtered = Vec::new();
+            let mut iterator = rust_value.dyn_clone();
+
+            loop {
+                // Try to get the next value from the iterator
+                match iterator.op_next() {
+                    Ok(Some(item)) => {
+                        // Call the predicate function with the item
+                        let predicate_args = crate::core::Args::positional(vec![item.clone()]);
+                        let result = predicate.call(predicate_args)?;
+
+                        // Check if result is truthy
+                        if result.is_truthy() {
+                            filtered.push(item);
+                        }
+                    }
+                    Ok(None) => break, // Iterator exhausted
+                    Err(_) => {
+                        // Not an iterator, return error
+                        return Err(anyhow!("filter() expects a list or iterable"));
+                    }
+                }
+            }
+
+            Ok(Value::new_list_with_values(filtered))
+        }
+        _ => Err(anyhow!("filter() expects a list or iterable")),
+    }
+}
+
+pub fn take_while(mut args: Args) -> Result<Value> {
+    args.set_function_name("take_while");
+    let iterable = args.expect("iterable")?;
+    let predicate = args.expect("predicate")?;
+    args.complete()?;
+
+    match &iterable {
+        Value::List(list_ref) => {
+            let list = list_ref.borrow();
+            let mut taken = Vec::new();
+
+            for item in list.iter() {
+                // Call the predicate function with the item
+                let predicate_args = crate::core::Args::positional(vec![item.clone()]);
+                let result = predicate.call(predicate_args)?;
+
+                // Check if result is truthy
+                if result.is_truthy() {
+                    taken.push(item.clone());
+                } else {
+                    break; // Stop taking once predicate is false
+                }
+            }
+
+            Ok(Value::new_list_with_values(taken))
+        }
+        Value::RustValue(rust_value) => {
+            // Handle iterators with op_next() method
+            let mut taken = Vec::new();
+            let mut iterator = rust_value.dyn_clone();
+
+            loop {
+                // Try to get the next value from the iterator
+                match iterator.op_next() {
+                    Ok(Some(item)) => {
+                        // Call the predicate function with the item
+                        let predicate_args = crate::core::Args::positional(vec![item.clone()]);
+                        let result = predicate.call(predicate_args)?;
+
+                        // Check if result is truthy
+                        if result.is_truthy() {
+                            taken.push(item);
+                        } else {
+                            break; // Stop taking once predicate is false
+                        }
+                    }
+                    Ok(None) => break, // Iterator exhausted
+                    Err(_) => {
+                        // Not an iterator, return error
+                        return Err(anyhow!("take_while() expects a list or iterable"));
+                    }
+                }
+            }
+
+            Ok(Value::new_list_with_values(taken))
+        }
+        Value::ClassInstance(_) => {
+            // Handle class instances that might have op_next method
+            let mut taken = Vec::new();
+
+            loop {
+                // Try to get the op_next method and call it
+                let mut dummy_eval = crate::eval::Evaluator::new();
+                if let Some(op_next_method) = iterable.get_attr("op_next", &mut dummy_eval) {
+                    match op_next_method.call(crate::core::Args::new(vec![], Default::default())) {
+                        Ok(item) => {
+                            // Call the predicate function with the item
+                            let predicate_args = crate::core::Args::positional(vec![item.clone()]);
+                            let result = predicate.call(predicate_args)?;
+
+                            // Check if result is truthy
+                            if result.is_truthy() {
+                                taken.push(item);
+                            } else {
+                                break; // Stop taking once predicate is false
+                            }
+                        }
+                        Err(_) => break, // Assume iterator exhausted or error
+                    }
+                } else {
+                    return Err(anyhow!("take_while() expects a list or iterable"));
+                }
+            }
+
+            Ok(Value::new_list_with_values(taken))
+        }
+        _ => Err(anyhow!("take_while() expects a list or iterable")),
+    }
+}

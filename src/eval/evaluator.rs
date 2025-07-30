@@ -54,10 +54,16 @@ impl Evaluator {
         self.register_builtin_fn("assert", crate::core::assert);
         self.register_builtin_fn("is_unit", crate::core::is_unit);
         self.register_builtin_fn("str", crate::core::str);
+        self.register_builtin_fn("int", crate::core::int);
+        self.register_builtin_fn("float", crate::core::float);
         self.register_builtin_fn("raise", crate::core::raise);
         self.register_builtin_fn("parse", crate::core::parse_builtin);
         self.register_builtin_fn("macro", crate::core::macro_identity_builtin);
         self.register_builtin_fn("join", crate::core::join_builtin);
+        self.register_builtin_fn("range", crate::core::range);
+        self.register_builtin_fn("sum", crate::core::sum);
+        self.register_builtin_fn("filter", crate::core::filter);
+        self.register_builtin_fn("take_while", crate::core::take_while);
 
         // Register math functions
         crate::core::register_math(self);

@@ -617,6 +617,8 @@ impl Value {
             "op_gt" => Some(self.bind_method(op_gt)),
             "op_ge" => Some(self.bind_method(op_ge)),
             "op_contains" => Some(self.bind_method(op_contains)),
+            "len" => Some(self.bind_method(string_len)),
+            "to_list" => Some(self.bind_method(string_to_list)),
             _ => None,
         }
     }
@@ -643,6 +645,12 @@ impl Value {
                     None
                 }
             }
+            "len" => Some(self.bind_method(list_len)),
+            "append" => Some(self.bind_method(list_append)),
+            "filter" => Some(self.bind_method(list_filter)),
+            "map" => Some(self.bind_method(list_map)),
+            "reduce" => Some(self.bind_method(list_reduce)),
+            "sum" => Some(self.bind_method(list_sum)),
             "op_contains" => Some(self.bind_method(op_contains)),
             "op_get_item" => Some(self.bind_method(op_get_item_list)),
             "op_set_item" => Some(self.bind_method(op_set_item_list)),

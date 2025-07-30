@@ -27,7 +27,7 @@ Testing Philosophy:
 - Use property-based testing where appropriate
 - Ensure tests are deterministic and can run in parallel
 - Write tests that serve as living documentation of expected behavior
-- Avoid temporary or throwaway test code - all tests should have long-term value
+- NEVER write temporary or throwaway test code - all tests should have long-term value and be implemented using the normal Rust testing frameworks
 
 Project-Specific Guidelines:
 - Adhere to RustLeaf specifications in ./specs/*.md as the definitive authority

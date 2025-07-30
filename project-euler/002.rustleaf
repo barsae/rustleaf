@@ -2,10 +2,21 @@
 // $$1, 2, 3, 5, 8, 13, 21, 34, 55, 89, \dots$$</p>
 // <p>By considering the terms in the Fibonacci sequence whose values do not exceed four million, find the sum of the even-valued terms.</p>
 
-use fib::{fib_generator};
+class Fib {
+    var a = 1;
+    var b = 2;
+
+    fn op_next() {
+        var current = self.a;
+        var next = self.a + self.b;
+        self.a = self.b;
+        self.b = next;
+        current
+    }
+}
 
 fn solve_euler_002(limit) {
-    Fib.new()
+    Fib()
         : take_while(|x| x < limit)
         : filter(|x| x % 2 == 0)
         : sum()
@@ -14,6 +25,7 @@ fn solve_euler_002(limit) {
 // Test with the example sequence: 1, 2, 3, 5, 8, 13, 21, 34, 55, 89
 // Even values under 100: 2, 8, 34 = 44
 var test_result = solve_euler_002(100);
+print(test_result);
 assert(test_result == 44);
 
 // Solve the actual problem
