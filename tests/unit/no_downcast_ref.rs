@@ -15,6 +15,7 @@ mod tests {
             let mut allowed_count = 0;
 
             for (line_num, line) in content.lines().enumerate() {
+                // TODO: this should also enforce downcast_mut
                 if line.contains("downcast_ref") {
                     // Check if this is in the allowed method
                     // The only allowed use is in the downcast_rust_value method
