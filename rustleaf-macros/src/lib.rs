@@ -234,6 +234,9 @@ fn rustleaf_struct(input: ItemStruct) -> TokenStream {
     // Generate get_property helper for struct fields
     let get_property_impl = generate_get_property_impl(&ref_name, &input);
 
+    // Generate rustleaf_new constructor for the original struct
+    let constructor_impl = generate_rustleaf_constructor(struct_name, &ref_name);
+
     let expanded = quote! {
         #original_struct
 
@@ -242,6 +245,8 @@ fn rustleaf_struct(input: ItemStruct) -> TokenStream {
         #rust_value_impl
 
         #get_property_impl
+
+        #constructor_impl
     };
 
     TokenStream::from(expanded)
@@ -687,6 +692,33 @@ fn generate_get_attr_impl(method_names: &[String]) -> proc_macro2::TokenStream {
             match name {
                 #(#match_arms)*
                 _ => None,
+            }
+        }
+    }
+}
+
+fn generate_rustleaf_constructor(
+    struct_name: &syn::Ident,
+    ref_name: &syn::Ident,
+) -> proc_macro2::TokenStream {
+    quote! {
+        impl #struct_name {
+            /// Generated constructor function for RustLeaf integration
+            pub fn rustleaf_new(mut args: rustleaf::core::Args) -> anyhow::Result<rustleaf::core::Value> {
+                args.set_function_name("new");
+
+                // Extract constructor arguments - for Vector2, we expect (x: f64, y: f64)
+                let x = args.expect("x")?.expect_f64("new", "x")?;
+                let y = args.expect("y")?.expect_f64("new", "y")?;
+
+                args.complete()?;
+
+                // Create the struct instance
+                let instance = Self::new(x, y);
+
+                // Wrap it in the Ref type and return as Value
+                let wrapper = #ref_name::new(instance);
+                Ok(rustleaf::core::Value::rust_value(Box::new(wrapper)))
             }
         }
     }

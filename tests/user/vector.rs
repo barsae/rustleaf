@@ -1,5 +1,4 @@
-use anyhow::Result;
-use rustleaf::core::{Args, RustValue, Value};
+use rustleaf::core::RustValue;
 use rustleaf_macros::{rustleaf, RustLeafWrapper};
 
 /// A Vector2 struct that demonstrates how a library user would extend RustLeaf
@@ -35,17 +34,6 @@ impl Vector2 {
     }
 }
 
-/// Constructor function for Vector2 that can be registered as a builtin
-pub fn vector2_constructor(mut args: Args) -> Result<Value> {
-    let (x, y) = args.two_f64("Vector2", "x", "y")?;
-    Ok(Value::from_rust(Vector2Ref::new(Vector2::new(x, y))))
-}
-
-/// Function to register Vector2 type with a RustLeaf evaluator
-pub fn register_vector2(evaluator: &mut rustleaf::eval::Evaluator) {
-    evaluator.register_builtin_fn("Vector2", vector2_constructor);
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -54,7 +42,7 @@ mod tests {
     #[test]
     fn test_vector2_user_experience() {
         let mut e = Evaluator::new();
-        register_vector2(&mut e);
+        e.register_builtin_fn("Vector2", Vector2::rustleaf_new);
 
         // Test that we can create vectors and use their methods
         let code = r#"
