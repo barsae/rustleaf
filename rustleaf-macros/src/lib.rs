@@ -234,9 +234,6 @@ fn rustleaf_struct(input: ItemStruct) -> TokenStream {
     // Generate get_property helper for struct fields
     let get_property_impl = generate_get_property_impl(&ref_name, &input);
 
-    // Generate rustleaf_new constructor for the original struct
-    let constructor_impl = generate_rustleaf_constructor(struct_name, &ref_name);
-
     let expanded = quote! {
         #original_struct
 
@@ -245,8 +242,6 @@ fn rustleaf_struct(input: ItemStruct) -> TokenStream {
         #rust_value_impl
 
         #get_property_impl
-
-        #constructor_impl
     };
 
     TokenStream::from(expanded)
@@ -375,17 +370,27 @@ fn rustleaf_impl(input: ItemImpl) -> TokenStream {
     // Generate wrapper methods for the Ref type and track method names
     let mut wrapper_methods = Vec::new();
     let mut method_names = Vec::new();
+    let mut static_methods = Vec::new();
 
     for item in &input.items {
         if let ImplItem::Fn(method) = item {
-            // Skip constructors and private methods
-            if method.sig.ident == "new" {
-                continue;
-            }
+            // Check if this is a static method (no self parameter)
+            let has_self = method
+                .sig
+                .inputs
+                .iter()
+                .any(|arg| matches!(arg, syn::FnArg::Receiver(_)));
 
-            let wrapper_method = generate_rustleaf_wrapper_method(method);
-            wrapper_methods.push(wrapper_method);
-            method_names.push(method.sig.ident.to_string());
+            if has_self {
+                // Instance method - generate wrapper for Ref type
+                let wrapper_method = generate_rustleaf_wrapper_method(method);
+                wrapper_methods.push(wrapper_method);
+                method_names.push(method.sig.ident.to_string());
+            } else {
+                // Static method - generate wrapper for original struct
+                let static_wrapper = generate_static_method_wrapper(method, struct_name, &ref_name);
+                static_methods.push(static_wrapper);
+            }
         }
     }
 
@@ -396,9 +401,14 @@ fn rustleaf_impl(input: ItemImpl) -> TokenStream {
         // Keep the original impl block unchanged
         #input
 
-        // Generate the wrapper methods for the Ref type
+        // Generate the wrapper methods for the Ref type (instance methods)
         impl #ref_name {
             #(#wrapper_methods)*
+        }
+
+        // Generate static method wrappers for the original struct
+        impl #struct_name {
+            #(#static_methods)*
         }
 
         // Generate get_method helper
@@ -697,28 +707,137 @@ fn generate_get_attr_impl(method_names: &[String]) -> proc_macro2::TokenStream {
     }
 }
 
-fn generate_rustleaf_constructor(
-    struct_name: &syn::Ident,
+fn generate_static_method_wrapper(
+    method: &ImplItemFn,
+    _struct_name: &syn::Ident,
     ref_name: &syn::Ident,
 ) -> proc_macro2::TokenStream {
-    quote! {
-        impl #struct_name {
-            /// Generated constructor function for RustLeaf integration
-            pub fn rustleaf_new(mut args: rustleaf::core::Args) -> anyhow::Result<rustleaf::core::Value> {
-                args.set_function_name("new");
+    let method_name = &method.sig.ident;
+    let wrapper_name = quote::format_ident!("rustleaf_{}", method_name);
+    let method_name_str = method_name.to_string();
 
-                // Extract constructor arguments - for Vector2, we expect (x: f64, y: f64)
-                let x = args.expect("x")?.expect_f64("new", "x")?;
-                let y = args.expect("y")?.expect_f64("new", "y")?;
+    // Analyze parameters for static method
+    let mut parameters = Vec::new();
+    for input in &method.sig.inputs {
+        if let syn::FnArg::Typed(typed) = input {
+            if let syn::Pat::Ident(ident) = &*typed.pat {
+                parameters.push(ParameterInfo {
+                    name: ident.ident.clone(),
+                    type_: &typed.ty,
+                });
+            }
+        }
+    }
+
+    // Check if this method returns Self (constructor pattern)
+    let returns_self = if let syn::ReturnType::Type(_, return_type) = &method.sig.output {
+        matches!(**return_type, syn::Type::Path(ref path) if path.path.is_ident("Self"))
+    } else {
+        false
+    };
+
+    if parameters.is_empty() {
+        // No-argument static method
+        if returns_self {
+            quote! {
+                pub fn #wrapper_name(mut args: rustleaf::core::Args) -> anyhow::Result<rustleaf::core::Value> {
+                    args.set_function_name(#method_name_str);
+                    args.complete()?;
+
+                    let instance = Self::#method_name();
+                    let wrapper = #ref_name::new(instance);
+                    Ok(rustleaf::core::Value::rust_value(Box::new(wrapper)))
+                }
+            }
+        } else {
+            quote! {
+                pub fn #wrapper_name(mut args: rustleaf::core::Args) -> anyhow::Result<rustleaf::core::Value> {
+                    args.set_function_name(#method_name_str);
+                    args.complete()?;
+
+                    let result = Self::#method_name();
+                    Ok(result.into())
+                }
+            }
+        }
+    } else {
+        // Static method with arguments
+        generate_static_args_wrapper(
+            &wrapper_name,
+            method_name,
+            &method_name_str,
+            &parameters,
+            ref_name,
+            returns_self,
+        )
+    }
+}
+
+fn generate_static_args_wrapper(
+    wrapper_name: &syn::Ident,
+    method_name: &syn::Ident,
+    method_name_str: &str,
+    parameters: &[ParameterInfo],
+    ref_name: &syn::Ident,
+    returns_self: bool,
+) -> proc_macro2::TokenStream {
+    // Generate argument extraction code
+    let mut arg_extractions = Vec::new();
+    let mut arg_names = Vec::new();
+
+    for (i, param) in parameters.iter().enumerate() {
+        let param_name = &param.name;
+        let param_name_str = param_name.to_string();
+        let temp_var = quote::format_ident!("arg_{}", i);
+
+        // Handle common types
+        let extraction = if is_f64_type(param.type_) {
+            quote! {
+                let #temp_var = args.expect(#param_name_str)?;
+                let #param_name = #temp_var.expect_f64(#method_name_str, #param_name_str)?;
+            }
+        } else if is_i64_type(param.type_) {
+            quote! {
+                let #temp_var = args.expect(#param_name_str)?;
+                let #param_name = #temp_var.expect_i64(#method_name_str, #param_name_str)?;
+            }
+        } else {
+            // Generic fallback
+            quote! {
+                let #temp_var = args.expect(#param_name_str)?;
+                let #param_name: _ = #temp_var.try_into().map_err(|e| anyhow::anyhow!("Failed to convert argument '{}' in {}: {}", #param_name_str, #method_name_str, e))?;
+            }
+        };
+
+        arg_extractions.push(extraction);
+        arg_names.push(param_name);
+    }
+
+    if returns_self {
+        quote! {
+            pub fn #wrapper_name(mut args: rustleaf::core::Args) -> anyhow::Result<rustleaf::core::Value> {
+                args.set_function_name(#method_name_str);
+
+                #(#arg_extractions)*
 
                 args.complete()?;
 
-                // Create the struct instance
-                let instance = Self::new(x, y);
-
-                // Wrap it in the Ref type and return as Value
+                let instance = Self::#method_name(#(#arg_names),*);
                 let wrapper = #ref_name::new(instance);
                 Ok(rustleaf::core::Value::rust_value(Box::new(wrapper)))
+            }
+        }
+    } else {
+        quote! {
+            pub fn #wrapper_name(mut args: rustleaf::core::Args) -> anyhow::Result<rustleaf::core::Value> {
+                args.set_function_name(#method_name_str);
+
+                #(#arg_extractions)*
+
+                args.complete()?;
+
+                let result = Self::#method_name(#(#arg_names),*);
+                Ok(result.into())
             }
         }
     }
