@@ -13,22 +13,22 @@ pub struct Vector2 {
 // Generates the wrapper methods (and dispatch) needed to expose methods to the scripting language
 #[rustleaf]
 impl Vector2 {
-        // The wrapping method gets named `rustleaf_new`, for registering with the evaluator
+    // The wrapping method gets named `rustleaf_new`, for registering with the evaluator
     pub fn new(x: f64, y: f64) -> Self {
         Self { x, y }
     }
 
-        // Immutable, no args
+    // Immutable, no args
     pub fn magnitude(&self) -> f64 {
         (self.x * self.x + self.y * self.y).sqrt()
     }
 
-        // Immutable, "other"-arg
+    // Immutable, "other"-arg
     pub fn dot(&self, other: &Vector2) -> f64 {
         self.x * other.x + self.y * other.y
     }
 
-        // Mutable self-arg
+    // Mutable self-arg
     pub fn normalize(&mut self) {
         let mag = self.magnitude();
         if mag > 0.0 {
@@ -46,9 +46,8 @@ mod tests {
     #[test]
     fn test_vector2_user_experience() {
         let mut e = Evaluator::new();
-         // Register our type with the evaluator, exposing it's properties, methods, etc.
+        // Register our type with the evaluator, exposing it's properties, methods, etc.
         e.register_builtin_fn("Vector2", Vector2::rustleaf_new);
-
 
         // Test that we can create vectors and use their methods in the scripting language
         let code = r#"

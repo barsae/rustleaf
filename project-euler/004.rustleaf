@@ -6,7 +6,7 @@ fn is_palindrome(n) {
     var chars = s.to_list();
     var len = chars.len();
     
-    for i in range(len / 2) {
+    for i in range(int(len / 2)) {
         if chars[i] != chars[len - 1 - i] {
             return false;
         }
@@ -37,7 +37,7 @@ fn solve_euler_004(min_digits, max_digits) {
         }
     }
     
-    [largest_palindrome, found_a, found_b]
+    return [largest_palindrome, found_a, found_b];
 }
 
 // Test with 2-digit numbers

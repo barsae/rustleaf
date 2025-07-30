@@ -302,11 +302,8 @@ pub fn sum(mut args: Args) -> Result<Value> {
             let mut sum = list[0].clone();
 
             for item in list.iter().skip(1) {
-                // Use op_add by calling the bound method directly
-                sum = crate::core::builtins::op_add(
-                    &sum,
-                    crate::core::Args::positional(vec![item.clone()]),
-                )?;
+                // Use the helper method for cleaner code
+                sum = sum.op_add(item.clone())?;
             }
 
             Ok(sum)
@@ -317,12 +314,13 @@ pub fn sum(mut args: Args) -> Result<Value> {
 
 pub fn filter(mut args: Args) -> Result<Value> {
     args.set_function_name("filter");
-    let iterable = args.expect("iterable")?;
+    let mut iterable = args.expect("iterable")?;
     let predicate = args.expect("predicate")?;
     args.complete()?;
 
-    match iterable {
+    match &iterable {
         Value::List(list_ref) => {
+            // Handle lists directly for efficiency
             let list = list_ref.borrow();
             let mut filtered = Vec::new();
 
@@ -339,14 +337,13 @@ pub fn filter(mut args: Args) -> Result<Value> {
 
             Ok(Value::new_list_with_values(filtered))
         }
-        Value::RustValue(rust_value) => {
-            // Handle iterators with op_next() method
+        _ => {
+            // Handle any iterator using the op_next helper
             let mut filtered = Vec::new();
-            let mut iterator = rust_value.dyn_clone();
 
             loop {
                 // Try to get the next value from the iterator
-                match iterator.op_next() {
+                match iterable.op_next() {
                     Ok(Some(item)) => {
                         // Call the predicate function with the item
                         let predicate_args = crate::core::Args::positional(vec![item.clone()]);
@@ -367,18 +364,18 @@ pub fn filter(mut args: Args) -> Result<Value> {
 
             Ok(Value::new_list_with_values(filtered))
         }
-        _ => Err(anyhow!("filter() expects a list or iterable")),
     }
 }
 
 pub fn take_while(mut args: Args) -> Result<Value> {
     args.set_function_name("take_while");
-    let iterable = args.expect("iterable")?;
+    let mut iterable = args.expect("iterable")?;
     let predicate = args.expect("predicate")?;
     args.complete()?;
 
     match &iterable {
         Value::List(list_ref) => {
+            // Handle lists directly for efficiency
             let list = list_ref.borrow();
             let mut taken = Vec::new();
 
@@ -397,14 +394,13 @@ pub fn take_while(mut args: Args) -> Result<Value> {
 
             Ok(Value::new_list_with_values(taken))
         }
-        Value::RustValue(rust_value) => {
-            // Handle iterators with op_next() method
+        _ => {
+            // Handle any iterator using the op_next helper
             let mut taken = Vec::new();
-            let mut iterator = rust_value.dyn_clone();
 
             loop {
                 // Try to get the next value from the iterator
-                match iterator.op_next() {
+                match iterable.op_next() {
                     Ok(Some(item)) => {
                         // Call the predicate function with the item
                         let predicate_args = crate::core::Args::positional(vec![item.clone()]);
@@ -427,36 +423,5 @@ pub fn take_while(mut args: Args) -> Result<Value> {
 
             Ok(Value::new_list_with_values(taken))
         }
-        Value::ClassInstance(_) => {
-            // Handle class instances that might have op_next method
-            let mut taken = Vec::new();
-
-            loop {
-                // Try to get the op_next method and call it
-                let mut dummy_eval = crate::eval::Evaluator::new();
-                if let Some(op_next_method) = iterable.get_attr("op_next", &mut dummy_eval) {
-                    match op_next_method.call(crate::core::Args::new(vec![], Default::default())) {
-                        Ok(item) => {
-                            // Call the predicate function with the item
-                            let predicate_args = crate::core::Args::positional(vec![item.clone()]);
-                            let result = predicate.call(predicate_args)?;
-
-                            // Check if result is truthy
-                            if result.is_truthy() {
-                                taken.push(item);
-                            } else {
-                                break; // Stop taking once predicate is false
-                            }
-                        }
-                        Err(_) => break, // Assume iterator exhausted or error
-                    }
-                } else {
-                    return Err(anyhow!("take_while() expects a list or iterable"));
-                }
-            }
-
-            Ok(Value::new_list_with_values(taken))
-        }
-        _ => Err(anyhow!("take_while() expects a list or iterable")),
     }
 }

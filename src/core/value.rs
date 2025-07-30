@@ -239,7 +239,7 @@ impl Value {
         })
     }
 
-    /// Extract i64 with error message for method calls  
+    /// Extract i64 with error message for method calls
     pub fn expect_i64(&self, method_name: &str, arg_name: &str) -> Result<i64> {
         self.as_i64().ok_or_else(|| {
             anyhow!(
@@ -552,6 +552,19 @@ impl Value {
     pub fn op_next(&mut self) -> Result<Option<Value>> {
         match self {
             Value::RustValue(rv) => rv.op_next(),
+            Value::ClassInstance(_) => {
+                // Handle class instances that might have op_next method
+                // TODO: this clearly should not be done this way
+                let mut dummy_eval = crate::eval::Evaluator::new();
+                if let Some(op_next_method) = self.get_attr("op_next", &mut dummy_eval) {
+                    match op_next_method.call(Args::new(vec![], Default::default())) {
+                        Ok(item) => Ok(Some(item)),
+                        Err(_) => Ok(None), // Assume iterator exhausted or error
+                    }
+                } else {
+                    Err(anyhow!("Value is not an iterator: {:?}", self))
+                }
+            }
             _ => Err(anyhow!("Value is not an iterator: {:?}", self)),
         }
     }
@@ -721,6 +734,12 @@ impl Value {
             "op_ne" => Some(self.bind_method(op_ne)),
             _ => None,
         }
+    }
+
+    /// Perform addition operation on this value with another value
+    pub fn op_add(&self, other: Value) -> Result<Value> {
+        use crate::core::builtins::op_add;
+        op_add(self, Args::positional(vec![other]))
     }
 
     pub fn eval(
