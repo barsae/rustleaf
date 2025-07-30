@@ -12,8 +12,12 @@ pub struct TokenStream {
 impl TokenStream {
     pub fn is_at_end(&self) -> bool;
 
-    // Only way to consume tokens
+    // Backtracking parse - returns None if parse fails
     pub fn try_parse<T, F>(&mut self, f: F) -> Result<Option<T>>
+        where F: FnOnce(&mut ParseStream) -> Result<T>;
+    
+    // Non-backtracking parse - for when you're committed to this parse path
+    pub fn parse<T, F>(&mut self, f: F) -> Result<T>
         where F: FnOnce(&mut ParseStream) -> Result<T>;
 }
 
@@ -37,6 +41,29 @@ impl<'a> ParseStream<'a> {
     // Nested speculation
     pub fn try_parse<T, F>(&mut self, f: F) -> Result<Option<T>>
         where F: FnOnce(&mut ParseStream) -> Result<T>;
+}
+```
+
+## When to Use Each Method
+
+- **`try_parse`**: Use for alternatives, optional elements, or any speculative parsing
+- **`parse`**: Use when you're already committed to a parse path (e.g., after matching a keyword)
+
+Example:
+```rust
+// Use try_parse for alternatives
+fn parse_instruction(s: &mut ParseStream) -> Result<Option<Instruction>> {
+    if let Some(push) = s.try_parse(parse_push)? {
+        Ok(Some(push))
+    } else if s.accept_lexeme("while")?.is_some() {
+        // We found "while" - we're committed, use parse for better errors
+        stream.parse(|s| {
+            let cond = parse_expression(s)?;
+            Err(anyhow!("While loops are not supported in this language"))
+        })?
+    } else {
+        Ok(None)
+    }
 }
 ```
 
