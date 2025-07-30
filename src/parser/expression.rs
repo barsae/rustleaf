@@ -28,9 +28,28 @@ impl Parser {
                     .ok_or_else(|| anyhow!("Identifier token missing text"))?;
                 left = Expression::GetAttr(Box::new(left), property);
             } else if self.accept(TokenType::LeftBracket) {
-                let index = self.parse_expression()?;
-                self.expect(TokenType::RightBracket, "Expected ']' after array index")?;
-                left = Expression::GetItem(Box::new(left), Box::new(index));
+                // TODO: this is a clear indicator our Block-Expression grammar is wrong
+                // Check if the left expression is a control flow expression that shouldn't be indexed
+                let should_allow_indexing = !matches!(
+                    &left,
+                    Expression::For { .. }
+                        | Expression::While { .. }
+                        | Expression::Loop { .. }
+                        | Expression::If { .. }
+                        | Expression::Match { .. }
+                        | Expression::Try { .. }
+                        | Expression::With { .. }
+                );
+
+                if should_allow_indexing {
+                    let index = self.parse_expression()?;
+                    self.expect(TokenType::RightBracket, "Expected ']' after array index")?;
+                    left = Expression::GetItem(Box::new(left), Box::new(index));
+                } else {
+                    // Don't consume the LeftBracket, let it be parsed as a separate expression
+                    self.current -= 1; // Put back the LeftBracket token
+                    break;
+                }
             } else if self.accept(TokenType::LeftParen) {
                 let mut args = Vec::new();
 
