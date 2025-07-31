@@ -1,6 +1,6 @@
 # Program
-Status: 🔴
-Assertions: 0
+Status: 🟢
+Assertions: 3
 
 ```rustleaf
 // Dict access with different key types
@@ -18,11 +18,83 @@ assert(mixed["two"] == 2);
 parse_program: starting
 parse_program: parsing statement at position 0 (Var)
 parse_statement: starting at position 0 (Var)
+parse_expression: starting at position 3 (LeftBrace)
+parse_primary: success - parsing block or dict
+parse_primary: success - parsed numeric/string literal
+parse_expression: starting at position 6 (Int(1))
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_primary: success - parsed numeric/string literal
+parse_expression: starting at position 10 (Int(2))
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_expression: success - parsed precedence expression
+parse_statement: success - parsed var declaration
+parse_program: parsing statement at position 13 (Ident(assert))
+parse_statement: starting at position 13 (Ident(assert))
+parse_statement: falling back to expression statement
+parse_expression: starting at position 13 (Ident(assert))
+parse_primary: success - parsed identifier (assert)
+parse_expression: starting at position 15 (Ident(my_dict))
+parse_primary: success - parsed identifier (my_dict)
+parse_expression: starting at position 17 (String(a))
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_expression: success - parsed precedence expression
+parse_program: parsing statement at position 23 (Var)
+parse_statement: starting at position 23 (Var)
+parse_expression: starting at position 26 (LeftBrace)
+parse_primary: success - parsing block or dict
+parse_primary: success - parsed numeric/string literal
+parse_expression: starting at position 29 (String(one))
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_primary: success - parsed numeric/string literal
+parse_expression: starting at position 33 (Int(2))
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_primary: success - parsed boolean literal (true)
+parse_expression: starting at position 37 (String(yes))
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_expression: success - parsed precedence expression
+parse_statement: success - parsed var declaration
+parse_program: parsing statement at position 40 (Ident(assert))
+parse_statement: starting at position 40 (Ident(assert))
+parse_statement: falling back to expression statement
+parse_expression: starting at position 40 (Ident(assert))
+parse_primary: success - parsed identifier (assert)
+parse_expression: starting at position 42 (Ident(mixed))
+parse_primary: success - parsed identifier (mixed)
+parse_expression: starting at position 44 (Int(1))
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_expression: success - parsed precedence expression
+parse_program: parsing statement at position 50 (Ident(assert))
+parse_statement: starting at position 50 (Ident(assert))
+parse_statement: falling back to expression statement
+parse_expression: starting at position 50 (Ident(assert))
+parse_primary: success - parsed identifier (assert)
+parse_expression: starting at position 52 (Ident(mixed))
+parse_primary: success - parsed identifier (mixed)
+parse_expression: starting at position 54 (String(two))
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_expression: success - parsed precedence expression
+parse_program: parsed 5 statements
 ```
 
 # Result
 ```rust
-Skipped due to parse error
+Ok(
+    Unit,
+)
 ```
 
 # Lex
@@ -96,12 +168,423 @@ Ok(
 
 # Parse
 ```rust
-Err(
-    "Expected Hash, found Var",
+Ok(
+    Program(
+        [
+            VarDecl {
+                pattern: Variable(
+                    "my_dict",
+                ),
+                value: Some(
+                    Dict(
+                        [
+                            (
+                                Literal(
+                                    String(
+                                        "a",
+                                    ),
+                                ),
+                                Literal(
+                                    Int(
+                                        1,
+                                    ),
+                                ),
+                            ),
+                            (
+                                Literal(
+                                    String(
+                                        "b",
+                                    ),
+                                ),
+                                Literal(
+                                    Int(
+                                        2,
+                                    ),
+                                ),
+                            ),
+                        ],
+                    ),
+                ),
+            },
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            GetItem(
+                                Identifier(
+                                    "my_dict",
+                                ),
+                                Literal(
+                                    String(
+                                        "a",
+                                    ),
+                                ),
+                            ),
+                            Literal(
+                                Int(
+                                    1,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            VarDecl {
+                pattern: Variable(
+                    "mixed",
+                ),
+                value: Some(
+                    Dict(
+                        [
+                            (
+                                Literal(
+                                    Int(
+                                        1,
+                                    ),
+                                ),
+                                Literal(
+                                    String(
+                                        "one",
+                                    ),
+                                ),
+                            ),
+                            (
+                                Literal(
+                                    String(
+                                        "two",
+                                    ),
+                                ),
+                                Literal(
+                                    Int(
+                                        2,
+                                    ),
+                                ),
+                            ),
+                            (
+                                Literal(
+                                    Bool(
+                                        true,
+                                    ),
+                                ),
+                                Literal(
+                                    String(
+                                        "yes",
+                                    ),
+                                ),
+                            ),
+                        ],
+                    ),
+                ),
+            },
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            GetItem(
+                                Identifier(
+                                    "mixed",
+                                ),
+                                Literal(
+                                    Int(
+                                        1,
+                                    ),
+                                ),
+                            ),
+                            Literal(
+                                String(
+                                    "one",
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            GetItem(
+                                Identifier(
+                                    "mixed",
+                                ),
+                                Literal(
+                                    String(
+                                        "two",
+                                    ),
+                                ),
+                            ),
+                            Literal(
+                                Int(
+                                    2,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+        ],
+    ),
 )
 ```
 
 # Eval
 ```rust
-Skipped due to parse error
+Ok(
+    RustValue(
+        EvalProgram {
+            statements: [
+                RustValue(
+                    EvalDeclare {
+                        name: "my_dict",
+                        init_expr: Some(
+                            RustValue(
+                                EvalDict {
+                                    pairs: [
+                                        (
+                                            RustValue(
+                                                EvalLiteral {
+                                                    value: String(
+                                                        "a",
+                                                    ),
+                                                },
+                                            ),
+                                            RustValue(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        1,
+                                                    ),
+                                                },
+                                            ),
+                                        ),
+                                        (
+                                            RustValue(
+                                                EvalLiteral {
+                                                    value: String(
+                                                        "b",
+                                                    ),
+                                                },
+                                            ),
+                                            RustValue(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        2,
+                                                    ),
+                                                },
+                                            ),
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ),
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalGetItem {
+                                                    obj_expr: RustValue(
+                                                        EvalVariable {
+                                                            name: "my_dict",
+                                                        },
+                                                    ),
+                                                    index_expr: RustValue(
+                                                        EvalLiteral {
+                                                            value: String(
+                                                                "a",
+                                                            ),
+                                                        },
+                                                    ),
+                                                },
+                                            ),
+                                            attr_name: "op_eq",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Int(
+                                                    1,
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ],
+                    },
+                ),
+                RustValue(
+                    EvalDeclare {
+                        name: "mixed",
+                        init_expr: Some(
+                            RustValue(
+                                EvalDict {
+                                    pairs: [
+                                        (
+                                            RustValue(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        1,
+                                                    ),
+                                                },
+                                            ),
+                                            RustValue(
+                                                EvalLiteral {
+                                                    value: String(
+                                                        "one",
+                                                    ),
+                                                },
+                                            ),
+                                        ),
+                                        (
+                                            RustValue(
+                                                EvalLiteral {
+                                                    value: String(
+                                                        "two",
+                                                    ),
+                                                },
+                                            ),
+                                            RustValue(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        2,
+                                                    ),
+                                                },
+                                            ),
+                                        ),
+                                        (
+                                            RustValue(
+                                                EvalLiteral {
+                                                    value: Bool(
+                                                        true,
+                                                    ),
+                                                },
+                                            ),
+                                            RustValue(
+                                                EvalLiteral {
+                                                    value: String(
+                                                        "yes",
+                                                    ),
+                                                },
+                                            ),
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ),
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalGetItem {
+                                                    obj_expr: RustValue(
+                                                        EvalVariable {
+                                                            name: "mixed",
+                                                        },
+                                                    ),
+                                                    index_expr: RustValue(
+                                                        EvalLiteral {
+                                                            value: Int(
+                                                                1,
+                                                            ),
+                                                        },
+                                                    ),
+                                                },
+                                            ),
+                                            attr_name: "op_eq",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: String(
+                                                    "one",
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ],
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalGetItem {
+                                                    obj_expr: RustValue(
+                                                        EvalVariable {
+                                                            name: "mixed",
+                                                        },
+                                                    ),
+                                                    index_expr: RustValue(
+                                                        EvalLiteral {
+                                                            value: String(
+                                                                "two",
+                                                            ),
+                                                        },
+                                                    ),
+                                                },
+                                            ),
+                                            attr_name: "op_eq",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Int(
+                                                    2,
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ],
+                    },
+                ),
+            ],
+        },
+    ),
+)
 ```

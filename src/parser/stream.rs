@@ -33,15 +33,22 @@ impl TokenStream {
 
     pub fn try_parse<T, F>(&mut self, f: F) -> Result<Option<T>>
     where
-        F: FnOnce(&mut TokenStream) -> Result<T>,
+        F: FnOnce(&mut TokenStream) -> Result<Option<T>>,
     {
         let checkpoint = self.current;
         
         match f(self) {
-            Ok(result) => {
+            Ok(Some(result)) => {
+                // Success - just return
                 Ok(Some(result))
             }
+            Ok(None) => {
+                // This alternative didn't match - restore checkpoint, return Ok(None)
+                self.current = checkpoint;
+                Ok(None)
+            }
             Err(err) => {
+                // Hard error - restore checkpoint, return Err
                 self.current = checkpoint;
                 Err(err)
             }

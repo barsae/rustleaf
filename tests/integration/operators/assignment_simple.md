@@ -1,6 +1,6 @@
 # Program
-Status: 🔴
-Assertions: 0
+Status: 🟢
+Assertions: 1
 
 ```rustleaf
 var x = 12;
@@ -13,11 +13,34 @@ assert(x == 42);
 parse_program: starting
 parse_program: parsing statement at position 0 (Var)
 parse_statement: starting at position 0 (Var)
+parse_expression: starting at position 3 (Int(12))
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_statement: success - parsed var declaration
+parse_program: parsing statement at position 5 (Ident(x))
+parse_statement: starting at position 5 (Ident(x))
+parse_expression: starting at position 7 (Int(42))
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_statement: success - parsed assignment
+parse_program: parsing statement at position 9 (Ident(assert))
+parse_statement: starting at position 9 (Ident(assert))
+parse_statement: falling back to expression statement
+parse_expression: starting at position 9 (Ident(assert))
+parse_primary: success - parsed identifier (assert)
+parse_expression: starting at position 11 (Ident(x))
+parse_primary: success - parsed identifier (x)
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_expression: success - parsed precedence expression
+parse_program: parsed 3 statements
 ```
 
 # Result
 ```rust
-Skipped due to parse error
+Ok(
+    Unit,
+)
 ```
 
 # Lex
@@ -47,12 +70,124 @@ Ok(
 
 # Parse
 ```rust
-Err(
-    "Expected Hash, found Var",
+Ok(
+    Program(
+        [
+            VarDecl {
+                pattern: Variable(
+                    "x",
+                ),
+                value: Some(
+                    Literal(
+                        Int(
+                            12,
+                        ),
+                    ),
+                ),
+            },
+            Assignment {
+                target: Identifier(
+                    "x",
+                ),
+                op: Assign,
+                value: Literal(
+                    Int(
+                        42,
+                    ),
+                ),
+            },
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            Identifier(
+                                "x",
+                            ),
+                            Literal(
+                                Int(
+                                    42,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+        ],
+    ),
 )
 ```
 
 # Eval
 ```rust
-Skipped due to parse error
+Ok(
+    RustValue(
+        EvalProgram {
+            statements: [
+                RustValue(
+                    EvalDeclare {
+                        name: "x",
+                        init_expr: Some(
+                            RustValue(
+                                EvalLiteral {
+                                    value: Int(
+                                        12,
+                                    ),
+                                },
+                            ),
+                        ),
+                    },
+                ),
+                RustValue(
+                    EvalAssign {
+                        name: "x",
+                        expr: RustValue(
+                            EvalLiteral {
+                                value: Int(
+                                    42,
+                                ),
+                            },
+                        ),
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalVariable {
+                                                    name: "x",
+                                                },
+                                            ),
+                                            attr_name: "op_eq",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Int(
+                                                    42,
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ],
+                    },
+                ),
+            ],
+        },
+    ),
+)
 ```

@@ -1,6 +1,6 @@
 # Program
 Status: 🟢
-Assertions: 0
+Assertions: 1
 
 ```rustleaf
 assert(false, "This should fail");
@@ -11,11 +11,24 @@ assert(false, "This should fail");
 parse_program: starting
 parse_program: parsing statement at position 0 (Ident(assert))
 parse_statement: starting at position 0 (Ident(assert))
+parse_statement: falling back to expression statement
+parse_expression: starting at position 0 (Ident(assert))
+parse_primary: success - parsed identifier (assert)
+parse_expression: starting at position 2 (False)
+parse_primary: success - parsed boolean literal (false)
+parse_expression: success - parsed precedence expression
+parse_expression: starting at position 4 (String(This should fail))
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_expression: success - parsed precedence expression
+parse_program: parsed 1 statements
 ```
 
 # Result
 ```rust
-Skipped due to parse error
+Err(
+    "Assertion failed: This should fail",
+)
 ```
 
 # Lex
@@ -36,12 +49,66 @@ Ok(
 
 # Parse
 ```rust
-Err(
-    "Expected Hash, found Ident",
+Ok(
+    Program(
+        [
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Literal(
+                            Bool(
+                                false,
+                            ),
+                        ),
+                        Literal(
+                            String(
+                                "This should fail",
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+        ],
+    ),
 )
 ```
 
 # Eval
 ```rust
-Skipped due to parse error
+Ok(
+    RustValue(
+        EvalProgram {
+            statements: [
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalLiteral {
+                                    value: Bool(
+                                        false,
+                                    ),
+                                },
+                            ),
+                            RustValue(
+                                EvalLiteral {
+                                    value: String(
+                                        "This should fail",
+                                    ),
+                                },
+                            ),
+                        ],
+                    },
+                ),
+            ],
+        },
+    ),
+)
 ```

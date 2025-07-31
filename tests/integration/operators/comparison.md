@@ -1,6 +1,6 @@
 # Program
-Status: 🔴
-Assertions: 0
+Status: 🟢
+Assertions: 10
 
 ```rustleaf
 // Basic comparison tests
@@ -25,11 +25,112 @@ assert("hello" == "hello");
 parse_program: starting
 parse_program: parsing statement at position 0 (Ident(assert))
 parse_statement: starting at position 0 (Ident(assert))
+parse_statement: falling back to expression statement
+parse_expression: starting at position 0 (Ident(assert))
+parse_primary: success - parsed identifier (assert)
+parse_expression: starting at position 2 (Int(3))
+parse_primary: success - parsed numeric/string literal
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_expression: success - parsed precedence expression
+parse_program: parsing statement at position 7 (Ident(assert))
+parse_statement: starting at position 7 (Ident(assert))
+parse_statement: falling back to expression statement
+parse_expression: starting at position 7 (Ident(assert))
+parse_primary: success - parsed identifier (assert)
+parse_expression: starting at position 9 (Int(3))
+parse_primary: success - parsed numeric/string literal
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_expression: success - parsed precedence expression
+parse_program: parsing statement at position 14 (Ident(assert))
+parse_statement: starting at position 14 (Ident(assert))
+parse_statement: falling back to expression statement
+parse_expression: starting at position 14 (Ident(assert))
+parse_primary: success - parsed identifier (assert)
+parse_expression: starting at position 16 (Int(3))
+parse_primary: success - parsed numeric/string literal
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_expression: success - parsed precedence expression
+parse_program: parsing statement at position 21 (Ident(assert))
+parse_statement: starting at position 21 (Ident(assert))
+parse_statement: falling back to expression statement
+parse_expression: starting at position 21 (Ident(assert))
+parse_primary: success - parsed identifier (assert)
+parse_expression: starting at position 23 (Int(4))
+parse_primary: success - parsed numeric/string literal
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_expression: success - parsed precedence expression
+parse_program: parsing statement at position 28 (Ident(assert))
+parse_statement: starting at position 28 (Ident(assert))
+parse_statement: falling back to expression statement
+parse_expression: starting at position 28 (Ident(assert))
+parse_primary: success - parsed identifier (assert)
+parse_expression: starting at position 30 (Int(3))
+parse_primary: success - parsed numeric/string literal
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_expression: success - parsed precedence expression
+parse_program: parsing statement at position 35 (Ident(assert))
+parse_statement: starting at position 35 (Ident(assert))
+parse_statement: falling back to expression statement
+parse_expression: starting at position 35 (Ident(assert))
+parse_primary: success - parsed identifier (assert)
+parse_expression: starting at position 37 (Int(3))
+parse_primary: success - parsed numeric/string literal
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_expression: success - parsed precedence expression
+parse_program: parsing statement at position 42 (Ident(assert))
+parse_statement: starting at position 42 (Ident(assert))
+parse_statement: falling back to expression statement
+parse_expression: starting at position 42 (Ident(assert))
+parse_primary: success - parsed identifier (assert)
+parse_expression: starting at position 44 (Int(3))
+parse_primary: success - parsed numeric/string literal
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_expression: success - parsed precedence expression
+parse_program: parsing statement at position 49 (Ident(assert))
+parse_statement: starting at position 49 (Ident(assert))
+parse_statement: falling back to expression statement
+parse_expression: starting at position 49 (Ident(assert))
+parse_primary: success - parsed identifier (assert)
+parse_expression: starting at position 51 (Float(3.5))
+parse_primary: success - parsed numeric/string literal
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_expression: success - parsed precedence expression
+parse_program: parsing statement at position 56 (Ident(assert))
+parse_statement: starting at position 56 (Ident(assert))
+parse_statement: falling back to expression statement
+parse_expression: starting at position 56 (Ident(assert))
+parse_primary: success - parsed identifier (assert)
+parse_expression: starting at position 58 (String(a))
+parse_primary: success - parsed numeric/string literal
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_expression: success - parsed precedence expression
+parse_program: parsing statement at position 63 (Ident(assert))
+parse_statement: starting at position 63 (Ident(assert))
+parse_statement: falling back to expression statement
+parse_expression: starting at position 63 (Ident(assert))
+parse_primary: success - parsed identifier (assert)
+parse_expression: starting at position 65 (String(hello))
+parse_primary: success - parsed numeric/string literal
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_expression: success - parsed precedence expression
+parse_program: parsed 10 statements
 ```
 
 # Result
 ```rust
-Skipped due to parse error
+Ok(
+    Unit,
+)
 ```
 
 # Lex
@@ -113,12 +214,592 @@ Ok(
 
 # Parse
 ```rust
-Err(
-    "Expected Hash, found Ident",
+Ok(
+    Program(
+        [
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            Literal(
+                                Int(
+                                    3,
+                                ),
+                            ),
+                            Literal(
+                                Int(
+                                    3,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Ne(
+                            Literal(
+                                Int(
+                                    3,
+                                ),
+                            ),
+                            Literal(
+                                Int(
+                                    4,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Lt(
+                            Literal(
+                                Int(
+                                    3,
+                                ),
+                            ),
+                            Literal(
+                                Int(
+                                    4,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Gt(
+                            Literal(
+                                Int(
+                                    4,
+                                ),
+                            ),
+                            Literal(
+                                Int(
+                                    3,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Le(
+                            Literal(
+                                Int(
+                                    3,
+                                ),
+                            ),
+                            Literal(
+                                Int(
+                                    3,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Ge(
+                            Literal(
+                                Int(
+                                    3,
+                                ),
+                            ),
+                            Literal(
+                                Int(
+                                    3,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            Literal(
+                                Int(
+                                    3,
+                                ),
+                            ),
+                            Literal(
+                                Float(
+                                    3.0,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Gt(
+                            Literal(
+                                Float(
+                                    3.5,
+                                ),
+                            ),
+                            Literal(
+                                Int(
+                                    3,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Lt(
+                            Literal(
+                                String(
+                                    "a",
+                                ),
+                            ),
+                            Literal(
+                                String(
+                                    "b",
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            Literal(
+                                String(
+                                    "hello",
+                                ),
+                            ),
+                            Literal(
+                                String(
+                                    "hello",
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+        ],
+    ),
 )
 ```
 
 # Eval
 ```rust
-Skipped due to parse error
+Ok(
+    RustValue(
+        EvalProgram {
+            statements: [
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        3,
+                                                    ),
+                                                },
+                                            ),
+                                            attr_name: "op_eq",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Int(
+                                                    3,
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ],
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        3,
+                                                    ),
+                                                },
+                                            ),
+                                            attr_name: "op_ne",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Int(
+                                                    4,
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ],
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        3,
+                                                    ),
+                                                },
+                                            ),
+                                            attr_name: "op_lt",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Int(
+                                                    4,
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ],
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        4,
+                                                    ),
+                                                },
+                                            ),
+                                            attr_name: "op_gt",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Int(
+                                                    3,
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ],
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        3,
+                                                    ),
+                                                },
+                                            ),
+                                            attr_name: "op_le",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Int(
+                                                    3,
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ],
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        3,
+                                                    ),
+                                                },
+                                            ),
+                                            attr_name: "op_ge",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Int(
+                                                    3,
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ],
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalLiteral {
+                                                    value: Int(
+                                                        3,
+                                                    ),
+                                                },
+                                            ),
+                                            attr_name: "op_eq",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Float(
+                                                    3.0,
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ],
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalLiteral {
+                                                    value: Float(
+                                                        3.5,
+                                                    ),
+                                                },
+                                            ),
+                                            attr_name: "op_gt",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Int(
+                                                    3,
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ],
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalLiteral {
+                                                    value: String(
+                                                        "a",
+                                                    ),
+                                                },
+                                            ),
+                                            attr_name: "op_lt",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: String(
+                                                    "b",
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ],
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalLiteral {
+                                                    value: String(
+                                                        "hello",
+                                                    ),
+                                                },
+                                            ),
+                                            attr_name: "op_eq",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: String(
+                                                    "hello",
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ],
+                    },
+                ),
+            ],
+        },
+    ),
+)
 ```

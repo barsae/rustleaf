@@ -1,6 +1,6 @@
 # Program
-Status: 🔴
-Assertions: 0
+Status: 🟢
+Assertions: 2
 
 ```rustleaf
 var lambda = || 42;
@@ -14,11 +14,50 @@ assert(is_unit(lambda) == false);  // Lambda should not be unit
 parse_program: starting
 parse_program: parsing statement at position 0 (Var)
 parse_statement: starting at position 0 (Var)
+parse_expression: starting at position 3 (Pipe)
+parse_primary: success - parsing lambda expression
+parse_expression: starting at position 5 (Int(42))
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_expression: success - parsed precedence expression
+parse_statement: success - parsed var declaration
+parse_program: parsing statement at position 7 (Var)
+parse_statement: starting at position 7 (Var)
+parse_expression: starting at position 10 (Ident(lambda))
+parse_primary: success - parsed identifier (lambda)
+parse_expression: success - parsed precedence expression
+parse_statement: success - parsed var declaration
+parse_program: parsing statement at position 14 (Ident(assert))
+parse_statement: starting at position 14 (Ident(assert))
+parse_statement: falling back to expression statement
+parse_expression: starting at position 14 (Ident(assert))
+parse_primary: success - parsed identifier (assert)
+parse_expression: starting at position 16 (Ident(result))
+parse_primary: success - parsed identifier (result)
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_expression: success - parsed precedence expression
+parse_program: parsing statement at position 21 (Ident(assert))
+parse_statement: starting at position 21 (Ident(assert))
+parse_statement: falling back to expression statement
+parse_expression: starting at position 21 (Ident(assert))
+parse_primary: success - parsed identifier (assert)
+parse_expression: starting at position 23 (Ident(is_unit))
+parse_primary: success - parsed identifier (is_unit)
+parse_expression: starting at position 25 (Ident(lambda))
+parse_primary: success - parsed identifier (lambda)
+parse_expression: success - parsed precedence expression
+parse_primary: success - parsed boolean literal (false)
+parse_expression: success - parsed precedence expression
+parse_expression: success - parsed precedence expression
+parse_program: parsed 4 statements
 ```
 
 # Result
 ```rust
-Skipped due to parse error
+Ok(
+    Unit,
+)
 ```
 
 # Lex
@@ -63,12 +102,214 @@ Ok(
 
 # Parse
 ```rust
-Err(
-    "Expected Hash, found Var",
+Ok(
+    Program(
+        [
+            VarDecl {
+                pattern: Variable(
+                    "lambda",
+                ),
+                value: Some(
+                    Lambda {
+                        params: [],
+                        body: Expression(
+                            Literal(
+                                Int(
+                                    42,
+                                ),
+                            ),
+                        ),
+                    },
+                ),
+            },
+            VarDecl {
+                pattern: Variable(
+                    "result",
+                ),
+                value: Some(
+                    FunctionCall(
+                        Identifier(
+                            "lambda",
+                        ),
+                        [],
+                    ),
+                ),
+            },
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            Identifier(
+                                "result",
+                            ),
+                            Literal(
+                                Int(
+                                    42,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            FunctionCall(
+                                Identifier(
+                                    "is_unit",
+                                ),
+                                [
+                                    Identifier(
+                                        "lambda",
+                                    ),
+                                ],
+                            ),
+                            Literal(
+                                Bool(
+                                    false,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+        ],
+    ),
 )
 ```
 
 # Eval
 ```rust
-Skipped due to parse error
+Ok(
+    RustValue(
+        EvalProgram {
+            statements: [
+                RustValue(
+                    EvalDeclare {
+                        name: "lambda",
+                        init_expr: Some(
+                            RustValue(
+                                EvalLambda {
+                                    data: LambdaData {
+                                        params: [],
+                                        body: RustValue(
+                                            EvalLiteral {
+                                                value: Int(
+                                                    42,
+                                                ),
+                                            },
+                                        ),
+                                    },
+                                },
+                            ),
+                        ),
+                    },
+                ),
+                RustValue(
+                    EvalDeclare {
+                        name: "result",
+                        init_expr: Some(
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalVariable {
+                                            name: "lambda",
+                                        },
+                                    ),
+                                    args: [],
+                                },
+                            ),
+                        ),
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalVariable {
+                                                    name: "result",
+                                                },
+                                            ),
+                                            attr_name: "op_eq",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Int(
+                                                    42,
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ],
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalCall {
+                                                    func_expr: RustValue(
+                                                        EvalVariable {
+                                                            name: "is_unit",
+                                                        },
+                                                    ),
+                                                    args: [
+                                                        RustValue(
+                                                            EvalVariable {
+                                                                name: "lambda",
+                                                            },
+                                                        ),
+                                                    ],
+                                                },
+                                            ),
+                                            attr_name: "op_eq",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Bool(
+                                                    false,
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ],
+                    },
+                ),
+            ],
+        },
+    ),
+)
 ```

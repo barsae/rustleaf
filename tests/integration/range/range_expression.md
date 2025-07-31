@@ -1,6 +1,6 @@
 # Program
-Status: 🔴
-Assertions: 0
+Status: 🟢
+Assertions: 4
 
 ```rustleaf
 // Test using ranges in for loops and expressions
@@ -31,11 +31,120 @@ assert(not (6 in small_range));
 parse_program: starting
 parse_program: parsing statement at position 0 (Var)
 parse_statement: starting at position 0 (Var)
+parse_expression: starting at position 3 (Int(0))
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_statement: success - parsed var declaration
+parse_program: parsing statement at position 5 (For)
+parse_statement: starting at position 5 (For)
+parse_expression: starting at position 5 (For)
+parse_primary: success - parsing for expression
+parse_expression: starting at position 8 (Int(1))
+parse_primary: success - parsed numeric/string literal
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_statement: starting at position 12 (Ident(sum))
+parse_expression: starting at position 14 (Ident(i))
+parse_primary: success - parsed identifier (i)
+parse_expression: success - parsed precedence expression
+parse_statement: success - parsed assignment
+parse_expression: success - parsed precedence expression
+parse_statement: success - parsed block-like expression statement
+parse_program: parsing statement at position 17 (Ident(assert))
+parse_statement: starting at position 17 (Ident(assert))
+parse_statement: falling back to expression statement
+parse_expression: starting at position 17 (Ident(assert))
+parse_primary: success - parsed identifier (assert)
+parse_expression: starting at position 19 (Ident(sum))
+parse_primary: success - parsed identifier (sum)
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_expression: success - parsed precedence expression
+parse_program: parsing statement at position 24 (Var)
+parse_statement: starting at position 24 (Var)
+parse_expression: starting at position 27 (Int(0))
+parse_primary: success - parsed numeric/string literal
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_statement: success - parsed var declaration
+parse_program: parsing statement at position 31 (Var)
+parse_statement: starting at position 31 (Var)
+parse_expression: starting at position 34 (Int(0))
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_statement: success - parsed var declaration
+parse_program: parsing statement at position 36 (For)
+parse_statement: starting at position 36 (For)
+parse_expression: starting at position 36 (For)
+parse_primary: success - parsing for expression
+parse_expression: starting at position 39 (Ident(range))
+parse_primary: success - parsed identifier (range)
+parse_expression: success - parsed precedence expression
+parse_statement: starting at position 41 (If)
+parse_expression: starting at position 41 (If)
+parse_primary: success - parsing if expression
+parse_expression: starting at position 42 (Ident(x))
+parse_primary: success - parsed identifier (x)
+parse_primary: success - parsed numeric/string literal
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_statement: starting at position 48 (Ident(even_count))
+parse_expression: starting at position 50 (Int(1))
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_statement: success - parsed assignment
+parse_expression: success - parsed precedence expression
+parse_statement: success - parsed block-like expression statement
+parse_expression: success - parsed precedence expression
+parse_statement: success - parsed block-like expression statement
+parse_program: parsing statement at position 54 (Ident(assert))
+parse_statement: starting at position 54 (Ident(assert))
+parse_statement: falling back to expression statement
+parse_expression: starting at position 54 (Ident(assert))
+parse_primary: success - parsed identifier (assert)
+parse_expression: starting at position 56 (Ident(even_count))
+parse_primary: success - parsed identifier (even_count)
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_expression: success - parsed precedence expression
+parse_program: parsing statement at position 61 (Var)
+parse_statement: starting at position 61 (Var)
+parse_expression: starting at position 64 (Int(3))
+parse_primary: success - parsed numeric/string literal
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_statement: success - parsed var declaration
+parse_program: parsing statement at position 68 (Ident(assert))
+parse_statement: starting at position 68 (Ident(assert))
+parse_statement: falling back to expression statement
+parse_expression: starting at position 68 (Ident(assert))
+parse_primary: success - parsed identifier (assert)
+parse_expression: starting at position 70 (Int(4))
+parse_primary: success - parsed numeric/string literal
+parse_primary: success - parsed identifier (small_range)
+parse_expression: success - parsed precedence expression
+parse_expression: success - parsed precedence expression
+parse_program: parsing statement at position 75 (Ident(assert))
+parse_statement: starting at position 75 (Ident(assert))
+parse_statement: falling back to expression statement
+parse_expression: starting at position 75 (Ident(assert))
+parse_primary: success - parsed identifier (assert)
+parse_expression: starting at position 77 (Not)
+parse_primary: success - parsing parenthesized expression
+parse_expression: starting at position 79 (Int(6))
+parse_primary: success - parsed numeric/string literal
+parse_primary: success - parsed identifier (small_range)
+parse_expression: success - parsed precedence expression
+parse_expression: success - parsed precedence expression
+parse_expression: success - parsed precedence expression
+parse_program: parsed 10 statements
 ```
 
 # Result
 ```rust
-Skipped due to parse error
+Ok(
+    Unit,
+)
 ```
 
 # Lex
@@ -134,12 +243,599 @@ Ok(
 
 # Parse
 ```rust
-Err(
-    "Expected Hash, found Var",
+Ok(
+    Program(
+        [
+            VarDecl {
+                pattern: Variable(
+                    "sum",
+                ),
+                value: Some(
+                    Literal(
+                        Int(
+                            0,
+                        ),
+                    ),
+                ),
+            },
+            Expression(
+                For {
+                    pattern: Variable(
+                        "i",
+                    ),
+                    iter: RangeExclusive(
+                        Literal(
+                            Int(
+                                1,
+                            ),
+                        ),
+                        Literal(
+                            Int(
+                                5,
+                            ),
+                        ),
+                    ),
+                    body: Block {
+                        statements: [
+                            Assignment {
+                                target: Identifier(
+                                    "sum",
+                                ),
+                                op: AddAssign,
+                                value: Identifier(
+                                    "i",
+                                ),
+                            },
+                        ],
+                        final_expr: None,
+                    },
+                },
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            Identifier(
+                                "sum",
+                            ),
+                            Literal(
+                                Int(
+                                    10,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            VarDecl {
+                pattern: Variable(
+                    "range",
+                ),
+                value: Some(
+                    RangeExclusive(
+                        Literal(
+                            Int(
+                                0,
+                            ),
+                        ),
+                        Literal(
+                            Int(
+                                10,
+                            ),
+                        ),
+                    ),
+                ),
+            },
+            VarDecl {
+                pattern: Variable(
+                    "even_count",
+                ),
+                value: Some(
+                    Literal(
+                        Int(
+                            0,
+                        ),
+                    ),
+                ),
+            },
+            Expression(
+                For {
+                    pattern: Variable(
+                        "x",
+                    ),
+                    iter: Identifier(
+                        "range",
+                    ),
+                    body: Block {
+                        statements: [
+                            Expression(
+                                If {
+                                    condition: Eq(
+                                        Mod(
+                                            Identifier(
+                                                "x",
+                                            ),
+                                            Literal(
+                                                Int(
+                                                    2,
+                                                ),
+                                            ),
+                                        ),
+                                        Literal(
+                                            Int(
+                                                0,
+                                            ),
+                                        ),
+                                    ),
+                                    then_expr: Block {
+                                        statements: [
+                                            Assignment {
+                                                target: Identifier(
+                                                    "even_count",
+                                                ),
+                                                op: AddAssign,
+                                                value: Literal(
+                                                    Int(
+                                                        1,
+                                                    ),
+                                                ),
+                                            },
+                                        ],
+                                        final_expr: None,
+                                    },
+                                    else_expr: None,
+                                },
+                            ),
+                        ],
+                        final_expr: None,
+                    },
+                },
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            Identifier(
+                                "even_count",
+                            ),
+                            Literal(
+                                Int(
+                                    5,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            VarDecl {
+                pattern: Variable(
+                    "small_range",
+                ),
+                value: Some(
+                    RangeExclusive(
+                        Literal(
+                            Int(
+                                3,
+                            ),
+                        ),
+                        Literal(
+                            Int(
+                                6,
+                            ),
+                        ),
+                    ),
+                ),
+            },
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        In(
+                            Literal(
+                                Int(
+                                    4,
+                                ),
+                            ),
+                            Identifier(
+                                "small_range",
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Not(
+                            In(
+                                Literal(
+                                    Int(
+                                        6,
+                                    ),
+                                ),
+                                Identifier(
+                                    "small_range",
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+        ],
+    ),
 )
 ```
 
 # Eval
 ```rust
-Skipped due to parse error
+Ok(
+    RustValue(
+        EvalProgram {
+            statements: [
+                RustValue(
+                    EvalDeclare {
+                        name: "sum",
+                        init_expr: Some(
+                            RustValue(
+                                EvalLiteral {
+                                    value: Int(
+                                        0,
+                                    ),
+                                },
+                            ),
+                        ),
+                    },
+                ),
+                RustValue(
+                    EvalFor {
+                        var_name: "i",
+                        iter_expr: RustValue(
+                            EvalLiteral {
+                                value: Range(
+                                    Range {
+                                        start: 1,
+                                        end: 5,
+                                        inclusive: false,
+                                    },
+                                ),
+                            },
+                        ),
+                        body: RustValue(
+                            EvalBlock {
+                                statements: [
+                                    RustValue(
+                                        EvalAssign {
+                                            name: "sum",
+                                            expr: RustValue(
+                                                EvalCall {
+                                                    func_expr: RustValue(
+                                                        EvalGetAttr {
+                                                            obj_expr: RustValue(
+                                                                EvalVariable {
+                                                                    name: "sum",
+                                                                },
+                                                            ),
+                                                            attr_name: "op_add",
+                                                        },
+                                                    ),
+                                                    args: [
+                                                        RustValue(
+                                                            EvalVariable {
+                                                                name: "i",
+                                                            },
+                                                        ),
+                                                    ],
+                                                },
+                                            ),
+                                        },
+                                    ),
+                                ],
+                                final_expr: None,
+                            },
+                        ),
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalVariable {
+                                                    name: "sum",
+                                                },
+                                            ),
+                                            attr_name: "op_eq",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Int(
+                                                    10,
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ],
+                    },
+                ),
+                RustValue(
+                    EvalDeclare {
+                        name: "range",
+                        init_expr: Some(
+                            RustValue(
+                                EvalLiteral {
+                                    value: Range(
+                                        Range {
+                                            start: 0,
+                                            end: 10,
+                                            inclusive: false,
+                                        },
+                                    ),
+                                },
+                            ),
+                        ),
+                    },
+                ),
+                RustValue(
+                    EvalDeclare {
+                        name: "even_count",
+                        init_expr: Some(
+                            RustValue(
+                                EvalLiteral {
+                                    value: Int(
+                                        0,
+                                    ),
+                                },
+                            ),
+                        ),
+                    },
+                ),
+                RustValue(
+                    EvalFor {
+                        var_name: "x",
+                        iter_expr: RustValue(
+                            EvalVariable {
+                                name: "range",
+                            },
+                        ),
+                        body: RustValue(
+                            EvalBlock {
+                                statements: [
+                                    RustValue(
+                                        EvalIf {
+                                            condition: RustValue(
+                                                EvalCall {
+                                                    func_expr: RustValue(
+                                                        EvalGetAttr {
+                                                            obj_expr: RustValue(
+                                                                EvalCall {
+                                                                    func_expr: RustValue(
+                                                                        EvalGetAttr {
+                                                                            obj_expr: RustValue(
+                                                                                EvalVariable {
+                                                                                    name: "x",
+                                                                                },
+                                                                            ),
+                                                                            attr_name: "op_mod",
+                                                                        },
+                                                                    ),
+                                                                    args: [
+                                                                        RustValue(
+                                                                            EvalLiteral {
+                                                                                value: Int(
+                                                                                    2,
+                                                                                ),
+                                                                            },
+                                                                        ),
+                                                                    ],
+                                                                },
+                                                            ),
+                                                            attr_name: "op_eq",
+                                                        },
+                                                    ),
+                                                    args: [
+                                                        RustValue(
+                                                            EvalLiteral {
+                                                                value: Int(
+                                                                    0,
+                                                                ),
+                                                            },
+                                                        ),
+                                                    ],
+                                                },
+                                            ),
+                                            then_expr: RustValue(
+                                                EvalBlock {
+                                                    statements: [
+                                                        RustValue(
+                                                            EvalAssign {
+                                                                name: "even_count",
+                                                                expr: RustValue(
+                                                                    EvalCall {
+                                                                        func_expr: RustValue(
+                                                                            EvalGetAttr {
+                                                                                obj_expr: RustValue(
+                                                                                    EvalVariable {
+                                                                                        name: "even_count",
+                                                                                    },
+                                                                                ),
+                                                                                attr_name: "op_add",
+                                                                            },
+                                                                        ),
+                                                                        args: [
+                                                                            RustValue(
+                                                                                EvalLiteral {
+                                                                                    value: Int(
+                                                                                        1,
+                                                                                    ),
+                                                                                },
+                                                                            ),
+                                                                        ],
+                                                                    },
+                                                                ),
+                                                            },
+                                                        ),
+                                                    ],
+                                                    final_expr: None,
+                                                },
+                                            ),
+                                            else_expr: None,
+                                        },
+                                    ),
+                                ],
+                                final_expr: None,
+                            },
+                        ),
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalVariable {
+                                                    name: "even_count",
+                                                },
+                                            ),
+                                            attr_name: "op_eq",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Int(
+                                                    5,
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ],
+                    },
+                ),
+                RustValue(
+                    EvalDeclare {
+                        name: "small_range",
+                        init_expr: Some(
+                            RustValue(
+                                EvalLiteral {
+                                    value: Range(
+                                        Range {
+                                            start: 3,
+                                            end: 6,
+                                            inclusive: false,
+                                        },
+                                    ),
+                                },
+                            ),
+                        ),
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalVariable {
+                                                    name: "small_range",
+                                                },
+                                            ),
+                                            attr_name: "op_contains",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Int(
+                                                    4,
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ],
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalLogicalNot {
+                                    expr: RustValue(
+                                        EvalCall {
+                                            func_expr: RustValue(
+                                                EvalGetAttr {
+                                                    obj_expr: RustValue(
+                                                        EvalVariable {
+                                                            name: "small_range",
+                                                        },
+                                                    ),
+                                                    attr_name: "op_contains",
+                                                },
+                                            ),
+                                            args: [
+                                                RustValue(
+                                                    EvalLiteral {
+                                                        value: Int(
+                                                            6,
+                                                        ),
+                                                    },
+                                                ),
+                                            ],
+                                        },
+                                    ),
+                                },
+                            ),
+                        ],
+                    },
+                ),
+            ],
+        },
+    ),
+)
 ```

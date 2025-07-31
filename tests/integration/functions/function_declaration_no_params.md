@@ -1,6 +1,6 @@
 # Program
-Status: 🔴
-Assertions: 0
+Status: 🟢
+Assertions: 4
 
 ```rustleaf
 fn hello() { 42 }
@@ -22,11 +22,106 @@ assert(hello() == 42);
 parse_program: starting
 parse_program: parsing statement at position 0 (Fn)
 parse_statement: starting at position 0 (Fn)
+parse_statement: starting at position 5 (Int(42))
+parse_statement: falling back to expression statement
+parse_expression: starting at position 5 (Int(42))
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_statement: failed - Expected Semicolon, found RightBrace
+parse_expression: starting at position 5 (Int(42))
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_statement: success - parsed function declaration
+parse_program: parsing statement at position 7 (Fn)
+parse_statement: starting at position 7 (Fn)
+parse_statement: starting at position 12 (Float(3.14))
+parse_statement: falling back to expression statement
+parse_expression: starting at position 12 (Float(3.14))
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_statement: failed - Expected Semicolon, found RightBrace
+parse_expression: starting at position 12 (Float(3.14))
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_statement: success - parsed function declaration
+parse_program: parsing statement at position 14 (Fn)
+parse_statement: starting at position 14 (Fn)
+parse_statement: starting at position 19 (String(Hello, World!))
+parse_statement: falling back to expression statement
+parse_expression: starting at position 19 (String(Hello, World!))
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_statement: failed - Expected Semicolon, found RightBrace
+parse_expression: starting at position 19 (String(Hello, World!))
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_statement: success - parsed function declaration
+parse_program: parsing statement at position 21 (Var)
+parse_statement: starting at position 21 (Var)
+parse_expression: starting at position 24 (Ident(hello))
+parse_primary: success - parsed identifier (hello)
+parse_expression: success - parsed precedence expression
+parse_statement: success - parsed var declaration
+parse_program: parsing statement at position 28 (Var)
+parse_statement: starting at position 28 (Var)
+parse_expression: starting at position 31 (Ident(get_pi))
+parse_primary: success - parsed identifier (get_pi)
+parse_expression: success - parsed precedence expression
+parse_statement: success - parsed var declaration
+parse_program: parsing statement at position 35 (Var)
+parse_statement: starting at position 35 (Var)
+parse_expression: starting at position 38 (Ident(get_greeting))
+parse_primary: success - parsed identifier (get_greeting)
+parse_expression: success - parsed precedence expression
+parse_statement: success - parsed var declaration
+parse_program: parsing statement at position 42 (Ident(assert))
+parse_statement: starting at position 42 (Ident(assert))
+parse_statement: falling back to expression statement
+parse_expression: starting at position 42 (Ident(assert))
+parse_primary: success - parsed identifier (assert)
+parse_expression: starting at position 44 (Ident(result1))
+parse_primary: success - parsed identifier (result1)
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_expression: success - parsed precedence expression
+parse_program: parsing statement at position 49 (Ident(assert))
+parse_statement: starting at position 49 (Ident(assert))
+parse_statement: falling back to expression statement
+parse_expression: starting at position 49 (Ident(assert))
+parse_primary: success - parsed identifier (assert)
+parse_expression: starting at position 51 (Ident(result2))
+parse_primary: success - parsed identifier (result2)
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_expression: success - parsed precedence expression
+parse_program: parsing statement at position 56 (Ident(assert))
+parse_statement: starting at position 56 (Ident(assert))
+parse_statement: falling back to expression statement
+parse_expression: starting at position 56 (Ident(assert))
+parse_primary: success - parsed identifier (assert)
+parse_expression: starting at position 58 (Ident(result3))
+parse_primary: success - parsed identifier (result3)
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_expression: success - parsed precedence expression
+parse_program: parsing statement at position 63 (Ident(assert))
+parse_statement: starting at position 63 (Ident(assert))
+parse_statement: falling back to expression statement
+parse_expression: starting at position 63 (Ident(assert))
+parse_primary: success - parsed identifier (assert)
+parse_expression: starting at position 65 (Ident(hello))
+parse_primary: success - parsed identifier (hello)
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_expression: success - parsed precedence expression
+parse_program: parsed 10 statements
 ```
 
 # Result
 ```rust
-Skipped due to parse error
+Ok(
+    Unit,
+)
 ```
 
 # Lex
@@ -112,12 +207,443 @@ Ok(
 
 # Parse
 ```rust
-Err(
-    "Expected Hash, found Fn",
+Ok(
+    Program(
+        [
+            FnDecl {
+                name: "hello",
+                params: [],
+                body: Block {
+                    statements: [],
+                    final_expr: Some(
+                        Literal(
+                            Int(
+                                42,
+                            ),
+                        ),
+                    ),
+                },
+                is_pub: false,
+            },
+            FnDecl {
+                name: "get_pi",
+                params: [],
+                body: Block {
+                    statements: [],
+                    final_expr: Some(
+                        Literal(
+                            Float(
+                                3.14,
+                            ),
+                        ),
+                    ),
+                },
+                is_pub: false,
+            },
+            FnDecl {
+                name: "get_greeting",
+                params: [],
+                body: Block {
+                    statements: [],
+                    final_expr: Some(
+                        Literal(
+                            String(
+                                "Hello, World!",
+                            ),
+                        ),
+                    ),
+                },
+                is_pub: false,
+            },
+            VarDecl {
+                pattern: Variable(
+                    "result1",
+                ),
+                value: Some(
+                    FunctionCall(
+                        Identifier(
+                            "hello",
+                        ),
+                        [],
+                    ),
+                ),
+            },
+            VarDecl {
+                pattern: Variable(
+                    "result2",
+                ),
+                value: Some(
+                    FunctionCall(
+                        Identifier(
+                            "get_pi",
+                        ),
+                        [],
+                    ),
+                ),
+            },
+            VarDecl {
+                pattern: Variable(
+                    "result3",
+                ),
+                value: Some(
+                    FunctionCall(
+                        Identifier(
+                            "get_greeting",
+                        ),
+                        [],
+                    ),
+                ),
+            },
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            Identifier(
+                                "result1",
+                            ),
+                            Literal(
+                                Int(
+                                    42,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            Identifier(
+                                "result2",
+                            ),
+                            Literal(
+                                Float(
+                                    3.14,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            Identifier(
+                                "result3",
+                            ),
+                            Literal(
+                                String(
+                                    "Hello, World!",
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            FunctionCall(
+                                Identifier(
+                                    "hello",
+                                ),
+                                [],
+                            ),
+                            Literal(
+                                Int(
+                                    42,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+        ],
+    ),
 )
 ```
 
 # Eval
 ```rust
-Skipped due to parse error
+Ok(
+    RustValue(
+        EvalProgram {
+            statements: [
+                RustValue(
+                    EvalFunction {
+                        data: FunctionData {
+                            name: "hello",
+                            params: [],
+                            body: RustValue(
+                                EvalBlock {
+                                    statements: [],
+                                    final_expr: Some(
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Int(
+                                                    42,
+                                                ),
+                                            },
+                                        ),
+                                    ),
+                                },
+                            ),
+                        },
+                    },
+                ),
+                RustValue(
+                    EvalFunction {
+                        data: FunctionData {
+                            name: "get_pi",
+                            params: [],
+                            body: RustValue(
+                                EvalBlock {
+                                    statements: [],
+                                    final_expr: Some(
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Float(
+                                                    3.14,
+                                                ),
+                                            },
+                                        ),
+                                    ),
+                                },
+                            ),
+                        },
+                    },
+                ),
+                RustValue(
+                    EvalFunction {
+                        data: FunctionData {
+                            name: "get_greeting",
+                            params: [],
+                            body: RustValue(
+                                EvalBlock {
+                                    statements: [],
+                                    final_expr: Some(
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: String(
+                                                    "Hello, World!",
+                                                ),
+                                            },
+                                        ),
+                                    ),
+                                },
+                            ),
+                        },
+                    },
+                ),
+                RustValue(
+                    EvalDeclare {
+                        name: "result1",
+                        init_expr: Some(
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalVariable {
+                                            name: "hello",
+                                        },
+                                    ),
+                                    args: [],
+                                },
+                            ),
+                        ),
+                    },
+                ),
+                RustValue(
+                    EvalDeclare {
+                        name: "result2",
+                        init_expr: Some(
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalVariable {
+                                            name: "get_pi",
+                                        },
+                                    ),
+                                    args: [],
+                                },
+                            ),
+                        ),
+                    },
+                ),
+                RustValue(
+                    EvalDeclare {
+                        name: "result3",
+                        init_expr: Some(
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalVariable {
+                                            name: "get_greeting",
+                                        },
+                                    ),
+                                    args: [],
+                                },
+                            ),
+                        ),
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalVariable {
+                                                    name: "result1",
+                                                },
+                                            ),
+                                            attr_name: "op_eq",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Int(
+                                                    42,
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ],
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalVariable {
+                                                    name: "result2",
+                                                },
+                                            ),
+                                            attr_name: "op_eq",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Float(
+                                                    3.14,
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ],
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalVariable {
+                                                    name: "result3",
+                                                },
+                                            ),
+                                            attr_name: "op_eq",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: String(
+                                                    "Hello, World!",
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ],
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalCall {
+                                                    func_expr: RustValue(
+                                                        EvalVariable {
+                                                            name: "hello",
+                                                        },
+                                                    ),
+                                                    args: [],
+                                                },
+                                            ),
+                                            attr_name: "op_eq",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Int(
+                                                    42,
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ],
+                    },
+                ),
+            ],
+        },
+    ),
+)
 ```

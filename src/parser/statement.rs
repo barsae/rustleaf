@@ -65,8 +65,10 @@ fn parse_expression_statement(s: &mut TokenStream) -> Result<Statement> {
     Ok(Statement::Expression(expr))
 }
 
-fn parse_macro(s: &mut TokenStream) -> Result<Statement> {
-    s.expect_type(TokenType::Hash)?;
+fn parse_macro(s: &mut TokenStream) -> Result<Option<Statement>> {
+    if s.accept_type(TokenType::Hash)?.is_none() {
+        return Ok(None);
+    }
     s.expect_type(TokenType::LeftBracket)?;
     
     // Accept either identifier or macro keyword
@@ -109,30 +111,36 @@ fn parse_macro(s: &mut TokenStream) -> Result<Statement> {
         args,
         statement,
     };
-    Ok(result)
+    Ok(Some(result))
 }
 
-fn parse_macro_arg(s: &mut TokenStream) -> Result<MacroArg> {
+fn parse_macro_arg(s: &mut TokenStream) -> Result<Option<MacroArg>> {
     // Try named argument first: ident:value
     if let Some((name, value)) = s.try_parse(|s| {
-        let name_token = s.accept_type(TokenType::Ident)?
-            .ok_or_else(|| anyhow!("Expected identifier"))?;
+        let name_token = match s.accept_type(TokenType::Ident)? {
+            Some(token) => token,
+            None => return Ok(None),
+        };
         let name = name_token.text
             .ok_or_else(|| anyhow!("Identifier token missing text"))?;
-        s.expect_type(TokenType::Colon)?;
+        if s.accept_type(TokenType::Colon)?.is_none() {
+            return Ok(None);
+        }
         let value = parse_literal_value(s)?;
-        Ok((name, value))
+        Ok(Some((name, value)))
     })? {
-        Ok(MacroArg::Named(name, value))
+        Ok(Some(MacroArg::Named(name, value)))
     } else {
         // Positional argument
         let value = parse_literal_value(s)?;
-        Ok(MacroArg::Positional(value))
+        Ok(Some(MacroArg::Positional(value)))
     }
 }
 
-fn parse_var_declaration(s: &mut TokenStream) -> Result<Statement> {
-    s.expect_type(TokenType::Var)?;
+fn parse_var_declaration(s: &mut TokenStream) -> Result<Option<Statement>> {
+    if s.accept_type(TokenType::Var)?.is_none() {
+        return Ok(None);
+    }
     let pattern = parse_pattern(s)?;
     let value = if s.accept_type(TokenType::Equal)?.is_some() {
         Some(parse_expression(s)?)
@@ -141,12 +149,14 @@ fn parse_var_declaration(s: &mut TokenStream) -> Result<Statement> {
     };
     s.expect_type(TokenType::Semicolon)?;
     
-    Ok(Statement::VarDecl { pattern, value })
+    Ok(Some(Statement::VarDecl { pattern, value }))
 }
 
-fn parse_function_declaration(s: &mut TokenStream) -> Result<Statement> {
+fn parse_function_declaration(s: &mut TokenStream) -> Result<Option<Statement>> {
     let is_pub = s.accept_type(TokenType::Pub)?.is_some();
-    s.expect_type(TokenType::Fn)?;
+    if s.accept_type(TokenType::Fn)?.is_none() {
+        return Ok(None);
+    }
     
     let name_token = s.expect_type(TokenType::Ident)?;
     let name = name_token.text
@@ -179,12 +189,12 @@ fn parse_function_declaration(s: &mut TokenStream) -> Result<Statement> {
         _ => unreachable!("parse_block_expression should return a Block"),
     };
     
-    Ok(Statement::FnDecl {
+    Ok(Some(Statement::FnDecl {
         name,
         params,
         body,
         is_pub,
-    })
+    }))
 }
 
 fn parse_parameter(s: &mut TokenStream) -> Result<Parameter> {
@@ -216,9 +226,11 @@ fn parse_parameter(s: &mut TokenStream) -> Result<Parameter> {
 }
 
 // Placeholder functions - to be implemented
-fn parse_class_declaration(s: &mut TokenStream) -> Result<Statement> {
+fn parse_class_declaration(s: &mut TokenStream) -> Result<Option<Statement>> {
     let is_pub = s.accept_type(TokenType::Pub)?.is_some();
-    s.expect_type(TokenType::Class)?;
+    if s.accept_type(TokenType::Class)?.is_none() {
+        return Ok(None);
+    }
     
     let name_token = s.expect_type(TokenType::Ident)?;
     let name = name_token.text
@@ -249,14 +261,14 @@ fn parse_class_declaration(s: &mut TokenStream) -> Result<Statement> {
     
     s.expect_type(TokenType::RightBrace)?;
     
-    Ok(Statement::ClassDecl {
+    Ok(Some(Statement::ClassDecl {
         name,
         members,
         is_pub,
-    })
+    }))
 }
 
-fn parse_class_member(s: &mut TokenStream) -> Result<ClassMember> {
+fn parse_class_member(s: &mut TokenStream) -> Result<Option<ClassMember>> {
     // Check for static methods
     if s.accept_type(TokenType::Static)?.is_some() {
         s.expect_type(TokenType::Fn)?;
@@ -283,10 +295,10 @@ fn parse_class_member(s: &mut TokenStream) -> Result<ClassMember> {
             _ => unreachable!("parse_block_expression should return a Block"),
         };
         
-        return Ok(ClassMember {
+        return Ok(Some(ClassMember {
             name,
             kind: ClassMemberKind::StaticMethod { params, body },
-        });
+        }));
     }
     
     // Check for regular methods
@@ -314,10 +326,10 @@ fn parse_class_member(s: &mut TokenStream) -> Result<ClassMember> {
             _ => unreachable!("parse_block_expression should return a Block"),
         };
         
-        return Ok(ClassMember {
+        return Ok(Some(ClassMember {
             name,
             kind: ClassMemberKind::Method { params, body },
-        });
+        }));
     }
     
     // Check for field declarations
@@ -334,17 +346,19 @@ fn parse_class_member(s: &mut TokenStream) -> Result<ClassMember> {
         
         s.expect_type(TokenType::Semicolon)?;
         
-        return Ok(ClassMember {
+        return Ok(Some(ClassMember {
             name,
             kind: ClassMemberKind::Field(initializer),
-        });
+        }));
     }
     
-    Err(anyhow!("Expected class member"))
+    Ok(None)
 }
 
-fn parse_import_statement(s: &mut TokenStream) -> Result<Statement> {
-    s.expect_type(TokenType::Use)?;
+fn parse_import_statement(s: &mut TokenStream) -> Result<Option<Statement>> {
+    if s.accept_type(TokenType::Use)?.is_none() {
+        return Ok(None);
+    }
     
     // Parse module path (e.g., "std::io")
     let mut module_parts = Vec::new();
@@ -426,11 +440,13 @@ fn parse_import_statement(s: &mut TokenStream) -> Result<Statement> {
     
     s.expect_type(TokenType::Semicolon)?;
     
-    Ok(Statement::Import(ImportSpec { module, items }))
+    Ok(Some(Statement::Import(ImportSpec { module, items })))
 }
 
-fn parse_return_statement(s: &mut TokenStream) -> Result<Statement> {
-    s.expect_type(TokenType::Return)?;
+fn parse_return_statement(s: &mut TokenStream) -> Result<Option<Statement>> {
+    if s.accept_type(TokenType::Return)?.is_none() {
+        return Ok(None);
+    }
     
     let expr = if let Some(_token) = s.accept_type(TokenType::Semicolon)? {
         // Put the semicolon back for the caller to consume
@@ -442,11 +458,13 @@ fn parse_return_statement(s: &mut TokenStream) -> Result<Statement> {
     };
     
     s.expect_type(TokenType::Semicolon)?;
-    Ok(Statement::Return(expr))
+    Ok(Some(Statement::Return(expr)))
 }
 
-fn parse_break_statement(s: &mut TokenStream) -> Result<Statement> {
-    s.expect_type(TokenType::Break)?;
+fn parse_break_statement(s: &mut TokenStream) -> Result<Option<Statement>> {
+    if s.accept_type(TokenType::Break)?.is_none() {
+        return Ok(None);
+    }
     
     let expr = if let Some(_) = s.accept_type(TokenType::Semicolon)? {
         None
@@ -456,18 +474,23 @@ fn parse_break_statement(s: &mut TokenStream) -> Result<Statement> {
         expr
     };
     
-    Ok(Statement::Break(expr))
+    Ok(Some(Statement::Break(expr)))
 }
 
-fn parse_continue_statement(s: &mut TokenStream) -> Result<Statement> {
-    s.expect_type(TokenType::Continue)?;
+fn parse_continue_statement(s: &mut TokenStream) -> Result<Option<Statement>> {
+    if s.accept_type(TokenType::Continue)?.is_none() {
+        return Ok(None);
+    }
     s.expect_type(TokenType::Semicolon)?;
-    Ok(Statement::Continue)
+    Ok(Some(Statement::Continue))
 }
 
-fn parse_assignment(s: &mut TokenStream) -> Result<Statement> {
+fn parse_assignment(s: &mut TokenStream) -> Result<Option<Statement>> {
     // Try to parse an lvalue
-    let target = parse_lvalue(s)?;
+    let target = match parse_lvalue(s)? {
+        Some(lval) => lval,
+        None => return Ok(None),
+    };
     
     // Parse assignment operator
     let op = if s.accept_type(TokenType::Equal)?.is_some() {
@@ -483,17 +506,20 @@ fn parse_assignment(s: &mut TokenStream) -> Result<Statement> {
     } else if s.accept_type(TokenType::PercentEqual)?.is_some() {
         AssignOp::ModAssign
     } else {
-        return Err(anyhow!("Expected assignment operator"));
+        return Ok(None);
     };
     
     let value = parse_expression(s)?;
     s.expect_type(TokenType::Semicolon)?;
     
-    Ok(Statement::Assignment { target, op, value })
+    Ok(Some(Statement::Assignment { target, op, value }))
 }
 
-fn parse_lvalue(s: &mut TokenStream) -> Result<LValue> {
-    let name_token = s.expect_type(TokenType::Ident)?;
+fn parse_lvalue(s: &mut TokenStream) -> Result<Option<LValue>> {
+    let name_token = match s.accept_type(TokenType::Ident)? {
+        Some(token) => token,
+        None => return Ok(None),
+    };
     let name = name_token.text
         .ok_or_else(|| anyhow!("Identifier token missing text"))?;
     let mut expr = LValue::Identifier(name);
@@ -528,10 +554,10 @@ fn parse_lvalue(s: &mut TokenStream) -> Result<LValue> {
         }
     }
     
-    Ok(expr)
+    Ok(Some(expr))
 }
 
-fn parse_block_like_expression_statement(s: &mut TokenStream) -> Result<Statement> {
+fn parse_block_like_expression_statement(s: &mut TokenStream) -> Result<Option<Statement>> {
     // Check for block-like expressions that don't require semicolons
     if matches!(s.peek_type(), 
         TokenType::If | TokenType::Loop | TokenType::While | 
@@ -539,26 +565,29 @@ fn parse_block_like_expression_statement(s: &mut TokenStream) -> Result<Statemen
     ) {
         // Parse as expression and wrap in Statement::Expression
         let expr = parse_expression(s)?;
-        return Ok(Statement::Expression(expr));
+        return Ok(Some(Statement::Expression(expr)));
     }
     
     // Try to parse a block expression (will backtrack if it's actually a dictionary)
     if s.peek_type() == TokenType::LeftBrace {
         if let Some(expr) = s.try_parse(|s| {
-            let expr = parse_expression(s)?;
+            let expr = match parse_expression(s) {
+                Ok(expr) => expr,
+                Err(_) => return Ok(None),
+            };
             // Check if this parsed as a block (not a dictionary)
             if matches!(expr, Expression::Block(_)) {
-                Ok(expr)
+                Ok(Some(expr))
             } else {
                 // It was a dictionary - signal to backtrack
-                Err(anyhow!("Not a block expression"))
+                Ok(None)
             }
         })? {
-            return Ok(Statement::Expression(expr));
+            return Ok(Some(Statement::Expression(expr)));
         }
     }
     
-    Err(anyhow!("Not a block-like expression statement"))
+    Ok(None)
 }
 
 pub fn parse_pattern(s: &mut TokenStream) -> Result<Pattern> {
@@ -577,19 +606,25 @@ pub fn parse_pattern(s: &mut TokenStream) -> Result<Pattern> {
         TokenType::True | TokenType::False | TokenType::Null => {
             // Try to parse as range pattern first
             if let Some(range_pattern) = s.try_parse(|s| {
-                let first_literal = parse_literal_value(s)?;
+                let first_literal = match parse_literal_value(s) {
+                    Ok(literal) => literal,
+                    Err(_) => return Ok(None),
+                };
                 
                 // Check for range operators
                 if s.accept_type(TokenType::DotDot)?.is_some() || 
                    s.accept_type(TokenType::DotDotEqual)?.is_some() {
-                    let second_literal = parse_literal_value(s)?;
-                    Ok(Pattern::Range(
+                    let second_literal = match parse_literal_value(s) {
+                        Ok(literal) => literal,
+                        Err(_) => return Ok(None),
+                    };
+                    Ok(Some(Pattern::Range(
                         Box::new(Pattern::Literal(first_literal)),
                         Box::new(Pattern::Literal(second_literal)),
-                    ))
+                    )))
                 } else {
-                    // Signal that this isn't a range pattern by returning an error
-                    Err(anyhow!("Not a range pattern"))
+                    // Signal that this isn't a range pattern
+                    Ok(None)
                 }
             })? {
                 Ok(range_pattern)

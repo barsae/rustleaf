@@ -143,8 +143,10 @@ fn parse_primary(s: &mut TokenStream) -> Result<Expression> {
     
     // Try numeric and string literals
     if let Some(literal) = s.try_parse(|s| {
-        let value = parse_literal_value(s)?;
-        Ok(Expression::Literal(value))
+        match parse_literal_value(s) {
+            Ok(value) => Ok(Some(Expression::Literal(value))),
+            Err(_) => Ok(None),
+        }
     })? {
         trace!("parse_primary: success - parsed numeric/string literal");
         return Ok(literal);
@@ -279,11 +281,21 @@ pub fn parse_block_expression(s: &mut TokenStream) -> Result<Expression> {
         }
         
         // Try to parse a statement first
-        if let Some(stmt) = s.try_parse(super::statement::parse_statement)? {
+        if let Some(stmt) = s.try_parse(|s| {
+            match super::statement::parse_statement(s) {
+                Ok(stmt) => Ok(Some(stmt)),
+                Err(_) => Ok(None),
+            }
+        })? {
             statements.push(stmt);
         } else {
             // Failed to parse as statement, try as expression
-            if let Some(expr) = s.try_parse(parse_expression)? {
+            if let Some(expr) = s.try_parse(|s| {
+                match parse_expression(s) {
+                    Ok(expr) => Ok(Some(expr)),
+                    Err(_) => Ok(None),
+                }
+            })? {
                 // Check if this is followed by a semicolon
                 if s.accept_type(TokenType::Semicolon)?.is_some() {
                     // It's an expression statement
@@ -474,19 +486,22 @@ fn parse_with_expression(s: &mut TokenStream) -> Result<Expression> {
     
     // Try to parse as simple expression form first
     if let Some(result) = s.try_parse(|s| {
-        let expr = parse_unary(s)?;
+        let expr = match parse_unary(s) {
+            Ok(expr) => expr,
+            Err(_) => return Ok(None),
+        };
         // Check if next token is a block start
         if s.peek_type() == TokenType::LeftBrace {
             // Simple form: with expr { ... }
-            Ok(vec![WithResource { 
+            Ok(Some(vec![WithResource { 
                 name: String::new(), 
                 value: expr 
-            }])
+            }]))
         } else if s.peek_type() == TokenType::Comma || s.peek_type() == TokenType::Colon {
             // Actually resource form, fail this parse attempt
-            Err(anyhow!("Not simple expression form"))
+            Ok(None)
         } else {
-            Err(anyhow!("Expected {{ or : after with expression"))
+            Ok(None)
         }
     })? {
         resources = result;
@@ -583,13 +598,21 @@ fn parse_block_or_dict(s: &mut TokenStream) -> Result<Expression> {
         
         loop {
             // Parse key expression - use high precedence to avoid consuming colons
-            let key = parse_precedence(s, 14)?; // Higher than pipe precedence (13)
+            let key = match parse_precedence(s, 14) {
+                Ok(key) => key,
+                Err(_) => return Ok(None),
+            };
             
             // Must be followed by ':'
-            s.expect_type(TokenType::Colon)?;
+            if s.accept_type(TokenType::Colon)?.is_none() {
+                return Ok(None);
+            }
             
             // Parse value expression
-            let value = parse_expression(s)?;
+            let value = match parse_expression(s) {
+                Ok(value) => value,
+                Err(_) => return Ok(None),
+            };
             
             pairs.push((key, value));
             
@@ -605,8 +628,10 @@ fn parse_block_or_dict(s: &mut TokenStream) -> Result<Expression> {
             }
         }
         
-        s.expect_type(TokenType::RightBrace)?;
-        Ok(Expression::Dict(pairs))
+        if s.accept_type(TokenType::RightBrace)?.is_none() {
+            return Ok(None);
+        }
+        Ok(Some(Expression::Dict(pairs)))
     })? {
         return Ok(dict_expr);
     }

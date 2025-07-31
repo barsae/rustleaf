@@ -19,6 +19,46 @@ assert(f() == [1, 2, 3]);
 parse_program: starting
 parse_program: parsing statement at position 0 (Fn)
 parse_statement: starting at position 0 (Fn)
+parse_statement: starting at position 5 (Var)
+parse_expression: starting at position 8 (LeftBracket)
+parse_primary: success - parsing list literal
+parse_expression: starting at position 9 (Int(10))
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_expression: starting at position 11 (Int(20))
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_expression: success - parsed precedence expression
+parse_statement: success - parsed var declaration
+parse_statement: starting at position 14 (For)
+parse_expression: starting at position 14 (For)
+parse_primary: success - parsing for expression
+parse_expression: starting at position 17 (Ident(j))
+parse_primary: success - parsed identifier (j)
+parse_expression: success - parsed precedence expression
+parse_statement: starting at position 19 (Ident(i))
+parse_statement: falling back to expression statement
+parse_expression: starting at position 19 (Ident(i))
+parse_primary: success - parsed identifier (i)
+parse_expression: success - parsed precedence expression
+parse_expression: starting at position 23 (Int(1))
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_expression: failed - Expected RightBracket, found Comma
+parse_expression: starting at position 14 (For)
+parse_primary: success - parsing for expression
+parse_expression: starting at position 17 (Ident(j))
+parse_primary: success - parsed identifier (j)
+parse_expression: success - parsed precedence expression
+parse_statement: starting at position 19 (Ident(i))
+parse_statement: falling back to expression statement
+parse_expression: starting at position 19 (Ident(i))
+parse_primary: success - parsed identifier (i)
+parse_expression: success - parsed precedence expression
+parse_expression: starting at position 23 (Int(1))
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_expression: failed - Expected RightBracket, found Comma
 ```
 
 # Result
@@ -83,7 +123,7 @@ Ok(
 # Parse
 ```rust
 Err(
-    "Expected Hash, found Fn",
+    "Expected statement or expression",
 )
 ```
 

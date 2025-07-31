@@ -1,6 +1,6 @@
 # Program
-Status: 🔴
-Assertions: 0
+Status: 🟢
+Assertions: 4
 
 ```rustleaf
 fn add(x, y) { x + y }
@@ -20,11 +20,116 @@ assert(multiply(0, 100) == 0);
 parse_program: starting
 parse_program: parsing statement at position 0 (Fn)
 parse_statement: starting at position 0 (Fn)
+parse_statement: starting at position 8 (Ident(x))
+parse_statement: falling back to expression statement
+parse_expression: starting at position 8 (Ident(x))
+parse_primary: success - parsed identifier (x)
+parse_primary: success - parsed identifier (y)
+parse_expression: success - parsed precedence expression
+parse_statement: failed - Expected Semicolon, found RightBrace
+parse_expression: starting at position 8 (Ident(x))
+parse_primary: success - parsed identifier (x)
+parse_primary: success - parsed identifier (y)
+parse_expression: success - parsed precedence expression
+parse_statement: success - parsed function declaration
+parse_program: parsing statement at position 12 (Fn)
+parse_statement: starting at position 12 (Fn)
+parse_statement: starting at position 20 (Ident(a))
+parse_statement: falling back to expression statement
+parse_expression: starting at position 20 (Ident(a))
+parse_primary: success - parsed identifier (a)
+parse_primary: success - parsed identifier (b)
+parse_expression: success - parsed precedence expression
+parse_statement: failed - Expected Semicolon, found RightBrace
+parse_expression: starting at position 20 (Ident(a))
+parse_primary: success - parsed identifier (a)
+parse_primary: success - parsed identifier (b)
+parse_expression: success - parsed precedence expression
+parse_statement: success - parsed function declaration
+parse_program: parsing statement at position 24 (Var)
+parse_statement: starting at position 24 (Var)
+parse_expression: starting at position 27 (Ident(add))
+parse_primary: success - parsed identifier (add)
+parse_expression: starting at position 29 (Int(5))
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_expression: starting at position 31 (Int(3))
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_expression: success - parsed precedence expression
+parse_statement: success - parsed var declaration
+parse_program: parsing statement at position 34 (Var)
+parse_statement: starting at position 34 (Var)
+parse_expression: starting at position 37 (Ident(multiply))
+parse_primary: success - parsed identifier (multiply)
+parse_expression: starting at position 39 (Int(4))
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_expression: starting at position 41 (Int(6))
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_expression: success - parsed precedence expression
+parse_statement: success - parsed var declaration
+parse_program: parsing statement at position 44 (Ident(assert))
+parse_statement: starting at position 44 (Ident(assert))
+parse_statement: falling back to expression statement
+parse_expression: starting at position 44 (Ident(assert))
+parse_primary: success - parsed identifier (assert)
+parse_expression: starting at position 46 (Ident(sum))
+parse_primary: success - parsed identifier (sum)
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_expression: success - parsed precedence expression
+parse_program: parsing statement at position 51 (Ident(assert))
+parse_statement: starting at position 51 (Ident(assert))
+parse_statement: falling back to expression statement
+parse_expression: starting at position 51 (Ident(assert))
+parse_primary: success - parsed identifier (assert)
+parse_expression: starting at position 53 (Ident(product))
+parse_primary: success - parsed identifier (product)
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_expression: success - parsed precedence expression
+parse_program: parsing statement at position 58 (Ident(assert))
+parse_statement: starting at position 58 (Ident(assert))
+parse_statement: falling back to expression statement
+parse_expression: starting at position 58 (Ident(assert))
+parse_primary: success - parsed identifier (assert)
+parse_expression: starting at position 60 (Ident(add))
+parse_primary: success - parsed identifier (add)
+parse_expression: starting at position 62 (Int(10))
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_expression: starting at position 64 (Minus)
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_expression: success - parsed precedence expression
+parse_program: parsing statement at position 71 (Ident(assert))
+parse_statement: starting at position 71 (Ident(assert))
+parse_statement: falling back to expression statement
+parse_expression: starting at position 71 (Ident(assert))
+parse_primary: success - parsed identifier (assert)
+parse_expression: starting at position 73 (Ident(multiply))
+parse_primary: success - parsed identifier (multiply)
+parse_expression: starting at position 75 (Int(0))
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_expression: starting at position 77 (Int(100))
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_primary: success - parsed numeric/string literal
+parse_expression: success - parsed precedence expression
+parse_expression: success - parsed precedence expression
+parse_program: parsed 8 statements
 ```
 
 # Result
 ```rust
-Skipped due to parse error
+Ok(
+    Unit,
+)
 ```
 
 # Lex
@@ -121,12 +226,578 @@ Ok(
 
 # Parse
 ```rust
-Err(
-    "Expected Hash, found Fn",
+Ok(
+    Program(
+        [
+            FnDecl {
+                name: "add",
+                params: [
+                    Parameter {
+                        name: "x",
+                        default: None,
+                        kind: Regular,
+                    },
+                    Parameter {
+                        name: "y",
+                        default: None,
+                        kind: Regular,
+                    },
+                ],
+                body: Block {
+                    statements: [],
+                    final_expr: Some(
+                        Add(
+                            Identifier(
+                                "x",
+                            ),
+                            Identifier(
+                                "y",
+                            ),
+                        ),
+                    ),
+                },
+                is_pub: false,
+            },
+            FnDecl {
+                name: "multiply",
+                params: [
+                    Parameter {
+                        name: "a",
+                        default: None,
+                        kind: Regular,
+                    },
+                    Parameter {
+                        name: "b",
+                        default: None,
+                        kind: Regular,
+                    },
+                ],
+                body: Block {
+                    statements: [],
+                    final_expr: Some(
+                        Mul(
+                            Identifier(
+                                "a",
+                            ),
+                            Identifier(
+                                "b",
+                            ),
+                        ),
+                    ),
+                },
+                is_pub: false,
+            },
+            VarDecl {
+                pattern: Variable(
+                    "sum",
+                ),
+                value: Some(
+                    FunctionCall(
+                        Identifier(
+                            "add",
+                        ),
+                        [
+                            Literal(
+                                Int(
+                                    5,
+                                ),
+                            ),
+                            Literal(
+                                Int(
+                                    3,
+                                ),
+                            ),
+                        ],
+                    ),
+                ),
+            },
+            VarDecl {
+                pattern: Variable(
+                    "product",
+                ),
+                value: Some(
+                    FunctionCall(
+                        Identifier(
+                            "multiply",
+                        ),
+                        [
+                            Literal(
+                                Int(
+                                    4,
+                                ),
+                            ),
+                            Literal(
+                                Int(
+                                    6,
+                                ),
+                            ),
+                        ],
+                    ),
+                ),
+            },
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            Identifier(
+                                "sum",
+                            ),
+                            Literal(
+                                Int(
+                                    8,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            Identifier(
+                                "product",
+                            ),
+                            Literal(
+                                Int(
+                                    24,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            FunctionCall(
+                                Identifier(
+                                    "add",
+                                ),
+                                [
+                                    Literal(
+                                        Int(
+                                            10,
+                                        ),
+                                    ),
+                                    Neg(
+                                        Literal(
+                                            Int(
+                                                2,
+                                            ),
+                                        ),
+                                    ),
+                                ],
+                            ),
+                            Literal(
+                                Int(
+                                    8,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            Expression(
+                FunctionCall(
+                    Identifier(
+                        "assert",
+                    ),
+                    [
+                        Eq(
+                            FunctionCall(
+                                Identifier(
+                                    "multiply",
+                                ),
+                                [
+                                    Literal(
+                                        Int(
+                                            0,
+                                        ),
+                                    ),
+                                    Literal(
+                                        Int(
+                                            100,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                            Literal(
+                                Int(
+                                    0,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+        ],
+    ),
 )
 ```
 
 # Eval
 ```rust
-Skipped due to parse error
+Ok(
+    RustValue(
+        EvalProgram {
+            statements: [
+                RustValue(
+                    EvalFunction {
+                        data: FunctionData {
+                            name: "add",
+                            params: [
+                                (
+                                    "x",
+                                    None,
+                                    Regular,
+                                ),
+                                (
+                                    "y",
+                                    None,
+                                    Regular,
+                                ),
+                            ],
+                            body: RustValue(
+                                EvalBlock {
+                                    statements: [],
+                                    final_expr: Some(
+                                        RustValue(
+                                            EvalCall {
+                                                func_expr: RustValue(
+                                                    EvalGetAttr {
+                                                        obj_expr: RustValue(
+                                                            EvalVariable {
+                                                                name: "x",
+                                                            },
+                                                        ),
+                                                        attr_name: "op_add",
+                                                    },
+                                                ),
+                                                args: [
+                                                    RustValue(
+                                                        EvalVariable {
+                                                            name: "y",
+                                                        },
+                                                    ),
+                                                ],
+                                            },
+                                        ),
+                                    ),
+                                },
+                            ),
+                        },
+                    },
+                ),
+                RustValue(
+                    EvalFunction {
+                        data: FunctionData {
+                            name: "multiply",
+                            params: [
+                                (
+                                    "a",
+                                    None,
+                                    Regular,
+                                ),
+                                (
+                                    "b",
+                                    None,
+                                    Regular,
+                                ),
+                            ],
+                            body: RustValue(
+                                EvalBlock {
+                                    statements: [],
+                                    final_expr: Some(
+                                        RustValue(
+                                            EvalCall {
+                                                func_expr: RustValue(
+                                                    EvalGetAttr {
+                                                        obj_expr: RustValue(
+                                                            EvalVariable {
+                                                                name: "a",
+                                                            },
+                                                        ),
+                                                        attr_name: "op_mul",
+                                                    },
+                                                ),
+                                                args: [
+                                                    RustValue(
+                                                        EvalVariable {
+                                                            name: "b",
+                                                        },
+                                                    ),
+                                                ],
+                                            },
+                                        ),
+                                    ),
+                                },
+                            ),
+                        },
+                    },
+                ),
+                RustValue(
+                    EvalDeclare {
+                        name: "sum",
+                        init_expr: Some(
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalVariable {
+                                            name: "add",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Int(
+                                                    5,
+                                                ),
+                                            },
+                                        ),
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Int(
+                                                    3,
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ),
+                    },
+                ),
+                RustValue(
+                    EvalDeclare {
+                        name: "product",
+                        init_expr: Some(
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalVariable {
+                                            name: "multiply",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Int(
+                                                    4,
+                                                ),
+                                            },
+                                        ),
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Int(
+                                                    6,
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ),
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalVariable {
+                                                    name: "sum",
+                                                },
+                                            ),
+                                            attr_name: "op_eq",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Int(
+                                                    8,
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ],
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalVariable {
+                                                    name: "product",
+                                                },
+                                            ),
+                                            attr_name: "op_eq",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Int(
+                                                    24,
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ],
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalCall {
+                                                    func_expr: RustValue(
+                                                        EvalVariable {
+                                                            name: "add",
+                                                        },
+                                                    ),
+                                                    args: [
+                                                        RustValue(
+                                                            EvalLiteral {
+                                                                value: Int(
+                                                                    10,
+                                                                ),
+                                                            },
+                                                        ),
+                                                        RustValue(
+                                                            EvalCall {
+                                                                func_expr: RustValue(
+                                                                    EvalGetAttr {
+                                                                        obj_expr: RustValue(
+                                                                            EvalLiteral {
+                                                                                value: Int(
+                                                                                    2,
+                                                                                ),
+                                                                            },
+                                                                        ),
+                                                                        attr_name: "op_neg",
+                                                                    },
+                                                                ),
+                                                                args: [],
+                                                            },
+                                                        ),
+                                                    ],
+                                                },
+                                            ),
+                                            attr_name: "op_eq",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Int(
+                                                    8,
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ],
+                    },
+                ),
+                RustValue(
+                    EvalCall {
+                        func_expr: RustValue(
+                            EvalVariable {
+                                name: "assert",
+                            },
+                        ),
+                        args: [
+                            RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalGetAttr {
+                                            obj_expr: RustValue(
+                                                EvalCall {
+                                                    func_expr: RustValue(
+                                                        EvalVariable {
+                                                            name: "multiply",
+                                                        },
+                                                    ),
+                                                    args: [
+                                                        RustValue(
+                                                            EvalLiteral {
+                                                                value: Int(
+                                                                    0,
+                                                                ),
+                                                            },
+                                                        ),
+                                                        RustValue(
+                                                            EvalLiteral {
+                                                                value: Int(
+                                                                    100,
+                                                                ),
+                                                            },
+                                                        ),
+                                                    ],
+                                                },
+                                            ),
+                                            attr_name: "op_eq",
+                                        },
+                                    ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Int(
+                                                    0,
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                },
+                            ),
+                        ],
+                    },
+                ),
+            ],
+        },
+    ),
+)
 ```
