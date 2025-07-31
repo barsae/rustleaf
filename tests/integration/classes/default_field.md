@@ -1,6 +1,6 @@
 # Program
-Status: 🟢
-Assertions: 1
+Status: 🔴
+Assertions: 0
 
 ```rustleaf
 class Greeter {
@@ -19,46 +19,13 @@ assert(msg == "Hello, Eric");
 # Output
 ```
 parse_program: starting
-parse_program: parsing statement at position 0
-parse_statement: starting at position 0
-parse_expression: starting at position 6
-parse_expression: success
-parse_statement: starting at position 13
-parse_statement: falling back to expression statement
-parse_expression: starting at position 13
-parse_expression: starting at position 15
-parse_expression: success
-parse_expression: success
-parse_expression: starting at position 13
-parse_expression: starting at position 15
-parse_expression: success
-parse_expression: success
-parse_statement: parsed class declaration
-parse_program: parsing statement at position 21
-parse_statement: starting at position 21
-parse_expression: starting at position 24
-parse_expression: success
-parse_statement: parsed var declaration
-parse_program: parsing statement at position 28
-parse_statement: starting at position 28
-parse_expression: starting at position 31
-parse_expression: success
-parse_statement: parsed var declaration
-parse_program: parsing statement at position 37
-parse_statement: starting at position 37
-parse_statement: falling back to expression statement
-parse_expression: starting at position 37
-parse_expression: starting at position 39
-parse_expression: success
-parse_expression: success
-parse_program: parsed 4 statements
+parse_program: parsing statement at position 0 (Class)
+parse_statement: starting at position 0 (Class)
 ```
 
 # Result
 ```rust
-Ok(
-    Unit,
-)
+Skipped due to parse error
 ```
 
 # Lex
@@ -116,261 +83,12 @@ Ok(
 
 # Parse
 ```rust
-Ok(
-    Program(
-        [
-            ClassDecl {
-                name: "Greeter",
-                members: [
-                    ClassMember {
-                        name: "name",
-                        kind: Field(
-                            Some(
-                                Literal(
-                                    String(
-                                        "Eric",
-                                    ),
-                                ),
-                            ),
-                        ),
-                    },
-                    ClassMember {
-                        name: "greet",
-                        kind: Method {
-                            params: [],
-                            body: Block {
-                                statements: [],
-                                final_expr: Some(
-                                    InterpolatedString(
-                                        [
-                                            Text(
-                                                "Hello, ",
-                                            ),
-                                            Expression(
-                                                GetAttr(
-                                                    Identifier(
-                                                        "self",
-                                                    ),
-                                                    "name",
-                                                ),
-                                            ),
-                                        ],
-                                    ),
-                                ),
-                            },
-                        },
-                    },
-                ],
-                is_pub: false,
-            },
-            VarDecl {
-                pattern: Variable(
-                    "greeter",
-                ),
-                value: Some(
-                    FunctionCall(
-                        Identifier(
-                            "Greeter",
-                        ),
-                        [],
-                    ),
-                ),
-            },
-            VarDecl {
-                pattern: Variable(
-                    "msg",
-                ),
-                value: Some(
-                    MethodCall(
-                        Identifier(
-                            "greeter",
-                        ),
-                        "greet",
-                        [],
-                    ),
-                ),
-            },
-            Expression(
-                FunctionCall(
-                    Identifier(
-                        "assert",
-                    ),
-                    [
-                        Eq(
-                            Identifier(
-                                "msg",
-                            ),
-                            Literal(
-                                String(
-                                    "Hello, Eric",
-                                ),
-                            ),
-                        ),
-                    ],
-                ),
-            ),
-        ],
-    ),
+Err(
+    "Expected Hash, found Class",
 )
 ```
 
 # Eval
 ```rust
-Ok(
-    RustValue(
-        EvalProgram {
-            statements: [
-                RustValue(
-                    EvalClassDecl {
-                        data: ClassDeclData {
-                            name: "Greeter",
-                            field_names: [
-                                "name",
-                            ],
-                            field_defaults: [
-                                Some(
-                                    RustValue(
-                                        EvalLiteral {
-                                            value: String(
-                                                "Eric",
-                                            ),
-                                        },
-                                    ),
-                                ),
-                            ],
-                            methods: [
-                                ClassMethod {
-                                    name: "greet",
-                                    params: [
-                                        "self",
-                                    ],
-                                    body: RustValue(
-                                        EvalBlock {
-                                            statements: [],
-                                            final_expr: Some(
-                                                RustValue(
-                                                    EvalCall {
-                                                        func_expr: RustValue(
-                                                            EvalGetAttr {
-                                                                obj_expr: RustValue(
-                                                                    EvalLiteral {
-                                                                        value: String(
-                                                                            "Hello, ",
-                                                                        ),
-                                                                    },
-                                                                ),
-                                                                attr_name: "op_add",
-                                                            },
-                                                        ),
-                                                        args: [
-                                                            RustValue(
-                                                                EvalCall {
-                                                                    func_expr: RustValue(
-                                                                        EvalVariable {
-                                                                            name: "str",
-                                                                        },
-                                                                    ),
-                                                                    args: [
-                                                                        RustValue(
-                                                                            EvalGetAttr {
-                                                                                obj_expr: RustValue(
-                                                                                    EvalVariable {
-                                                                                        name: "self",
-                                                                                    },
-                                                                                ),
-                                                                                attr_name: "name",
-                                                                            },
-                                                                        ),
-                                                                    ],
-                                                                },
-                                                            ),
-                                                        ],
-                                                    },
-                                                ),
-                                            ),
-                                        },
-                                    ),
-                                    is_static: false,
-                                },
-                            ],
-                        },
-                    },
-                ),
-                RustValue(
-                    EvalDeclare {
-                        name: "greeter",
-                        init_expr: Some(
-                            RustValue(
-                                EvalCall {
-                                    func_expr: RustValue(
-                                        EvalVariable {
-                                            name: "Greeter",
-                                        },
-                                    ),
-                                    args: [],
-                                },
-                            ),
-                        ),
-                    },
-                ),
-                RustValue(
-                    EvalDeclare {
-                        name: "msg",
-                        init_expr: Some(
-                            RustValue(
-                                EvalCall {
-                                    func_expr: RustValue(
-                                        EvalGetAttr {
-                                            obj_expr: RustValue(
-                                                EvalVariable {
-                                                    name: "greeter",
-                                                },
-                                            ),
-                                            attr_name: "greet",
-                                        },
-                                    ),
-                                    args: [],
-                                },
-                            ),
-                        ),
-                    },
-                ),
-                RustValue(
-                    EvalCall {
-                        func_expr: RustValue(
-                            EvalVariable {
-                                name: "assert",
-                            },
-                        ),
-                        args: [
-                            RustValue(
-                                EvalCall {
-                                    func_expr: RustValue(
-                                        EvalGetAttr {
-                                            obj_expr: RustValue(
-                                                EvalVariable {
-                                                    name: "msg",
-                                                },
-                                            ),
-                                            attr_name: "op_eq",
-                                        },
-                                    ),
-                                    args: [
-                                        RustValue(
-                                            EvalLiteral {
-                                                value: String(
-                                                    "Hello, Eric",
-                                                ),
-                                            },
-                                        ),
-                                    ],
-                                },
-                            ),
-                        ],
-                    },
-                ),
-            ],
-        },
-    ),
-)
+Skipped due to parse error
 ```

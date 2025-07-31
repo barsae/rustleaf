@@ -1,6 +1,6 @@
 # Program
-Status: 🟢
-Assertions: 1
+Status: 🔴
+Assertions: 0
 
 ```rustleaf
 var a = 3;
@@ -12,42 +12,13 @@ assert(result == "3 and 7 equals 10");
 # Output
 ```
 parse_program: starting
-parse_program: parsing statement at position 0
-parse_statement: starting at position 0
-parse_expression: starting at position 3
-parse_expression: success
-parse_statement: parsed var declaration
-parse_program: parsing statement at position 5
-parse_statement: starting at position 5
-parse_expression: starting at position 8
-parse_expression: success
-parse_statement: parsed var declaration
-parse_program: parsing statement at position 10
-parse_statement: starting at position 10
-parse_expression: starting at position 13
-parse_expression: starting at position 14
-parse_expression: success
-parse_expression: starting at position 18
-parse_expression: success
-parse_expression: starting at position 22
-parse_expression: success
-parse_expression: success
-parse_statement: parsed var declaration
-parse_program: parsing statement at position 27
-parse_statement: starting at position 27
-parse_statement: falling back to expression statement
-parse_expression: starting at position 27
-parse_expression: starting at position 29
-parse_expression: success
-parse_expression: success
-parse_program: parsed 4 statements
+parse_program: parsing statement at position 0 (Var)
+parse_statement: starting at position 0 (Var)
 ```
 
 # Result
 ```rust
-Ok(
-    Unit,
-)
+Skipped due to parse error
 ```
 
 # Lex
@@ -95,260 +66,12 @@ Ok(
 
 # Parse
 ```rust
-Ok(
-    Program(
-        [
-            VarDecl {
-                pattern: Variable(
-                    "a",
-                ),
-                value: Some(
-                    Literal(
-                        Int(
-                            3,
-                        ),
-                    ),
-                ),
-            },
-            VarDecl {
-                pattern: Variable(
-                    "b",
-                ),
-                value: Some(
-                    Literal(
-                        Int(
-                            7,
-                        ),
-                    ),
-                ),
-            },
-            VarDecl {
-                pattern: Variable(
-                    "result",
-                ),
-                value: Some(
-                    InterpolatedString(
-                        [
-                            Expression(
-                                Identifier(
-                                    "a",
-                                ),
-                            ),
-                            Text(
-                                " and ",
-                            ),
-                            Expression(
-                                Identifier(
-                                    "b",
-                                ),
-                            ),
-                            Text(
-                                " equals ",
-                            ),
-                            Expression(
-                                Add(
-                                    Identifier(
-                                        "a",
-                                    ),
-                                    Identifier(
-                                        "b",
-                                    ),
-                                ),
-                            ),
-                        ],
-                    ),
-                ),
-            },
-            Expression(
-                FunctionCall(
-                    Identifier(
-                        "assert",
-                    ),
-                    [
-                        Eq(
-                            Identifier(
-                                "result",
-                            ),
-                            Literal(
-                                String(
-                                    "3 and 7 equals 10",
-                                ),
-                            ),
-                        ),
-                    ],
-                ),
-            ),
-        ],
-    ),
+Err(
+    "Expected Hash, found Var",
 )
 ```
 
 # Eval
 ```rust
-Ok(
-    RustValue(
-        EvalProgram {
-            statements: [
-                RustValue(
-                    EvalDeclare {
-                        name: "a",
-                        init_expr: Some(
-                            RustValue(
-                                EvalLiteral {
-                                    value: Int(
-                                        3,
-                                    ),
-                                },
-                            ),
-                        ),
-                    },
-                ),
-                RustValue(
-                    EvalDeclare {
-                        name: "b",
-                        init_expr: Some(
-                            RustValue(
-                                EvalLiteral {
-                                    value: Int(
-                                        7,
-                                    ),
-                                },
-                            ),
-                        ),
-                    },
-                ),
-                RustValue(
-                    EvalDeclare {
-                        name: "result",
-                        init_expr: Some(
-                            RustValue(
-                                EvalCall {
-                                    func_expr: RustValue(
-                                        EvalGetAttr {
-                                            obj_expr: RustValue(
-                                                EvalCall {
-                                                    func_expr: RustValue(
-                                                        EvalVariable {
-                                                            name: "str",
-                                                        },
-                                                    ),
-                                                    args: [
-                                                        RustValue(
-                                                            EvalVariable {
-                                                                name: "a",
-                                                            },
-                                                        ),
-                                                    ],
-                                                },
-                                            ),
-                                            attr_name: "op_add",
-                                        },
-                                    ),
-                                    args: [
-                                        RustValue(
-                                            EvalLiteral {
-                                                value: String(
-                                                    " and ",
-                                                ),
-                                            },
-                                        ),
-                                        RustValue(
-                                            EvalCall {
-                                                func_expr: RustValue(
-                                                    EvalVariable {
-                                                        name: "str",
-                                                    },
-                                                ),
-                                                args: [
-                                                    RustValue(
-                                                        EvalVariable {
-                                                            name: "b",
-                                                        },
-                                                    ),
-                                                ],
-                                            },
-                                        ),
-                                        RustValue(
-                                            EvalLiteral {
-                                                value: String(
-                                                    " equals ",
-                                                ),
-                                            },
-                                        ),
-                                        RustValue(
-                                            EvalCall {
-                                                func_expr: RustValue(
-                                                    EvalVariable {
-                                                        name: "str",
-                                                    },
-                                                ),
-                                                args: [
-                                                    RustValue(
-                                                        EvalCall {
-                                                            func_expr: RustValue(
-                                                                EvalGetAttr {
-                                                                    obj_expr: RustValue(
-                                                                        EvalVariable {
-                                                                            name: "a",
-                                                                        },
-                                                                    ),
-                                                                    attr_name: "op_add",
-                                                                },
-                                                            ),
-                                                            args: [
-                                                                RustValue(
-                                                                    EvalVariable {
-                                                                        name: "b",
-                                                                    },
-                                                                ),
-                                                            ],
-                                                        },
-                                                    ),
-                                                ],
-                                            },
-                                        ),
-                                    ],
-                                },
-                            ),
-                        ),
-                    },
-                ),
-                RustValue(
-                    EvalCall {
-                        func_expr: RustValue(
-                            EvalVariable {
-                                name: "assert",
-                            },
-                        ),
-                        args: [
-                            RustValue(
-                                EvalCall {
-                                    func_expr: RustValue(
-                                        EvalGetAttr {
-                                            obj_expr: RustValue(
-                                                EvalVariable {
-                                                    name: "result",
-                                                },
-                                            ),
-                                            attr_name: "op_eq",
-                                        },
-                                    ),
-                                    args: [
-                                        RustValue(
-                                            EvalLiteral {
-                                                value: String(
-                                                    "3 and 7 equals 10",
-                                                ),
-                                            },
-                                        ),
-                                    ],
-                                },
-                            ),
-                        ],
-                    },
-                ),
-            ],
-        },
-    ),
-)
+Skipped due to parse error
 ```

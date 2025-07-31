@@ -7,12 +7,12 @@ use crate::trace;
 
 /// Main entry point for parsing expressions
 pub fn parse_expression(s: &mut TokenStream) -> Result<Expression> {
-    trace!("parse_expression: starting at position {}", s.position());
+    trace!("parse_expression: starting at position {} ({})", s.position(), s.current_token_info());
     let result = parse_precedence(s, 0);
     if result.is_ok() {
-        trace!("parse_expression: success");
+        trace!("parse_expression: success - parsed precedence expression");
     } else {
-        trace!("parse_expression: failed");
+        trace!("parse_expression: failed - {}", result.as_ref().err().unwrap());
     }
     result
 }
@@ -121,12 +121,15 @@ fn parse_postfix(s: &mut TokenStream) -> Result<Expression> {
 fn parse_primary(s: &mut TokenStream) -> Result<Expression> {
     // Literals
     if s.accept_type(TokenType::True)?.is_some() {
+        trace!("parse_primary: success - parsed boolean literal (true)");
         return Ok(Expression::Literal(LiteralValue::Bool(true)));
     }
     if s.accept_type(TokenType::False)?.is_some() {
+        trace!("parse_primary: success - parsed boolean literal (false)");
         return Ok(Expression::Literal(LiteralValue::Bool(false)));
     }
     if s.accept_type(TokenType::Null)?.is_some() {
+        trace!("parse_primary: success - parsed null literal");
         return Ok(Expression::Literal(LiteralValue::Null));
     }
 
@@ -134,6 +137,7 @@ fn parse_primary(s: &mut TokenStream) -> Result<Expression> {
     if let Some(token) = s.accept_type(TokenType::Ident)? {
         let name = token.text
             .ok_or_else(|| anyhow!("Identifier token missing text"))?;
+        trace!("parse_primary: success - parsed identifier ({})", name);
         return Ok(Expression::Identifier(name));
     }
     
@@ -142,48 +146,60 @@ fn parse_primary(s: &mut TokenStream) -> Result<Expression> {
         let value = parse_literal_value(s)?;
         Ok(Expression::Literal(value))
     })? {
+        trace!("parse_primary: success - parsed numeric/string literal");
         return Ok(literal);
     }
 
     // Control flow expressions
     if s.accept_type(TokenType::If)?.is_some() {
+        trace!("parse_primary: success - parsing if expression");
         return parse_if_expression(s);
     }
     if s.accept_type(TokenType::Match)?.is_some() {
+        trace!("parse_primary: success - parsing match expression");
         return parse_match_expression(s);
     }
     if s.accept_type(TokenType::While)?.is_some() {
+        trace!("parse_primary: success - parsing while expression");
         return parse_while_expression(s);
     }
     if s.accept_type(TokenType::For)?.is_some() {
+        trace!("parse_primary: success - parsing for expression");
         return parse_for_expression(s);
     }
     if s.accept_type(TokenType::Loop)?.is_some() {
+        trace!("parse_primary: success - parsing loop expression");
         return parse_loop_expression(s);
     }
     if s.accept_type(TokenType::Try)?.is_some() {
+        trace!("parse_primary: success - parsing try expression");
         return parse_try_expression(s);
     }
     if s.accept_type(TokenType::With)?.is_some() {
+        trace!("parse_primary: success - parsing with expression");
         return parse_with_expression(s);
     }
 
     // Lambda expressions
     if s.peek_type() == TokenType::Pipe {
+        trace!("parse_primary: success - parsing lambda expression");
         return parse_lambda_expression(s);
     }
 
     // Collections
     if s.accept_type(TokenType::LeftBracket)?.is_some() {
+        trace!("parse_primary: success - parsing list literal");
         return parse_list_literal(s);
     }
     if s.peek_type() == TokenType::LeftBrace {
         // Could be block or dict - need to check
+        trace!("parse_primary: success - parsing block or dict");
         return parse_block_or_dict(s);
     }
 
     // Parenthesized expressions
     if s.accept_type(TokenType::LeftParen)?.is_some() {
+        trace!("parse_primary: success - parsing parenthesized expression");
         let expr = parse_expression(s)?;
         s.expect_type(TokenType::RightParen)?;
         return Ok(expr);
@@ -191,9 +207,12 @@ fn parse_primary(s: &mut TokenStream) -> Result<Expression> {
 
     // Interpolated strings
     if s.peek_type() == TokenType::StringPart || s.peek_type() == TokenType::InterpolationStart {
+        trace!("parse_primary: success - parsing interpolated string");
         return parse_interpolated_string(s);
     }
 
+    let current_token = s.current_token_info();
+    trace!("parse_primary: failed - no matching primary expression for {}", current_token);
     Err(anyhow!("Expected expression, found {:?}", s.peek_type()))
 }
 

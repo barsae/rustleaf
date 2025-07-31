@@ -1,6 +1,6 @@
 # Program
-Status: 🟢
-Assertions: 3
+Status: 🔴
+Assertions: 0
 
 ```rustleaf
 assert(-42 == -42);
@@ -12,35 +12,13 @@ assert(not false == true);
 # Output
 ```
 parse_program: starting
-parse_program: parsing statement at position 0
-parse_statement: starting at position 0
-parse_statement: falling back to expression statement
-parse_expression: starting at position 0
-parse_expression: starting at position 2
-parse_expression: success
-parse_expression: success
-parse_program: parsing statement at position 9
-parse_statement: starting at position 9
-parse_statement: falling back to expression statement
-parse_expression: starting at position 9
-parse_expression: starting at position 11
-parse_expression: success
-parse_expression: success
-parse_program: parsing statement at position 17
-parse_statement: starting at position 17
-parse_statement: falling back to expression statement
-parse_expression: starting at position 17
-parse_expression: starting at position 19
-parse_expression: success
-parse_expression: success
-parse_program: parsed 3 statements
+parse_program: parsing statement at position 0 (Ident(assert))
+parse_statement: starting at position 0 (Ident(assert))
 ```
 
 # Result
 ```rust
-Ok(
-    Unit,
-)
+Skipped due to parse error
 ```
 
 # Lex
@@ -79,229 +57,12 @@ Ok(
 
 # Parse
 ```rust
-Ok(
-    Program(
-        [
-            Expression(
-                FunctionCall(
-                    Identifier(
-                        "assert",
-                    ),
-                    [
-                        Eq(
-                            Neg(
-                                Literal(
-                                    Int(
-                                        42,
-                                    ),
-                                ),
-                            ),
-                            Neg(
-                                Literal(
-                                    Int(
-                                        42,
-                                    ),
-                                ),
-                            ),
-                        ),
-                    ],
-                ),
-            ),
-            Expression(
-                FunctionCall(
-                    Identifier(
-                        "assert",
-                    ),
-                    [
-                        Eq(
-                            Not(
-                                Literal(
-                                    Bool(
-                                        true,
-                                    ),
-                                ),
-                            ),
-                            Literal(
-                                Bool(
-                                    false,
-                                ),
-                            ),
-                        ),
-                    ],
-                ),
-            ),
-            Expression(
-                FunctionCall(
-                    Identifier(
-                        "assert",
-                    ),
-                    [
-                        Eq(
-                            Not(
-                                Literal(
-                                    Bool(
-                                        false,
-                                    ),
-                                ),
-                            ),
-                            Literal(
-                                Bool(
-                                    true,
-                                ),
-                            ),
-                        ),
-                    ],
-                ),
-            ),
-        ],
-    ),
+Err(
+    "Expected Hash, found Ident",
 )
 ```
 
 # Eval
 ```rust
-Ok(
-    RustValue(
-        EvalProgram {
-            statements: [
-                RustValue(
-                    EvalCall {
-                        func_expr: RustValue(
-                            EvalVariable {
-                                name: "assert",
-                            },
-                        ),
-                        args: [
-                            RustValue(
-                                EvalCall {
-                                    func_expr: RustValue(
-                                        EvalGetAttr {
-                                            obj_expr: RustValue(
-                                                EvalCall {
-                                                    func_expr: RustValue(
-                                                        EvalGetAttr {
-                                                            obj_expr: RustValue(
-                                                                EvalLiteral {
-                                                                    value: Int(
-                                                                        42,
-                                                                    ),
-                                                                },
-                                                            ),
-                                                            attr_name: "op_neg",
-                                                        },
-                                                    ),
-                                                    args: [],
-                                                },
-                                            ),
-                                            attr_name: "op_eq",
-                                        },
-                                    ),
-                                    args: [
-                                        RustValue(
-                                            EvalCall {
-                                                func_expr: RustValue(
-                                                    EvalGetAttr {
-                                                        obj_expr: RustValue(
-                                                            EvalLiteral {
-                                                                value: Int(
-                                                                    42,
-                                                                ),
-                                                            },
-                                                        ),
-                                                        attr_name: "op_neg",
-                                                    },
-                                                ),
-                                                args: [],
-                                            },
-                                        ),
-                                    ],
-                                },
-                            ),
-                        ],
-                    },
-                ),
-                RustValue(
-                    EvalCall {
-                        func_expr: RustValue(
-                            EvalVariable {
-                                name: "assert",
-                            },
-                        ),
-                        args: [
-                            RustValue(
-                                EvalCall {
-                                    func_expr: RustValue(
-                                        EvalGetAttr {
-                                            obj_expr: RustValue(
-                                                EvalLogicalNot {
-                                                    expr: RustValue(
-                                                        EvalLiteral {
-                                                            value: Bool(
-                                                                true,
-                                                            ),
-                                                        },
-                                                    ),
-                                                },
-                                            ),
-                                            attr_name: "op_eq",
-                                        },
-                                    ),
-                                    args: [
-                                        RustValue(
-                                            EvalLiteral {
-                                                value: Bool(
-                                                    false,
-                                                ),
-                                            },
-                                        ),
-                                    ],
-                                },
-                            ),
-                        ],
-                    },
-                ),
-                RustValue(
-                    EvalCall {
-                        func_expr: RustValue(
-                            EvalVariable {
-                                name: "assert",
-                            },
-                        ),
-                        args: [
-                            RustValue(
-                                EvalCall {
-                                    func_expr: RustValue(
-                                        EvalGetAttr {
-                                            obj_expr: RustValue(
-                                                EvalLogicalNot {
-                                                    expr: RustValue(
-                                                        EvalLiteral {
-                                                            value: Bool(
-                                                                false,
-                                                            ),
-                                                        },
-                                                    ),
-                                                },
-                                            ),
-                                            attr_name: "op_eq",
-                                        },
-                                    ),
-                                    args: [
-                                        RustValue(
-                                            EvalLiteral {
-                                                value: Bool(
-                                                    true,
-                                                ),
-                                            },
-                                        ),
-                                    ],
-                                },
-                            ),
-                        ],
-                    },
-                ),
-            ],
-        },
-    ),
-)
+Skipped due to parse error
 ```

@@ -1,6 +1,6 @@
 # Program
-Status: 🟢
-Assertions: 1
+Status: 🔴
+Assertions: 0
 
 ```rustleaf
 var x = {};
@@ -10,26 +10,13 @@ assert(x is Dict);
 # Output
 ```
 parse_program: starting
-parse_program: parsing statement at position 0
-parse_statement: starting at position 0
-parse_expression: starting at position 3
-parse_expression: success
-parse_statement: parsed var declaration
-parse_program: parsing statement at position 6
-parse_statement: starting at position 6
-parse_statement: falling back to expression statement
-parse_expression: starting at position 6
-parse_expression: starting at position 8
-parse_expression: success
-parse_expression: success
-parse_program: parsed 2 statements
+parse_program: parsing statement at position 0 (Var)
+parse_statement: starting at position 0 (Var)
 ```
 
 # Result
 ```rust
-Ok(
-    Unit,
-)
+Skipped due to parse error
 ```
 
 # Lex
@@ -56,86 +43,12 @@ Ok(
 
 # Parse
 ```rust
-Ok(
-    Program(
-        [
-            VarDecl {
-                pattern: Variable(
-                    "x",
-                ),
-                value: Some(
-                    Dict(
-                        [],
-                    ),
-                ),
-            },
-            Expression(
-                FunctionCall(
-                    Identifier(
-                        "assert",
-                    ),
-                    [
-                        Is(
-                            Identifier(
-                                "x",
-                            ),
-                            Identifier(
-                                "Dict",
-                            ),
-                        ),
-                    ],
-                ),
-            ),
-        ],
-    ),
+Err(
+    "Expected Hash, found Var",
 )
 ```
 
 # Eval
 ```rust
-Ok(
-    RustValue(
-        EvalProgram {
-            statements: [
-                RustValue(
-                    EvalDeclare {
-                        name: "x",
-                        init_expr: Some(
-                            RustValue(
-                                EvalDict {
-                                    pairs: [],
-                                },
-                            ),
-                        ),
-                    },
-                ),
-                RustValue(
-                    EvalCall {
-                        func_expr: RustValue(
-                            EvalVariable {
-                                name: "assert",
-                            },
-                        ),
-                        args: [
-                            RustValue(
-                                EvalIs {
-                                    left: RustValue(
-                                        EvalVariable {
-                                            name: "x",
-                                        },
-                                    ),
-                                    right: RustValue(
-                                        EvalVariable {
-                                            name: "Dict",
-                                        },
-                                    ),
-                                },
-                            ),
-                        ],
-                    },
-                ),
-            ],
-        },
-    ),
-)
+Skipped due to parse error
 ```

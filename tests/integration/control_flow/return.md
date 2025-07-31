@@ -1,6 +1,6 @@
 # Program
-Status: 🟢
-Assertions: 1
+Status: 🔴
+Assertions: 0
 
 ```rustleaf
 fn test_return() {
@@ -14,33 +14,13 @@ assert(result == 42);
 # Output
 ```
 parse_program: starting
-parse_program: parsing statement at position 0
-parse_statement: starting at position 0
-parse_statement: starting at position 5
-parse_expression: starting at position 6
-parse_expression: success
-parse_statement: parsed return statement
-parse_statement: parsed function declaration
-parse_program: parsing statement at position 9
-parse_statement: starting at position 9
-parse_expression: starting at position 12
-parse_expression: success
-parse_statement: parsed var declaration
-parse_program: parsing statement at position 16
-parse_statement: starting at position 16
-parse_statement: falling back to expression statement
-parse_expression: starting at position 16
-parse_expression: starting at position 18
-parse_expression: success
-parse_expression: success
-parse_program: parsed 3 statements
+parse_program: parsing statement at position 0 (Fn)
+parse_statement: starting at position 0 (Fn)
 ```
 
 # Result
 ```rust
-Ok(
-    Unit,
-)
+Skipped due to parse error
 ```
 
 # Lex
@@ -77,152 +57,12 @@ Ok(
 
 # Parse
 ```rust
-Ok(
-    Program(
-        [
-            FnDecl {
-                name: "test_return",
-                params: [],
-                body: Block {
-                    statements: [
-                        Return(
-                            Some(
-                                Literal(
-                                    Int(
-                                        42,
-                                    ),
-                                ),
-                            ),
-                        ),
-                    ],
-                    final_expr: None,
-                },
-                is_pub: false,
-            },
-            VarDecl {
-                pattern: Variable(
-                    "result",
-                ),
-                value: Some(
-                    FunctionCall(
-                        Identifier(
-                            "test_return",
-                        ),
-                        [],
-                    ),
-                ),
-            },
-            Expression(
-                FunctionCall(
-                    Identifier(
-                        "assert",
-                    ),
-                    [
-                        Eq(
-                            Identifier(
-                                "result",
-                            ),
-                            Literal(
-                                Int(
-                                    42,
-                                ),
-                            ),
-                        ),
-                    ],
-                ),
-            ),
-        ],
-    ),
+Err(
+    "Expected Hash, found Fn",
 )
 ```
 
 # Eval
 ```rust
-Ok(
-    RustValue(
-        EvalProgram {
-            statements: [
-                RustValue(
-                    EvalFunction {
-                        data: FunctionData {
-                            name: "test_return",
-                            params: [],
-                            body: RustValue(
-                                EvalBlock {
-                                    statements: [
-                                        RustValue(
-                                            EvalReturn {
-                                                expr: Some(
-                                                    RustValue(
-                                                        EvalLiteral {
-                                                            value: Int(
-                                                                42,
-                                                            ),
-                                                        },
-                                                    ),
-                                                ),
-                                            },
-                                        ),
-                                    ],
-                                    final_expr: None,
-                                },
-                            ),
-                        },
-                    },
-                ),
-                RustValue(
-                    EvalDeclare {
-                        name: "result",
-                        init_expr: Some(
-                            RustValue(
-                                EvalCall {
-                                    func_expr: RustValue(
-                                        EvalVariable {
-                                            name: "test_return",
-                                        },
-                                    ),
-                                    args: [],
-                                },
-                            ),
-                        ),
-                    },
-                ),
-                RustValue(
-                    EvalCall {
-                        func_expr: RustValue(
-                            EvalVariable {
-                                name: "assert",
-                            },
-                        ),
-                        args: [
-                            RustValue(
-                                EvalCall {
-                                    func_expr: RustValue(
-                                        EvalGetAttr {
-                                            obj_expr: RustValue(
-                                                EvalVariable {
-                                                    name: "result",
-                                                },
-                                            ),
-                                            attr_name: "op_eq",
-                                        },
-                                    ),
-                                    args: [
-                                        RustValue(
-                                            EvalLiteral {
-                                                value: Int(
-                                                    42,
-                                                ),
-                                            },
-                                        ),
-                                    ],
-                                },
-                            ),
-                        ],
-                    },
-                ),
-            ],
-        },
-    ),
-)
+Skipped due to parse error
 ```

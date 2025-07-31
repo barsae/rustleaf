@@ -17,51 +17,8 @@ assert(f() == [1, 2, 3]);
 # Output
 ```
 parse_program: starting
-parse_program: parsing statement at position 0
-parse_statement: starting at position 0
-parse_statement: starting at position 5
-parse_expression: starting at position 8
-parse_expression: starting at position 9
-parse_expression: success
-parse_expression: starting at position 11
-parse_expression: success
-parse_expression: success
-parse_statement: parsed var declaration
-parse_statement: starting at position 14
-parse_expression: starting at position 14
-parse_expression: starting at position 17
-parse_expression: success
-parse_statement: starting at position 19
-parse_statement: falling back to expression statement
-parse_expression: starting at position 19
-parse_expression: success
-parse_expression: starting at position 23
-parse_expression: success
-parse_expression: failed
-parse_statement: falling back to expression statement
-parse_expression: starting at position 14
-parse_expression: starting at position 17
-parse_expression: success
-parse_statement: starting at position 19
-parse_statement: falling back to expression statement
-parse_expression: starting at position 19
-parse_expression: success
-parse_expression: starting at position 23
-parse_expression: success
-parse_expression: failed
-parse_expression: starting at position 14
-parse_expression: starting at position 17
-parse_expression: success
-parse_statement: starting at position 19
-parse_statement: falling back to expression statement
-parse_expression: starting at position 19
-parse_expression: success
-parse_expression: starting at position 23
-parse_expression: success
-parse_expression: failed
-parse_statement: falling back to expression statement
-parse_expression: starting at position 0
-parse_expression: failed
+parse_program: parsing statement at position 0 (Fn)
+parse_statement: starting at position 0 (Fn)
 ```
 
 # Result
@@ -126,7 +83,7 @@ Ok(
 # Parse
 ```rust
 Err(
-    "Expected expression, found Fn",
+    "Expected Hash, found Fn",
 )
 ```
 

@@ -1,6 +1,6 @@
 # Program
-Status: 🟢
-Assertions: 3
+Status: 🔴
+Assertions: 0
 
 ```rustleaf
 var multiline = "This is a
@@ -14,40 +14,13 @@ assert("This is a" in multiline);
 # Output
 ```
 parse_program: starting
-parse_program: parsing statement at position 0
-parse_statement: starting at position 0
-parse_expression: starting at position 3
-parse_expression: success
-parse_statement: parsed var declaration
-parse_program: parsing statement at position 5
-parse_statement: starting at position 5
-parse_statement: falling back to expression statement
-parse_expression: starting at position 5
-parse_expression: starting at position 7
-parse_expression: success
-parse_expression: success
-parse_program: parsing statement at position 12
-parse_statement: starting at position 12
-parse_statement: falling back to expression statement
-parse_expression: starting at position 12
-parse_expression: starting at position 14
-parse_expression: success
-parse_expression: success
-parse_program: parsing statement at position 19
-parse_statement: starting at position 19
-parse_statement: falling back to expression statement
-parse_expression: starting at position 19
-parse_expression: starting at position 21
-parse_expression: success
-parse_expression: success
-parse_program: parsed 4 statements
+parse_program: parsing statement at position 0 (Var)
+parse_statement: starting at position 0 (Var)
 ```
 
 # Result
 ```rust
-Ok(
-    Unit,
-)
+Skipped due to parse error
 ```
 
 # Lex
@@ -87,207 +60,12 @@ Ok(
 
 # Parse
 ```rust
-Ok(
-    Program(
-        [
-            VarDecl {
-                pattern: Variable(
-                    "multiline",
-                ),
-                value: Some(
-                    Literal(
-                        String(
-                            "This is a\nmultiline string\nwith multiple lines",
-                        ),
-                    ),
-                ),
-            },
-            Expression(
-                FunctionCall(
-                    Identifier(
-                        "assert",
-                    ),
-                    [
-                        Ne(
-                            Identifier(
-                                "multiline",
-                            ),
-                            Literal(
-                                String(
-                                    "single line",
-                                ),
-                            ),
-                        ),
-                    ],
-                ),
-            ),
-            Expression(
-                FunctionCall(
-                    Identifier(
-                        "assert",
-                    ),
-                    [
-                        In(
-                            Literal(
-                                String(
-                                    "multiline",
-                                ),
-                            ),
-                            Identifier(
-                                "multiline",
-                            ),
-                        ),
-                    ],
-                ),
-            ),
-            Expression(
-                FunctionCall(
-                    Identifier(
-                        "assert",
-                    ),
-                    [
-                        In(
-                            Literal(
-                                String(
-                                    "This is a",
-                                ),
-                            ),
-                            Identifier(
-                                "multiline",
-                            ),
-                        ),
-                    ],
-                ),
-            ),
-        ],
-    ),
+Err(
+    "Expected Hash, found Var",
 )
 ```
 
 # Eval
 ```rust
-Ok(
-    RustValue(
-        EvalProgram {
-            statements: [
-                RustValue(
-                    EvalDeclare {
-                        name: "multiline",
-                        init_expr: Some(
-                            RustValue(
-                                EvalLiteral {
-                                    value: String(
-                                        "This is a\nmultiline string\nwith multiple lines",
-                                    ),
-                                },
-                            ),
-                        ),
-                    },
-                ),
-                RustValue(
-                    EvalCall {
-                        func_expr: RustValue(
-                            EvalVariable {
-                                name: "assert",
-                            },
-                        ),
-                        args: [
-                            RustValue(
-                                EvalCall {
-                                    func_expr: RustValue(
-                                        EvalGetAttr {
-                                            obj_expr: RustValue(
-                                                EvalVariable {
-                                                    name: "multiline",
-                                                },
-                                            ),
-                                            attr_name: "op_ne",
-                                        },
-                                    ),
-                                    args: [
-                                        RustValue(
-                                            EvalLiteral {
-                                                value: String(
-                                                    "single line",
-                                                ),
-                                            },
-                                        ),
-                                    ],
-                                },
-                            ),
-                        ],
-                    },
-                ),
-                RustValue(
-                    EvalCall {
-                        func_expr: RustValue(
-                            EvalVariable {
-                                name: "assert",
-                            },
-                        ),
-                        args: [
-                            RustValue(
-                                EvalCall {
-                                    func_expr: RustValue(
-                                        EvalGetAttr {
-                                            obj_expr: RustValue(
-                                                EvalVariable {
-                                                    name: "multiline",
-                                                },
-                                            ),
-                                            attr_name: "op_contains",
-                                        },
-                                    ),
-                                    args: [
-                                        RustValue(
-                                            EvalLiteral {
-                                                value: String(
-                                                    "multiline",
-                                                ),
-                                            },
-                                        ),
-                                    ],
-                                },
-                            ),
-                        ],
-                    },
-                ),
-                RustValue(
-                    EvalCall {
-                        func_expr: RustValue(
-                            EvalVariable {
-                                name: "assert",
-                            },
-                        ),
-                        args: [
-                            RustValue(
-                                EvalCall {
-                                    func_expr: RustValue(
-                                        EvalGetAttr {
-                                            obj_expr: RustValue(
-                                                EvalVariable {
-                                                    name: "multiline",
-                                                },
-                                            ),
-                                            attr_name: "op_contains",
-                                        },
-                                    ),
-                                    args: [
-                                        RustValue(
-                                            EvalLiteral {
-                                                value: String(
-                                                    "This is a",
-                                                ),
-                                            },
-                                        ),
-                                    ],
-                                },
-                            ),
-                        ],
-                    },
-                ),
-            ],
-        },
-    ),
-)
+Skipped due to parse error
 ```

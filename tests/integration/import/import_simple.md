@@ -1,6 +1,6 @@
 # Program
-Status: 🟢
-Assertions: 1
+Status: 🔴
+Assertions: 0
 
 ```rustleaf
 use math::adder;
@@ -11,44 +11,13 @@ assert(x == 3);
 # Output
 ```
 parse_program: starting
-parse_program: parsing statement at position 0
-parse_statement: starting at position 0
-parse_statement: parsed import statement
-parse_program: parsing statement at position 5
-parse_statement: starting at position 5
-parse_expression: starting at position 8
-parse_expression: starting at position 10
-parse_expression: success
-parse_expression: starting at position 12
-parse_expression: success
-parse_expression: success
-parse_statement: parsed var declaration
-parse_program: parsing statement at position 15
-parse_statement: starting at position 15
-parse_statement: falling back to expression statement
-parse_expression: starting at position 15
-parse_expression: starting at position 17
-parse_expression: success
-parse_expression: success
-parse_program: parsed 3 statements
-parse_program: starting
-parse_program: parsing statement at position 0
-parse_statement: starting at position 0
-parse_statement: starting at position 9
-parse_statement: falling back to expression statement
-parse_expression: starting at position 9
-parse_expression: success
-parse_expression: starting at position 9
-parse_expression: success
-parse_statement: parsed function declaration
-parse_program: parsed 1 statements
+parse_program: parsing statement at position 0 (Use)
+parse_statement: starting at position 0 (Use)
 ```
 
 # Result
 ```rust
-Ok(
-    Unit,
-)
+Skipped due to parse error
 ```
 
 # Lex
@@ -84,159 +53,12 @@ Ok(
 
 # Parse
 ```rust
-Ok(
-    Program(
-        [
-            Import(
-                ImportSpec {
-                    module: "math",
-                    items: Specific(
-                        [
-                            ImportItem {
-                                name: "adder",
-                                alias: None,
-                            },
-                        ],
-                    ),
-                },
-            ),
-            VarDecl {
-                pattern: Variable(
-                    "x",
-                ),
-                value: Some(
-                    FunctionCall(
-                        Identifier(
-                            "adder",
-                        ),
-                        [
-                            Literal(
-                                Int(
-                                    1,
-                                ),
-                            ),
-                            Literal(
-                                Int(
-                                    2,
-                                ),
-                            ),
-                        ],
-                    ),
-                ),
-            },
-            Expression(
-                FunctionCall(
-                    Identifier(
-                        "assert",
-                    ),
-                    [
-                        Eq(
-                            Identifier(
-                                "x",
-                            ),
-                            Literal(
-                                Int(
-                                    3,
-                                ),
-                            ),
-                        ),
-                    ],
-                ),
-            ),
-        ],
-    ),
+Err(
+    "Expected Hash, found Use",
 )
 ```
 
 # Eval
 ```rust
-Ok(
-    RustValue(
-        EvalProgram {
-            statements: [
-                RustValue(
-                    EvalImport {
-                        data: ImportData {
-                            module: "math",
-                            items: Specific(
-                                [
-                                    ImportItem {
-                                        name: "adder",
-                                        alias: None,
-                                    },
-                                ],
-                            ),
-                        },
-                    },
-                ),
-                RustValue(
-                    EvalDeclare {
-                        name: "x",
-                        init_expr: Some(
-                            RustValue(
-                                EvalCall {
-                                    func_expr: RustValue(
-                                        EvalVariable {
-                                            name: "adder",
-                                        },
-                                    ),
-                                    args: [
-                                        RustValue(
-                                            EvalLiteral {
-                                                value: Int(
-                                                    1,
-                                                ),
-                                            },
-                                        ),
-                                        RustValue(
-                                            EvalLiteral {
-                                                value: Int(
-                                                    2,
-                                                ),
-                                            },
-                                        ),
-                                    ],
-                                },
-                            ),
-                        ),
-                    },
-                ),
-                RustValue(
-                    EvalCall {
-                        func_expr: RustValue(
-                            EvalVariable {
-                                name: "assert",
-                            },
-                        ),
-                        args: [
-                            RustValue(
-                                EvalCall {
-                                    func_expr: RustValue(
-                                        EvalGetAttr {
-                                            obj_expr: RustValue(
-                                                EvalVariable {
-                                                    name: "x",
-                                                },
-                                            ),
-                                            attr_name: "op_eq",
-                                        },
-                                    ),
-                                    args: [
-                                        RustValue(
-                                            EvalLiteral {
-                                                value: Int(
-                                                    3,
-                                                ),
-                                            },
-                                        ),
-                                    ],
-                                },
-                            ),
-                        ],
-                    },
-                ),
-            ],
-        },
-    ),
-)
+Skipped due to parse error
 ```

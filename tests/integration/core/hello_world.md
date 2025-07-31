@@ -1,6 +1,6 @@
 # Program
-Status: 🟢
-Assertions: 1
+Status: 🔴
+Assertions: 0
 
 ```rustleaf
 assert("hello, world" == "hello, world");
@@ -9,21 +9,13 @@ assert("hello, world" == "hello, world");
 # Output
 ```
 parse_program: starting
-parse_program: parsing statement at position 0
-parse_statement: starting at position 0
-parse_statement: falling back to expression statement
-parse_expression: starting at position 0
-parse_expression: starting at position 2
-parse_expression: success
-parse_expression: success
-parse_program: parsed 1 statements
+parse_program: parsing statement at position 0 (Ident(assert))
+parse_statement: starting at position 0 (Ident(assert))
 ```
 
 # Result
 ```rust
-Ok(
-    Unit,
-)
+Skipped due to parse error
 ```
 
 # Lex
@@ -44,79 +36,12 @@ Ok(
 
 # Parse
 ```rust
-Ok(
-    Program(
-        [
-            Expression(
-                FunctionCall(
-                    Identifier(
-                        "assert",
-                    ),
-                    [
-                        Eq(
-                            Literal(
-                                String(
-                                    "hello, world",
-                                ),
-                            ),
-                            Literal(
-                                String(
-                                    "hello, world",
-                                ),
-                            ),
-                        ),
-                    ],
-                ),
-            ),
-        ],
-    ),
+Err(
+    "Expected Hash, found Ident",
 )
 ```
 
 # Eval
 ```rust
-Ok(
-    RustValue(
-        EvalProgram {
-            statements: [
-                RustValue(
-                    EvalCall {
-                        func_expr: RustValue(
-                            EvalVariable {
-                                name: "assert",
-                            },
-                        ),
-                        args: [
-                            RustValue(
-                                EvalCall {
-                                    func_expr: RustValue(
-                                        EvalGetAttr {
-                                            obj_expr: RustValue(
-                                                EvalLiteral {
-                                                    value: String(
-                                                        "hello, world",
-                                                    ),
-                                                },
-                                            ),
-                                            attr_name: "op_eq",
-                                        },
-                                    ),
-                                    args: [
-                                        RustValue(
-                                            EvalLiteral {
-                                                value: String(
-                                                    "hello, world",
-                                                ),
-                                            },
-                                        ),
-                                    ],
-                                },
-                            ),
-                        ],
-                    },
-                ),
-            ],
-        },
-    ),
-)
+Skipped due to parse error
 ```

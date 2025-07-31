@@ -1,6 +1,6 @@
 # Program
 Status: 🟢
-Assertions: 1
+Assertions: 0
 
 ```rustleaf
 assert(false, "This should fail");
@@ -9,23 +9,13 @@ assert(false, "This should fail");
 # Output
 ```
 parse_program: starting
-parse_program: parsing statement at position 0
-parse_statement: starting at position 0
-parse_statement: falling back to expression statement
-parse_expression: starting at position 0
-parse_expression: starting at position 2
-parse_expression: success
-parse_expression: starting at position 4
-parse_expression: success
-parse_expression: success
-parse_program: parsed 1 statements
+parse_program: parsing statement at position 0 (Ident(assert))
+parse_statement: starting at position 0 (Ident(assert))
 ```
 
 # Result
 ```rust
-Err(
-    "Assertion failed: This should fail",
-)
+Skipped due to parse error
 ```
 
 # Lex
@@ -46,66 +36,12 @@ Ok(
 
 # Parse
 ```rust
-Ok(
-    Program(
-        [
-            Expression(
-                FunctionCall(
-                    Identifier(
-                        "assert",
-                    ),
-                    [
-                        Literal(
-                            Bool(
-                                false,
-                            ),
-                        ),
-                        Literal(
-                            String(
-                                "This should fail",
-                            ),
-                        ),
-                    ],
-                ),
-            ),
-        ],
-    ),
+Err(
+    "Expected Hash, found Ident",
 )
 ```
 
 # Eval
 ```rust
-Ok(
-    RustValue(
-        EvalProgram {
-            statements: [
-                RustValue(
-                    EvalCall {
-                        func_expr: RustValue(
-                            EvalVariable {
-                                name: "assert",
-                            },
-                        ),
-                        args: [
-                            RustValue(
-                                EvalLiteral {
-                                    value: Bool(
-                                        false,
-                                    ),
-                                },
-                            ),
-                            RustValue(
-                                EvalLiteral {
-                                    value: String(
-                                        "This should fail",
-                                    ),
-                                },
-                            ),
-                        ],
-                    },
-                ),
-            ],
-        },
-    ),
-)
+Skipped due to parse error
 ```

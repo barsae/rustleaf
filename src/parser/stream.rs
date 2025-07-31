@@ -15,6 +15,14 @@ impl TokenStream {
         self.current
     }
 
+    pub fn current_token_info(&self) -> String {
+        let token = self.peek();
+        match &token.text {
+            Some(text) => format!("{:?}({})", token.token_type, text),
+            None => format!("{:?}", token.token_type),
+        }
+    }
+
     pub fn is_at_end(&self) -> bool {
         matches!(self.peek().token_type, TokenType::Eof)
     }
@@ -33,9 +41,9 @@ impl TokenStream {
             Ok(result) => {
                 Ok(Some(result))
             }
-            Err(_) => {
+            Err(err) => {
                 self.current = checkpoint;
-                Ok(None)
+                Err(err)
             }
         }
     }

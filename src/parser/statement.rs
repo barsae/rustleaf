@@ -6,53 +6,56 @@ use crate::trace;
 
 /// Parse a single statement
 pub fn parse_statement(s: &mut TokenStream) -> Result<Statement> {
-    trace!("parse_statement: starting at position {}", s.position());
+    trace!("parse_statement: starting at position {} ({})", s.position(), s.current_token_info());
     
     // Try each statement type in order
     if let Some(stmt) = s.try_parse(parse_macro)? {
-        trace!("parse_statement: parsed macro");
+        trace!("parse_statement: success - parsed macro");
         return Ok(stmt);
     }
     if let Some(stmt) = s.try_parse(parse_var_declaration)? {
-        trace!("parse_statement: parsed var declaration");
+        trace!("parse_statement: success - parsed var declaration");
         return Ok(stmt);
     }
     if let Some(stmt) = s.try_parse(parse_function_declaration)? {
-        trace!("parse_statement: parsed function declaration");
+        trace!("parse_statement: success - parsed function declaration");
         return Ok(stmt);
     }
     if let Some(stmt) = s.try_parse(parse_class_declaration)? {
-        trace!("parse_statement: parsed class declaration");
+        trace!("parse_statement: success - parsed class declaration");
         return Ok(stmt);
     }
     if let Some(stmt) = s.try_parse(parse_import_statement)? {
-        trace!("parse_statement: parsed import statement");
+        trace!("parse_statement: success - parsed import statement");
         return Ok(stmt);
     }
     if let Some(stmt) = s.try_parse(parse_return_statement)? {
-        trace!("parse_statement: parsed return statement");
+        trace!("parse_statement: success - parsed return statement");
         return Ok(stmt);
     }
     if let Some(stmt) = s.try_parse(parse_break_statement)? {
-        trace!("parse_statement: parsed break statement");
+        trace!("parse_statement: success - parsed break statement");
         return Ok(stmt);
     }
     if let Some(stmt) = s.try_parse(parse_continue_statement)? {
-        trace!("parse_statement: parsed continue statement");
+        trace!("parse_statement: success - parsed continue statement");
         return Ok(stmt);
     }
     if let Some(stmt) = s.try_parse(parse_assignment)? {
-        trace!("parse_statement: parsed assignment");
+        trace!("parse_statement: success - parsed assignment");
         return Ok(stmt);
     }
     if let Some(stmt) = s.try_parse(parse_block_like_expression_statement)? {
-        trace!("parse_statement: parsed block-like expression statement");
+        trace!("parse_statement: success - parsed block-like expression statement");
         return Ok(stmt);
     }
     
     // Fall back to expression statement
     trace!("parse_statement: falling back to expression statement");
     let result = parse_expression_statement(s);
+    if result.is_err() {
+        trace!("parse_statement: failed - {}", result.as_ref().err().unwrap());
+    }
     result
 }
 
