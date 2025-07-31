@@ -90,20 +90,18 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
 
                     // Try parsing (only if lexing succeeded)
                     println!("DEBUG: Starting parsing phase");
-                    let parse_output = match &tokens_result {
-                        Ok(_) => {
-                            let parse_result = rustleaf::parser::Parser::parse_str(&source);
-                            format!("{:#?}", parse_result)
-                        }
-                        Err(_) => "Skipped due to lex error".to_string(),
+                    let parse_result = match &tokens_result {
+                        Ok(_) => rustleaf::parser::Parser::parse_str(&source),
+                        Err(e) => Err(anyhow::Error::msg(format!("Lex error: {}", e))),
                     };
+                    let parse_output = format!("{:#?}", parse_result);
                     println!("DEBUG: Parsing completed");
 
                     // Try compiling to eval IR (only if parsing succeeded)
                     println!("DEBUG: Starting compilation phase");
-                    let eval_output = match rustleaf::parser::Parser::parse_str(&source) {
+                    let eval_output = match &parse_result {
                         Ok(ast) => {
-                            let eval_result = rustleaf::eval::Compiler::compile(ast);
+                            let eval_result = rustleaf::eval::Compiler::compile(ast.clone());
                             format!("{:#?}", eval_result)
                         }
                         Err(_) => "Skipped due to parse error".to_string(),
@@ -112,7 +110,7 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
 
                     // Try evaluation (only if all previous stages succeeded)
                     println!("DEBUG: Starting evaluation phase");
-                    let (output_section, execution_output, eval_success, final_result, assertion_count) = match rustleaf::parser::Parser::parse_str(&source) {
+                    let (output_section, execution_output, eval_success, final_result, assertion_count) = match parse_result {
                         Ok(ast) => {
                             println!("DEBUG: AST parsing successful, starting evaluation setup");
                             rustleaf::core::start_print_capture();
