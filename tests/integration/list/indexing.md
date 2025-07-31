@@ -10,7 +10,39 @@ assert(my_list[2] == 3);
 ```
 
 # Output
-None
+```
+parse_program: starting
+parse_program: parsing statement at position 0
+parse_statement: starting at position 0
+parse_expression: starting at position 3
+parse_expression: starting at position 4
+parse_expression: success
+parse_expression: starting at position 6
+parse_expression: success
+parse_expression: starting at position 8
+parse_expression: success
+parse_expression: success
+parse_statement: parsed var declaration
+parse_program: parsing statement at position 11
+parse_statement: starting at position 11
+parse_statement: falling back to expression statement
+parse_expression: starting at position 11
+parse_expression: starting at position 13
+parse_expression: starting at position 15
+parse_expression: success
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 21
+parse_statement: starting at position 21
+parse_statement: falling back to expression statement
+parse_expression: starting at position 21
+parse_expression: starting at position 23
+parse_expression: starting at position 25
+parse_expression: success
+parse_expression: success
+parse_expression: success
+parse_program: parsed 3 statements
+```
 
 # Result
 ```rust

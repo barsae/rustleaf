@@ -3,6 +3,7 @@ use crate::core::*;
 use crate::lexer::Token;
 use anyhow::Result;
 use super::stream::TokenStream;
+use crate::trace;
 
 pub struct Parser;
 
@@ -24,12 +25,15 @@ impl Parser {
 
 /// Parse a complete program
 fn parse_program(s: &mut TokenStream) -> Result<Program> {
+    trace!("parse_program: starting");
     let mut statements = Vec::new();
 
     while !s.is_at_end() {
+        trace!("parse_program: parsing statement at position {}", s.position());
         statements.push(parse_statement(s)?);
     }
 
+    trace!("parse_program: parsed {} statements", statements.len());
     Ok(Program(statements))
 }
 

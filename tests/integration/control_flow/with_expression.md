@@ -29,7 +29,63 @@ assert(f.closed == 1, "closed should be 1");
 ```
 
 # Output
-None
+```
+parse_program: starting
+parse_program: parsing statement at position 0
+parse_statement: starting at position 0
+parse_statement: starting at position 16
+parse_expression: starting at position 20
+parse_expression: success
+parse_statement: parsed assignment
+parse_statement: starting at position 28
+parse_expression: starting at position 32
+parse_expression: success
+parse_statement: parsed assignment
+parse_statement: parsed class declaration
+parse_program: parsing statement at position 42
+parse_statement: starting at position 42
+parse_expression: starting at position 45
+parse_expression: success
+parse_statement: parsed var declaration
+parse_program: parsing statement at position 49
+parse_statement: starting at position 49
+parse_expression: starting at position 53
+parse_expression: success
+parse_statement: parsed assignment
+parse_program: parsing statement at position 55
+parse_statement: starting at position 55
+parse_expression: starting at position 59
+parse_expression: success
+parse_statement: parsed assignment
+parse_program: parsing statement at position 61
+parse_statement: starting at position 61
+parse_expression: starting at position 61
+parse_statement: starting at position 64
+parse_statement: falling back to expression statement
+parse_expression: starting at position 64
+parse_expression: success
+parse_expression: success
+parse_statement: parsed block-like expression statement
+parse_program: parsing statement at position 71
+parse_statement: starting at position 71
+parse_statement: falling back to expression statement
+parse_expression: starting at position 71
+parse_expression: starting at position 73
+parse_expression: success
+parse_expression: starting at position 79
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 82
+parse_statement: starting at position 82
+parse_statement: falling back to expression statement
+parse_expression: starting at position 82
+parse_expression: starting at position 84
+parse_expression: success
+parse_expression: starting at position 90
+parse_expression: success
+parse_expression: success
+parse_program: parsed 7 statements
+```
 
 # Result
 ```rust

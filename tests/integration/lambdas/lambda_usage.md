@@ -34,7 +34,102 @@ assert(multiply_by_three(4) == 12);
 ```
 
 # Output
-None
+```
+parse_program: starting
+parse_program: parsing statement at position 0
+parse_statement: starting at position 0
+parse_expression: starting at position 3
+parse_expression: starting at position 6
+parse_expression: success
+parse_expression: success
+parse_statement: parsed var declaration
+parse_program: parsing statement at position 10
+parse_statement: starting at position 10
+parse_statement: falling back to expression statement
+parse_expression: starting at position 10
+parse_expression: starting at position 12
+parse_expression: starting at position 14
+parse_expression: success
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 20
+parse_statement: starting at position 20
+parse_statement: starting at position 28
+parse_statement: falling back to expression statement
+parse_expression: starting at position 28
+parse_expression: starting at position 30
+parse_expression: success
+parse_expression: success
+parse_expression: starting at position 28
+parse_expression: starting at position 30
+parse_expression: success
+parse_expression: success
+parse_statement: parsed function declaration
+parse_program: parsing statement at position 33
+parse_statement: starting at position 33
+parse_expression: starting at position 36
+parse_expression: starting at position 39
+parse_expression: success
+parse_expression: success
+parse_statement: parsed var declaration
+parse_program: parsing statement at position 43
+parse_statement: starting at position 43
+parse_statement: falling back to expression statement
+parse_expression: starting at position 43
+parse_expression: starting at position 45
+parse_expression: starting at position 47
+parse_expression: success
+parse_expression: starting at position 49
+parse_expression: success
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 55
+parse_statement: starting at position 55
+parse_expression: starting at position 58
+parse_statement: starting at position 62
+parse_expression: starting at position 65
+parse_expression: success
+parse_statement: parsed var declaration
+parse_statement: starting at position 69
+parse_statement: falling back to expression statement
+parse_expression: starting at position 69
+parse_expression: success
+parse_expression: starting at position 69
+parse_expression: success
+parse_expression: success
+parse_statement: parsed var declaration
+parse_program: parsing statement at position 74
+parse_statement: starting at position 74
+parse_statement: falling back to expression statement
+parse_expression: starting at position 74
+parse_expression: starting at position 76
+parse_expression: starting at position 78
+parse_expression: success
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 84
+parse_statement: starting at position 84
+parse_expression: starting at position 87
+parse_expression: success
+parse_statement: parsed var declaration
+parse_program: parsing statement at position 89
+parse_statement: starting at position 89
+parse_expression: starting at position 92
+parse_expression: starting at position 95
+parse_expression: success
+parse_expression: success
+parse_statement: parsed var declaration
+parse_program: parsing statement at position 99
+parse_statement: starting at position 99
+parse_statement: falling back to expression statement
+parse_expression: starting at position 99
+parse_expression: starting at position 101
+parse_expression: starting at position 103
+parse_expression: success
+parse_expression: success
+parse_expression: success
+parse_program: parsed 10 statements
+```
 
 # Result
 ```rust

@@ -17,7 +17,42 @@ assert(msg == "Hello, Eric");
 ```
 
 # Output
-None
+```
+parse_program: starting
+parse_program: parsing statement at position 0
+parse_statement: starting at position 0
+parse_expression: starting at position 6
+parse_expression: success
+parse_statement: starting at position 13
+parse_statement: falling back to expression statement
+parse_expression: starting at position 13
+parse_expression: starting at position 15
+parse_expression: success
+parse_expression: success
+parse_expression: starting at position 13
+parse_expression: starting at position 15
+parse_expression: success
+parse_expression: success
+parse_statement: parsed class declaration
+parse_program: parsing statement at position 21
+parse_statement: starting at position 21
+parse_expression: starting at position 24
+parse_expression: success
+parse_statement: parsed var declaration
+parse_program: parsing statement at position 28
+parse_statement: starting at position 28
+parse_expression: starting at position 31
+parse_expression: success
+parse_statement: parsed var declaration
+parse_program: parsing statement at position 37
+parse_statement: starting at position 37
+parse_statement: falling back to expression statement
+parse_expression: starting at position 37
+parse_expression: starting at position 39
+parse_expression: success
+parse_expression: success
+parse_program: parsed 4 statements
+```
 
 # Result
 ```rust

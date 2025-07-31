@@ -13,7 +13,40 @@ assert(greet("Alice") == "Hello, Alice");
 ```
 
 # Output
-None
+```
+parse_program: starting
+parse_program: parsing statement at position 0
+parse_statement: starting at position 0
+parse_statement: starting at position 7
+parse_expression: starting at position 8
+parse_expression: success
+parse_statement: parsed return statement
+parse_statement: parsed function declaration
+parse_program: parsing statement at position 13
+parse_statement: starting at position 13
+parse_expression: starting at position 16
+parse_expression: starting at position 18
+parse_expression: success
+parse_expression: success
+parse_statement: parsed var declaration
+parse_program: parsing statement at position 21
+parse_statement: starting at position 21
+parse_statement: falling back to expression statement
+parse_expression: starting at position 21
+parse_expression: starting at position 23
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 28
+parse_statement: starting at position 28
+parse_statement: falling back to expression statement
+parse_expression: starting at position 28
+parse_expression: starting at position 30
+parse_expression: starting at position 32
+parse_expression: success
+parse_expression: success
+parse_expression: success
+parse_program: parsed 4 statements
+```
 
 # Result
 ```rust

@@ -7,7 +7,19 @@ assert(false, "This should fail");
 ```
 
 # Output
-None
+```
+parse_program: starting
+parse_program: parsing statement at position 0
+parse_statement: starting at position 0
+parse_statement: falling back to expression statement
+parse_expression: starting at position 0
+parse_expression: starting at position 2
+parse_expression: success
+parse_expression: starting at position 4
+parse_expression: success
+parse_expression: success
+parse_program: parsed 1 statements
+```
 
 # Result
 ```rust

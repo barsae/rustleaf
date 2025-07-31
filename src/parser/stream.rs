@@ -11,6 +11,10 @@ impl TokenStream {
         TokenStream { tokens, current: 0 }
     }
 
+    pub fn position(&self) -> usize {
+        self.current
+    }
+
     pub fn is_at_end(&self) -> bool {
         matches!(self.peek().token_type, TokenType::Eof)
     }

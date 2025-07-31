@@ -10,7 +10,38 @@ assert(10 / 2 == 5.0);
 ```
 
 # Output
-None
+```
+parse_program: starting
+parse_program: parsing statement at position 0
+parse_statement: starting at position 0
+parse_statement: falling back to expression statement
+parse_expression: starting at position 0
+parse_expression: starting at position 2
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 9
+parse_statement: starting at position 9
+parse_statement: falling back to expression statement
+parse_expression: starting at position 9
+parse_expression: starting at position 11
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 18
+parse_statement: starting at position 18
+parse_statement: falling back to expression statement
+parse_expression: starting at position 18
+parse_expression: starting at position 20
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 27
+parse_statement: starting at position 27
+parse_statement: falling back to expression statement
+parse_expression: starting at position 27
+parse_expression: starting at position 29
+parse_expression: success
+parse_expression: success
+parse_program: parsed 4 statements
+```
 
 # Result
 ```rust

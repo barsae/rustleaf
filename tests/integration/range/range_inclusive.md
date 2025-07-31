@@ -27,7 +27,112 @@ assert(not (0 in range));
 ```
 
 # Output
-None
+```
+parse_program: starting
+parse_program: parsing statement at position 0
+parse_statement: starting at position 0
+parse_expression: starting at position 3
+parse_expression: success
+parse_statement: parsed var declaration
+parse_program: parsing statement at position 7
+parse_statement: starting at position 7
+parse_statement: falling back to expression statement
+parse_expression: starting at position 7
+parse_expression: starting at position 9
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 16
+parse_statement: starting at position 16
+parse_statement: falling back to expression statement
+parse_expression: starting at position 16
+parse_expression: starting at position 18
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 25
+parse_statement: starting at position 25
+parse_statement: falling back to expression statement
+parse_expression: starting at position 25
+parse_expression: starting at position 27
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 34
+parse_statement: starting at position 34
+parse_expression: starting at position 37
+parse_expression: success
+parse_statement: parsed var declaration
+parse_program: parsing statement at position 43
+parse_statement: starting at position 43
+parse_statement: falling back to expression statement
+parse_expression: starting at position 43
+parse_expression: starting at position 45
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 52
+parse_statement: starting at position 52
+parse_statement: falling back to expression statement
+parse_expression: starting at position 52
+parse_expression: starting at position 54
+parse_expression: starting at position 56
+parse_expression: success
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 62
+parse_statement: starting at position 62
+parse_statement: falling back to expression statement
+parse_expression: starting at position 62
+parse_expression: starting at position 64
+parse_expression: starting at position 66
+parse_expression: success
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 72
+parse_statement: starting at position 72
+parse_statement: falling back to expression statement
+parse_expression: starting at position 72
+parse_expression: starting at position 74
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 79
+parse_statement: starting at position 79
+parse_statement: falling back to expression statement
+parse_expression: starting at position 79
+parse_expression: starting at position 81
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 86
+parse_statement: starting at position 86
+parse_statement: falling back to expression statement
+parse_expression: starting at position 86
+parse_expression: starting at position 88
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 93
+parse_statement: starting at position 93
+parse_statement: falling back to expression statement
+parse_expression: starting at position 93
+parse_expression: starting at position 95
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 100
+parse_statement: starting at position 100
+parse_statement: falling back to expression statement
+parse_expression: starting at position 100
+parse_expression: starting at position 102
+parse_expression: starting at position 104
+parse_expression: success
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 110
+parse_statement: starting at position 110
+parse_statement: falling back to expression statement
+parse_expression: starting at position 110
+parse_expression: starting at position 112
+parse_expression: starting at position 114
+parse_expression: success
+parse_expression: success
+parse_expression: success
+parse_program: parsed 14 statements
+```
 
 # Result
 ```rust

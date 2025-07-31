@@ -82,6 +82,10 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                     println!("DEBUG: Starting test for file: {}", #full_path);
                     println!("DEBUG: Extracted source code: {}", source);
 
+                    // Start print capture early to capture parser traces
+                    rustleaf::core::start_print_capture();
+                    rustleaf::core::start_assertion_count();
+
                     // Try lexing
                     println!("DEBUG: Starting lexing phase");
                     let tokens_result = rustleaf::lexer::Lexer::tokenize(&source);
@@ -113,9 +117,7 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                     let (output_section, execution_output, eval_success, final_result, assertion_count) = match parse_result {
                         Ok(ast) => {
                             println!("DEBUG: AST parsing successful, starting evaluation setup");
-                            rustleaf::core::start_print_capture();
-                            rustleaf::core::start_assertion_count();
-                            println!("DEBUG: Print capture and assertion counting started");
+                            // Note: Print capture and assertion counting already started before parsing
 
                             // Get the directory of the test file for module imports
                             let test_file_dir = std::path::Path::new(#full_path).parent().map(|p| p.to_path_buf());
@@ -124,6 +126,8 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                             println!("DEBUG: About to call evaluate_with_dir - this is where the stack overflow likely occurs");
                             let result = rustleaf::eval::evaluate_with_dir(ast, test_file_dir);
                             println!("DEBUG: evaluate_with_dir returned successfully");
+                            
+                            // Get all captured output (includes parser traces and print statements)
                             let captured_output = rustleaf::core::get_captured_prints();
                             let assertion_count = rustleaf::core::get_assertion_count();
                             let execution_output = format!("{:#?}", result);
@@ -140,8 +144,18 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                         }
                         Err(parse_error) => {
                             println!("DEBUG: Parse error occurred: {}", parse_error);
+                            // Even on parse error, get any captured output (parser traces)
+                            let captured_output = rustleaf::core::get_captured_prints();
+                            let assertion_count = rustleaf::core::get_assertion_count();
+                            
+                            let output_section = if captured_output.is_empty() {
+                                "None".to_string()
+                            } else {
+                                captured_output.join("\n")
+                            };
+                            
                             let error_result = Err(anyhow::Error::msg(format!("Parse error: {}", parse_error)));
-                            ("None".to_string(), "Skipped due to parse error".to_string(), false, error_result, 0)
+                            (output_section, "Skipped due to parse error".to_string(), false, error_result, assertion_count)
                         }
                     };
                     println!("DEBUG: Evaluation completed");

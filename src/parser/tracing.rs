@@ -8,7 +8,7 @@ macro_rules! trace {
         #[cfg(feature = "parser-tracing")]
         {
             let msg = format!($($arg)*);
-            crate::core::builtins::functions::write_to_print_capture(msg);
+            crate::core::write_to_print_capture(msg);
         }
         #[cfg(not(feature = "parser-tracing"))]
         {

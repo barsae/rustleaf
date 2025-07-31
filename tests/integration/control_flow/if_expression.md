@@ -24,7 +24,86 @@ assert(y == -5);
 ```
 
 # Output
-None
+```
+parse_program: starting
+parse_program: parsing statement at position 0
+parse_statement: starting at position 0
+parse_expression: starting at position 3
+parse_expression: success
+parse_statement: parsed var declaration
+parse_program: parsing statement at position 5
+parse_statement: starting at position 5
+parse_expression: starting at position 8
+parse_expression: starting at position 9
+parse_expression: success
+parse_statement: starting at position 13
+parse_statement: falling back to expression statement
+parse_expression: starting at position 13
+parse_expression: success
+parse_expression: starting at position 13
+parse_expression: success
+parse_statement: starting at position 17
+parse_statement: falling back to expression statement
+parse_expression: starting at position 17
+parse_expression: success
+parse_expression: starting at position 17
+parse_expression: success
+parse_expression: success
+parse_statement: parsed var declaration
+parse_program: parsing statement at position 20
+parse_statement: starting at position 20
+parse_expression: starting at position 23
+parse_expression: success
+parse_statement: parsed var declaration
+parse_program: parsing statement at position 26
+parse_statement: starting at position 26
+parse_expression: starting at position 29
+parse_expression: starting at position 30
+parse_expression: success
+parse_statement: starting at position 34
+parse_statement: falling back to expression statement
+parse_expression: starting at position 34
+parse_expression: success
+parse_expression: starting at position 34
+parse_expression: success
+parse_statement: starting at position 38
+parse_statement: falling back to expression statement
+parse_expression: starting at position 38
+parse_expression: success
+parse_expression: starting at position 38
+parse_expression: success
+parse_expression: success
+parse_statement: parsed var declaration
+parse_program: parsing statement at position 41
+parse_statement: starting at position 41
+parse_statement: falling back to expression statement
+parse_expression: starting at position 41
+parse_expression: starting at position 43
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 48
+parse_statement: starting at position 48
+parse_statement: falling back to expression statement
+parse_expression: starting at position 48
+parse_expression: starting at position 50
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 55
+parse_statement: starting at position 55
+parse_statement: falling back to expression statement
+parse_expression: starting at position 55
+parse_expression: starting at position 57
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 62
+parse_statement: starting at position 62
+parse_statement: falling back to expression statement
+parse_expression: starting at position 62
+parse_expression: starting at position 64
+parse_expression: success
+parse_expression: success
+parse_program: parsed 8 statements
+```
 
 # Result
 ```rust

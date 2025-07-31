@@ -24,7 +24,103 @@ assert(not ("z" in my_dict));
 ```
 
 # Output
-None
+```
+parse_program: starting
+parse_program: parsing statement at position 0
+parse_statement: starting at position 0
+parse_statement: falling back to expression statement
+parse_expression: starting at position 0
+parse_expression: starting at position 2
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 7
+parse_statement: starting at position 7
+parse_statement: falling back to expression statement
+parse_expression: starting at position 7
+parse_expression: starting at position 9
+parse_expression: starting at position 11
+parse_expression: success
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 17
+parse_statement: starting at position 17
+parse_expression: starting at position 20
+parse_expression: starting at position 21
+parse_expression: success
+parse_expression: starting at position 23
+parse_expression: success
+parse_expression: starting at position 25
+parse_expression: success
+parse_expression: starting at position 27
+parse_expression: success
+parse_expression: success
+parse_statement: parsed var declaration
+parse_program: parsing statement at position 30
+parse_statement: starting at position 30
+parse_statement: falling back to expression statement
+parse_expression: starting at position 30
+parse_expression: starting at position 32
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 37
+parse_statement: starting at position 37
+parse_statement: falling back to expression statement
+parse_expression: starting at position 37
+parse_expression: starting at position 39
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 44
+parse_statement: starting at position 44
+parse_statement: falling back to expression statement
+parse_expression: starting at position 44
+parse_expression: starting at position 46
+parse_expression: starting at position 48
+parse_expression: success
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 54
+parse_statement: starting at position 54
+parse_expression: starting at position 57
+parse_expression: starting at position 60
+parse_expression: success
+parse_expression: starting at position 64
+parse_expression: success
+parse_expression: starting at position 68
+parse_expression: success
+parse_expression: success
+parse_statement: parsed var declaration
+parse_program: parsing statement at position 71
+parse_statement: starting at position 71
+parse_statement: falling back to expression statement
+parse_expression: starting at position 71
+parse_expression: starting at position 73
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 78
+parse_statement: starting at position 78
+parse_statement: falling back to expression statement
+parse_expression: starting at position 78
+parse_expression: starting at position 80
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 85
+parse_statement: starting at position 85
+parse_statement: falling back to expression statement
+parse_expression: starting at position 85
+parse_expression: starting at position 87
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 92
+parse_statement: starting at position 92
+parse_statement: falling back to expression statement
+parse_expression: starting at position 92
+parse_expression: starting at position 94
+parse_expression: starting at position 96
+parse_expression: success
+parse_expression: success
+parse_expression: success
+parse_program: parsed 11 statements
+```
 
 # Result
 ```rust

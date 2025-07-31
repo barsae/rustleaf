@@ -10,7 +10,38 @@ assert(result == "3 and 7 equals 10");
 ```
 
 # Output
-None
+```
+parse_program: starting
+parse_program: parsing statement at position 0
+parse_statement: starting at position 0
+parse_expression: starting at position 3
+parse_expression: success
+parse_statement: parsed var declaration
+parse_program: parsing statement at position 5
+parse_statement: starting at position 5
+parse_expression: starting at position 8
+parse_expression: success
+parse_statement: parsed var declaration
+parse_program: parsing statement at position 10
+parse_statement: starting at position 10
+parse_expression: starting at position 13
+parse_expression: starting at position 14
+parse_expression: success
+parse_expression: starting at position 18
+parse_expression: success
+parse_expression: starting at position 22
+parse_expression: success
+parse_expression: success
+parse_statement: parsed var declaration
+parse_program: parsing statement at position 27
+parse_statement: starting at position 27
+parse_statement: falling back to expression statement
+parse_expression: starting at position 27
+parse_expression: starting at position 29
+parse_expression: success
+parse_expression: success
+parse_program: parsed 4 statements
+```
 
 # Result
 ```rust

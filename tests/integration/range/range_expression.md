@@ -27,7 +27,88 @@ assert(not (6 in small_range));
 ```
 
 # Output
-None
+```
+parse_program: starting
+parse_program: parsing statement at position 0
+parse_statement: starting at position 0
+parse_expression: starting at position 3
+parse_expression: success
+parse_statement: parsed var declaration
+parse_program: parsing statement at position 5
+parse_statement: starting at position 5
+parse_expression: starting at position 5
+parse_expression: starting at position 8
+parse_expression: success
+parse_statement: starting at position 12
+parse_expression: starting at position 14
+parse_expression: success
+parse_statement: parsed assignment
+parse_expression: success
+parse_statement: parsed block-like expression statement
+parse_program: parsing statement at position 17
+parse_statement: starting at position 17
+parse_statement: falling back to expression statement
+parse_expression: starting at position 17
+parse_expression: starting at position 19
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 24
+parse_statement: starting at position 24
+parse_expression: starting at position 27
+parse_expression: success
+parse_statement: parsed var declaration
+parse_program: parsing statement at position 31
+parse_statement: starting at position 31
+parse_expression: starting at position 34
+parse_expression: success
+parse_statement: parsed var declaration
+parse_program: parsing statement at position 36
+parse_statement: starting at position 36
+parse_expression: starting at position 36
+parse_expression: starting at position 39
+parse_expression: success
+parse_statement: starting at position 41
+parse_expression: starting at position 41
+parse_expression: starting at position 42
+parse_expression: success
+parse_statement: starting at position 48
+parse_expression: starting at position 50
+parse_expression: success
+parse_statement: parsed assignment
+parse_expression: success
+parse_statement: parsed block-like expression statement
+parse_expression: success
+parse_statement: parsed block-like expression statement
+parse_program: parsing statement at position 54
+parse_statement: starting at position 54
+parse_statement: falling back to expression statement
+parse_expression: starting at position 54
+parse_expression: starting at position 56
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 61
+parse_statement: starting at position 61
+parse_expression: starting at position 64
+parse_expression: success
+parse_statement: parsed var declaration
+parse_program: parsing statement at position 68
+parse_statement: starting at position 68
+parse_statement: falling back to expression statement
+parse_expression: starting at position 68
+parse_expression: starting at position 70
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 75
+parse_statement: starting at position 75
+parse_statement: falling back to expression statement
+parse_expression: starting at position 75
+parse_expression: starting at position 77
+parse_expression: starting at position 79
+parse_expression: success
+parse_expression: success
+parse_expression: success
+parse_program: parsed 10 statements
+```
 
 # Result
 ```rust

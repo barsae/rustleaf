@@ -17,7 +17,66 @@ assert(2 ** 3.0 == 8.0);
 ```
 
 # Output
-None
+```
+parse_program: starting
+parse_program: parsing statement at position 0
+parse_statement: starting at position 0
+parse_statement: falling back to expression statement
+parse_expression: starting at position 0
+parse_expression: starting at position 2
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 9
+parse_statement: starting at position 9
+parse_statement: falling back to expression statement
+parse_expression: starting at position 9
+parse_expression: starting at position 11
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 18
+parse_statement: starting at position 18
+parse_statement: falling back to expression statement
+parse_expression: starting at position 18
+parse_expression: starting at position 20
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 27
+parse_statement: starting at position 27
+parse_statement: falling back to expression statement
+parse_expression: starting at position 27
+parse_expression: starting at position 29
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 36
+parse_statement: starting at position 36
+parse_statement: falling back to expression statement
+parse_expression: starting at position 36
+parse_expression: starting at position 38
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 45
+parse_statement: starting at position 45
+parse_statement: falling back to expression statement
+parse_expression: starting at position 45
+parse_expression: starting at position 47
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 54
+parse_statement: starting at position 54
+parse_statement: falling back to expression statement
+parse_expression: starting at position 54
+parse_expression: starting at position 56
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 63
+parse_statement: starting at position 63
+parse_statement: falling back to expression statement
+parse_expression: starting at position 63
+parse_expression: starting at position 65
+parse_expression: success
+parse_expression: success
+parse_program: parsed 8 statements
+```
 
 # Result
 ```rust

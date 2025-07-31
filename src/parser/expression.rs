@@ -3,10 +3,17 @@ use crate::lexer::TokenType;
 use anyhow::{anyhow, Result};
 use super::stream::TokenStream;
 use super::statement::{parse_literal_value, parse_pattern};
+use crate::trace;
 
 /// Main entry point for parsing expressions
 pub fn parse_expression(s: &mut TokenStream) -> Result<Expression> {
+    trace!("parse_expression: starting at position {}", s.position());
     let result = parse_precedence(s, 0);
+    if result.is_ok() {
+        trace!("parse_expression: success");
+    } else {
+        trace!("parse_expression: failed");
+    }
     result
 }
 

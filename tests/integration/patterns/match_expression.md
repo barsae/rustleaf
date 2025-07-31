@@ -47,7 +47,121 @@ assert(result3 == "zero");
 ```
 
 # Output
-None
+```
+parse_program: starting
+parse_program: parsing statement at position 0
+parse_statement: starting at position 0
+parse_expression: starting at position 3
+parse_expression: success
+parse_statement: parsed var declaration
+parse_program: parsing statement at position 5
+parse_statement: starting at position 5
+parse_expression: starting at position 8
+parse_expression: starting at position 9
+parse_expression: success
+parse_statement: starting at position 14
+parse_statement: falling back to expression statement
+parse_expression: starting at position 14
+parse_expression: success
+parse_expression: starting at position 14
+parse_expression: success
+parse_statement: starting at position 19
+parse_statement: falling back to expression statement
+parse_expression: starting at position 19
+parse_expression: success
+parse_expression: starting at position 19
+parse_expression: success
+parse_statement: starting at position 24
+parse_statement: falling back to expression statement
+parse_expression: starting at position 24
+parse_expression: success
+parse_expression: starting at position 24
+parse_expression: success
+parse_expression: success
+parse_statement: parsed var declaration
+parse_program: parsing statement at position 28
+parse_statement: starting at position 28
+parse_statement: falling back to expression statement
+parse_expression: starting at position 28
+parse_expression: starting at position 30
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 35
+parse_statement: starting at position 35
+parse_expression: starting at position 38
+parse_expression: success
+parse_statement: parsed var declaration
+parse_program: parsing statement at position 40
+parse_statement: starting at position 40
+parse_expression: starting at position 43
+parse_expression: starting at position 44
+parse_expression: success
+parse_statement: starting at position 49
+parse_statement: falling back to expression statement
+parse_expression: starting at position 49
+parse_expression: success
+parse_expression: starting at position 49
+parse_expression: success
+parse_statement: starting at position 54
+parse_statement: falling back to expression statement
+parse_expression: starting at position 54
+parse_expression: success
+parse_expression: starting at position 54
+parse_expression: success
+parse_statement: starting at position 59
+parse_statement: falling back to expression statement
+parse_expression: starting at position 59
+parse_expression: success
+parse_expression: starting at position 59
+parse_expression: success
+parse_expression: success
+parse_statement: parsed var declaration
+parse_program: parsing statement at position 63
+parse_statement: starting at position 63
+parse_statement: falling back to expression statement
+parse_expression: starting at position 63
+parse_expression: starting at position 65
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 70
+parse_statement: starting at position 70
+parse_expression: starting at position 73
+parse_expression: success
+parse_statement: parsed var declaration
+parse_program: parsing statement at position 75
+parse_statement: starting at position 75
+parse_expression: starting at position 78
+parse_expression: starting at position 79
+parse_expression: success
+parse_statement: starting at position 84
+parse_statement: falling back to expression statement
+parse_expression: starting at position 84
+parse_expression: success
+parse_expression: starting at position 84
+parse_expression: success
+parse_statement: starting at position 89
+parse_statement: falling back to expression statement
+parse_expression: starting at position 89
+parse_expression: success
+parse_expression: starting at position 89
+parse_expression: success
+parse_statement: starting at position 94
+parse_statement: falling back to expression statement
+parse_expression: starting at position 94
+parse_expression: success
+parse_expression: starting at position 94
+parse_expression: success
+parse_expression: success
+parse_statement: parsed var declaration
+parse_program: parsing statement at position 98
+parse_statement: starting at position 98
+parse_statement: falling back to expression statement
+parse_expression: starting at position 98
+parse_expression: starting at position 100
+parse_expression: success
+parse_expression: success
+parse_program: parsed 9 statements
+```
 
 # Result
 ```rust

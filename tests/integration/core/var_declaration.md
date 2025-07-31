@@ -13,7 +13,53 @@ assert(x + 8 == 50);
 ```
 
 # Output
-None
+```
+parse_program: starting
+parse_program: parsing statement at position 0
+parse_statement: starting at position 0
+parse_expression: starting at position 3
+parse_expression: success
+parse_statement: parsed var declaration
+parse_program: parsing statement at position 5
+parse_statement: starting at position 5
+parse_expression: starting at position 8
+parse_expression: success
+parse_statement: parsed var declaration
+parse_program: parsing statement at position 10
+parse_statement: starting at position 10
+parse_expression: starting at position 13
+parse_expression: success
+parse_statement: parsed var declaration
+parse_program: parsing statement at position 15
+parse_statement: starting at position 15
+parse_statement: falling back to expression statement
+parse_expression: starting at position 15
+parse_expression: starting at position 17
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 22
+parse_statement: starting at position 22
+parse_statement: falling back to expression statement
+parse_expression: starting at position 22
+parse_expression: starting at position 24
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 29
+parse_statement: starting at position 29
+parse_statement: falling back to expression statement
+parse_expression: starting at position 29
+parse_expression: starting at position 31
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 36
+parse_statement: starting at position 36
+parse_statement: falling back to expression statement
+parse_expression: starting at position 36
+parse_expression: starting at position 38
+parse_expression: success
+parse_expression: success
+parse_program: parsed 7 statements
+```
 
 # Result
 ```rust

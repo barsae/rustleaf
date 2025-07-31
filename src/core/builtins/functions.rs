@@ -41,6 +41,18 @@ impl RustValue for RustFunction {
     }
 }
 
+// Internal helper to write to print capture or stdout
+fn write_output(output: &str) {
+    PRINT_CAPTURE.with(|capture| {
+        if let Some(ref mut captured) = *capture.borrow_mut() {
+            captured.push(output.to_string());
+        } else {
+            // Normal behavior: print to stdout
+            println!("{}", output);
+        }
+    });
+}
+
 pub fn print(mut args: Args) -> Result<Value> {
     args.set_function_name("print");
     let arg = args.expect("arg")?;
@@ -53,16 +65,7 @@ pub fn print(mut args: Args) -> Result<Value> {
         _ => unreachable!("str() should always return a string"),
     };
 
-    // If capture is enabled, store the output instead of printing
-    PRINT_CAPTURE.with(|capture| {
-        if let Some(ref mut captured) = *capture.borrow_mut() {
-            captured.push(output.clone());
-        } else {
-            // Normal behavior: print to stdout
-            println!("{}", output);
-        }
-    });
-
+    write_output(&output);
     Ok(Value::Unit)
 }
 
@@ -127,14 +130,7 @@ pub fn stop_assertion_count() {
 // Public function to write directly to PRINT_CAPTURE
 // Used by the parser tracing module
 pub fn write_to_print_capture(msg: String) {
-    PRINT_CAPTURE.with(|capture| {
-        if let Some(ref mut captured) = *capture.borrow_mut() {
-            captured.push(msg);
-        } else {
-            // Normal behavior: print to stdout
-            println!("{}", msg);
-        }
-    });
+    write_output(&msg);
 }
 
 pub fn is_unit(mut args: Args) -> Result<Value> {

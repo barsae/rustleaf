@@ -14,7 +14,57 @@ assert(mixed["two"] == 2);
 ```
 
 # Output
-None
+```
+parse_program: starting
+parse_program: parsing statement at position 0
+parse_statement: starting at position 0
+parse_expression: starting at position 3
+parse_expression: starting at position 6
+parse_expression: success
+parse_expression: starting at position 10
+parse_expression: success
+parse_expression: success
+parse_statement: parsed var declaration
+parse_program: parsing statement at position 13
+parse_statement: starting at position 13
+parse_statement: falling back to expression statement
+parse_expression: starting at position 13
+parse_expression: starting at position 15
+parse_expression: starting at position 17
+parse_expression: success
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 23
+parse_statement: starting at position 23
+parse_expression: starting at position 26
+parse_expression: starting at position 29
+parse_expression: success
+parse_expression: starting at position 33
+parse_expression: success
+parse_expression: starting at position 37
+parse_expression: success
+parse_expression: success
+parse_statement: parsed var declaration
+parse_program: parsing statement at position 40
+parse_statement: starting at position 40
+parse_statement: falling back to expression statement
+parse_expression: starting at position 40
+parse_expression: starting at position 42
+parse_expression: starting at position 44
+parse_expression: success
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 50
+parse_statement: starting at position 50
+parse_statement: falling back to expression statement
+parse_expression: starting at position 50
+parse_expression: starting at position 52
+parse_expression: starting at position 54
+parse_expression: success
+parse_expression: success
+parse_expression: success
+parse_program: parsed 5 statements
+```
 
 # Result
 ```rust

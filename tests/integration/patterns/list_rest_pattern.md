@@ -9,7 +9,43 @@ assert(rest == [2, 3, 4]);
 ```
 
 # Output
-None
+```
+parse_program: starting
+parse_program: parsing statement at position 0
+parse_statement: starting at position 0
+parse_expression: starting at position 8
+parse_expression: starting at position 9
+parse_expression: success
+parse_expression: starting at position 11
+parse_expression: success
+parse_expression: starting at position 13
+parse_expression: success
+parse_expression: starting at position 15
+parse_expression: success
+parse_expression: success
+parse_statement: parsed var declaration
+parse_program: parsing statement at position 18
+parse_statement: starting at position 18
+parse_statement: falling back to expression statement
+parse_expression: starting at position 18
+parse_expression: starting at position 20
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 25
+parse_statement: starting at position 25
+parse_statement: falling back to expression statement
+parse_expression: starting at position 25
+parse_expression: starting at position 27
+parse_expression: starting at position 30
+parse_expression: success
+parse_expression: starting at position 32
+parse_expression: success
+parse_expression: starting at position 34
+parse_expression: success
+parse_expression: success
+parse_expression: success
+parse_program: parsed 3 statements
+```
 
 # Result
 ```rust

@@ -13,6 +13,34 @@ This is a multiline string with interpolation.");
 
 # Output
 ```
+parse_program: starting
+parse_program: parsing statement at position 0
+parse_statement: starting at position 0
+parse_expression: starting at position 3
+parse_expression: success
+parse_statement: parsed var declaration
+parse_program: parsing statement at position 5
+parse_statement: starting at position 5
+parse_expression: starting at position 8
+parse_expression: starting at position 10
+parse_expression: success
+parse_expression: success
+parse_statement: parsed var declaration
+parse_program: parsing statement at position 14
+parse_statement: starting at position 14
+parse_statement: falling back to expression statement
+parse_expression: starting at position 14
+parse_expression: starting at position 16
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 19
+parse_statement: starting at position 19
+parse_statement: falling back to expression statement
+parse_expression: starting at position 19
+parse_expression: starting at position 21
+parse_expression: success
+parse_expression: success
+parse_program: parsed 4 statements
 Hello World!
 This is a multiline string with interpolation.
 ```

@@ -18,7 +18,71 @@ assert(is_unit(side_effect()));
 ```
 
 # Output
-None
+```
+parse_program: starting
+parse_program: parsing statement at position 0
+parse_statement: starting at position 0
+parse_statement: falling back to expression statement
+parse_expression: starting at position 0
+parse_expression: starting at position 2
+parse_expression: starting at position 5
+parse_expression: success
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 9
+parse_statement: starting at position 9
+parse_statement: falling back to expression statement
+parse_expression: starting at position 9
+parse_expression: starting at position 11
+parse_expression: starting at position 14
+parse_expression: success
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 18
+parse_statement: starting at position 18
+parse_statement: falling back to expression statement
+parse_expression: starting at position 18
+parse_expression: starting at position 20
+parse_expression: starting at position 23
+parse_expression: success
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 27
+parse_statement: starting at position 27
+parse_statement: falling back to expression statement
+parse_expression: starting at position 27
+parse_expression: starting at position 29
+parse_expression: starting at position 32
+parse_expression: success
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 37
+parse_statement: starting at position 37
+parse_statement: falling back to expression statement
+parse_expression: starting at position 37
+parse_expression: starting at position 39
+parse_expression: starting at position 42
+parse_expression: success
+parse_expression: success
+parse_expression: success
+parse_program: parsing statement at position 47
+parse_statement: starting at position 47
+parse_statement: starting at position 52
+parse_expression: starting at position 55
+parse_expression: success
+parse_statement: parsed var declaration
+parse_statement: parsed function declaration
+parse_program: parsing statement at position 58
+parse_statement: starting at position 58
+parse_statement: falling back to expression statement
+parse_expression: starting at position 58
+parse_expression: starting at position 60
+parse_expression: starting at position 62
+parse_expression: success
+parse_expression: success
+parse_expression: success
+parse_program: parsed 7 statements
+```
 
 # Result
 ```rust

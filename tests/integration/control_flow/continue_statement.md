@@ -15,7 +15,43 @@ assert(x == 2);
 ```
 
 # Output
-None
+```
+parse_program: starting
+parse_program: parsing statement at position 0
+parse_statement: starting at position 0
+parse_expression: starting at position 3
+parse_expression: success
+parse_statement: parsed var declaration
+parse_program: parsing statement at position 5
+parse_statement: starting at position 5
+parse_expression: starting at position 5
+parse_statement: starting at position 7
+parse_expression: starting at position 9
+parse_expression: success
+parse_statement: parsed assignment
+parse_statement: starting at position 11
+parse_expression: starting at position 11
+parse_expression: starting at position 12
+parse_expression: starting at position 13
+parse_expression: success
+parse_expression: success
+parse_statement: starting at position 18
+parse_statement: parsed continue statement
+parse_expression: success
+parse_statement: parsed block-like expression statement
+parse_statement: starting at position 21
+parse_statement: parsed break statement
+parse_expression: success
+parse_statement: parsed block-like expression statement
+parse_program: parsing statement at position 24
+parse_statement: starting at position 24
+parse_statement: falling back to expression statement
+parse_expression: starting at position 24
+parse_expression: starting at position 26
+parse_expression: success
+parse_expression: success
+parse_program: parsed 3 statements
+```
 
 # Result
 ```rust
