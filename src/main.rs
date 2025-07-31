@@ -34,6 +34,9 @@ enum Commands {
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    #[cfg(feature = "parser-tracing")]
+    rustleaf::parser::init_tracing();
+    
     let cli = Cli::parse();
 
     match cli.command {

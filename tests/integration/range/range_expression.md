@@ -239,45 +239,47 @@ Ok(
                         "range",
                     ),
                     body: Block {
-                        statements: [],
-                        final_expr: Some(
-                            If {
-                                condition: Eq(
-                                    Mod(
-                                        Identifier(
-                                            "x",
+                        statements: [
+                            Expression(
+                                If {
+                                    condition: Eq(
+                                        Mod(
+                                            Identifier(
+                                                "x",
+                                            ),
+                                            Literal(
+                                                Int(
+                                                    2,
+                                                ),
+                                            ),
                                         ),
                                         Literal(
                                             Int(
-                                                2,
+                                                0,
                                             ),
                                         ),
                                     ),
-                                    Literal(
-                                        Int(
-                                            0,
-                                        ),
-                                    ),
-                                ),
-                                then_expr: Block {
-                                    statements: [
-                                        Assignment {
-                                            target: Identifier(
-                                                "even_count",
-                                            ),
-                                            op: AddAssign,
-                                            value: Literal(
-                                                Int(
-                                                    1,
+                                    then_expr: Block {
+                                        statements: [
+                                            Assignment {
+                                                target: Identifier(
+                                                    "even_count",
                                                 ),
-                                            ),
-                                        },
-                                    ],
-                                    final_expr: None,
+                                                op: AddAssign,
+                                                value: Literal(
+                                                    Int(
+                                                        1,
+                                                    ),
+                                                ),
+                                            },
+                                        ],
+                                        final_expr: None,
+                                    },
+                                    else_expr: None,
                                 },
-                                else_expr: None,
-                            },
-                        ),
+                            ),
+                        ],
+                        final_expr: None,
                     },
                 },
             ),
@@ -509,8 +511,7 @@ Ok(
                         ),
                         body: RustValue(
                             EvalBlock {
-                                statements: [],
-                                final_expr: Some(
+                                statements: [
                                     RustValue(
                                         EvalIf {
                                             condition: RustValue(
@@ -592,7 +593,8 @@ Ok(
                                             else_expr: None,
                                         },
                                     ),
-                                ),
+                                ],
+                                final_expr: None,
                             },
                         ),
                     },

@@ -1,6 +1,6 @@
 # Program
-Status: 🟢
-Assertions: 2
+Status: 🔴
+Assertions: 0
 
 ```rustleaf
 fn memoize(f) {
@@ -44,14 +44,12 @@ assert(count == 11, "count");
 ```
 
 # Output
-```
-11
-```
+None
 
 # Result
 ```rust
-Ok(
-    Unit,
+Err(
+    "Failed to parse: Expected expression, found Var:\nvar fibonacci = {\n        var cache = {};\n\n        fn original(n) {\n    count = count.op_add(1);\n    if n.op_le(1) {\n    n\n} else {\n    fibonacci(n.op_sub(1)).op_add(fibonacci(n.op_sub(2)))\n};\n}\n\n        fn cached(n) {\n            var args_key = str(n);\n            if args_key in cache {\n                cache[args_key]\n            } else {\n                var result = original(n);\n                cache[args_key] = result;\n                result\n            }\n        }\n\n        cached\n    };",
 )
 ```
 
@@ -341,72 +339,73 @@ Ok(
                                     ),
                                 ),
                             },
-                        ],
-                        final_expr: Some(
-                            If {
-                                condition: Le(
-                                    Identifier(
-                                        "n",
-                                    ),
-                                    Literal(
-                                        Int(
-                                            1,
-                                        ),
-                                    ),
-                                ),
-                                then_expr: Block {
-                                    statements: [],
-                                    final_expr: Some(
+                            Expression(
+                                If {
+                                    condition: Le(
                                         Identifier(
                                             "n",
                                         ),
+                                        Literal(
+                                            Int(
+                                                1,
+                                            ),
+                                        ),
                                     ),
-                                },
-                                else_expr: Some(
-                                    Block {
+                                    then_expr: Block {
                                         statements: [],
                                         final_expr: Some(
-                                            Add(
-                                                FunctionCall(
-                                                    Identifier(
-                                                        "fibonacci",
-                                                    ),
-                                                    [
-                                                        Sub(
-                                                            Identifier(
-                                                                "n",
-                                                            ),
-                                                            Literal(
-                                                                Int(
-                                                                    1,
-                                                                ),
-                                                            ),
-                                                        ),
-                                                    ],
-                                                ),
-                                                FunctionCall(
-                                                    Identifier(
-                                                        "fibonacci",
-                                                    ),
-                                                    [
-                                                        Sub(
-                                                            Identifier(
-                                                                "n",
-                                                            ),
-                                                            Literal(
-                                                                Int(
-                                                                    2,
-                                                                ),
-                                                            ),
-                                                        ),
-                                                    ],
-                                                ),
+                                            Identifier(
+                                                "n",
                                             ),
                                         ),
                                     },
-                                ),
-                            },
-                        ),
+                                    else_expr: Some(
+                                        Block {
+                                            statements: [],
+                                            final_expr: Some(
+                                                Add(
+                                                    FunctionCall(
+                                                        Identifier(
+                                                            "fibonacci",
+                                                        ),
+                                                        [
+                                                            Sub(
+                                                                Identifier(
+                                                                    "n",
+                                                                ),
+                                                                Literal(
+                                                                    Int(
+                                                                        1,
+                                                                    ),
+                                                                ),
+                                                            ),
+                                                        ],
+                                                    ),
+                                                    FunctionCall(
+                                                        Identifier(
+                                                            "fibonacci",
+                                                        ),
+                                                        [
+                                                            Sub(
+                                                                Identifier(
+                                                                    "n",
+                                                                ),
+                                                                Literal(
+                                                                    Int(
+                                                                        2,
+                                                                    ),
+                                                                ),
+                                                            ),
+                                                        ],
+                                                    ),
+                                                ),
+                                            ),
+                                        },
+                                    ),
+                                },
+                            ),
+                        ],
+                        final_expr: None,
                     },
                     is_pub: false,
                 },
@@ -799,8 +798,6 @@ Ok(
                                                             ),
                                                         },
                                                     ),
-                                                ],
-                                                final_expr: Some(
                                                     RustValue(
                                                         EvalIf {
                                                             condition: RustValue(
@@ -928,7 +925,8 @@ Ok(
                                                             ),
                                                         },
                                                     ),
-                                                ),
+                                                ],
+                                                final_expr: None,
                                             },
                                         ),
                                     },

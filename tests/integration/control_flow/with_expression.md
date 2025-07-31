@@ -268,7 +268,7 @@ Ok(
                 With {
                     resources: [
                         WithResource {
-                            name: "f",
+                            name: "",
                             value: Identifier(
                                 "f",
                             ),
@@ -545,7 +545,7 @@ Ok(
                         data: WithData {
                             resources: [
                                 (
-                                    "f",
+                                    "",
                                     RustValue(
                                         EvalVariable {
                                             name: "f",

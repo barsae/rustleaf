@@ -2,6 +2,7 @@
 use crate::core::*;
 use crate::lexer::{Token, TokenType};
 use anyhow::{anyhow, Result};
+use super::stream::TokenStream;
 
 pub struct Parser {
     pub(crate) tokens: Vec<Token>,
@@ -17,14 +18,16 @@ impl Parser {
 
     /// Parse tokens into an AST
     pub fn parse(tokens: Vec<Token>) -> Result<Program> {
-        let mut parser = Self::new(tokens);
-        parser.parse_program()
+        let mut stream = TokenStream::new(tokens);
+        stream.parse(parse_program)
     }
 
+    #[allow(dead_code)]
     fn new(tokens: Vec<Token>) -> Self {
         Parser { tokens, current: 0 }
     }
 
+    #[allow(dead_code)]
     fn parse_program(&mut self) -> Result<Program> {
         let mut statements = Vec::new();
 
@@ -107,4 +110,22 @@ impl Parser {
             }
         }
     }
+}
+
+// ===== New API functions =====
+
+/// Parse a complete program
+fn parse_program(s: &mut TokenStream) -> Result<Program> {
+    let mut statements = Vec::new();
+
+    while !s.is_at_end() {
+        statements.push(parse_statement(s)?);
+    }
+
+    Ok(Program(statements))
+}
+
+/// Parse a single statement
+fn parse_statement(s: &mut TokenStream) -> Result<Statement> {
+    super::statement_new::parse_statement(s)
 }

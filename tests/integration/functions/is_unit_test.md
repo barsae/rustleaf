@@ -1,6 +1,6 @@
 # Program
-Status: 🟢
-Assertions: 6
+Status: 🔴
+Assertions: 0
 
 ```rustleaf
 // Test is_unit with various values
@@ -22,8 +22,8 @@ None
 
 # Result
 ```rust
-Ok(
-    Unit,
+Err(
+    "Value is not callable: Bool(false)",
 )
 ```
 
@@ -115,19 +115,19 @@ Ok(
                         "assert",
                     ),
                     [
-                        Not(
-                            FunctionCall(
+                        FunctionCall(
+                            Not(
                                 Identifier(
                                     "is_unit",
                                 ),
-                                [
-                                    Literal(
-                                        Int(
-                                            42,
-                                        ),
-                                    ),
-                                ],
                             ),
+                            [
+                                Literal(
+                                    Int(
+                                        42,
+                                    ),
+                                ),
+                            ],
                         ),
                     ],
                 ),
@@ -138,19 +138,19 @@ Ok(
                         "assert",
                     ),
                     [
-                        Not(
-                            FunctionCall(
+                        FunctionCall(
+                            Not(
                                 Identifier(
                                     "is_unit",
                                 ),
-                                [
-                                    Literal(
-                                        String(
-                                            "hello",
-                                        ),
-                                    ),
-                                ],
                             ),
+                            [
+                                Literal(
+                                    String(
+                                        "hello",
+                                    ),
+                                ),
+                            ],
                         ),
                     ],
                 ),
@@ -161,19 +161,19 @@ Ok(
                         "assert",
                     ),
                     [
-                        Not(
-                            FunctionCall(
+                        FunctionCall(
+                            Not(
                                 Identifier(
                                     "is_unit",
                                 ),
-                                [
-                                    Literal(
-                                        Bool(
-                                            true,
-                                        ),
-                                    ),
-                                ],
                             ),
+                            [
+                                Literal(
+                                    Bool(
+                                        true,
+                                    ),
+                                ),
+                            ],
                         ),
                     ],
                 ),
@@ -184,17 +184,17 @@ Ok(
                         "assert",
                     ),
                     [
-                        Not(
-                            FunctionCall(
+                        FunctionCall(
+                            Not(
                                 Identifier(
                                     "is_unit",
                                 ),
-                                [
-                                    List(
-                                        [],
-                                    ),
-                                ],
                             ),
+                            [
+                                List(
+                                    [],
+                                ),
+                            ],
                         ),
                     ],
                 ),
@@ -205,17 +205,17 @@ Ok(
                         "assert",
                     ),
                     [
-                        Not(
-                            FunctionCall(
+                        FunctionCall(
+                            Not(
                                 Identifier(
                                     "is_unit",
                                 ),
-                                [
-                                    Dict(
-                                        [],
-                                    ),
-                                ],
                             ),
+                            [
+                                Dict(
+                                    [],
+                                ),
+                            ],
                         ),
                     ],
                 ),
@@ -284,25 +284,25 @@ Ok(
                         ),
                         args: [
                             RustValue(
-                                EvalLogicalNot {
-                                    expr: RustValue(
-                                        EvalCall {
-                                            func_expr: RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalLogicalNot {
+                                            expr: RustValue(
                                                 EvalVariable {
                                                     name: "is_unit",
                                                 },
                                             ),
-                                            args: [
-                                                RustValue(
-                                                    EvalLiteral {
-                                                        value: Int(
-                                                            42,
-                                                        ),
-                                                    },
-                                                ),
-                                            ],
                                         },
                                     ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Int(
+                                                    42,
+                                                ),
+                                            },
+                                        ),
+                                    ],
                                 },
                             ),
                         ],
@@ -317,25 +317,25 @@ Ok(
                         ),
                         args: [
                             RustValue(
-                                EvalLogicalNot {
-                                    expr: RustValue(
-                                        EvalCall {
-                                            func_expr: RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalLogicalNot {
+                                            expr: RustValue(
                                                 EvalVariable {
                                                     name: "is_unit",
                                                 },
                                             ),
-                                            args: [
-                                                RustValue(
-                                                    EvalLiteral {
-                                                        value: String(
-                                                            "hello",
-                                                        ),
-                                                    },
-                                                ),
-                                            ],
                                         },
                                     ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: String(
+                                                    "hello",
+                                                ),
+                                            },
+                                        ),
+                                    ],
                                 },
                             ),
                         ],
@@ -350,25 +350,25 @@ Ok(
                         ),
                         args: [
                             RustValue(
-                                EvalLogicalNot {
-                                    expr: RustValue(
-                                        EvalCall {
-                                            func_expr: RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalLogicalNot {
+                                            expr: RustValue(
                                                 EvalVariable {
                                                     name: "is_unit",
                                                 },
                                             ),
-                                            args: [
-                                                RustValue(
-                                                    EvalLiteral {
-                                                        value: Bool(
-                                                            true,
-                                                        ),
-                                                    },
-                                                ),
-                                            ],
                                         },
                                     ),
+                                    args: [
+                                        RustValue(
+                                            EvalLiteral {
+                                                value: Bool(
+                                                    true,
+                                                ),
+                                            },
+                                        ),
+                                    ],
                                 },
                             ),
                         ],
@@ -383,23 +383,23 @@ Ok(
                         ),
                         args: [
                             RustValue(
-                                EvalLogicalNot {
-                                    expr: RustValue(
-                                        EvalCall {
-                                            func_expr: RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalLogicalNot {
+                                            expr: RustValue(
                                                 EvalVariable {
                                                     name: "is_unit",
                                                 },
                                             ),
-                                            args: [
-                                                RustValue(
-                                                    EvalList {
-                                                        elements: [],
-                                                    },
-                                                ),
-                                            ],
                                         },
                                     ),
+                                    args: [
+                                        RustValue(
+                                            EvalList {
+                                                elements: [],
+                                            },
+                                        ),
+                                    ],
                                 },
                             ),
                         ],
@@ -414,23 +414,23 @@ Ok(
                         ),
                         args: [
                             RustValue(
-                                EvalLogicalNot {
-                                    expr: RustValue(
-                                        EvalCall {
-                                            func_expr: RustValue(
+                                EvalCall {
+                                    func_expr: RustValue(
+                                        EvalLogicalNot {
+                                            expr: RustValue(
                                                 EvalVariable {
                                                     name: "is_unit",
                                                 },
                                             ),
-                                            args: [
-                                                RustValue(
-                                                    EvalDict {
-                                                        pairs: [],
-                                                    },
-                                                ),
-                                            ],
                                         },
                                     ),
+                                    args: [
+                                        RustValue(
+                                            EvalDict {
+                                                pairs: [],
+                                            },
+                                        ),
+                                    ],
                                 },
                             ),
                         ],

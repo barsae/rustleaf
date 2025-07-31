@@ -208,41 +208,42 @@ Ok(
                                         ),
                                     ),
                                 },
-                            ],
-                            final_expr: Some(
-                                If {
-                                    condition: Eq(
-                                        Identifier(
-                                            "counter",
-                                        ),
-                                        Literal(
-                                            Int(
-                                                3,
+                                Expression(
+                                    If {
+                                        condition: Eq(
+                                            Identifier(
+                                                "counter",
+                                            ),
+                                            Literal(
+                                                Int(
+                                                    3,
+                                                ),
                                             ),
                                         ),
-                                    ),
-                                    then_expr: Block {
-                                        statements: [
-                                            Break(
-                                                Some(
-                                                    Mul(
-                                                        Identifier(
-                                                            "counter",
-                                                        ),
-                                                        Literal(
-                                                            Int(
-                                                                5,
+                                        then_expr: Block {
+                                            statements: [
+                                                Break(
+                                                    Some(
+                                                        Mul(
+                                                            Identifier(
+                                                                "counter",
+                                                            ),
+                                                            Literal(
+                                                                Int(
+                                                                    5,
+                                                                ),
                                                             ),
                                                         ),
                                                     ),
                                                 ),
-                                            ),
-                                        ],
-                                        final_expr: None,
+                                            ],
+                                            final_expr: None,
+                                        },
+                                        else_expr: None,
                                     },
-                                    else_expr: None,
-                                },
-                            ),
+                                ),
+                            ],
+                            final_expr: None,
                         },
                     },
                 ),
@@ -447,8 +448,6 @@ Ok(
                                                         ),
                                                     },
                                                 ),
-                                            ],
-                                            final_expr: Some(
                                                 RustValue(
                                                     EvalIf {
                                                         condition: RustValue(
@@ -513,7 +512,8 @@ Ok(
                                                         else_expr: None,
                                                     },
                                                 ),
-                                            ),
+                                            ],
+                                            final_expr: None,
                                         },
                                     ),
                                 },
