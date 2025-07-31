@@ -1,516 +1,576 @@
 use crate::core::*;
 use crate::lexer::TokenType;
 use anyhow::{anyhow, Result};
+use super::stream::TokenStream;
+use super::statement::{parse_literal_value, parse_pattern};
 
-use super::Parser;
+/// Main entry point for parsing expressions
+pub fn parse_expression(s: &mut TokenStream) -> Result<Expression> {
+    let result = parse_precedence(s, 0);
+    result
+}
 
-impl Parser {
-    pub fn parse_expression(&mut self) -> Result<Expression> {
-        self.parse_precedence(0)
-    }
+/// Parse expressions with precedence climbing
+fn parse_precedence(s: &mut TokenStream, min_precedence: u8) -> Result<Expression> {
+    let mut left = parse_unary(s)?;
 
-    /// Parse expressions with precedence climbing
-    pub fn parse_precedence(&mut self, min_precedence: u8) -> Result<Expression> {
-        let mut left = self.parse_unary()?;
+    while !s.is_at_end() {
+        let op_precedence = get_binary_precedence(s.peek_type());
+        if op_precedence < min_precedence {
+            break;
+        }
 
-        while !self.is_at_end() {
-            let op_precedence = self.get_binary_precedence(self.peek().token_type);
-            if op_precedence < min_precedence {
-                break;
-            }
-
-            // Handle postfix operators (method calls, array access, property access)
-            if self.accept(TokenType::Dot) {
-                let property_token =
-                    self.expect(TokenType::Ident, "Expected property name after '.'")?;
-                let property = property_token
-                    .text
-                    .ok_or_else(|| anyhow!("Identifier token missing text"))?;
-                left = Expression::GetAttr(Box::new(left), property);
-            } else if self.accept(TokenType::LeftBracket) {
-                // TODO: this is a clear indicator our Block-Expression grammar is wrong
-                // Check if the left expression is a control flow expression that shouldn't be indexed
-                let should_allow_indexing = !matches!(
-                    &left,
-                    Expression::For { .. }
-                        | Expression::While { .. }
-                        | Expression::Loop { .. }
-                        | Expression::If { .. }
-                        | Expression::Match { .. }
-                        | Expression::Try { .. }
-                        | Expression::With { .. }
-                );
-
-                if should_allow_indexing {
-                    let index = self.parse_expression()?;
-                    self.expect(TokenType::RightBracket, "Expected ']' after array index")?;
-                    left = Expression::GetItem(Box::new(left), Box::new(index));
-                } else {
-                    // Don't consume the LeftBracket, let it be parsed as a separate expression
-                    self.current -= 1; // Put back the LeftBracket token
-                    break;
-                }
-            } else if self.accept(TokenType::LeftParen) {
-                let mut args = Vec::new();
-
-                loop {
-                    if self.is_at_end() {
-                        return Err(anyhow!("Unexpected EOF in function call arguments"));
-                    }
-
-                    if self.accept(TokenType::RightParen) {
-                        break;
-                    }
-
-                    args.push(self.parse_expression()?);
-                    if !self.accept(TokenType::Comma) {
-                        self.expect(TokenType::RightParen, "Expected ')' after arguments")?;
-                        break;
-                    }
-                }
-
-                // Check if this is a method call (function call on a property access)
-                left = match left {
-                    Expression::GetAttr(obj, method_name) => {
-                        // Convert obj.method(args) to MethodCall
-                        Expression::MethodCall(obj, method_name, args)
-                    }
-                    _ => {
-                        // Regular function call
-                        Expression::FunctionCall(Box::new(left), args)
-                    }
-                };
+        // Binary operators
+        if let Some(expr_constructor) = get_binary_expression_constructor(s.peek_type()) {
+            s.accept_type(s.peek_type())?; // Consume the operator
+            let right_precedence = if is_right_associative_token(s.peek_type()) {
+                op_precedence
             } else {
-                // Binary operators
-                if let Some(expr_constructor) =
-                    self.get_binary_expression_constructor(self.peek().token_type)
-                {
-                    self.advance();
-                    let right_precedence =
-                        if self.is_right_associative_token(self.previous().token_type) {
-                            op_precedence
-                        } else {
-                            op_precedence + 1
-                        };
-                    let right = self.parse_precedence(right_precedence)?;
-                    left = expr_constructor(Box::new(left), Box::new(right));
-                } else {
-                    break;
-                }
-            }
-        }
-
-        Ok(left)
-    }
-
-    pub fn parse_unary(&mut self) -> Result<Expression> {
-        if self.accept(TokenType::Minus) {
-            // Unary operators have precedence 14 (higher than binary ops, lower than postfix)
-            let expr = self.parse_precedence(14)?;
-            Ok(Expression::Neg(Box::new(expr)))
-        } else if self.accept(TokenType::Not) {
-            // Unary operators have precedence 14 (higher than binary ops, lower than postfix)
-            let expr = self.parse_precedence(14)?;
-            Ok(Expression::Not(Box::new(expr)))
-        } else {
-            self.parse_primary()
-        }
-    }
-
-    pub fn parse_primary(&mut self) -> Result<Expression> {
-        if self.accept(TokenType::True) {
-            Ok(Expression::Literal(LiteralValue::Bool(true)))
-        } else if self.accept(TokenType::False) {
-            Ok(Expression::Literal(LiteralValue::Bool(false)))
-        } else if self.accept(TokenType::Null) {
-            Ok(Expression::Literal(LiteralValue::Null))
-        } else if let Some(token) = self.accept_token(TokenType::Int) {
-            let text = token
-                .text
-                .as_ref()
-                .ok_or_else(|| anyhow!("Int token missing text"))?;
-            let n = text
-                .parse::<i64>()
-                .map_err(|e| anyhow!("Failed to parse integer '{}': {}", text, e))?;
-            Ok(Expression::Literal(LiteralValue::Int(n)))
-        } else if let Some(token) = self.accept_token(TokenType::Float) {
-            let text = token
-                .text
-                .as_ref()
-                .ok_or_else(|| anyhow!("Float token missing text"))?;
-            let f = text
-                .parse::<f64>()
-                .map_err(|e| anyhow!("Failed to parse float '{}': {}", text, e))?;
-            Ok(Expression::Literal(LiteralValue::Float(f)))
-        } else if let Some(token) = self.accept_token(TokenType::String) {
-            let text = token
-                .text
-                .as_ref()
-                .ok_or_else(|| anyhow!("String token missing text"))?
-                .clone();
-            Ok(Expression::Literal(LiteralValue::String(text)))
-        } else if let Some(token) = self.accept_token(TokenType::Ident) {
-            let text = token
-                .text
-                .as_ref()
-                .ok_or_else(|| anyhow!("Identifier token missing text"))?
-                .clone();
-            Ok(Expression::Identifier(text))
-        } else if self.check(TokenType::StringPart) || self.check(TokenType::InterpolationStart) {
-            self.parse_interpolated_string()
-        } else if self.check(TokenType::LeftBrace) {
-            self.parse_brace_expression()
-        } else if self.check(TokenType::If) {
-            self.try_parse_if_expression()
-        } else if self.check(TokenType::Loop) {
-            self.try_parse_loop_expression()
-        } else if self.check(TokenType::While) {
-            self.try_parse_while_expression()
-        } else if self.check(TokenType::For) {
-            self.try_parse_for_expression()
-        } else if self.check(TokenType::Match) {
-            self.try_parse_match_expression()
-        } else if self.check(TokenType::Try) {
-            self.try_parse_try_expression()
-        } else if self.check(TokenType::With) {
-            self.try_parse_with_expression()
-        } else if self.check(TokenType::Pipe) {
-            self.try_parse_lambda_expression()
-        } else if self.accept(TokenType::LeftBracket) {
-            self.parse_list_literal()
-        } else if self.accept(TokenType::LeftParen) {
-            // Grouped expression: (expr)
-            let expr = self.parse_expression()?;
-            self.expect(
-                TokenType::RightParen,
-                "Expected ')' after grouped expression",
-            )?;
-            Ok(expr)
-        } else {
-            Err(anyhow!("Unexpected token: {:?}", self.peek().token_type))
-        }
-    }
-
-    pub fn parse_literal_value(&mut self) -> Result<LiteralValue> {
-        let token = self.peek();
-        match &token.token_type {
-            TokenType::True => {
-                self.advance();
-                Ok(LiteralValue::Bool(true))
-            }
-            TokenType::False => {
-                self.advance();
-                Ok(LiteralValue::Bool(false))
-            }
-            TokenType::Null => {
-                self.advance();
-                Ok(LiteralValue::Null)
-            }
-            TokenType::Int => {
-                let text = token
-                    .text
-                    .as_ref()
-                    .ok_or_else(|| anyhow!("Int token missing text"))?;
-                let n = text
-                    .parse::<i64>()
-                    .map_err(|e| anyhow!("Failed to parse integer '{}': {}", text, e))?;
-                self.advance();
-                Ok(LiteralValue::Int(n))
-            }
-            TokenType::Float => {
-                let text = token
-                    .text
-                    .as_ref()
-                    .ok_or_else(|| anyhow!("Float token missing text"))?;
-                let f = text
-                    .parse::<f64>()
-                    .map_err(|e| anyhow!("Failed to parse float '{}': {}", text, e))?;
-                self.advance();
-                Ok(LiteralValue::Float(f))
-            }
-            TokenType::String => {
-                let text = token
-                    .text
-                    .as_ref()
-                    .ok_or_else(|| anyhow!("String token missing text"))?
-                    .clone();
-                self.advance();
-                Ok(LiteralValue::String(text))
-            }
-            TokenType::RawString => {
-                let text = token
-                    .text
-                    .as_ref()
-                    .ok_or_else(|| anyhow!("RawString token missing text"))?
-                    .clone();
-                self.advance();
-                Ok(LiteralValue::RawString(text))
-            }
-            _ => Err(anyhow!(
-                "Expected literal value, found {:?}",
-                token.token_type
-            )),
-        }
-    }
-
-    pub fn parse_block_expression(&mut self) -> Result<Expression> {
-        // Opening { already consumed by parse_primary
-        let block = self.parse_block()?;
-        Ok(Expression::Block(block))
-    }
-
-    pub fn try_parse_if_expression(&mut self) -> Result<Expression> {
-        self.expect(TokenType::If, "Expected 'if'")?;
-
-        let condition = Box::new(self.parse_expression()?);
-
-        self.expect(TokenType::LeftBrace, "Expected '{' after if condition")?;
-        let then_expr = self.parse_block()?;
-
-        let mut else_expr = None;
-
-        // Handle else clause
-        if self.accept(TokenType::Else) {
-            if self.accept(TokenType::If) {
-                // else if - parse as nested if expression
-                let nested_if = self.try_parse_if_expression()?;
-                else_expr = Some(Block {
-                    statements: vec![],
-                    final_expr: Some(Box::new(nested_if)),
-                });
-            } else {
-                // final else clause
-                self.expect(TokenType::LeftBrace, "Expected '{' after else")?;
-                else_expr = Some(self.parse_block()?);
-            }
-        }
-
-        Ok(Expression::If {
-            condition,
-            then_expr,
-            else_expr,
-        })
-    }
-
-    pub fn parse_list_literal(&mut self) -> Result<Expression> {
-        // Opening [ already consumed by parse_primary
-        let mut elements = Vec::new();
-
-        // Handle empty list
-        if self.accept(TokenType::RightBracket) {
-            return Ok(Expression::List(elements));
-        }
-
-        // Parse comma-separated expressions
-        loop {
-            elements.push(self.parse_expression()?);
-
-            if self.accept(TokenType::RightBracket) {
-                break;
-            } else if self.accept(TokenType::Comma) {
-                // Check for trailing comma before ]
-                if self.check(TokenType::RightBracket) {
-                    self.advance(); // consume the ]
-                    break;
-                }
-                continue;
-            } else {
-                return Err(anyhow!("Expected ',' or ']' in list literal"));
-            }
-        }
-
-        Ok(Expression::List(elements))
-    }
-
-    pub fn try_parse_loop_expression(&mut self) -> Result<Expression> {
-        self.expect(TokenType::Loop, "Expected 'loop'")?;
-        self.expect(TokenType::LeftBrace, "Expected '{' after loop")?;
-        let body = self.parse_block()?;
-        Ok(Expression::Loop { body })
-    }
-
-    pub fn try_parse_while_expression(&mut self) -> Result<Expression> {
-        self.expect(TokenType::While, "Expected 'while'")?;
-        let condition = Box::new(self.parse_expression()?);
-        self.expect(TokenType::LeftBrace, "Expected '{' after while condition")?;
-        let body = self.parse_block()?;
-        Ok(Expression::While { condition, body })
-    }
-
-    pub fn try_parse_for_expression(&mut self) -> Result<Expression> {
-        self.expect(TokenType::For, "Expected 'for'")?;
-        let pattern = self.parse_pattern()?;
-        self.expect(TokenType::In, "Expected 'in' after for pattern")?;
-        let iter = Box::new(self.parse_expression()?);
-        self.expect(TokenType::LeftBrace, "Expected '{' after for iterator")?;
-        let body = self.parse_block()?;
-        Ok(Expression::For {
-            pattern,
-            iter,
-            body,
-        })
-    }
-
-    pub fn try_parse_match_expression(&mut self) -> Result<Expression> {
-        self.expect(TokenType::Match, "Expected 'match'")?;
-        let expr = Box::new(self.parse_expression()?);
-        self.expect(TokenType::LeftBrace, "Expected '{' after match expression")?;
-
-        let mut cases = Vec::new();
-        while !self.check(TokenType::RightBrace) && !self.is_at_end() {
-            self.expect(TokenType::Case, "Expected 'case' in match arm")?;
-            let pattern = self.parse_pattern()?;
-
-            // Optional guard
-            let guard = if self.accept(TokenType::If) {
-                Some(self.parse_expression()?)
-            } else {
-                None
+                op_precedence + 1
             };
-
-            self.expect(TokenType::LeftBrace, "Expected '{' after match pattern")?;
-            let body = self.parse_block()?;
-
-            cases.push(MatchCase {
-                pattern,
-                guard,
-                body,
-            });
+            let right = parse_precedence(s, right_precedence)?;
+            left = expr_constructor(Box::new(left), Box::new(right));
+        } else {
+            break;
         }
-
-        self.expect(TokenType::RightBrace, "Expected '}' after match cases")?;
-        Ok(Expression::Match { expr, cases })
     }
 
-    pub fn try_parse_try_expression(&mut self) -> Result<Expression> {
-        self.expect(TokenType::Try, "Expected 'try'")?;
-        self.expect(TokenType::LeftBrace, "Expected '{' after 'try'")?;
-        let body = self.parse_block()?;
+    Ok(left)
+}
 
-        self.expect(TokenType::Catch, "Expected 'catch' after try block")?;
-        let pattern = self.parse_pattern()?;
-        self.expect(TokenType::LeftBrace, "Expected '{' after catch pattern")?;
-        let catch_body = self.parse_block()?;
+/// Parse unary expressions
+fn parse_unary(s: &mut TokenStream) -> Result<Expression> {
+    // Handle unary prefix operators
+    if s.accept_type(TokenType::Not)?.is_some() {
+        let expr = Box::new(parse_postfix(s)?);
+        return Ok(Expression::Not(expr));
+    }
+    if s.accept_type(TokenType::Minus)?.is_some() {
+        let expr = Box::new(parse_postfix(s)?);
+        return Ok(Expression::Neg(expr));
+    }
+    if s.accept_type(TokenType::Plus)?.is_some() {
+        // Unary plus is not in the AST, just return the expression
+        return parse_postfix(s);
+    }
 
-        let catch = CatchClause {
+    let result = parse_postfix(s);
+    result
+}
+
+/// Parse postfix expressions (function calls, array access, property access)
+fn parse_postfix(s: &mut TokenStream) -> Result<Expression> {
+    let mut expr = parse_primary(s)?;
+    
+    loop {
+        if s.accept_type(TokenType::Dot)?.is_some() {
+            let property_token = s.expect_type(TokenType::Ident)?;
+            let property = property_token.text
+                .ok_or_else(|| anyhow!("Identifier token missing text"))?;
+            expr = Expression::GetAttr(Box::new(expr), property);
+        } else if s.accept_type(TokenType::LeftBracket)?.is_some() {
+            let index = parse_expression(s)?;
+            s.expect_type(TokenType::RightBracket)?;
+            expr = Expression::GetItem(Box::new(expr), Box::new(index));
+        } else if s.accept_type(TokenType::LeftParen)?.is_some() {
+            let mut args = Vec::new();
+
+            loop {
+                if s.is_at_end() {
+                    return Err(anyhow!("Unexpected EOF in function call arguments"));
+                }
+
+                if s.accept_type(TokenType::RightParen)?.is_some() {
+                    break;
+                }
+
+                args.push(parse_expression(s)?);
+                if s.accept_type(TokenType::Comma)?.is_none() {
+                    s.expect_type(TokenType::RightParen)?;
+                    break;
+                }
+            }
+
+            // Check if this is a method call (function call on a property access)
+            expr = match expr {
+                Expression::GetAttr(obj, method_name) => {
+                    // Convert obj.method(args) to MethodCall
+                    Expression::MethodCall(obj, method_name, args)
+                }
+                _ => {
+                    // Regular function call
+                    Expression::FunctionCall(Box::new(expr), args)
+                }
+            };
+        } else {
+            break;
+        }
+    }
+    
+    Ok(expr)
+}
+
+/// Parse primary expressions
+fn parse_primary(s: &mut TokenStream) -> Result<Expression> {
+    // Literals
+    if s.accept_type(TokenType::True)?.is_some() {
+        return Ok(Expression::Literal(LiteralValue::Bool(true)));
+    }
+    if s.accept_type(TokenType::False)?.is_some() {
+        return Ok(Expression::Literal(LiteralValue::Bool(false)));
+    }
+    if s.accept_type(TokenType::Null)?.is_some() {
+        return Ok(Expression::Literal(LiteralValue::Null));
+    }
+
+    // Identifiers (must come before literal parsing to avoid conflicts)
+    if let Some(token) = s.accept_type(TokenType::Ident)? {
+        let name = token.text
+            .ok_or_else(|| anyhow!("Identifier token missing text"))?;
+        return Ok(Expression::Identifier(name));
+    }
+    
+    // Try numeric and string literals
+    if let Some(literal) = s.try_parse(|s| {
+        let value = parse_literal_value(s)?;
+        Ok(Expression::Literal(value))
+    })? {
+        return Ok(literal);
+    }
+
+    // Control flow expressions
+    if s.accept_type(TokenType::If)?.is_some() {
+        return parse_if_expression(s);
+    }
+    if s.accept_type(TokenType::Match)?.is_some() {
+        return parse_match_expression(s);
+    }
+    if s.accept_type(TokenType::While)?.is_some() {
+        return parse_while_expression(s);
+    }
+    if s.accept_type(TokenType::For)?.is_some() {
+        return parse_for_expression(s);
+    }
+    if s.accept_type(TokenType::Loop)?.is_some() {
+        return parse_loop_expression(s);
+    }
+    if s.accept_type(TokenType::Try)?.is_some() {
+        return parse_try_expression(s);
+    }
+    if s.accept_type(TokenType::With)?.is_some() {
+        return parse_with_expression(s);
+    }
+
+    // Lambda expressions
+    if s.peek_type() == TokenType::Pipe {
+        return parse_lambda_expression(s);
+    }
+
+    // Collections
+    if s.accept_type(TokenType::LeftBracket)?.is_some() {
+        return parse_list_literal(s);
+    }
+    if s.peek_type() == TokenType::LeftBrace {
+        // Could be block or dict - need to check
+        return parse_block_or_dict(s);
+    }
+
+    // Parenthesized expressions
+    if s.accept_type(TokenType::LeftParen)?.is_some() {
+        let expr = parse_expression(s)?;
+        s.expect_type(TokenType::RightParen)?;
+        return Ok(expr);
+    }
+
+    // Interpolated strings
+    if s.peek_type() == TokenType::StringPart || s.peek_type() == TokenType::InterpolationStart {
+        return parse_interpolated_string(s);
+    }
+
+    Err(anyhow!("Expected expression, found {:?}", s.peek_type()))
+}
+
+// Helper functions
+
+fn get_binary_precedence(token_type: TokenType) -> u8 {
+    match token_type {
+        TokenType::Or => 1,
+        TokenType::And => 2,
+        TokenType::EqualEqual | TokenType::BangEqual => 3,
+        TokenType::Less | TokenType::Greater | TokenType::LessEqual | TokenType::GreaterEqual => 4,
+        TokenType::In | TokenType::Is | TokenType::IsNot => 5,
+        TokenType::DotDot | TokenType::DotDotEqual => 6, // Range operators
+        TokenType::Plus | TokenType::Minus => 11,
+        TokenType::Star | TokenType::Slash | TokenType::Percent => 12,
+        TokenType::StarStar => 13,
+        TokenType::Pipe => 2, // Pipe (|) operator - low precedence
+        TokenType::Dot | TokenType::LeftBracket | TokenType::LeftParen => 15,
+        _ => 0, // Not a binary operator
+    }
+}
+
+fn is_right_associative_token(token_type: TokenType) -> bool {
+    matches!(token_type, TokenType::StarStar)
+}
+
+fn get_binary_expression_constructor(token_type: TokenType) -> Option<fn(Box<Expression>, Box<Expression>) -> Expression> {
+    match token_type {
+        TokenType::Plus => Some(Expression::Add),
+        TokenType::Minus => Some(Expression::Sub),
+        TokenType::Star => Some(Expression::Mul),
+        TokenType::Slash => Some(Expression::Div),
+        TokenType::Percent => Some(Expression::Mod),
+        TokenType::StarStar => Some(Expression::Pow),
+        TokenType::EqualEqual => Some(Expression::Eq),
+        TokenType::BangEqual => Some(Expression::Ne),
+        TokenType::Less => Some(Expression::Lt),
+        TokenType::Greater => Some(Expression::Gt),
+        TokenType::LessEqual => Some(Expression::Le),
+        TokenType::GreaterEqual => Some(Expression::Ge),
+        TokenType::And => Some(Expression::And),
+        TokenType::Or => Some(Expression::Or),
+        TokenType::In => Some(Expression::In),
+        TokenType::Is => Some(Expression::Is),
+        TokenType::IsNot => Some(Expression::IsNot),
+        TokenType::Pipe => Some(Expression::Pipe), // Pipe (|) operator
+        TokenType::DotDot => Some(Expression::RangeExclusive),
+        TokenType::DotDotEqual => Some(Expression::RangeInclusive),
+        _ => None,
+    }
+}
+
+// Expression parsing functions - placeholders for now
+
+pub fn parse_block_expression(s: &mut TokenStream) -> Result<Expression> {
+    let mut statements = Vec::new();
+    let mut final_expr = None;
+    
+    // Parse statements and possible final expression
+    while !s.is_at_end() && s.peek_type() != TokenType::RightBrace {
+        // Debug: Check for specific problematic case
+        if s.peek_type() == TokenType::LeftBracket {
+            println!("DEBUG: Found [, after parsing statements: {:?}", statements.last());
+        }
+        
+        // Try to parse a statement first
+        if let Some(stmt) = s.try_parse(super::statement::parse_statement)? {
+            statements.push(stmt);
+        } else {
+            // Failed to parse as statement, try as expression
+            if let Some(expr) = s.try_parse(parse_expression)? {
+                // Check if this is followed by a semicolon
+                if s.accept_type(TokenType::Semicolon)?.is_some() {
+                    // It's an expression statement
+                    statements.push(Statement::Expression(expr));
+                } else {
+                    // It's the final expression
+                    final_expr = Some(Box::new(expr));
+                    break;
+                }
+            } else {
+                // Neither statement nor expression worked
+                return Err(anyhow!("Expected statement or expression"));
+            }
+        }
+    }
+    
+    s.expect_type(TokenType::RightBrace)?;
+    Ok(Expression::Block(Block { statements, final_expr }))
+}
+
+fn parse_if_expression(s: &mut TokenStream) -> Result<Expression> {
+    // 'if' already consumed
+    let condition = Box::new(parse_expression(s)?);
+    
+    s.expect_type(TokenType::LeftBrace)?;
+    let then_block_expr = parse_block_expression(s)?;
+    let then_expr = match then_block_expr {
+        Expression::Block(block) => block,
+        _ => unreachable!("parse_block_expression should return a Block"),
+    };
+    
+    let else_expr = if s.accept_type(TokenType::Else)?.is_some() {
+        if s.peek_type() == TokenType::If {
+            // else if - convert the if expression to a block
+            s.accept_type(TokenType::If)?;
+            let else_if_expr = parse_if_expression(s)?;
+            Some(Block {
+                statements: vec![Statement::Expression(else_if_expr)],
+                final_expr: None,
+            })
+        } else {
+            s.expect_type(TokenType::LeftBrace)?;
+            let else_block_expr = parse_block_expression(s)?;
+            match else_block_expr {
+                Expression::Block(block) => Some(block),
+                _ => unreachable!("parse_block_expression should return a Block"),
+            }
+        }
+    } else {
+        None
+    };
+    
+    Ok(Expression::If {
+        condition,
+        then_expr,
+        else_expr,
+    })
+}
+
+fn parse_match_expression(s: &mut TokenStream) -> Result<Expression> {
+    // 'match' already consumed
+    let expr = Box::new(parse_expression(s)?);
+    s.expect_type(TokenType::LeftBrace)?;
+    
+    let mut cases = Vec::new();
+    
+    while !s.is_at_end() && s.peek_type() != TokenType::RightBrace {
+        let pattern = parse_pattern(s)?;
+        
+        let guard = if s.accept_type(TokenType::If)?.is_some() {
+            Some(parse_expression(s)?)
+        } else {
+            None
+        };
+        
+        s.expect_type(TokenType::Colon)?;
+        s.expect_type(TokenType::LeftBrace)?;
+        let body_expr = parse_block_expression(s)?;
+        let body = match body_expr {
+            Expression::Block(block) => block,
+            _ => unreachable!("parse_block_expression should return a Block"),
+        };
+        
+        cases.push(MatchCase { pattern, guard, body });
+        
+        // Optional comma between cases
+        s.accept_type(TokenType::Comma)?;
+    }
+    
+    s.expect_type(TokenType::RightBrace)?;
+    Ok(Expression::Match { expr, cases })
+}
+
+fn parse_while_expression(s: &mut TokenStream) -> Result<Expression> {
+    // 'while' already consumed
+    let condition = Box::new(parse_expression(s)?);
+    s.expect_type(TokenType::LeftBrace)?;
+    // Parse as block expression to support final expressions
+    let block_expr = parse_block_expression(s)?;
+    let body = match block_expr {
+        Expression::Block(block) => block,
+        _ => unreachable!("parse_block_expression should return a Block"),
+    };
+    
+    Ok(Expression::While { condition, body })
+}
+
+fn parse_for_expression(s: &mut TokenStream) -> Result<Expression> {
+    // 'for' already consumed
+    let pattern = parse_pattern(s)?;
+    s.expect_type(TokenType::In)?;
+    let iterable = Box::new(parse_expression(s)?);
+    s.expect_type(TokenType::LeftBrace)?;
+    // Parse as block expression to support final expressions
+    let block_expr = parse_block_expression(s)?;
+    let body = match block_expr {
+        Expression::Block(block) => block,
+        _ => unreachable!("parse_block_expression should return a Block"),
+    };
+    
+    Ok(Expression::For { pattern, iter: iterable, body })
+}
+
+fn parse_loop_expression(s: &mut TokenStream) -> Result<Expression> {
+    // 'loop' already consumed
+    s.expect_type(TokenType::LeftBrace)?;
+    // Parse as block expression to support final expressions and break values
+    let block_expr = parse_block_expression(s)?;
+    let body = match block_expr {
+        Expression::Block(block) => block,
+        _ => unreachable!("parse_block_expression should return a Block"),
+    };
+    
+    Ok(Expression::Loop { body })
+}
+
+fn parse_try_expression(s: &mut TokenStream) -> Result<Expression> {
+    // 'try' already consumed
+    s.expect_type(TokenType::LeftBrace)?;
+    let body_expr = parse_block_expression(s)?;
+    let body = match body_expr {
+        Expression::Block(block) => block,
+        _ => unreachable!("parse_block_expression should return a Block"),
+    };
+    
+    s.expect_type(TokenType::Catch)?;
+    let pattern = parse_pattern(s)?;
+    s.expect_type(TokenType::LeftBrace)?;
+    let catch_expr = parse_block_expression(s)?;
+    let catch_body = match catch_expr {
+        Expression::Block(block) => block,
+        _ => unreachable!("parse_block_expression should return a Block"),
+    };
+    
+    Ok(Expression::Try {
+        body,
+        catch: CatchClause {
             pattern,
             body: catch_body,
-        };
+        },
+    })
+}
 
-        Ok(Expression::Try { body, catch })
-    }
-
-    pub fn try_parse_with_expression(&mut self) -> Result<Expression> {
-        self.expect(TokenType::With, "Expected 'with'")?;
-
+fn parse_with_expression(s: &mut TokenStream) -> Result<Expression> {
+    // 'with' already consumed
+    let resources;
+    
+    // Helper to parse resource form (name = expr)
+    let parse_resource_form = |s: &mut TokenStream| -> Result<Vec<WithResource>> {
         let mut resources = Vec::new();
         loop {
-            let name_token = self.expect(TokenType::Ident, "Expected resource identifier")?;
-            let name = name_token
-                .text
+            let name_token = s.expect_type(TokenType::Ident)?;
+            let name = name_token.text
                 .ok_or_else(|| anyhow!("Identifier token missing text"))?;
-
-            // Check for two syntax forms:
-            // 1. with name = expr { ... } (original spec syntax)
-            // 2. with variable { ... } (simplified syntax for existing variables)
-            if self.accept(TokenType::Equal) {
-                // Original syntax: with name = expr
-                let value = self.parse_expression()?;
-                resources.push(WithResource { name, value });
-            } else {
-                // Simplified syntax: with variable
-                // Treat as: with name = name (use existing variable as resource)
-                let value = Expression::Identifier(name.clone());
-                resources.push(WithResource { name, value });
-            }
-
-            if !self.accept(TokenType::Comma) {
+            s.expect_type(TokenType::Equal)?;
+            let value = parse_expression(s)?;
+            
+            resources.push(WithResource { name, value });
+            
+            if !s.accept_type(TokenType::Comma)?.is_some() {
                 break;
             }
         }
-
-        self.expect(TokenType::LeftBrace, "Expected '{' after with resources")?;
-        let body = self.parse_block()?;
-
-        Ok(Expression::With { resources, body })
-    }
-
-    pub fn try_parse_lambda_expression(&mut self) -> Result<Expression> {
-        self.expect(TokenType::Pipe, "Expected '|' to start lambda")?;
-
-        let mut params = Vec::new();
-
-        // Parse parameters until closing |
-        while !self.check(TokenType::Pipe) && !self.is_at_end() {
-            let param_token = self.expect(TokenType::Ident, "Expected parameter name")?;
-            let param_name = param_token
-                .text
-                .ok_or_else(|| anyhow!("Identifier token missing text"))?;
-            params.push(param_name);
-
-            if !self.accept(TokenType::Comma) {
-                break;
-            }
-        }
-
-        self.expect(TokenType::Pipe, "Expected '|' to end lambda parameters")?;
-
-        // Parse body - either expression or block
-        let body = if self.check(TokenType::LeftBrace) {
-            // Block body: |x| { ... }
-            self.advance(); // consume {
-            let block = self.parse_block()?;
-            LambdaBody::Block(block)
+        // Optional colon before block
+        s.accept_type(TokenType::Colon)?;
+        Ok(resources)
+    };
+    
+    // Try to parse as simple expression form first
+    if let Some(result) = s.try_parse(|s| {
+        let expr = parse_unary(s)?;
+        // Check if next token is a block start
+        if s.peek_type() == TokenType::LeftBrace {
+            // Simple form: with expr { ... }
+            Ok(vec![WithResource { 
+                name: String::new(), 
+                value: expr 
+            }])
+        } else if s.peek_type() == TokenType::Comma || s.peek_type() == TokenType::Colon {
+            // Actually resource form, fail this parse attempt
+            Err(anyhow!("Not simple expression form"))
         } else {
-            // Expression body: |x| x + 1
-            let expr = self.parse_expression()?;
-            LambdaBody::Expression(Box::new(expr))
-        };
-
-        Ok(Expression::Lambda { params, body })
-    }
-
-    pub fn parse_brace_expression(&mut self) -> Result<Expression> {
-        self.expect(TokenType::LeftBrace, "Expected '{'")?;
-
-        // Handle empty dict: {}
-        if self.accept(TokenType::RightBrace) {
-            return Ok(Expression::Dict(Vec::new()));
+            Err(anyhow!("Expected {{ or : after with expression"))
         }
-
-        // Try to parse as dictionary first, fall back to block
-        if let Some(dict_expr) = self.with_checkpoint(|parser| parser.try_parse_dict_content())? {
-            return Ok(dict_expr);
-        }
-
-        // Parse as block expression (opening { already consumed)
-        let block = self.parse_block()?;
-        Ok(Expression::Block(block))
+    })? {
+        resources = result;
+    } else {
+        // Must be resource form (name = expr)
+        resources = parse_resource_form(s)?;
     }
+    
+    // Parse body
+    s.expect_type(TokenType::LeftBrace)?;
+    let body_expr = parse_block_expression(s)?;
+    let body = match body_expr {
+        Expression::Block(block) => block,
+        _ => unreachable!("parse_block_expression should return a Block"),
+    };
+    
+    Ok(Expression::With { resources, body })
+}
 
-    pub fn try_parse_dict_content(&mut self) -> Result<Option<Expression>> {
+fn parse_lambda_expression(s: &mut TokenStream) -> Result<Expression> {
+    // Parse opening |
+    s.expect_type(TokenType::Pipe)?;
+    
+    let mut params = Vec::new();
+    
+    // Parse parameters
+    while s.peek_type() != TokenType::Pipe {
+        let param_token = s.expect_type(TokenType::Ident)?;
+        let param = param_token.text
+            .ok_or_else(|| anyhow!("Identifier token missing text"))?;
+        params.push(param);
+        
+        if s.peek_type() != TokenType::Pipe {
+            s.expect_type(TokenType::Comma)?;
+        }
+    }
+    
+    // Parse closing |
+    s.expect_type(TokenType::Pipe)?;
+    
+    // Parse body - either an expression or a block
+    let body = if s.peek_type() == TokenType::LeftBrace {
+        s.expect_type(TokenType::LeftBrace)?;
+        // Parse as block expression with potential final expression
+        let block_expr = parse_block_expression(s)?;
+        match block_expr {
+            Expression::Block(block) => LambdaBody::Block(block),
+            _ => unreachable!("parse_block_expression should return a Block"),
+        }
+    } else {
+        LambdaBody::Expression(Box::new(parse_expression(s)?))
+    };
+    
+    Ok(Expression::Lambda { params, body })
+}
+
+fn parse_list_literal(s: &mut TokenStream) -> Result<Expression> {
+    // We already consumed the [
+    let mut elements = Vec::new();
+    
+    // Handle empty list
+    if s.accept_type(TokenType::RightBracket)?.is_some() {
+        return Ok(Expression::List(elements));
+    }
+    
+    loop {
+        elements.push(parse_expression(s)?);
+        
+        if s.accept_type(TokenType::Comma)?.is_some() {
+            // Check for trailing comma
+            if s.peek_type() == TokenType::RightBracket {
+                break;
+            }
+        } else {
+            break;
+        }
+    }
+    
+    s.expect_type(TokenType::RightBracket)?;
+    Ok(Expression::List(elements))
+}
+
+fn parse_block_or_dict(s: &mut TokenStream) -> Result<Expression> {
+    s.expect_type(TokenType::LeftBrace)?;
+    
+    // Handle empty dict: {}
+    if s.accept_type(TokenType::RightBrace)?.is_some() {
+        return Ok(Expression::Dict(Vec::new()));
+    }
+    
+    // Try to parse as dictionary first, fall back to block
+    if let Some(dict_expr) = s.try_parse(|s| {
         let mut pairs = Vec::new();
-
+        
         loop {
-            // Parse key expression - use precedence lower than pipe to avoid consuming colons
-            let key = match self.parse_precedence(14) {
-                // Higher than pipe precedence (13)
-                Ok(expr) => expr,
-                Err(_) => return Ok(None), // Not a valid expression, not a dictionary
-            };
-
+            // Parse key expression - use high precedence to avoid consuming colons
+            let key = parse_precedence(s, 14)?; // Higher than pipe precedence (13)
+            
             // Must be followed by ':'
-            self.expect(TokenType::Colon, "Expected ':' after dictionary key")?;
-
+            s.expect_type(TokenType::Colon)?;
+            
             // Parse value expression
-            let value = self.parse_expression()?;
-
+            let value = parse_expression(s)?;
+            
             pairs.push((key, value));
-
+            
             // Check for continuation
-            if self.accept(TokenType::Comma) {
+            if s.accept_type(TokenType::Comma)?.is_some() {
                 // Allow trailing comma before }
-                if self.check(TokenType::RightBrace) {
+                if s.peek_type() == TokenType::RightBrace {
                     break;
                 }
                 continue;
@@ -518,39 +578,44 @@ impl Parser {
                 break;
             }
         }
-
-        self.expect(TokenType::RightBrace, "Expected '}' to close dictionary")?;
-        Ok(Some(Expression::Dict(pairs)))
+        
+        s.expect_type(TokenType::RightBrace)?;
+        Ok(Expression::Dict(pairs))
+    })? {
+        return Ok(dict_expr);
     }
+    
+    // Parse as block expression (opening { already consumed)
+    let result = parse_block_expression(s)?;
+    Ok(result)
+}
 
-    fn parse_interpolated_string(&mut self) -> Result<Expression> {
-        use crate::core::InterpolationPart;
-        let mut parts = Vec::new();
-
-        loop {
-            if let Some(token) = self.accept_token(TokenType::StringPart) {
-                // Text part
-                let text = token
-                    .text
-                    .ok_or_else(|| anyhow!("StringPart token missing text"))?;
+fn parse_interpolated_string(s: &mut TokenStream) -> Result<Expression> {
+    let mut parts = Vec::new();
+    
+    // Parse string parts and interpolations
+    while !s.is_at_end() {
+        // Check for string part
+        if let Some(token) = s.accept_type(TokenType::StringPart)? {
+            if let Some(text) = token.text {
                 parts.push(InterpolationPart::Text(text));
-            } else if self.accept(TokenType::InterpolationStart) {
-                // Expression part
-                let expr = self.parse_expression()?;
-                parts.push(InterpolationPart::Expression(expr));
-                self.expect(
-                    TokenType::InterpolationEnd,
-                    "Expected closing '}' in string interpolation",
-                )?;
-            } else {
-                break;
             }
         }
-
-        if parts.is_empty() {
-            return Err(anyhow!("Empty interpolated string"));
+        
+        // Check for interpolation start
+        if s.accept_type(TokenType::InterpolationStart)?.is_some() {
+            let expr = parse_expression(s)?;
+            s.expect_type(TokenType::InterpolationEnd)?;
+            parts.push(InterpolationPart::Expression(expr));
+        } else {
+            // No more interpolations
+            break;
         }
-
-        Ok(Expression::InterpolatedString(parts))
     }
+    
+    if parts.is_empty() {
+        return Err(anyhow!("Expected interpolated string"));
+    }
+    
+    Ok(Expression::InterpolatedString(parts))
 }

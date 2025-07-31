@@ -1,13 +1,10 @@
 /// Parser implementation for RustLeaf
 use crate::core::*;
-use crate::lexer::{Token, TokenType};
-use anyhow::{anyhow, Result};
+use crate::lexer::Token;
+use anyhow::Result;
 use super::stream::TokenStream;
 
-pub struct Parser {
-    pub(crate) tokens: Vec<Token>,
-    pub(crate) current: usize,
-}
+pub struct Parser;
 
 impl Parser {
     /// Parse source code string directly into an AST
@@ -20,95 +17,6 @@ impl Parser {
     pub fn parse(tokens: Vec<Token>) -> Result<Program> {
         let mut stream = TokenStream::new(tokens);
         stream.parse(parse_program)
-    }
-
-    #[allow(dead_code)]
-    fn new(tokens: Vec<Token>) -> Self {
-        Parser { tokens, current: 0 }
-    }
-
-    #[allow(dead_code)]
-    fn parse_program(&mut self) -> Result<Program> {
-        let mut statements = Vec::new();
-
-        while !self.is_at_end() {
-            statements.push(self.parse_statement()?);
-        }
-
-        Ok(Program(statements))
-    }
-
-    // ===== Helper Functions =====
-
-    pub fn advance(&mut self) -> &Token {
-        if !self.is_at_end() {
-            self.current += 1;
-        }
-        self.previous()
-    }
-
-    pub fn is_at_end(&self) -> bool {
-        matches!(self.peek().token_type, TokenType::Eof)
-    }
-
-    pub fn peek(&self) -> &Token {
-        &self.tokens[self.current]
-    }
-
-    pub fn previous(&self) -> &Token {
-        &self.tokens[self.current - 1]
-    }
-
-    pub fn check(&self, token_type: TokenType) -> bool {
-        if self.is_at_end() {
-            false
-        } else {
-            self.peek().token_type == token_type
-        }
-    }
-
-    pub fn accept_token(&mut self, token_type: TokenType) -> Option<Token> {
-        if self.check(token_type) {
-            Some(self.advance().clone())
-        } else {
-            None
-        }
-    }
-
-    pub fn accept(&mut self, token_type: TokenType) -> bool {
-        self.accept_token(token_type).is_some()
-    }
-
-    pub fn expect(&mut self, token_type: TokenType, message: &str) -> Result<Token> {
-        if let Some(token) = self.accept_token(token_type) {
-            Ok(token)
-        } else {
-            Err(anyhow!(
-                "{}: expected {:?}, found {:?}",
-                message,
-                token_type,
-                self.peek().token_type
-            ))
-        }
-    }
-
-    /// Try parsing with automatic backtracking on None or error
-    pub fn with_checkpoint<T, F>(&mut self, parse_fn: F) -> Result<Option<T>>
-    where
-        F: FnOnce(&mut Self) -> Result<Option<T>>,
-    {
-        let checkpoint = self.current;
-        match parse_fn(self) {
-            Ok(Some(result)) => Ok(Some(result)),
-            Ok(None) => {
-                self.current = checkpoint;
-                Ok(None)
-            }
-            Err(e) => {
-                self.current = checkpoint;
-                Err(e)
-            }
-        }
     }
 }
 
@@ -127,5 +35,5 @@ fn parse_program(s: &mut TokenStream) -> Result<Program> {
 
 /// Parse a single statement
 fn parse_statement(s: &mut TokenStream) -> Result<Statement> {
-    super::statement_new::parse_statement(s)
+    super::statement::parse_statement(s)
 }

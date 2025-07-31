@@ -33,8 +33,8 @@ test: check-test-dirs
         exit 1
     fi
     just test-summary
-    #cargo clippy -- -D warnings
-    #cargo fmt
+    cargo clippy -- -D warnings
+    cargo fmt
 
 
 # Generate test summary from integration tests

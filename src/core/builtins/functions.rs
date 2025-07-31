@@ -124,6 +124,19 @@ pub fn stop_assertion_count() {
     });
 }
 
+// Public function to write directly to PRINT_CAPTURE
+// Used by the parser tracing module
+pub fn write_to_print_capture(msg: String) {
+    PRINT_CAPTURE.with(|capture| {
+        if let Some(ref mut captured) = *capture.borrow_mut() {
+            captured.push(msg);
+        } else {
+            // Normal behavior: print to stdout
+            println!("{}", msg);
+        }
+    });
+}
+
 pub fn is_unit(mut args: Args) -> Result<Value> {
     args.set_function_name("is_unit");
     let value = args.expect("value")?;

@@ -171,9 +171,6 @@ just test
 
 # Build release version
 cargo build --release
-
-# Run with tracing
-cargo run --features parser-tracing -- your_script.rustleaf
 ```
 
 ### Project Structure

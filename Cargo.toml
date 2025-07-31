@@ -16,8 +16,8 @@ name = "rustleaf"
 path = "src/lib.rs"
 
 [features]
-default = []
-parser-tracing = ["log", "env_logger"]
+default = ["parser-tracing"]
+parser-tracing = []
 
 [dependencies]
 anyhow = "1"
@@ -26,8 +26,6 @@ indexmap = "2"
 regex = "1"
 rustleaf-macros-internal = { path = "rustleaf-macros-internal" }
 rustleaf-macros = { path = "rustleaf-macros" }
-log = { version = "0.4", optional = true }
-env_logger = { version = "0.11", optional = true }
 
 [dev-dependencies]
 tempfile = "3.0"

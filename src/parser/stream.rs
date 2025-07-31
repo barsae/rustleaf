@@ -1,6 +1,5 @@
 use crate::lexer::{Token, TokenType};
 use anyhow::Result;
-use crate::{trace_enter, trace_exit, trace_fail, trace_backtrack, trace_token};
 
 pub struct TokenStream {
     tokens: Vec<Token>,
@@ -24,18 +23,14 @@ impl TokenStream {
     where
         F: FnOnce(&mut TokenStream) -> Result<T>,
     {
-        trace_enter!("try_parse", "checkpoint: {}", self.current);
         let checkpoint = self.current;
         
         match f(self) {
             Ok(result) => {
-                trace_exit!("try_parse"); // Don't log full result to avoid spam
                 Ok(Some(result))
             }
             Err(_) => {
-                trace_backtrack!("try_parse");
                 self.current = checkpoint;
-                trace_exit!("try_parse");
                 Ok(None)
             }
         }
@@ -59,16 +54,11 @@ impl TokenStream {
     }
 
     pub fn accept_type(&mut self, token_type: TokenType) -> Result<Option<Token>> {
-        trace_enter!("accept_type", "looking for: {:?}", token_type);
         let current = self.peek();
         if current.token_type == token_type {
-            trace_token!("accept", current);
             let token = self.advance().clone();
-            trace_exit!("accept_type");
             Ok(Some(token))
         } else {
-            trace_token!("reject", current);
-            trace_exit!("accept_type");
             Ok(None)
         }
     }
@@ -84,10 +74,8 @@ impl TokenStream {
     }
     
     pub fn expect_type(&mut self, token_type: TokenType) -> Result<Token> {
-        trace_enter!("expect_type", "expecting: {:?}", token_type);
         match self.accept_type(token_type)? {
             Some(token) => {
-                trace_exit!("expect_type");
                 Ok(token)
             }
             None => {
@@ -96,7 +84,6 @@ impl TokenStream {
                     token_type,
                     self.peek().token_type
                 );
-                trace_fail!("expect_type", &err);
                 Err(err)
             }
         }
