@@ -498,7 +498,7 @@ fn parse_break_statement(s: &mut TokenStream) -> Result<Option<Statement>> {
         return Ok(None);
     }
 
-    let expr = if let Some(_) = s.accept_type(TokenType::Semicolon)? {
+    let expr = if (s.accept_type(TokenType::Semicolon)?).is_some() {
         None
     } else {
         let expr = Some(parse_expression(s)?);

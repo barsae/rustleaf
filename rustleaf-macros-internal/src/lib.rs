@@ -134,7 +134,6 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                             println!("DEBUG: About to call evaluate_with_dir - this is where the stack overflow likely occurs");
                             let result = rustleaf::eval::evaluate_with_dir(ast, test_file_dir);
                             println!("DEBUG: evaluate_with_dir returned successfully");
-                            
                             // Get all captured output (includes parser traces and print statements)
                             let captured_output = rustleaf::core::get_captured_prints();
                             let assertion_count = rustleaf::core::get_assertion_count();
@@ -155,13 +154,13 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                             // Even on parse error, get any captured output (parser traces)
                             let captured_output = rustleaf::core::get_captured_prints();
                             let assertion_count = rustleaf::core::get_assertion_count();
-                            
+
                             let output_section = if captured_output.is_empty() {
                                 "None".to_string()
                             } else {
                                 captured_output.join("\n")
                             };
-                            
+
                             let error_msg = format!("Parse error: {}", parse_error);
                             let error_result = Err(anyhow::Error::msg(error_msg.clone()));
                             (output_section, "Skipped due to parse error".to_string(), false, error_result, assertion_count)

@@ -68,8 +68,7 @@ fn parse_unary(s: &mut TokenStream) -> Result<Expression> {
         return parse_postfix(s);
     }
 
-    let result = parse_postfix(s);
-    result
+    parse_postfix(s)
 }
 
 /// Parse postfix expressions (function calls, array access, property access)
@@ -271,9 +270,9 @@ fn is_right_associative_token(token_type: TokenType) -> bool {
     matches!(token_type, TokenType::StarStar)
 }
 
-fn get_binary_expression_constructor(
-    token_type: TokenType,
-) -> Option<fn(Box<Expression>, Box<Expression>) -> Expression> {
+type BinaryExpressionConstructor = fn(Box<Expression>, Box<Expression>) -> Expression;
+
+fn get_binary_expression_constructor(token_type: TokenType) -> Option<BinaryExpressionConstructor> {
     match token_type {
         TokenType::Plus => Some(Expression::Add),
         TokenType::Minus => Some(Expression::Sub),
@@ -518,7 +517,7 @@ fn parse_with_expression(s: &mut TokenStream) -> Result<Expression> {
 
             resources.push(WithResource { name, value });
 
-            if !s.accept_type(TokenType::Comma)?.is_some() {
+            if s.accept_type(TokenType::Comma)?.is_none() {
                 break;
             }
         }
