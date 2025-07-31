@@ -2,6 +2,13 @@
 
 A lightweight, dynamically-typed scripting language with Rust-inspired syntax and functional programming features.
 
+<!-- TODO: Before open sourcing
+- [ ] Verify all code examples compile and run
+- [ ] Update installation instructions after crates.io publish  
+- [ ] Add CI badges once GitHub Actions are set up
+- [ ] Update GitHub username in clone URL
+-->
+
 ## Overview
 
 RustLeaf is designed to be an embeddable scripting language that combines the elegance of Rust's syntax with the flexibility of dynamic typing. It features expression-oriented semantics, pattern matching, and a powerful pipeline operator for functional programming.
@@ -22,6 +29,7 @@ RustLeaf is designed to be an embeddable scripting language that combines the el
 
 ### Installation
 
+<!-- TODO: Update once published to crates.io -->
 ```bash
 # Clone the repository
 git clone https://github.com/yourusername/rustleaf.git
@@ -60,9 +68,10 @@ var sum = range(1, 11)
     | sum();
 
 // Classes
+// TODO: Verify class syntax - may need 'var' keyword for fields
 class Point {
-    x: 0,
-    y: 0,
+    var x = 0;
+    var y = 0;
     
     fn distance() {
         sqrt(self.x * self.x + self.y * self.y)
@@ -126,6 +135,7 @@ fn sum_all(...numbers) {
 
 ```rustleaf
 // Match expressions
+// TODO: Verify pattern syntax, especially enum patterns
 match value {
     Pattern::Variant(x) => x * 2,
     [first, ...rest] => process(first, rest),
@@ -133,7 +143,8 @@ match value {
     _ => default_value
 }
 
-// Destructuring
+// Destructuring  
+// TODO: Verify destructuring assignment syntax
 var [head, ...tail] = list;
 var {x, y} = point;
 ```
@@ -170,13 +181,15 @@ cargo run --features parser-tracing -- your_script.rustleaf
 ```
 rustleaf/
 ├── src/
-│   ├── lexer/       # Tokenization
-│   ├── parser/      # AST generation
-│   ├── eval/        # Interpreter
-│   └── core/        # Core types and traits
-├── specs/           # Language specification
-├── tests/           # Integration tests
-└── examples/        # Example programs
+│   ├── lexer/          # Tokenization
+│   ├── parser/         # AST generation  
+│   ├── eval/           # Interpreter
+│   └── core/           # Core types and traits
+├── specs/              # Language specification
+├── tests/              # Integration tests
+├── project-euler/      # Example solutions
+├── rustleaf-macros/    # Proc macros
+└── vscode-extension/   # VS Code syntax highlighting
 ```
 
 ## Contributing
