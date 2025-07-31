@@ -89,7 +89,15 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                     // Try lexing
                     println!("DEBUG: Starting lexing phase");
                     let tokens_result = rustleaf::lexer::Lexer::tokenize(&source);
-                    let lex_output = format!("{:#?}", tokens_result);
+                    let lex_output = match &tokens_result {
+                        Ok(tokens) => {
+                            let formatted_tokens: Vec<String> = tokens.iter().enumerate()
+                                .map(|(i, token)| format!("{}: {:?}", i, token))
+                                .collect();
+                            format!("Ok(\n    [\n        {}\n    ],\n)", formatted_tokens.join(",\n        "))
+                        }
+                        Err(e) => format!("Err({:#?})", e)
+                    };
                     println!("DEBUG: Lexing completed");
 
                     // Try parsing (only if lexing succeeded)

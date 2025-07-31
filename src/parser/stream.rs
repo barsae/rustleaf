@@ -76,6 +76,7 @@ impl TokenStream {
         let current = self.peek();
         if current.token_type == token_type {
             let token = self.advance().clone();
+            crate::trace!("consume_token: position {} consumed {:?}", self.current - 1, token_type);
             Ok(Some(token))
         } else {
             Ok(None)
@@ -99,9 +100,10 @@ impl TokenStream {
             }
             None => {
                 let err = anyhow::anyhow!(
-                    "Expected {:?}, found {:?}",
+                    "Expected {:?}, found {:?} at position {}",
                     token_type,
-                    self.peek().token_type
+                    self.peek().token_type,
+                    self.current
                 );
                 Err(err)
             }

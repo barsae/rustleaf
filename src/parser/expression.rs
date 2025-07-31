@@ -69,6 +69,11 @@ fn parse_unary(s: &mut TokenStream) -> Result<Expression> {
 fn parse_postfix(s: &mut TokenStream) -> Result<Expression> {
     let mut expr = parse_primary(s)?;
     
+    // Check if this expression contains blocks - if so, disallow postfix operations
+    if expression_contains_blocks(&expr) {
+        return Ok(expr);
+    }
+    
     loop {
         if s.accept_type(TokenType::Dot)?.is_some() {
             let property_token = s.expect_type(TokenType::Ident)?;
@@ -115,6 +120,20 @@ fn parse_postfix(s: &mut TokenStream) -> Result<Expression> {
     }
     
     Ok(expr)
+}
+
+/// Check if an expression contains block constructs that shouldn't have postfix operations
+fn expression_contains_blocks(expr: &Expression) -> bool {
+    matches!(expr, 
+        Expression::If { .. } |
+        Expression::Match { .. } |
+        Expression::While { .. } |
+        Expression::For { .. } |
+        Expression::Loop { .. } |
+        Expression::Try { .. } |
+        Expression::With { .. } |
+        Expression::Block(_)
+    )
 }
 
 /// Parse primary expressions
@@ -560,27 +579,35 @@ fn parse_lambda_expression(s: &mut TokenStream) -> Result<Expression> {
 
 fn parse_list_literal(s: &mut TokenStream) -> Result<Expression> {
     // We already consumed the [
+    trace!("parse_list_literal: starting at position {}", s.position());
     let mut elements = Vec::new();
     
     // Handle empty list
     if s.accept_type(TokenType::RightBracket)?.is_some() {
+        trace!("parse_list_literal: empty list");
         return Ok(Expression::List(elements));
     }
     
     loop {
+        trace!("parse_list_literal: parsing element at position {}", s.position());
         elements.push(parse_expression(s)?);
         
         if s.accept_type(TokenType::Comma)?.is_some() {
+            trace!("parse_list_literal: found comma, checking for more elements");
             // Check for trailing comma
             if s.peek_type() == TokenType::RightBracket {
+                trace!("parse_list_literal: trailing comma before ]");
                 break;
             }
         } else {
+            trace!("parse_list_literal: no comma, expecting ]");
             break;
         }
     }
     
+    trace!("parse_list_literal: expecting ] at position {}", s.position());
     s.expect_type(TokenType::RightBracket)?;
+    trace!("parse_list_literal: success");
     Ok(Expression::List(elements))
 }
 

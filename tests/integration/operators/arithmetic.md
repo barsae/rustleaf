@@ -14,48 +14,88 @@ assert(10 / 2 == 5.0);
 parse_program: starting
 parse_program: parsing statement at position 0 (Ident(assert))
 parse_statement: starting at position 0 (Ident(assert))
+consume_token: position 0 consumed Ident
 parse_statement: falling back to expression statement
 parse_expression: starting at position 0 (Ident(assert))
+consume_token: position 0 consumed Ident
 parse_primary: success - parsed identifier (assert)
+consume_token: position 1 consumed LeftParen
 parse_expression: starting at position 2 (Int(1))
+consume_token: position 2 consumed Int
 parse_primary: success - parsed numeric/string literal
+consume_token: position 3 consumed Plus
+consume_token: position 4 consumed Int
 parse_primary: success - parsed numeric/string literal
+consume_token: position 5 consumed EqualEqual
+consume_token: position 6 consumed Int
 parse_primary: success - parsed numeric/string literal
 parse_expression: success - parsed precedence expression
+consume_token: position 7 consumed RightParen
 parse_expression: success - parsed precedence expression
+consume_token: position 8 consumed Semicolon
 parse_program: parsing statement at position 9 (Ident(assert))
 parse_statement: starting at position 9 (Ident(assert))
+consume_token: position 9 consumed Ident
 parse_statement: falling back to expression statement
 parse_expression: starting at position 9 (Ident(assert))
+consume_token: position 9 consumed Ident
 parse_primary: success - parsed identifier (assert)
+consume_token: position 10 consumed LeftParen
 parse_expression: starting at position 11 (Int(5))
+consume_token: position 11 consumed Int
 parse_primary: success - parsed numeric/string literal
+consume_token: position 12 consumed Minus
+consume_token: position 13 consumed Int
 parse_primary: success - parsed numeric/string literal
+consume_token: position 14 consumed EqualEqual
+consume_token: position 15 consumed Int
 parse_primary: success - parsed numeric/string literal
 parse_expression: success - parsed precedence expression
+consume_token: position 16 consumed RightParen
 parse_expression: success - parsed precedence expression
+consume_token: position 17 consumed Semicolon
 parse_program: parsing statement at position 18 (Ident(assert))
 parse_statement: starting at position 18 (Ident(assert))
+consume_token: position 18 consumed Ident
 parse_statement: falling back to expression statement
 parse_expression: starting at position 18 (Ident(assert))
+consume_token: position 18 consumed Ident
 parse_primary: success - parsed identifier (assert)
+consume_token: position 19 consumed LeftParen
 parse_expression: starting at position 20 (Int(4))
+consume_token: position 20 consumed Int
 parse_primary: success - parsed numeric/string literal
+consume_token: position 21 consumed Star
+consume_token: position 22 consumed Int
 parse_primary: success - parsed numeric/string literal
+consume_token: position 23 consumed EqualEqual
+consume_token: position 24 consumed Int
 parse_primary: success - parsed numeric/string literal
 parse_expression: success - parsed precedence expression
+consume_token: position 25 consumed RightParen
 parse_expression: success - parsed precedence expression
+consume_token: position 26 consumed Semicolon
 parse_program: parsing statement at position 27 (Ident(assert))
 parse_statement: starting at position 27 (Ident(assert))
+consume_token: position 27 consumed Ident
 parse_statement: falling back to expression statement
 parse_expression: starting at position 27 (Ident(assert))
+consume_token: position 27 consumed Ident
 parse_primary: success - parsed identifier (assert)
+consume_token: position 28 consumed LeftParen
 parse_expression: starting at position 29 (Int(10))
+consume_token: position 29 consumed Int
 parse_primary: success - parsed numeric/string literal
+consume_token: position 30 consumed Slash
+consume_token: position 31 consumed Int
 parse_primary: success - parsed numeric/string literal
+consume_token: position 32 consumed EqualEqual
+consume_token: position 33 consumed Float
 parse_primary: success - parsed numeric/string literal
 parse_expression: success - parsed precedence expression
+consume_token: position 34 consumed RightParen
 parse_expression: success - parsed precedence expression
+consume_token: position 35 consumed Semicolon
 parse_program: parsed 4 statements
 ```
 
@@ -70,43 +110,43 @@ Ok(
 ```rust
 Ok(
     [
-        Token(Ident, "assert"),
-        Token(LeftParen),
-        Token(Int, "1"),
-        Token(Plus),
-        Token(Int, "2"),
-        Token(EqualEqual),
-        Token(Int, "3"),
-        Token(RightParen),
-        Token(Semicolon),
-        Token(Ident, "assert"),
-        Token(LeftParen),
-        Token(Int, "5"),
-        Token(Minus),
-        Token(Int, "3"),
-        Token(EqualEqual),
-        Token(Int, "2"),
-        Token(RightParen),
-        Token(Semicolon),
-        Token(Ident, "assert"),
-        Token(LeftParen),
-        Token(Int, "4"),
-        Token(Star),
-        Token(Int, "3"),
-        Token(EqualEqual),
-        Token(Int, "12"),
-        Token(RightParen),
-        Token(Semicolon),
-        Token(Ident, "assert"),
-        Token(LeftParen),
-        Token(Int, "10"),
-        Token(Slash),
-        Token(Int, "2"),
-        Token(EqualEqual),
-        Token(Float, "5.0"),
-        Token(RightParen),
-        Token(Semicolon),
-        Token(Eof),
+        0: Token(Ident, "assert"),
+        1: Token(LeftParen),
+        2: Token(Int, "1"),
+        3: Token(Plus),
+        4: Token(Int, "2"),
+        5: Token(EqualEqual),
+        6: Token(Int, "3"),
+        7: Token(RightParen),
+        8: Token(Semicolon),
+        9: Token(Ident, "assert"),
+        10: Token(LeftParen),
+        11: Token(Int, "5"),
+        12: Token(Minus),
+        13: Token(Int, "3"),
+        14: Token(EqualEqual),
+        15: Token(Int, "2"),
+        16: Token(RightParen),
+        17: Token(Semicolon),
+        18: Token(Ident, "assert"),
+        19: Token(LeftParen),
+        20: Token(Int, "4"),
+        21: Token(Star),
+        22: Token(Int, "3"),
+        23: Token(EqualEqual),
+        24: Token(Int, "12"),
+        25: Token(RightParen),
+        26: Token(Semicolon),
+        27: Token(Ident, "assert"),
+        28: Token(LeftParen),
+        29: Token(Int, "10"),
+        30: Token(Slash),
+        31: Token(Int, "2"),
+        32: Token(EqualEqual),
+        33: Token(Float, "5.0"),
+        34: Token(RightParen),
+        35: Token(Semicolon),
+        36: Token(Eof)
     ],
 )
 ```
