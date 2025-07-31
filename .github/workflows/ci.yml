@@ -46,7 +46,7 @@ jobs:
           key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
       
       - name: Install just
-        uses: extractions/setup-just@v1
+        uses: extractions/setup-just@v3
       
       - name: Run tests
         run: just test
