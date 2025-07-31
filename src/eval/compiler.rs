@@ -23,6 +23,7 @@ impl Compiler {
 
         let eval_statements: Result<Vec<_>> = statements
             .into_iter()
+            .filter(|stmt| !matches!(stmt, Statement::Empty))
             .map(|stmt| self.compile_statement(stmt))
             .collect();
 
@@ -114,6 +115,10 @@ impl Compiler {
                 Ok(Eval::break_expr(compiled_expr.map(|boxed| *boxed)))
             }
             Statement::Continue => Ok(Eval::continue_expr()),
+            Statement::Empty => {
+                // Empty statements should be filtered out before reaching here
+                unreachable!("Empty statements should be filtered out during compilation")
+            }
             Statement::FnDecl {
                 name,
                 params,
@@ -229,9 +234,11 @@ impl Compiler {
             Expression::Block(block) => {
                 let mut eval_statements = Vec::new();
 
-                // Compile all statements
+                // Compile all statements, filtering out empty ones
                 for stmt in block.statements {
-                    eval_statements.push(self.compile_statement(stmt)?);
+                    if !matches!(stmt, Statement::Empty) {
+                        eval_statements.push(self.compile_statement(stmt)?);
+                    }
                 }
 
                 // Handle final expression
@@ -471,9 +478,11 @@ impl Compiler {
     fn compile_block_helper(&mut self, block: crate::core::Block) -> Result<Value> {
         let mut eval_statements = Vec::new();
 
-        // Compile all statements
+        // Compile all statements, filtering out empty ones
         for stmt in block.statements {
-            eval_statements.push(self.compile_statement(stmt)?);
+            if !matches!(stmt, Statement::Empty) {
+                eval_statements.push(self.compile_statement(stmt)?);
+            }
         }
 
         // Handle final expression

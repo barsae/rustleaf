@@ -36,7 +36,7 @@ impl TokenStream {
         F: FnOnce(&mut TokenStream) -> Result<Option<T>>,
     {
         let checkpoint = self.current;
-        
+
         match f(self) {
             Ok(Some(result)) => {
                 // Success - just return
@@ -54,7 +54,7 @@ impl TokenStream {
             }
         }
     }
-    
+
     pub fn parse<T, F>(&mut self, f: F) -> Result<T>
     where
         F: FnOnce(&mut TokenStream) -> Result<T>,
@@ -76,28 +76,27 @@ impl TokenStream {
         let current = self.peek();
         if current.token_type == token_type {
             let token = self.advance().clone();
-            crate::trace!("consume_token: position {} consumed {:?}", self.current - 1, token_type);
+            crate::trace!(
+                "consume_token: position {} consumed {:?}",
+                self.current - 1,
+                token_type
+            );
             Ok(Some(token))
         } else {
             Ok(None)
         }
     }
-    
+
     #[allow(dead_code)]
     pub fn expect_lexeme(&mut self, lexeme: &str) -> Result<Token> {
-        self.accept_lexeme(lexeme)?
-            .ok_or_else(|| anyhow::anyhow!(
-                "Expected '{}', found {:?}",
-                lexeme,
-                self.peek().token_type
-            ))
+        self.accept_lexeme(lexeme)?.ok_or_else(|| {
+            anyhow::anyhow!("Expected '{}', found {:?}", lexeme, self.peek().token_type)
+        })
     }
-    
+
     pub fn expect_type(&mut self, token_type: TokenType) -> Result<Token> {
         match self.accept_type(token_type)? {
-            Some(token) => {
-                Ok(token)
-            }
+            Some(token) => Ok(token),
             None => {
                 let err = anyhow::anyhow!(
                     "Expected {:?}, found {:?} at position {}",

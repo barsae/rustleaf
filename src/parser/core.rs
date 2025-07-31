@@ -1,9 +1,9 @@
+use super::stream::TokenStream;
 /// Parser implementation for RustLeaf
 use crate::core::*;
 use crate::lexer::Token;
-use anyhow::Result;
-use super::stream::TokenStream;
 use crate::trace;
+use anyhow::Result;
 
 pub struct Parser;
 
@@ -29,7 +29,11 @@ fn parse_program(s: &mut TokenStream) -> Result<Program> {
     let mut statements = Vec::new();
 
     while !s.is_at_end() {
-        trace!("parse_program: parsing statement at position {} ({})", s.position(), s.current_token_info());
+        trace!(
+            "parse_program: parsing statement at position {} ({})",
+            s.position(),
+            s.current_token_info()
+        );
         statements.push(parse_statement(s)?);
     }
 

@@ -138,7 +138,7 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                             // Get all captured output (includes parser traces and print statements)
                             let captured_output = rustleaf::core::get_captured_prints();
                             let assertion_count = rustleaf::core::get_assertion_count();
-                            let execution_output = format!("{:#?}", result);
+                            let execution_output = format!("{:#?}", result).replace("\\n", "\n");
                             println!("DEBUG: Captured {} prints, {} assertions", captured_output.len(), assertion_count);
 
                             let output_section = if captured_output.is_empty() {
@@ -162,7 +162,8 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                                 captured_output.join("\n")
                             };
                             
-                            let error_result = Err(anyhow::Error::msg(format!("Parse error: {}", parse_error)));
+                            let error_msg = format!("Parse error: {}", parse_error);
+                            let error_result = Err(anyhow::Error::msg(error_msg.clone()));
                             (output_section, "Skipped due to parse error".to_string(), false, error_result, assertion_count)
                         }
                     };

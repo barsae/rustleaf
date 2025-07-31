@@ -1,18 +1,25 @@
+use super::statement::{parse_literal_value, parse_pattern};
+use super::stream::TokenStream;
 use crate::core::*;
 use crate::lexer::TokenType;
-use anyhow::{anyhow, Result};
-use super::stream::TokenStream;
-use super::statement::{parse_literal_value, parse_pattern};
 use crate::trace;
+use anyhow::{anyhow, Result};
 
 /// Main entry point for parsing expressions
 pub fn parse_expression(s: &mut TokenStream) -> Result<Expression> {
-    trace!("parse_expression: starting at position {} ({})", s.position(), s.current_token_info());
+    trace!(
+        "parse_expression: starting at position {} ({})",
+        s.position(),
+        s.current_token_info()
+    );
     let result = parse_precedence(s, 0);
     if result.is_ok() {
         trace!("parse_expression: success - parsed precedence expression");
     } else {
-        trace!("parse_expression: failed - {}", result.as_ref().err().unwrap());
+        trace!(
+            "parse_expression: failed - {}",
+            result.as_ref().err().unwrap()
+        );
     }
     result
 }
@@ -68,16 +75,17 @@ fn parse_unary(s: &mut TokenStream) -> Result<Expression> {
 /// Parse postfix expressions (function calls, array access, property access)
 fn parse_postfix(s: &mut TokenStream) -> Result<Expression> {
     let mut expr = parse_primary(s)?;
-    
+
     // Check if this expression contains blocks - if so, disallow postfix operations
     if expression_contains_blocks(&expr) {
         return Ok(expr);
     }
-    
+
     loop {
         if s.accept_type(TokenType::Dot)?.is_some() {
             let property_token = s.expect_type(TokenType::Ident)?;
-            let property = property_token.text
+            let property = property_token
+                .text
                 .ok_or_else(|| anyhow!("Identifier token missing text"))?;
             expr = Expression::GetAttr(Box::new(expr), property);
         } else if s.accept_type(TokenType::LeftBracket)?.is_some() {
@@ -118,21 +126,22 @@ fn parse_postfix(s: &mut TokenStream) -> Result<Expression> {
             break;
         }
     }
-    
+
     Ok(expr)
 }
 
 /// Check if an expression contains block constructs that shouldn't have postfix operations
 fn expression_contains_blocks(expr: &Expression) -> bool {
-    matches!(expr, 
-        Expression::If { .. } |
-        Expression::Match { .. } |
-        Expression::While { .. } |
-        Expression::For { .. } |
-        Expression::Loop { .. } |
-        Expression::Try { .. } |
-        Expression::With { .. } |
-        Expression::Block(_)
+    matches!(
+        expr,
+        Expression::If { .. }
+            | Expression::Match { .. }
+            | Expression::While { .. }
+            | Expression::For { .. }
+            | Expression::Loop { .. }
+            | Expression::Try { .. }
+            | Expression::With { .. }
+            | Expression::Block(_)
     )
 }
 
@@ -154,18 +163,17 @@ fn parse_primary(s: &mut TokenStream) -> Result<Expression> {
 
     // Identifiers (must come before literal parsing to avoid conflicts)
     if let Some(token) = s.accept_type(TokenType::Ident)? {
-        let name = token.text
+        let name = token
+            .text
             .ok_or_else(|| anyhow!("Identifier token missing text"))?;
         trace!("parse_primary: success - parsed identifier ({})", name);
         return Ok(Expression::Identifier(name));
     }
-    
+
     // Try numeric and string literals
-    if let Some(literal) = s.try_parse(|s| {
-        match parse_literal_value(s) {
-            Ok(value) => Ok(Some(Expression::Literal(value))),
-            Err(_) => Ok(None),
-        }
+    if let Some(literal) = s.try_parse(|s| match parse_literal_value(s) {
+        Ok(value) => Ok(Some(Expression::Literal(value))),
+        Err(_) => Ok(None),
     })? {
         trace!("parse_primary: success - parsed numeric/string literal");
         return Ok(literal);
@@ -233,7 +241,10 @@ fn parse_primary(s: &mut TokenStream) -> Result<Expression> {
     }
 
     let current_token = s.current_token_info();
-    trace!("parse_primary: failed - no matching primary expression for {}", current_token);
+    trace!(
+        "parse_primary: failed - no matching primary expression for {}",
+        current_token
+    );
     Err(anyhow!("Expected expression, found {:?}", s.peek_type()))
 }
 
@@ -260,7 +271,9 @@ fn is_right_associative_token(token_type: TokenType) -> bool {
     matches!(token_type, TokenType::StarStar)
 }
 
-fn get_binary_expression_constructor(token_type: TokenType) -> Option<fn(Box<Expression>, Box<Expression>) -> Expression> {
+fn get_binary_expression_constructor(
+    token_type: TokenType,
+) -> Option<fn(Box<Expression>, Box<Expression>) -> Expression> {
     match token_type {
         TokenType::Plus => Some(Expression::Add),
         TokenType::Minus => Some(Expression::Sub),
@@ -291,29 +304,28 @@ fn get_binary_expression_constructor(token_type: TokenType) -> Option<fn(Box<Exp
 pub fn parse_block_expression(s: &mut TokenStream) -> Result<Expression> {
     let mut statements = Vec::new();
     let mut final_expr = None;
-    
+
     // Parse statements and possible final expression
     while !s.is_at_end() && s.peek_type() != TokenType::RightBrace {
         // Debug: Check for specific problematic case
         if s.peek_type() == TokenType::LeftBracket {
-            println!("DEBUG: Found [, after parsing statements: {:?}", statements.last());
+            println!(
+                "DEBUG: Found [, after parsing statements: {:?}",
+                statements.last()
+            );
         }
-        
+
         // Try to parse a statement first
-        if let Some(stmt) = s.try_parse(|s| {
-            match super::statement::parse_statement(s) {
-                Ok(stmt) => Ok(Some(stmt)),
-                Err(_) => Ok(None),
-            }
+        if let Some(stmt) = s.try_parse(|s| match super::statement::parse_statement(s) {
+            Ok(stmt) => Ok(Some(stmt)),
+            Err(_) => Ok(None),
         })? {
             statements.push(stmt);
         } else {
             // Failed to parse as statement, try as expression
-            if let Some(expr) = s.try_parse(|s| {
-                match parse_expression(s) {
-                    Ok(expr) => Ok(Some(expr)),
-                    Err(_) => Ok(None),
-                }
+            if let Some(expr) = s.try_parse(|s| match parse_expression(s) {
+                Ok(expr) => Ok(Some(expr)),
+                Err(_) => Ok(None),
             })? {
                 // Check if this is followed by a semicolon
                 if s.accept_type(TokenType::Semicolon)?.is_some() {
@@ -330,22 +342,25 @@ pub fn parse_block_expression(s: &mut TokenStream) -> Result<Expression> {
             }
         }
     }
-    
+
     s.expect_type(TokenType::RightBrace)?;
-    Ok(Expression::Block(Block { statements, final_expr }))
+    Ok(Expression::Block(Block {
+        statements,
+        final_expr,
+    }))
 }
 
 fn parse_if_expression(s: &mut TokenStream) -> Result<Expression> {
     // 'if' already consumed
     let condition = Box::new(parse_expression(s)?);
-    
+
     s.expect_type(TokenType::LeftBrace)?;
     let then_block_expr = parse_block_expression(s)?;
     let then_expr = match then_block_expr {
         Expression::Block(block) => block,
         _ => unreachable!("parse_block_expression should return a Block"),
     };
-    
+
     let else_expr = if s.accept_type(TokenType::Else)?.is_some() {
         if s.peek_type() == TokenType::If {
             // else if - convert the if expression to a block
@@ -366,7 +381,7 @@ fn parse_if_expression(s: &mut TokenStream) -> Result<Expression> {
     } else {
         None
     };
-    
+
     Ok(Expression::If {
         condition,
         then_expr,
@@ -378,18 +393,18 @@ fn parse_match_expression(s: &mut TokenStream) -> Result<Expression> {
     // 'match' already consumed
     let expr = Box::new(parse_expression(s)?);
     s.expect_type(TokenType::LeftBrace)?;
-    
+
     let mut cases = Vec::new();
-    
+
     while !s.is_at_end() && s.peek_type() != TokenType::RightBrace {
         let pattern = parse_pattern(s)?;
-        
+
         let guard = if s.accept_type(TokenType::If)?.is_some() {
             Some(parse_expression(s)?)
         } else {
             None
         };
-        
+
         s.expect_type(TokenType::Colon)?;
         s.expect_type(TokenType::LeftBrace)?;
         let body_expr = parse_block_expression(s)?;
@@ -397,13 +412,17 @@ fn parse_match_expression(s: &mut TokenStream) -> Result<Expression> {
             Expression::Block(block) => block,
             _ => unreachable!("parse_block_expression should return a Block"),
         };
-        
-        cases.push(MatchCase { pattern, guard, body });
-        
+
+        cases.push(MatchCase {
+            pattern,
+            guard,
+            body,
+        });
+
         // Optional comma between cases
         s.accept_type(TokenType::Comma)?;
     }
-    
+
     s.expect_type(TokenType::RightBrace)?;
     Ok(Expression::Match { expr, cases })
 }
@@ -418,7 +437,7 @@ fn parse_while_expression(s: &mut TokenStream) -> Result<Expression> {
         Expression::Block(block) => block,
         _ => unreachable!("parse_block_expression should return a Block"),
     };
-    
+
     Ok(Expression::While { condition, body })
 }
 
@@ -434,8 +453,12 @@ fn parse_for_expression(s: &mut TokenStream) -> Result<Expression> {
         Expression::Block(block) => block,
         _ => unreachable!("parse_block_expression should return a Block"),
     };
-    
-    Ok(Expression::For { pattern, iter: iterable, body })
+
+    Ok(Expression::For {
+        pattern,
+        iter: iterable,
+        body,
+    })
 }
 
 fn parse_loop_expression(s: &mut TokenStream) -> Result<Expression> {
@@ -447,7 +470,7 @@ fn parse_loop_expression(s: &mut TokenStream) -> Result<Expression> {
         Expression::Block(block) => block,
         _ => unreachable!("parse_block_expression should return a Block"),
     };
-    
+
     Ok(Expression::Loop { body })
 }
 
@@ -459,7 +482,7 @@ fn parse_try_expression(s: &mut TokenStream) -> Result<Expression> {
         Expression::Block(block) => block,
         _ => unreachable!("parse_block_expression should return a Block"),
     };
-    
+
     s.expect_type(TokenType::Catch)?;
     let pattern = parse_pattern(s)?;
     s.expect_type(TokenType::LeftBrace)?;
@@ -468,7 +491,7 @@ fn parse_try_expression(s: &mut TokenStream) -> Result<Expression> {
         Expression::Block(block) => block,
         _ => unreachable!("parse_block_expression should return a Block"),
     };
-    
+
     Ok(Expression::Try {
         body,
         catch: CatchClause {
@@ -481,19 +504,20 @@ fn parse_try_expression(s: &mut TokenStream) -> Result<Expression> {
 fn parse_with_expression(s: &mut TokenStream) -> Result<Expression> {
     // 'with' already consumed
     let resources;
-    
+
     // Helper to parse resource form (name = expr)
     let parse_resource_form = |s: &mut TokenStream| -> Result<Vec<WithResource>> {
         let mut resources = Vec::new();
         loop {
             let name_token = s.expect_type(TokenType::Ident)?;
-            let name = name_token.text
+            let name = name_token
+                .text
                 .ok_or_else(|| anyhow!("Identifier token missing text"))?;
             s.expect_type(TokenType::Equal)?;
             let value = parse_expression(s)?;
-            
+
             resources.push(WithResource { name, value });
-            
+
             if !s.accept_type(TokenType::Comma)?.is_some() {
                 break;
             }
@@ -502,7 +526,7 @@ fn parse_with_expression(s: &mut TokenStream) -> Result<Expression> {
         s.accept_type(TokenType::Colon)?;
         Ok(resources)
     };
-    
+
     // Try to parse as simple expression form first
     if let Some(result) = s.try_parse(|s| {
         let expr = match parse_unary(s) {
@@ -512,9 +536,9 @@ fn parse_with_expression(s: &mut TokenStream) -> Result<Expression> {
         // Check if next token is a block start
         if s.peek_type() == TokenType::LeftBrace {
             // Simple form: with expr { ... }
-            Ok(Some(vec![WithResource { 
-                name: String::new(), 
-                value: expr 
+            Ok(Some(vec![WithResource {
+                name: String::new(),
+                value: expr,
             }]))
         } else if s.peek_type() == TokenType::Comma || s.peek_type() == TokenType::Colon {
             // Actually resource form, fail this parse attempt
@@ -528,7 +552,7 @@ fn parse_with_expression(s: &mut TokenStream) -> Result<Expression> {
         // Must be resource form (name = expr)
         resources = parse_resource_form(s)?;
     }
-    
+
     // Parse body
     s.expect_type(TokenType::LeftBrace)?;
     let body_expr = parse_block_expression(s)?;
@@ -536,31 +560,32 @@ fn parse_with_expression(s: &mut TokenStream) -> Result<Expression> {
         Expression::Block(block) => block,
         _ => unreachable!("parse_block_expression should return a Block"),
     };
-    
+
     Ok(Expression::With { resources, body })
 }
 
 fn parse_lambda_expression(s: &mut TokenStream) -> Result<Expression> {
     // Parse opening |
     s.expect_type(TokenType::Pipe)?;
-    
+
     let mut params = Vec::new();
-    
+
     // Parse parameters
     while s.peek_type() != TokenType::Pipe {
         let param_token = s.expect_type(TokenType::Ident)?;
-        let param = param_token.text
+        let param = param_token
+            .text
             .ok_or_else(|| anyhow!("Identifier token missing text"))?;
         params.push(param);
-        
+
         if s.peek_type() != TokenType::Pipe {
             s.expect_type(TokenType::Comma)?;
         }
     }
-    
+
     // Parse closing |
     s.expect_type(TokenType::Pipe)?;
-    
+
     // Parse body - either an expression or a block
     let body = if s.peek_type() == TokenType::LeftBrace {
         s.expect_type(TokenType::LeftBrace)?;
@@ -573,7 +598,7 @@ fn parse_lambda_expression(s: &mut TokenStream) -> Result<Expression> {
     } else {
         LambdaBody::Expression(Box::new(parse_expression(s)?))
     };
-    
+
     Ok(Expression::Lambda { params, body })
 }
 
@@ -581,17 +606,20 @@ fn parse_list_literal(s: &mut TokenStream) -> Result<Expression> {
     // We already consumed the [
     trace!("parse_list_literal: starting at position {}", s.position());
     let mut elements = Vec::new();
-    
+
     // Handle empty list
     if s.accept_type(TokenType::RightBracket)?.is_some() {
         trace!("parse_list_literal: empty list");
         return Ok(Expression::List(elements));
     }
-    
+
     loop {
-        trace!("parse_list_literal: parsing element at position {}", s.position());
+        trace!(
+            "parse_list_literal: parsing element at position {}",
+            s.position()
+        );
         elements.push(parse_expression(s)?);
-        
+
         if s.accept_type(TokenType::Comma)?.is_some() {
             trace!("parse_list_literal: found comma, checking for more elements");
             // Check for trailing comma
@@ -604,8 +632,11 @@ fn parse_list_literal(s: &mut TokenStream) -> Result<Expression> {
             break;
         }
     }
-    
-    trace!("parse_list_literal: expecting ] at position {}", s.position());
+
+    trace!(
+        "parse_list_literal: expecting ] at position {}",
+        s.position()
+    );
     s.expect_type(TokenType::RightBracket)?;
     trace!("parse_list_literal: success");
     Ok(Expression::List(elements))
@@ -613,36 +644,36 @@ fn parse_list_literal(s: &mut TokenStream) -> Result<Expression> {
 
 fn parse_block_or_dict(s: &mut TokenStream) -> Result<Expression> {
     s.expect_type(TokenType::LeftBrace)?;
-    
+
     // Handle empty dict: {}
     if s.accept_type(TokenType::RightBrace)?.is_some() {
         return Ok(Expression::Dict(Vec::new()));
     }
-    
+
     // Try to parse as dictionary first, fall back to block
     if let Some(dict_expr) = s.try_parse(|s| {
         let mut pairs = Vec::new();
-        
+
         loop {
             // Parse key expression - use high precedence to avoid consuming colons
             let key = match parse_precedence(s, 14) {
                 Ok(key) => key,
                 Err(_) => return Ok(None),
             };
-            
+
             // Must be followed by ':'
             if s.accept_type(TokenType::Colon)?.is_none() {
                 return Ok(None);
             }
-            
+
             // Parse value expression
             let value = match parse_expression(s) {
                 Ok(value) => value,
                 Err(_) => return Ok(None),
             };
-            
+
             pairs.push((key, value));
-            
+
             // Check for continuation
             if s.accept_type(TokenType::Comma)?.is_some() {
                 // Allow trailing comma before }
@@ -654,7 +685,7 @@ fn parse_block_or_dict(s: &mut TokenStream) -> Result<Expression> {
                 break;
             }
         }
-        
+
         if s.accept_type(TokenType::RightBrace)?.is_none() {
             return Ok(None);
         }
@@ -662,7 +693,7 @@ fn parse_block_or_dict(s: &mut TokenStream) -> Result<Expression> {
     })? {
         return Ok(dict_expr);
     }
-    
+
     // Parse as block expression (opening { already consumed)
     let result = parse_block_expression(s)?;
     Ok(result)
@@ -670,7 +701,7 @@ fn parse_block_or_dict(s: &mut TokenStream) -> Result<Expression> {
 
 fn parse_interpolated_string(s: &mut TokenStream) -> Result<Expression> {
     let mut parts = Vec::new();
-    
+
     // Parse string parts and interpolations
     while !s.is_at_end() {
         // Check for string part
@@ -679,7 +710,7 @@ fn parse_interpolated_string(s: &mut TokenStream) -> Result<Expression> {
                 parts.push(InterpolationPart::Text(text));
             }
         }
-        
+
         // Check for interpolation start
         if s.accept_type(TokenType::InterpolationStart)?.is_some() {
             let expr = parse_expression(s)?;
@@ -690,10 +721,10 @@ fn parse_interpolated_string(s: &mut TokenStream) -> Result<Expression> {
             break;
         }
     }
-    
+
     if parts.is_empty() {
         return Err(anyhow!("Expected interpolated string"));
     }
-    
+
     Ok(Expression::InterpolatedString(parts))
 }

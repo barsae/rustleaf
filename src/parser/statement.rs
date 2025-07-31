@@ -1,13 +1,17 @@
+use super::stream::TokenStream;
 use crate::core::*;
 use crate::lexer::TokenType;
-use anyhow::{anyhow, Result};
-use super::stream::TokenStream;
 use crate::trace;
+use anyhow::{anyhow, Result};
 
 /// Parse a single statement
 pub fn parse_statement(s: &mut TokenStream) -> Result<Statement> {
-    trace!("parse_statement: starting at position {} ({})", s.position(), s.current_token_info());
-    
+    trace!(
+        "parse_statement: starting at position {} ({})",
+        s.position(),
+        s.current_token_info()
+    );
+
     // Try each statement type in order
     if let Some(stmt) = s.try_parse(parse_macro)? {
         trace!("parse_statement: success - parsed macro");
@@ -49,12 +53,21 @@ pub fn parse_statement(s: &mut TokenStream) -> Result<Statement> {
         trace!("parse_statement: success - parsed block-like expression statement");
         return Ok(stmt);
     }
-    
+
+    // Check for empty statements (standalone semicolons)
+    if s.accept_type(TokenType::Semicolon)?.is_some() {
+        trace!("parse_statement: success - parsed empty statement");
+        return Ok(Statement::Empty);
+    }
+
     // Fall back to expression statement
     trace!("parse_statement: falling back to expression statement");
     let result = parse_expression_statement(s);
     if result.is_err() {
-        trace!("parse_statement: failed - {}", result.as_ref().err().unwrap());
+        trace!(
+            "parse_statement: failed - {}",
+            result.as_ref().err().unwrap()
+        );
     }
     result
 }
@@ -70,42 +83,44 @@ fn parse_macro(s: &mut TokenStream) -> Result<Option<Statement>> {
         return Ok(None);
     }
     s.expect_type(TokenType::LeftBracket)?;
-    
+
     // Accept either identifier or macro keyword
     let name = if let Some(token) = s.accept_type(TokenType::Ident)? {
-        token.text.ok_or_else(|| anyhow!("Identifier token missing text"))?
+        token
+            .text
+            .ok_or_else(|| anyhow!("Identifier token missing text"))?
     } else if s.accept_type(TokenType::Macro)?.is_some() {
         "macro".to_string()
     } else {
         return Err(anyhow!("Expected macro name: identifier or 'macro'"));
     };
-    
+
     let mut args = Vec::new();
-    
+
     if s.accept_type(TokenType::LeftParen)?.is_some() {
         loop {
             if s.is_at_end() {
                 return Err(anyhow!("Unexpected EOF in macro arguments"));
             }
-            
+
             if s.accept_type(TokenType::RightParen)?.is_some() {
                 break;
             }
-            
+
             if let Some(arg) = s.try_parse(parse_macro_arg)? {
                 args.push(arg);
             }
-            
+
             if s.accept_type(TokenType::Comma)?.is_none() {
                 s.expect_type(TokenType::RightParen)?;
                 break;
             }
         }
     }
-    
+
     s.expect_type(TokenType::RightBracket)?;
     let statement = Box::new(parse_statement(s)?);
-    
+
     let result = Statement::Macro {
         name,
         args,
@@ -121,7 +136,8 @@ fn parse_macro_arg(s: &mut TokenStream) -> Result<Option<MacroArg>> {
             Some(token) => token,
             None => return Ok(None),
         };
-        let name = name_token.text
+        let name = name_token
+            .text
             .ok_or_else(|| anyhow!("Identifier token missing text"))?;
         if s.accept_type(TokenType::Colon)?.is_none() {
             return Ok(None);
@@ -148,7 +164,7 @@ fn parse_var_declaration(s: &mut TokenStream) -> Result<Option<Statement>> {
         None
     };
     s.expect_type(TokenType::Semicolon)?;
-    
+
     Ok(Some(Statement::VarDecl { pattern, value }))
 }
 
@@ -157,38 +173,39 @@ fn parse_function_declaration(s: &mut TokenStream) -> Result<Option<Statement>> 
     if s.accept_type(TokenType::Fn)?.is_none() {
         return Ok(None);
     }
-    
+
     let name_token = s.expect_type(TokenType::Ident)?;
-    let name = name_token.text
+    let name = name_token
+        .text
         .ok_or_else(|| anyhow!("Function name token missing text"))?;
-    
+
     s.expect_type(TokenType::LeftParen)?;
-    
+
     let mut params = Vec::new();
     loop {
         if s.is_at_end() {
             return Err(anyhow!("Unexpected EOF in function parameters"));
         }
-        
+
         if s.accept_type(TokenType::RightParen)?.is_some() {
             break;
         }
-        
+
         params.push(parse_parameter(s)?);
-        
+
         if s.accept_type(TokenType::Comma)?.is_none() {
             s.expect_type(TokenType::RightParen)?;
             break;
         }
     }
-    
+
     s.expect_type(TokenType::LeftBrace)?;
     let body_expr = super::expression::parse_block_expression(s)?;
     let body = match body_expr {
         Expression::Block(block) => block,
         _ => unreachable!("parse_block_expression should return a Block"),
     };
-    
+
     Ok(Some(Statement::FnDecl {
         name,
         params,
@@ -207,17 +224,18 @@ fn parse_parameter(s: &mut TokenStream) -> Result<Parameter> {
     } else {
         ParameterKind::Regular
     };
-    
+
     let name_token = s.expect_type(TokenType::Ident)?;
-    let name = name_token.text
+    let name = name_token
+        .text
         .ok_or_else(|| anyhow!("Parameter name token missing text"))?;
-    
+
     let default = if s.accept_type(TokenType::Equal)?.is_some() {
         Some(parse_literal_value(s)?)
     } else {
         None
     };
-    
+
     Ok(Parameter {
         name,
         default,
@@ -231,11 +249,12 @@ fn parse_class_declaration(s: &mut TokenStream) -> Result<Option<Statement>> {
     if s.accept_type(TokenType::Class)?.is_none() {
         return Ok(None);
     }
-    
+
     let name_token = s.expect_type(TokenType::Ident)?;
-    let name = name_token.text
+    let name = name_token
+        .text
         .ok_or_else(|| anyhow!("Class name token missing text"))?;
-    
+
     // Handle optional constructor parameters: class Name() or class Name(params)
     if s.accept_type(TokenType::LeftParen)?.is_some() {
         // Skip constructor parameters for now - just consume until )
@@ -245,11 +264,11 @@ fn parse_class_declaration(s: &mut TokenStream) -> Result<Option<Statement>> {
         }
         s.expect_type(TokenType::RightParen)?;
     }
-    
+
     s.expect_type(TokenType::LeftBrace)?;
-    
+
     let mut members = Vec::new();
-    
+
     while s.peek_type() != TokenType::RightBrace && !s.is_at_end() {
         if let Some(member) = s.try_parse(parse_class_member)? {
             members.push(member);
@@ -258,9 +277,9 @@ fn parse_class_declaration(s: &mut TokenStream) -> Result<Option<Statement>> {
             break;
         }
     }
-    
+
     s.expect_type(TokenType::RightBrace)?;
-    
+
     Ok(Some(Statement::ClassDecl {
         name,
         members,
@@ -273,12 +292,13 @@ fn parse_class_member(s: &mut TokenStream) -> Result<Option<ClassMember>> {
     if s.accept_type(TokenType::Static)?.is_some() {
         s.expect_type(TokenType::Fn)?;
         let name_token = s.expect_type(TokenType::Ident)?;
-        let name = name_token.text
+        let name = name_token
+            .text
             .ok_or_else(|| anyhow!("Method name token missing text"))?;
-        
+
         s.expect_type(TokenType::LeftParen)?;
         let mut params = Vec::new();
-        
+
         // Parse parameters
         while s.peek_type() != TokenType::RightParen && !s.is_at_end() {
             params.push(parse_parameter(s)?);
@@ -287,29 +307,30 @@ fn parse_class_member(s: &mut TokenStream) -> Result<Option<ClassMember>> {
             }
         }
         s.expect_type(TokenType::RightParen)?;
-        
+
         s.expect_type(TokenType::LeftBrace)?;
         let body_expr = super::expression::parse_block_expression(s)?;
         let body = match body_expr {
             Expression::Block(block) => block,
             _ => unreachable!("parse_block_expression should return a Block"),
         };
-        
+
         return Ok(Some(ClassMember {
             name,
             kind: ClassMemberKind::StaticMethod { params, body },
         }));
     }
-    
+
     // Check for regular methods
     if s.accept_type(TokenType::Fn)?.is_some() {
         let name_token = s.expect_type(TokenType::Ident)?;
-        let name = name_token.text
+        let name = name_token
+            .text
             .ok_or_else(|| anyhow!("Method name token missing text"))?;
-        
+
         s.expect_type(TokenType::LeftParen)?;
         let mut params = Vec::new();
-        
+
         // Parse parameters
         while s.peek_type() != TokenType::RightParen && !s.is_at_end() {
             params.push(parse_parameter(s)?);
@@ -318,40 +339,41 @@ fn parse_class_member(s: &mut TokenStream) -> Result<Option<ClassMember>> {
             }
         }
         s.expect_type(TokenType::RightParen)?;
-        
+
         s.expect_type(TokenType::LeftBrace)?;
         let body_expr = super::expression::parse_block_expression(s)?;
         let body = match body_expr {
             Expression::Block(block) => block,
             _ => unreachable!("parse_block_expression should return a Block"),
         };
-        
+
         return Ok(Some(ClassMember {
             name,
             kind: ClassMemberKind::Method { params, body },
         }));
     }
-    
+
     // Check for field declarations
     if s.accept_type(TokenType::Var)?.is_some() {
         let name_token = s.expect_type(TokenType::Ident)?;
-        let name = name_token.text
+        let name = name_token
+            .text
             .ok_or_else(|| anyhow!("Field name token missing text"))?;
-        
+
         let initializer = if s.accept_type(TokenType::Equal)?.is_some() {
             Some(parse_expression(s)?)
         } else {
             None
         };
-        
+
         s.expect_type(TokenType::Semicolon)?;
-        
+
         return Ok(Some(ClassMember {
             name,
             kind: ClassMemberKind::Field(initializer),
         }));
     }
-    
+
     Ok(None)
 }
 
@@ -359,21 +381,23 @@ fn parse_import_statement(s: &mut TokenStream) -> Result<Option<Statement>> {
     if s.accept_type(TokenType::Use)?.is_none() {
         return Ok(None);
     }
-    
+
     // Parse module path (e.g., "std::io")
     let mut module_parts = Vec::new();
-    
+
     let first_part = s.expect_type(TokenType::Ident)?;
     module_parts.push(
-        first_part.text
+        first_part
+            .text
             .ok_or_else(|| anyhow!("Module name token missing text"))?,
     );
-    
+
     while s.accept_type(TokenType::DoubleColon)?.is_some() {
         // Check if this is the final :: before import items
-        if s.peek_type() == TokenType::Star ||
-           s.peek_type() == TokenType::LeftBrace ||
-           s.peek_type() == TokenType::Ident {
+        if s.peek_type() == TokenType::Star
+            || s.peek_type() == TokenType::LeftBrace
+            || s.peek_type() == TokenType::Ident
+        {
             // This is the final :: before import items
             break;
         } else {
@@ -385,61 +409,69 @@ fn parse_import_statement(s: &mut TokenStream) -> Result<Option<Statement>> {
             );
         }
     }
-    
+
     let module = module_parts.join("::");
-    
+
     let items = if s.accept_type(TokenType::Star)?.is_some() {
         // use module::*
         ImportItems::All
     } else if s.accept_type(TokenType::LeftBrace)?.is_some() {
         // use module::{item1, item2 as alias}
         let mut import_items = Vec::new();
-        
+
         loop {
             if s.peek_type() == TokenType::RightBrace {
                 break;
             }
-            
+
             let name_token = s.expect_type(TokenType::Ident)?;
-            let name = name_token.text
+            let name = name_token
+                .text
                 .ok_or_else(|| anyhow!("Import item name token missing text"))?;
-            
+
             let alias = if s.accept_type(TokenType::As)?.is_some() {
                 let alias_token = s.expect_type(TokenType::Ident)?;
-                Some(alias_token.text
-                    .ok_or_else(|| anyhow!("Alias token missing text"))?)
+                Some(
+                    alias_token
+                        .text
+                        .ok_or_else(|| anyhow!("Alias token missing text"))?,
+                )
             } else {
                 None
             };
-            
+
             import_items.push(ImportItem { name, alias });
-            
+
             if s.accept_type(TokenType::Comma)?.is_none() {
                 break;
             }
         }
-        
+
         s.expect_type(TokenType::RightBrace)?;
         ImportItems::Specific(import_items)
     } else {
         // use module::item
         let name_token = s.expect_type(TokenType::Ident)?;
-        let name = name_token.text
+        let name = name_token
+            .text
             .ok_or_else(|| anyhow!("Import item name token missing text"))?;
-        
+
         let alias = if s.accept_type(TokenType::As)?.is_some() {
             let alias_token = s.expect_type(TokenType::Ident)?;
-            Some(alias_token.text
-                .ok_or_else(|| anyhow!("Alias token missing text"))?)
+            Some(
+                alias_token
+                    .text
+                    .ok_or_else(|| anyhow!("Alias token missing text"))?,
+            )
         } else {
             None
         };
-        
+
         ImportItems::Specific(vec![ImportItem { name, alias }])
     };
-    
+
     s.expect_type(TokenType::Semicolon)?;
-    
+
     Ok(Some(Statement::Import(ImportSpec { module, items })))
 }
 
@@ -447,7 +479,7 @@ fn parse_return_statement(s: &mut TokenStream) -> Result<Option<Statement>> {
     if s.accept_type(TokenType::Return)?.is_none() {
         return Ok(None);
     }
-    
+
     let expr = if let Some(_token) = s.accept_type(TokenType::Semicolon)? {
         // Put the semicolon back for the caller to consume
         // This is a hack - ideally we'd peek at the next token
@@ -456,7 +488,7 @@ fn parse_return_statement(s: &mut TokenStream) -> Result<Option<Statement>> {
     } else {
         Some(parse_expression(s)?)
     };
-    
+
     s.expect_type(TokenType::Semicolon)?;
     Ok(Some(Statement::Return(expr)))
 }
@@ -465,7 +497,7 @@ fn parse_break_statement(s: &mut TokenStream) -> Result<Option<Statement>> {
     if s.accept_type(TokenType::Break)?.is_none() {
         return Ok(None);
     }
-    
+
     let expr = if let Some(_) = s.accept_type(TokenType::Semicolon)? {
         None
     } else {
@@ -473,7 +505,7 @@ fn parse_break_statement(s: &mut TokenStream) -> Result<Option<Statement>> {
         s.expect_type(TokenType::Semicolon)?;
         expr
     };
-    
+
     Ok(Some(Statement::Break(expr)))
 }
 
@@ -491,7 +523,7 @@ fn parse_assignment(s: &mut TokenStream) -> Result<Option<Statement>> {
         Some(lval) => lval,
         None => return Ok(None),
     };
-    
+
     // Parse assignment operator
     let op = if s.accept_type(TokenType::Equal)?.is_some() {
         AssignOp::Assign
@@ -508,10 +540,10 @@ fn parse_assignment(s: &mut TokenStream) -> Result<Option<Statement>> {
     } else {
         return Ok(None);
     };
-    
+
     let value = parse_expression(s)?;
     s.expect_type(TokenType::Semicolon)?;
-    
+
     Ok(Some(Statement::Assignment { target, op, value }))
 }
 
@@ -520,17 +552,19 @@ fn parse_lvalue(s: &mut TokenStream) -> Result<Option<LValue>> {
         Some(token) => token,
         None => return Ok(None),
     };
-    let name = name_token.text
+    let name = name_token
+        .text
         .ok_or_else(|| anyhow!("Identifier token missing text"))?;
     let mut expr = LValue::Identifier(name);
-    
+
     // Handle chained property/index access
     loop {
         if s.accept_type(TokenType::Dot)?.is_some() {
             let property_token = s.expect_type(TokenType::Ident)?;
-            let property = property_token.text
+            let property = property_token
+                .text
                 .ok_or_else(|| anyhow!("Identifier token missing text"))?;
-            
+
             // Convert LValue to Expression for GetAttr
             let base_expr = match expr {
                 LValue::Identifier(name) => Expression::Identifier(name),
@@ -541,7 +575,7 @@ fn parse_lvalue(s: &mut TokenStream) -> Result<Option<LValue>> {
         } else if s.accept_type(TokenType::LeftBracket)?.is_some() {
             let index = parse_expression(s)?;
             s.expect_type(TokenType::RightBracket)?;
-            
+
             // Convert LValue to Expression for GetItem
             let base_expr = match expr {
                 LValue::Identifier(name) => Expression::Identifier(name),
@@ -553,21 +587,27 @@ fn parse_lvalue(s: &mut TokenStream) -> Result<Option<LValue>> {
             break;
         }
     }
-    
+
     Ok(Some(expr))
 }
 
 fn parse_block_like_expression_statement(s: &mut TokenStream) -> Result<Option<Statement>> {
     // Check for block-like expressions that don't require semicolons
-    if matches!(s.peek_type(), 
-        TokenType::If | TokenType::Loop | TokenType::While | 
-        TokenType::For | TokenType::Match | TokenType::Try | TokenType::With
+    if matches!(
+        s.peek_type(),
+        TokenType::If
+            | TokenType::Loop
+            | TokenType::While
+            | TokenType::For
+            | TokenType::Match
+            | TokenType::Try
+            | TokenType::With
     ) {
         // Parse as expression and wrap in Statement::Expression
         let expr = parse_expression(s)?;
         return Ok(Some(Statement::Expression(expr)));
     }
-    
+
     // Try to parse a block expression (will backtrack if it's actually a dictionary)
     if s.peek_type() == TokenType::LeftBrace {
         if let Some(expr) = s.try_parse(|s| {
@@ -586,7 +626,7 @@ fn parse_block_like_expression_statement(s: &mut TokenStream) -> Result<Option<S
             return Ok(Some(Statement::Expression(expr)));
         }
     }
-    
+
     Ok(None)
 }
 
@@ -594,7 +634,8 @@ pub fn parse_pattern(s: &mut TokenStream) -> Result<Pattern> {
     match s.peek_type() {
         TokenType::Ident => {
             let name_token = s.expect_type(TokenType::Ident)?;
-            let name = name_token.text
+            let name = name_token
+                .text
                 .ok_or_else(|| anyhow!("Identifier token missing text"))?;
             if name == "_" {
                 Ok(Pattern::Wildcard)
@@ -602,18 +643,23 @@ pub fn parse_pattern(s: &mut TokenStream) -> Result<Pattern> {
                 Ok(Pattern::Variable(name))
             }
         }
-        TokenType::Int | TokenType::Float | TokenType::String | 
-        TokenType::True | TokenType::False | TokenType::Null => {
+        TokenType::Int
+        | TokenType::Float
+        | TokenType::String
+        | TokenType::True
+        | TokenType::False
+        | TokenType::Null => {
             // Try to parse as range pattern first
             if let Some(range_pattern) = s.try_parse(|s| {
                 let first_literal = match parse_literal_value(s) {
                     Ok(literal) => literal,
                     Err(_) => return Ok(None),
                 };
-                
+
                 // Check for range operators
-                if s.accept_type(TokenType::DotDot)?.is_some() || 
-                   s.accept_type(TokenType::DotDotEqual)?.is_some() {
+                if s.accept_type(TokenType::DotDot)?.is_some()
+                    || s.accept_type(TokenType::DotDotEqual)?.is_some()
+                {
                     let second_literal = match parse_literal_value(s) {
                         Ok(literal) => literal,
                         Err(_) => return Ok(None),
@@ -642,23 +688,24 @@ pub fn parse_pattern(s: &mut TokenStream) -> Result<Pattern> {
 
 fn parse_list_pattern(s: &mut TokenStream) -> Result<Pattern> {
     s.expect_type(TokenType::LeftBracket)?;
-    
+
     let mut patterns = Vec::new();
     let mut rest_var = None;
-    
+
     // Handle empty list pattern: []
     if s.accept_type(TokenType::RightBracket)?.is_some() {
         return Ok(Pattern::List(patterns));
     }
-    
+
     loop {
         // Check for rest pattern: *name
         if s.accept_type(TokenType::Star)?.is_some() {
             let rest_token = s.expect_type(TokenType::Ident)?;
-            let rest_name = rest_token.text
+            let rest_name = rest_token
+                .text
                 .ok_or_else(|| anyhow!("Identifier token missing text"))?;
             rest_var = Some(rest_name);
-            
+
             // After rest pattern, we can only have closing bracket or comma + closing bracket
             if s.accept_type(TokenType::Comma)?.is_some() {
                 // Allow trailing comma
@@ -668,10 +715,10 @@ fn parse_list_pattern(s: &mut TokenStream) -> Result<Pattern> {
             }
             break;
         }
-        
+
         // Parse regular pattern
         patterns.push(parse_pattern(s)?);
-        
+
         if s.accept_type(TokenType::Comma)?.is_some() {
             // Check for trailing comma
             if s.peek_type() == TokenType::RightBracket {
@@ -682,9 +729,9 @@ fn parse_list_pattern(s: &mut TokenStream) -> Result<Pattern> {
             break;
         }
     }
-    
+
     s.expect_type(TokenType::RightBracket)?;
-    
+
     if rest_var.is_some() {
         Ok(Pattern::ListRest(patterns, rest_var))
     } else {
@@ -694,32 +741,36 @@ fn parse_list_pattern(s: &mut TokenStream) -> Result<Pattern> {
 
 fn parse_dict_pattern(s: &mut TokenStream) -> Result<Pattern> {
     s.expect_type(TokenType::LeftBrace)?;
-    
+
     let mut dict_patterns = Vec::new();
-    
+
     // Handle empty dict pattern: {}
     if s.accept_type(TokenType::RightBrace)?.is_some() {
         return Ok(Pattern::Dict(dict_patterns));
     }
-    
+
     loop {
         // Parse key identifier
         let key_token = s.expect_type(TokenType::Ident)?;
-        let key = key_token.text
+        let key = key_token
+            .text
             .ok_or_else(|| anyhow!("Identifier token missing text"))?;
-        
+
         let alias = if s.accept_type(TokenType::Colon)?.is_some() {
             // {key: alias} form
             let alias_token = s.expect_type(TokenType::Ident)?;
-            Some(alias_token.text
-                .ok_or_else(|| anyhow!("Alias token missing text"))?)
+            Some(
+                alias_token
+                    .text
+                    .ok_or_else(|| anyhow!("Alias token missing text"))?,
+            )
         } else {
             // {key} form - use key as the variable name
             None
         };
-        
+
         dict_patterns.push(DictPattern { key, alias });
-        
+
         if s.accept_type(TokenType::Comma)?.is_some() {
             // Check for trailing comma
             if s.peek_type() == TokenType::RightBrace {
@@ -730,7 +781,7 @@ fn parse_dict_pattern(s: &mut TokenStream) -> Result<Pattern> {
             break;
         }
     }
-    
+
     s.expect_type(TokenType::RightBrace)?;
     Ok(Pattern::Dict(dict_patterns))
 }
@@ -747,23 +798,29 @@ pub fn parse_literal_value(s: &mut TokenStream) -> Result<LiteralValue> {
     } else if s.accept_type(TokenType::Null)?.is_some() {
         Ok(LiteralValue::Null)
     } else if let Some(token) = s.accept_type(TokenType::Int)? {
-        let text = token.text
+        let text = token
+            .text
             .ok_or_else(|| anyhow!("Int token missing text"))?;
-        let n = text.parse::<i64>()
+        let n = text
+            .parse::<i64>()
             .map_err(|e| anyhow!("Failed to parse integer '{}': {}", text, e))?;
         Ok(LiteralValue::Int(n))
     } else if let Some(token) = s.accept_type(TokenType::Float)? {
-        let text = token.text
+        let text = token
+            .text
             .ok_or_else(|| anyhow!("Float token missing text"))?;
-        let f = text.parse::<f64>()
+        let f = text
+            .parse::<f64>()
             .map_err(|e| anyhow!("Failed to parse float '{}': {}", text, e))?;
         Ok(LiteralValue::Float(f))
     } else if let Some(token) = s.accept_type(TokenType::String)? {
-        let text = token.text
+        let text = token
+            .text
             .ok_or_else(|| anyhow!("String token missing text"))?;
         Ok(LiteralValue::String(text))
     } else if let Some(token) = s.accept_type(TokenType::RawString)? {
-        let text = token.text
+        let text = token
+            .text
             .ok_or_else(|| anyhow!("RawString token missing text"))?;
         Ok(LiteralValue::String(text))
     } else {
@@ -774,12 +831,12 @@ pub fn parse_literal_value(s: &mut TokenStream) -> Result<LiteralValue> {
 #[allow(dead_code)]
 pub fn parse_block(s: &mut TokenStream) -> Result<Vec<Statement>> {
     let mut statements = Vec::new();
-    
+
     // Parse statements until we hit the closing brace
     while !s.is_at_end() && s.peek_type() != TokenType::RightBrace {
         statements.push(parse_statement(s)?);
     }
-    
+
     s.expect_type(TokenType::RightBrace)?;
     Ok(statements)
 }

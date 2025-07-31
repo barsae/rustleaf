@@ -40,7 +40,6 @@ impl Parser {
             // Equality
             TokenType::EqualEqual | TokenType::BangEqual => 7,
 
-
             // Logical AND
             TokenType::And => 3,
 

@@ -54,6 +54,9 @@ pub enum Statement {
     Return(Option<Expression>),
     Break(Option<Expression>), // Can break with value from loop expressions
     Continue,
+
+    // Empty statement (just a semicolon)
+    Empty,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -114,8 +117,8 @@ pub enum Expression {
     Xor(Box<Expression>, Box<Expression>), // xor
 
     // Unary operators
-    Neg(Box<Expression>),    // -expr
-    Not(Box<Expression>),    // not expr
+    Neg(Box<Expression>), // -expr
+    Not(Box<Expression>), // not expr
 
     // Pipe operator
     Pipe(Box<Expression>, Box<Expression>), // expr1 | expr2
