@@ -21,7 +21,7 @@ parser-tracing = []
 
 [dependencies]
 anyhow = "1"
-clap = { version = "4.0", features = ["derive"] }
+clap = { version = "4.5", features = ["derive"] }
 indexmap = "2"
 regex = "1"
 rustleaf-macros-internal = { path = "rustleaf-macros-internal" }
