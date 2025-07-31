@@ -3,8 +3,8 @@
 
 fn solve_euler_001(x) {
     range(1, x)
-        : filter(|i| i % 3 == 0 or i % 5 == 0)
-        : sum()
+        | filter(|i| i % 3 == 0 or i % 5 == 0)
+        | sum()
 }
 
 // Test the example first

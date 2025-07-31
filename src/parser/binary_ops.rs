@@ -19,14 +19,13 @@ impl Parser {
             // Multiplicative
             TokenType::Star | TokenType::Slash | TokenType::Percent => 14,
 
-            // Pipe operator - between property access and other binary operators
-            TokenType::Colon => 13,
+            // Pipe operator - low precedence
+            TokenType::Pipe => 2,
 
             // Additive
             TokenType::Plus | TokenType::Minus => 12,
 
             // Shift
-            TokenType::LessLess | TokenType::GreaterGreater => 11,
 
             // Range
             TokenType::DotDot | TokenType::DotDotEqual => 10,
@@ -41,14 +40,6 @@ impl Parser {
             // Equality
             TokenType::EqualEqual | TokenType::BangEqual => 7,
 
-            // Bitwise AND
-            TokenType::Ampersand => 6,
-
-            // Bitwise XOR
-            TokenType::Caret => 5,
-
-            // Bitwise OR
-            TokenType::Pipe => 4,
 
             // Logical AND
             TokenType::And => 3,
@@ -74,7 +65,7 @@ impl Parser {
             TokenType::Slash => Some(Expression::Div),
             TokenType::Percent => Some(Expression::Mod),
             TokenType::StarStar => Some(Expression::Pow),
-            TokenType::Colon => Some(Expression::Pipe),
+            TokenType::Pipe => Some(Expression::Pipe),
             TokenType::EqualEqual => Some(Expression::Eq),
             TokenType::BangEqual => Some(Expression::Ne),
             TokenType::Less => Some(Expression::Lt),
@@ -88,11 +79,6 @@ impl Parser {
             TokenType::And => Some(Expression::And),
             TokenType::Or => Some(Expression::Or),
             TokenType::Xor => Some(Expression::Xor),
-            TokenType::Ampersand => Some(Expression::BitAnd),
-            TokenType::Pipe => Some(Expression::BitOr),
-            TokenType::Caret => Some(Expression::BitXor),
-            TokenType::LessLess => Some(Expression::LeftShift),
-            TokenType::GreaterGreater => Some(Expression::RightShift),
             TokenType::DotDot => Some(Expression::RangeExclusive),
             TokenType::DotDotEqual => Some(Expression::RangeInclusive),
             _ => None,

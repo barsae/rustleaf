@@ -191,7 +191,7 @@ world""#;
 
     #[test]
     fn test_operators() {
-        let source = "+ - * / % ** = += -= *= /= %= == != < > <= >= & | ^ ~ << >> .. ..=";
+        let source = "+ - * / % ** = += -= *= /= %= == != < > <= >= | .. ..=";
         let tokens = Lexer::tokenize(source).unwrap();
 
         assert_eq!(
@@ -215,12 +215,7 @@ world""#;
                 Token::simple(TokenType::Greater),
                 Token::simple(TokenType::LessEqual),
                 Token::simple(TokenType::GreaterEqual),
-                Token::simple(TokenType::Ampersand),
                 Token::simple(TokenType::Pipe),
-                Token::simple(TokenType::Caret),
-                Token::simple(TokenType::Tilde),
-                Token::simple(TokenType::LessLess),
-                Token::simple(TokenType::GreaterGreater),
                 Token::simple(TokenType::DotDot),
                 Token::simple(TokenType::DotDotEqual),
                 Token::simple(TokenType::Eof),

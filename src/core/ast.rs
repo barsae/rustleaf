@@ -108,13 +108,6 @@ pub enum Expression {
     NotIn(Box<Expression>, Box<Expression>), // not in
     IsNot(Box<Expression>, Box<Expression>), // is not
 
-    // Bitwise operators
-    BitAnd(Box<Expression>, Box<Expression>),     // &
-    BitOr(Box<Expression>, Box<Expression>),      // |
-    BitXor(Box<Expression>, Box<Expression>),     // ^
-    LeftShift(Box<Expression>, Box<Expression>),  // <<
-    RightShift(Box<Expression>, Box<Expression>), // >>
-
     // Logical operators (with short-circuit semantics)
     And(Box<Expression>, Box<Expression>), // and
     Or(Box<Expression>, Box<Expression>),  // or
@@ -123,10 +116,9 @@ pub enum Expression {
     // Unary operators
     Neg(Box<Expression>),    // -expr
     Not(Box<Expression>),    // not expr
-    BitNot(Box<Expression>), // ~expr
 
     // Pipe operator
-    Pipe(Box<Expression>, Box<Expression>), // expr1 : expr2
+    Pipe(Box<Expression>, Box<Expression>), // expr1 | expr2
 
     // Range operators
     RangeExclusive(Box<Expression>, Box<Expression>), // expr1..expr2
@@ -306,11 +298,6 @@ impl Expression {
             Expression::Le(_, _) => Some("op_le"),
             Expression::Gt(_, _) => Some("op_gt"),
             Expression::Ge(_, _) => Some("op_ge"),
-            Expression::BitAnd(_, _) => Some("op_bitwise_and"),
-            Expression::BitOr(_, _) => Some("op_bitwise_or"),
-            Expression::BitXor(_, _) => Some("op_bitwise_xor"),
-            Expression::LeftShift(_, _) => Some("op_lshift"),
-            Expression::RightShift(_, _) => Some("op_rshift"),
             Expression::In(_, _) => Some("op_contains"),
             _ => None,
         }

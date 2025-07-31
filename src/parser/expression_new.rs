@@ -23,34 +23,60 @@ fn parse_precedence(s: &mut TokenStream, min_precedence: u8) -> Result<Expressio
             break;
         }
 
-        // Handle postfix operators (method calls, array access, property access)
+        // Binary operators
+        if let Some(expr_constructor) = get_binary_expression_constructor(s.peek_type()) {
+            s.accept_type(s.peek_type())?; // Consume the operator
+            let right_precedence = if is_right_associative_token(s.peek_type()) {
+                op_precedence
+            } else {
+                op_precedence + 1
+            };
+            let right = parse_precedence(s, right_precedence)?;
+            left = expr_constructor(Box::new(left), Box::new(right));
+        } else {
+            break;
+        }
+    }
+
+    trace_exit!("parse_precedence", Ok(left))
+}
+
+/// Parse unary expressions
+fn parse_unary(s: &mut TokenStream) -> Result<Expression> {
+    trace_enter!("parse_unary");
+    // Handle unary prefix operators
+    if s.accept_type(TokenType::Not)?.is_some() {
+        let expr = Box::new(parse_postfix(s)?);
+        return trace_exit!("parse_unary", Ok(Expression::Not(expr)));
+    }
+    if s.accept_type(TokenType::Minus)?.is_some() {
+        let expr = Box::new(parse_postfix(s)?);
+        return trace_exit!("parse_unary", Ok(Expression::Neg(expr)));
+    }
+    if s.accept_type(TokenType::Plus)?.is_some() {
+        // Unary plus is not in the AST, just return the expression
+        return parse_postfix(s);
+    }
+
+    let result = parse_postfix(s);
+    trace_exit!("parse_unary", result)
+}
+
+/// Parse postfix expressions (function calls, array access, property access)
+fn parse_postfix(s: &mut TokenStream) -> Result<Expression> {
+    trace_enter!("parse_postfix");
+    let mut expr = parse_primary(s)?;
+    
+    loop {
         if s.accept_type(TokenType::Dot)?.is_some() {
             let property_token = s.expect_type(TokenType::Ident)?;
             let property = property_token.text
                 .ok_or_else(|| anyhow!("Identifier token missing text"))?;
-            left = Expression::GetAttr(Box::new(left), property);
+            expr = Expression::GetAttr(Box::new(expr), property);
         } else if s.accept_type(TokenType::LeftBracket)?.is_some() {
-            // Check if the left expression is a control flow expression that shouldn't be indexed
-            let should_allow_indexing = !matches!(
-                &left,
-                Expression::For { .. }
-                    | Expression::While { .. }
-                    | Expression::Loop { .. }
-                    | Expression::If { .. }
-                    | Expression::Match { .. }
-                    | Expression::Try { .. }
-                    | Expression::With { .. }
-            );
-
-            if should_allow_indexing {
-                let index = parse_expression(s)?;
-                s.expect_type(TokenType::RightBracket)?;
-                left = Expression::GetItem(Box::new(left), Box::new(index));
-            } else {
-                // This is a hack - we need to handle this better
-                // For now, just error out
-                return Err(anyhow!("Cannot index control flow expressions"));
-            }
+            let index = parse_expression(s)?;
+            s.expect_type(TokenType::RightBracket)?;
+            expr = Expression::GetItem(Box::new(expr), Box::new(index));
         } else if s.accept_type(TokenType::LeftParen)?.is_some() {
             let mut args = Vec::new();
 
@@ -71,59 +97,22 @@ fn parse_precedence(s: &mut TokenStream, min_precedence: u8) -> Result<Expressio
             }
 
             // Check if this is a method call (function call on a property access)
-            left = match left {
+            expr = match expr {
                 Expression::GetAttr(obj, method_name) => {
                     // Convert obj.method(args) to MethodCall
                     Expression::MethodCall(obj, method_name, args)
                 }
                 _ => {
                     // Regular function call
-                    Expression::FunctionCall(Box::new(left), args)
+                    Expression::FunctionCall(Box::new(expr), args)
                 }
             };
         } else {
-            // Binary operators
-            if let Some(expr_constructor) = get_binary_expression_constructor(s.peek_type()) {
-                s.accept_type(s.peek_type())?; // Consume the operator
-                let right_precedence = if is_right_associative_token(s.peek_type()) {
-                    op_precedence
-                } else {
-                    op_precedence + 1
-                };
-                let right = parse_precedence(s, right_precedence)?;
-                left = expr_constructor(Box::new(left), Box::new(right));
-            } else {
-                break;
-            }
+            break;
         }
     }
-
-    trace_exit!("parse_precedence", Ok(left))
-}
-
-/// Parse unary expressions
-fn parse_unary(s: &mut TokenStream) -> Result<Expression> {
-    trace_enter!("parse_unary");
-    // Handle unary prefix operators
-    if s.accept_type(TokenType::Not)?.is_some() {
-        let expr = Box::new(parse_unary(s)?);
-        return trace_exit!("parse_unary", Ok(Expression::Not(expr)));
-    }
-    if s.accept_type(TokenType::Minus)?.is_some() {
-        let expr = Box::new(parse_unary(s)?);
-        return trace_exit!("parse_unary", Ok(Expression::Neg(expr)));
-    }
-    if s.accept_type(TokenType::Plus)?.is_some() {
-        // Unary plus is not in the AST, just return the expression
-        return parse_unary(s);
-    }
-    if s.accept_type(TokenType::Tilde)?.is_some() {
-        let expr = Box::new(parse_unary(s)?);
-        return trace_exit!("parse_unary", Ok(Expression::BitNot(expr)));
-    }
-
-    let result = parse_primary(s);
-    trace_exit!("parse_unary", result)
+    
+    trace_exit!("parse_postfix", Ok(expr))
 }
 
 /// Parse primary expressions
@@ -217,14 +206,10 @@ fn get_binary_precedence(token_type: TokenType) -> u8 {
         TokenType::Less | TokenType::Greater | TokenType::LessEqual | TokenType::GreaterEqual => 4,
         TokenType::In | TokenType::Is | TokenType::IsNot => 5,
         TokenType::DotDot | TokenType::DotDotEqual => 6, // Range operators
-        TokenType::Pipe => 7, // Pipe (|) is bitwise OR
-        TokenType::Caret => 8,
-        TokenType::Ampersand => 9,
-        TokenType::LessLess | TokenType::GreaterGreater => 10,
         TokenType::Plus | TokenType::Minus => 11,
         TokenType::Star | TokenType::Slash | TokenType::Percent => 12,
         TokenType::StarStar => 13,
-        TokenType::Colon => 14, // Colon (:) is the pipe operator with highest precedence
+        TokenType::Pipe => 2, // Pipe (|) operator - low precedence
         TokenType::Dot | TokenType::LeftBracket | TokenType::LeftParen => 15,
         _ => 0, // Not a binary operator
     }
@@ -250,15 +235,10 @@ fn get_binary_expression_constructor(token_type: TokenType) -> Option<fn(Box<Exp
         TokenType::GreaterEqual => Some(Expression::Ge),
         TokenType::And => Some(Expression::And),
         TokenType::Or => Some(Expression::Or),
-        TokenType::Ampersand => Some(Expression::BitAnd),
-        TokenType::Pipe => Some(Expression::BitOr),
-        TokenType::Caret => Some(Expression::BitXor),
-        TokenType::LessLess => Some(Expression::LeftShift),
-        TokenType::GreaterGreater => Some(Expression::RightShift),
         TokenType::In => Some(Expression::In),
         TokenType::Is => Some(Expression::Is),
         TokenType::IsNot => Some(Expression::IsNot),
-        TokenType::Colon => Some(Expression::Pipe), // Colon (:) is the pipe operator
+        TokenType::Pipe => Some(Expression::Pipe), // Pipe (|) operator
         TokenType::DotDot => Some(Expression::RangeExclusive),
         TokenType::DotDotEqual => Some(Expression::RangeInclusive),
         _ => None,

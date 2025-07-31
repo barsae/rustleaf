@@ -111,12 +111,7 @@ pub enum TokenType {
     Greater,
     LessEqual,
     GreaterEqual,
-    Ampersand,
     Pipe,
-    Caret,
-    Tilde,
-    LessLess,
-    GreaterGreater,
     DotDot,
     DotDotEqual,
 

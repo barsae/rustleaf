@@ -112,10 +112,6 @@ impl Parser {
             // Unary operators have precedence 14 (higher than binary ops, lower than postfix)
             let expr = self.parse_precedence(14)?;
             Ok(Expression::Not(Box::new(expr)))
-        } else if self.accept(TokenType::Tilde) {
-            // Unary operators have precedence 14 (higher than binary ops, lower than postfix)
-            let expr = self.parse_precedence(14)?;
-            Ok(Expression::BitNot(Box::new(expr)))
         } else {
             self.parse_primary()
         }

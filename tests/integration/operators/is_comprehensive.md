@@ -1,6 +1,6 @@
 # Program
-Status: 🔴
-Assertions: 0
+Status: 🟢
+Assertions: 22
 
 ```rustleaf
 // Comprehensive test of is and is not operators
@@ -56,8 +56,8 @@ None
 
 # Result
 ```rust
-Err(
-    "Value is not callable: String(\"value\")",
+Ok(
+    Unit,
 )
 ```
 
@@ -449,24 +449,21 @@ Ok(
                     "dict_val",
                 ),
                 value: Some(
-                    Block(
-                        Block {
-                            statements: [],
-                            final_expr: Some(
-                                Pipe(
-                                    Literal(
-                                        String(
-                                            "key",
-                                        ),
+                    Dict(
+                        [
+                            (
+                                Literal(
+                                    String(
+                                        "key",
                                     ),
-                                    Literal(
-                                        String(
-                                            "value",
-                                        ),
+                                ),
+                                Literal(
+                                    String(
+                                        "value",
                                     ),
                                 ),
                             ),
-                        },
+                        ],
                     ),
                 ),
             },
@@ -1187,30 +1184,25 @@ Ok(
                         name: "dict_val",
                         init_expr: Some(
                             RustValue(
-                                EvalBlock {
-                                    statements: [],
-                                    final_expr: Some(
-                                        RustValue(
-                                            EvalCall {
-                                                func_expr: RustValue(
-                                                    EvalLiteral {
-                                                        value: String(
-                                                            "value",
-                                                        ),
-                                                    },
-                                                ),
-                                                args: [
-                                                    RustValue(
-                                                        EvalLiteral {
-                                                            value: String(
-                                                                "key",
-                                                            ),
-                                                        },
+                                EvalDict {
+                                    pairs: [
+                                        (
+                                            RustValue(
+                                                EvalLiteral {
+                                                    value: String(
+                                                        "key",
                                                     ),
-                                                ],
-                                            },
+                                                },
+                                            ),
+                                            RustValue(
+                                                EvalLiteral {
+                                                    value: String(
+                                                        "value",
+                                                    ),
+                                                },
+                                            ),
                                         ),
-                                    ),
+                                    ],
                                 },
                             ),
                         ),

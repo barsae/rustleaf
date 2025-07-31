@@ -256,21 +256,6 @@ impl Compiler {
             Expression::Le(left, right) => self.compile_binary_op(*left, *right, "op_le"),
             Expression::Gt(left, right) => self.compile_binary_op(*left, *right, "op_gt"),
             Expression::Ge(left, right) => self.compile_binary_op(*left, *right, "op_ge"),
-            Expression::BitAnd(left, right) => {
-                self.compile_binary_op(*left, *right, "op_bitwise_and")
-            }
-            Expression::BitOr(left, right) => {
-                self.compile_binary_op(*left, *right, "op_bitwise_or")
-            }
-            Expression::BitXor(left, right) => {
-                self.compile_binary_op(*left, *right, "op_bitwise_xor")
-            }
-            Expression::LeftShift(left, right) => {
-                self.compile_binary_op(*left, *right, "op_lshift")
-            }
-            Expression::RightShift(left, right) => {
-                self.compile_binary_op(*left, *right, "op_rshift")
-            }
 
             // Special cases that remain built-in
             Expression::And(left, right) => {
@@ -297,7 +282,6 @@ impl Compiler {
 
             // Unary operators - most become method calls
             Expression::Neg(expr) => self.compile_unary_method_call(*expr, "op_neg"),
-            Expression::BitNot(expr) => self.compile_unary_method_call(*expr, "op_bitwise_not"),
 
             // Special case that remains built-in
             Expression::Not(expr) => {
@@ -397,7 +381,7 @@ impl Compiler {
                 }))
             }
 
-            // Pipe operator: expr1 : expr2
+            // Pipe operator: expr1 | expr2
             // According to spec, should create partial application: |*args, **kwargs| expr2(expr1, *args, **kwargs)
             // For now, implement simpler version for the test case: 1 : test(2) => test(1, 2)
             Expression::Pipe(left, right) => {
