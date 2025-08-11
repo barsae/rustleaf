@@ -4,9 +4,8 @@ A lightweight, dynamically-typed scripting language with Rust-inspired syntax an
 
 <!-- TODO: Before open sourcing
 - [ ] Verify all code examples compile and run
-- [ ] Update installation instructions after crates.io publish  
+- [ ] Update installation instructions after crates.io publish
 - [ ] Add CI badges once GitHub Actions are set up
-- [ ] Update GitHub username in clone URL
 -->
 
 ## Overview
@@ -29,10 +28,9 @@ RustLeaf is designed to be an embeddable scripting language that combines the el
 
 ### Installation
 
-<!-- TODO: Update once published to crates.io -->
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/rustleaf.git
+git clone https://github.com/barsae/rustleaf.git
 cd rustleaf
 
 # Build and install
@@ -68,11 +66,10 @@ var sum = range(1, 11)
     | sum();
 
 // Classes
-// TODO: Verify class syntax - may need 'var' keyword for fields
 class Point {
     var x = 0;
     var y = 0;
-    
+
     fn distance() {
         sqrt(self.x * self.x + self.y * self.y)
     }
@@ -143,7 +140,7 @@ match value {
     _ => default_value
 }
 
-// Destructuring  
+// Destructuring
 // TODO: Verify destructuring assignment syntax
 var [head, ...tail] = list;
 var {x, y} = point;
@@ -179,7 +176,7 @@ cargo build --release
 rustleaf/
 ├── src/
 │   ├── lexer/          # Tokenization
-│   ├── parser/         # AST generation  
+│   ├── parser/         # AST generation
 │   ├── eval/           # Interpreter
 │   └── core/           # Core types and traits
 ├── specs/              # Language specification
