@@ -1,0 +1,4 @@
+fn polynomial(x) {
+    // Simple quadratic: 2x^2 + 3x + 1
+    2.0 * x * x + 3.0 * x + 1.0
+}

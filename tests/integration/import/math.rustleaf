@@ -1,0 +1,3 @@
+pub fn adder(x, y) {
+    x + y
+}

@@ -1,0 +1,34 @@
+{
+  "name": "rustleaf-syntax",
+  "displayName": "RustLeaf Syntax Highlighting",
+  "description": "Syntax highlighting for the RustLeaf programming language",
+  "version": "0.1.0",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/barsae/rustleaf"
+  },
+  "license": "MIT",
+  "contributes": {
+    "languages": [
+      {
+        "id": "rustleaf",
+        "aliases": ["RustLeaf", "rustleaf"],
+        "extensions": [".rustleaf"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "rustleaf",
+        "scopeName": "source.rustleaf",
+        "path": "./syntaxes/rustleaf.tmGrammar.json"
+      }
+    ]
+  }
+}

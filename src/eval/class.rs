@@ -1,0 +1,179 @@
+use anyhow::Result;
+use std::collections::HashMap;
+
+use super::{scope::ScopeRef, structs::ClassMethod};
+use crate::core::{Args, RustValue, Value};
+
+/// A class definition - the "type" that can be called as a constructor
+#[derive(Debug, Clone)]
+pub struct Class {
+    pub name: String,
+    pub field_names: Vec<String>,
+    pub field_defaults: Vec<Option<Value>>,
+    pub methods: Vec<ClassMethod>,
+}
+
+impl Class {
+    pub fn new(
+        name: String,
+        field_names: Vec<String>,
+        field_defaults: Vec<Option<Value>>,
+        methods: Vec<ClassMethod>,
+    ) -> Self {
+        Self {
+            name,
+            field_names,
+            field_defaults,
+            methods,
+        }
+    }
+
+    /// Find a method by name
+    pub fn find_method(&self, name: &str) -> Option<&ClassMethod> {
+        self.methods.iter().find(|m| m.name == name)
+    }
+
+    /// Find a static method by name
+    pub fn find_static_method(&self, name: &str) -> Option<&ClassMethod> {
+        self.methods.iter().find(|m| m.name == name && m.is_static)
+    }
+}
+
+#[crate::rust_value_any]
+impl RustValue for Class {
+    fn dyn_clone(&self) -> Box<dyn RustValue> {
+        Box::new(self.clone())
+    }
+    fn get_attr(&self, name: &str) -> Option<Value> {
+        // Allow access to static methods
+        self.find_static_method(name).map(|method| {
+            Value::from_rust(StaticMethod {
+                class_name: self.name.clone(),
+                method: method.clone(),
+            })
+        })
+    }
+
+    fn set_attr(&mut self, _name: &str, _value: Value) -> Result<(), String> {
+        Err("Cannot set attributes on class".to_string())
+    }
+
+    fn call(&self, args: Args) -> Result<Value> {
+        // Constructor call - create new instance
+        if !args.is_empty() {
+            return Err(anyhow::anyhow!("Class constructor takes no arguments"));
+        }
+
+        // We need access to an evaluator to evaluate default expressions
+        // For now, return an error suggesting this needs to be handled by the evaluator
+        Err(anyhow::anyhow!(
+            "Class constructor must be handled by evaluator to evaluate default field values"
+        ))
+    }
+}
+
+/// A class instance - holds field values and provides method access
+#[derive(Debug, Clone)]
+pub struct ClassInstance {
+    pub class_name: String,
+    pub fields: HashMap<String, Value>,
+    pub methods: Vec<ClassMethod>,
+}
+
+impl ClassInstance {
+    /// Find a method by name
+    pub fn find_method(&self, name: &str) -> Option<&ClassMethod> {
+        self.methods.iter().find(|m| m.name == name && !m.is_static)
+    }
+}
+
+/// A bound method - method bound to a specific instance
+#[derive(Debug, Clone)]
+pub struct BoundMethod {
+    pub instance: Value, // The instance this method is bound to
+    pub method: ClassMethod,
+    pub closure_env: ScopeRef, // Environment where the method can execute
+}
+
+#[crate::rust_value_any]
+impl RustValue for BoundMethod {
+    fn dyn_clone(&self) -> Box<dyn RustValue> {
+        Box::new(self.clone())
+    }
+    fn call(&self, mut args: Args) -> Result<Value> {
+        use super::evaluator::{ControlFlow, ErrorKind, Evaluator};
+        use anyhow::anyhow;
+
+        // Check argument count - method should expect self + provided args
+        let expected_args = self.method.params.len(); // This includes 'self' now
+        let provided_args = args.len() + 1; // +1 for the instance we'll inject
+
+        if provided_args != expected_args {
+            return Err(anyhow!(
+                "Method '{}' expects {} arguments, got {}",
+                self.method.name,
+                expected_args - 1,
+                args.len()
+            ));
+        }
+
+        // Create new scope for method execution
+        let method_scope = self.closure_env.child();
+
+        // Set function name for better error messages
+        args.set_function_name(&format!("method {}", self.method.name));
+
+        // Bind 'self' parameter to the bound instance
+        method_scope.define("self".to_string(), self.instance.clone());
+
+        // Bind remaining parameters to provided arguments using the fluent API
+        for param_name in self.method.params.iter().skip(1) {
+            let arg_value = args.expect(param_name)?;
+            method_scope.define(param_name.clone(), arg_value);
+        }
+
+        // Validate all args consumed
+        args.complete()?;
+
+        // Create evaluator with method scope
+        let mut evaluator = Evaluator {
+            globals: self.closure_env.clone(),
+            current_env: method_scope,
+            current_dir: std::env::current_dir().unwrap_or_else(|_| std::path::PathBuf::from(".")),
+        };
+
+        // Evaluate method body
+        match evaluator.eval(&self.method.body) {
+            Ok(value) => Ok(value),
+            Err(ControlFlow::Return(value)) => Ok(value),
+            Err(ControlFlow::Error(ErrorKind::SystemError(err))) => Err(err),
+            Err(ControlFlow::Error(ErrorKind::RaisedError(value))) => {
+                // Convert raised value to string for error display
+                match value {
+                    crate::core::Value::String(s) => Err(anyhow!("{}", s)),
+                    _ => Err(anyhow!("{:?}", value)),
+                }
+            }
+            Err(other) => Err(anyhow!("Invalid control flow in method: {:?}", other)),
+        }
+    }
+}
+
+/// A static method bound to a class
+#[derive(Debug, Clone)]
+pub struct StaticMethod {
+    pub class_name: String,
+    pub method: ClassMethod,
+}
+
+#[crate::rust_value_any]
+impl RustValue for StaticMethod {
+    fn dyn_clone(&self) -> Box<dyn RustValue> {
+        Box::new(self.clone())
+    }
+    fn call(&self, _args: Args) -> Result<Value> {
+        // This will need to be implemented by the evaluator
+        // as it needs to execute the method body
+        Err(anyhow::anyhow!("Static method call not yet implemented"))
+    }
+}
