@@ -3,6 +3,12 @@ name = "rustleaf-macros-internal"
 version = "0.1.0"
 edition = "2021"
 license = "MIT OR Apache-2.0"
+description = "Internal procedural macros for the RustLeaf language interpreter"
+repository = "https://github.com/barsae/rustleaf"
+homepage = "https://github.com/barsae/rustleaf"
+documentation = "https://docs.rs/rustleaf-macros-internal"
+keywords = ["macro", "procedural", "rustleaf", "internal"]
+categories = ["development-tools"]
 
 [lib]
 proc-macro = true
