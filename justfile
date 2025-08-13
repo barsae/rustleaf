@@ -1,14 +1,14 @@
 # RustLeaf justfile
 
 current_branch := `basename $(pwd)`
-rust_flags := "RUSTFLAGS=\"-D warnings\""
+rust_flags := "RUSTFLAGS=\"-D warnings\" NEXTEST_HIDE_PROGRESS_BAR=1"
 rustdoc_flags := "RUSTDOCFLAGS=\"-D warnings\""
 
 # Run check, test, and clippy with warnings as errors
 test: check-test-dirs
     #!/bin/bash
     {{rust_flags}} cargo check
-    if ! {{rust_flags}} cargo test; then
+    if ! {{rust_flags}} cargo nextest run; then
         just test-summary
         exit 1
     fi
