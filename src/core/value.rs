@@ -645,7 +645,7 @@ impl Value {
         }
     }
 
-    /// Get a reference to Vec<Value> for function parameter binding
+    /// Get a reference to `Vec<Value>` for function parameter binding
     pub fn as_ref_vec_value(&self) -> Result<std::cell::Ref<Vec<Value>>> {
         match self {
             Value::List(list_ref) => Ok(list_ref.borrow()),
@@ -653,7 +653,7 @@ impl Value {
         }
     }
 
-    /// Get a mutable reference to Vec<Value> for function parameter binding
+    /// Get a mutable reference to `Vec<Value>` for function parameter binding
     pub fn as_mut_ref_vec_value(&self) -> Result<std::cell::RefMut<Vec<Value>>> {
         match self {
             Value::List(list_ref) => Ok(list_ref.borrow_mut()),

@@ -9,7 +9,7 @@ pub trait FromValue<T> {
 }
 
 /// Trait for borrowing a Value as a reference to a Rust type.
-/// Use this for borrowing internal data like &Vec<Value> from Value::List or &Point from PointRef.
+/// Use this for borrowing internal data like `&Vec<Value>` from Value::List or `&Point` from PointRef.
 /// Returns a guard that derefs to the target type.
 #[allow(dead_code)]
 pub trait BorrowValueAs<T: ?Sized> {
@@ -20,7 +20,7 @@ pub trait BorrowValueAs<T: ?Sized> {
 }
 
 /// Trait for mutably borrowing a Value as a reference to a Rust type.
-/// Use this for mutably borrowing internal data like &mut Vec<Value> from Value::List or &mut Point from PointRef.
+/// Use this for mutably borrowing internal data like `&mut Vec<Value>` from Value::List or `&mut Point` from PointRef.
 /// Returns a guard that derefs to the target type.
 #[allow(dead_code)]
 pub trait BorrowMutValueAs<T: ?Sized> {

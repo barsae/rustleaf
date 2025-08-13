@@ -1,7 +1,21 @@
 # RustLeaf justfile
 
-rust_flags := "RUSTFLAGS=\"-D warnings\""
 current_branch := `basename $(pwd)`
+rust_flags := "RUSTFLAGS=\"-D warnings\""
+rustdoc_flags := "RUSTDOCFLAGS=\"-D warnings\""
+
+# Run check, test, and clippy with warnings as errors
+test: check-test-dirs
+    #!/bin/bash
+    {{rust_flags}} cargo check
+    if ! {{rust_flags}} cargo test; then
+        just test-summary
+        exit 1
+    fi
+    just test-summary
+    cargo clippy -- -D warnings
+    {{rustdoc_flags}} cargo doc --no-deps --all-features
+    cargo fmt
 
 # Check if test directories changed and trigger rebuild if needed
 check-test-dirs:
@@ -23,19 +37,6 @@ check-test-dirs:
     fi
 
     echo "$current_hash" > "$hash_file"
-
-# Run check, test, and clippy with warnings as errors
-test: check-test-dirs
-    #!/bin/bash
-    {{rust_flags}} cargo check
-    if ! {{rust_flags}} cargo test; then
-        just test-summary
-        exit 1
-    fi
-    just test-summary
-    cargo clippy -- -D warnings
-    cargo fmt
-
 
 # Generate test summary from integration tests
 test-summary:
