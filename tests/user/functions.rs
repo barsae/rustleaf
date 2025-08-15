@@ -20,7 +20,7 @@ fn fn_no_args() -> f64 {
 }
 
 #[rustleaf]
-fn fn_borrow(v: &Vec<Value>) -> usize {
+fn fn_borrow(v: &[Value]) -> usize {
     v.len()
 }
 

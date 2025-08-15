@@ -321,6 +321,17 @@ impl BorrowMutValueAs<Vec<Value>> for Value {
     }
 }
 
+impl BorrowValueAs<[Value]> for Value {
+    type Guard<'a> = std::cell::Ref<'a, [Value]>;
+
+    fn borrow_value_as(&self) -> Result<Self::Guard<'_>, anyhow::Error> {
+        match self {
+            Value::List(list_ref) => Ok(std::cell::Ref::map(list_ref.borrow(), |v| &v[..])),
+            _ => Err(anyhow!("Cannot borrow {} as [Value]", self.type_name())),
+        }
+    }
+}
+
 impl BorrowValueAs<indexmap::IndexMap<String, Value>> for Value {
     type Guard<'a> = std::cell::Ref<'a, indexmap::IndexMap<String, Value>>;
 

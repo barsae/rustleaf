@@ -6,7 +6,6 @@ use std::fs;
 /// script and calls a function from it. This pattern shows how RustLeaf can be
 /// embedded in larger applications where users provide scripts with specific
 /// function contracts.
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -43,10 +42,7 @@ mod tests {
 
             assert!(
                 (y - expected).abs() < 1e-10,
-                "polynomial({}) = {}, expected {}",
-                input,
-                y,
-                expected
+                "polynomial({input}) = {y}, expected {expected}"
             );
         }
     }
