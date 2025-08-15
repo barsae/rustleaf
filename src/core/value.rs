@@ -10,11 +10,11 @@ use crate::core::Args;
 pub struct ListRef(Rc<RefCell<Vec<Value>>>);
 
 impl ListRef {
-    pub fn borrow(&self) -> std::cell::Ref<Vec<Value>> {
+    pub fn borrow(&self) -> std::cell::Ref<'_, Vec<Value>> {
         self.0.borrow()
     }
 
-    pub fn borrow_mut(&self) -> std::cell::RefMut<Vec<Value>> {
+    pub fn borrow_mut(&self) -> std::cell::RefMut<'_, Vec<Value>> {
         self.0.borrow_mut()
     }
 }
@@ -23,11 +23,11 @@ impl ListRef {
 pub struct DictRef(Rc<RefCell<IndexMap<String, Value>>>);
 
 impl DictRef {
-    pub fn borrow(&self) -> std::cell::Ref<IndexMap<String, Value>> {
+    pub fn borrow(&self) -> std::cell::Ref<'_, IndexMap<String, Value>> {
         self.0.borrow()
     }
 
-    pub fn borrow_mut(&self) -> std::cell::RefMut<IndexMap<String, Value>> {
+    pub fn borrow_mut(&self) -> std::cell::RefMut<'_, IndexMap<String, Value>> {
         self.0.borrow_mut()
     }
 }
@@ -36,11 +36,11 @@ impl DictRef {
 pub struct ClassInstanceRef(Rc<RefCell<crate::eval::ClassInstance>>);
 
 impl ClassInstanceRef {
-    pub fn borrow(&self) -> std::cell::Ref<crate::eval::ClassInstance> {
+    pub fn borrow(&self) -> std::cell::Ref<'_, crate::eval::ClassInstance> {
         self.0.borrow()
     }
 
-    pub fn borrow_mut(&self) -> std::cell::RefMut<crate::eval::ClassInstance> {
+    pub fn borrow_mut(&self) -> std::cell::RefMut<'_, crate::eval::ClassInstance> {
         self.0.borrow_mut()
     }
 }
@@ -49,11 +49,11 @@ impl ClassInstanceRef {
 pub struct ClassRef(Rc<RefCell<crate::eval::Class>>);
 
 impl ClassRef {
-    pub fn borrow(&self) -> std::cell::Ref<crate::eval::Class> {
+    pub fn borrow(&self) -> std::cell::Ref<'_, crate::eval::Class> {
         self.0.borrow()
     }
 
-    pub fn borrow_mut(&self) -> std::cell::RefMut<crate::eval::Class> {
+    pub fn borrow_mut(&self) -> std::cell::RefMut<'_, crate::eval::Class> {
         self.0.borrow_mut()
     }
 }
@@ -646,7 +646,7 @@ impl Value {
     }
 
     /// Get a reference to `Vec<Value>` for function parameter binding
-    pub fn as_ref_vec_value(&self) -> Result<std::cell::Ref<Vec<Value>>> {
+    pub fn as_ref_vec_value(&self) -> Result<std::cell::Ref<'_, Vec<Value>>> {
         match self {
             Value::List(list_ref) => Ok(list_ref.borrow()),
             _ => Err(anyhow!("Cannot borrow {} as &Vec<Value>", self.type_name())),
@@ -654,7 +654,7 @@ impl Value {
     }
 
     /// Get a mutable reference to `Vec<Value>` for function parameter binding
-    pub fn as_mut_ref_vec_value(&self) -> Result<std::cell::RefMut<Vec<Value>>> {
+    pub fn as_mut_ref_vec_value(&self) -> Result<std::cell::RefMut<'_, Vec<Value>>> {
         match self {
             Value::List(list_ref) => Ok(list_ref.borrow_mut()),
             _ => Err(anyhow!(
@@ -667,7 +667,7 @@ impl Value {
     /// Get a reference to IndexMap<String, Value> for function parameter binding
     pub fn as_ref_indexmap_string_value(
         &self,
-    ) -> Result<std::cell::Ref<indexmap::IndexMap<String, Value>>> {
+    ) -> Result<std::cell::Ref<'_, indexmap::IndexMap<String, Value>>> {
         match self {
             Value::Dict(dict_ref) => Ok(dict_ref.borrow()),
             _ => Err(anyhow!(
@@ -680,7 +680,7 @@ impl Value {
     /// Get a mutable reference to IndexMap<String, Value> for function parameter binding
     pub fn as_mut_ref_indexmap_string_value(
         &self,
-    ) -> Result<std::cell::RefMut<indexmap::IndexMap<String, Value>>> {
+    ) -> Result<std::cell::RefMut<'_, indexmap::IndexMap<String, Value>>> {
         match self {
             Value::Dict(dict_ref) => Ok(dict_ref.borrow_mut()),
             _ => Err(anyhow!(
