@@ -10,68 +10,7 @@ assert(not false == true);
 ```
 
 # Output
-```
-parse_program: starting
-parse_program: parsing statement at position 0 (Ident(assert))
-parse_statement: starting at position 0 (Ident(assert))
-consume_token: position 0 consumed Ident
-parse_statement: falling back to expression statement
-parse_expression: starting at position 0 (Ident(assert))
-consume_token: position 0 consumed Ident
-parse_primary: success - parsed identifier (assert)
-consume_token: position 1 consumed LeftParen
-parse_expression: starting at position 2 (Minus)
-consume_token: position 2 consumed Minus
-consume_token: position 3 consumed Int
-parse_primary: success - parsed numeric/string literal
-consume_token: position 4 consumed EqualEqual
-consume_token: position 5 consumed Minus
-consume_token: position 6 consumed Int
-parse_primary: success - parsed numeric/string literal
-parse_expression: success - parsed precedence expression
-consume_token: position 7 consumed RightParen
-parse_expression: success - parsed precedence expression
-consume_token: position 8 consumed Semicolon
-parse_program: parsing statement at position 9 (Ident(assert))
-parse_statement: starting at position 9 (Ident(assert))
-consume_token: position 9 consumed Ident
-parse_statement: falling back to expression statement
-parse_expression: starting at position 9 (Ident(assert))
-consume_token: position 9 consumed Ident
-parse_primary: success - parsed identifier (assert)
-consume_token: position 10 consumed LeftParen
-parse_expression: starting at position 11 (Not)
-consume_token: position 11 consumed Not
-consume_token: position 12 consumed True
-parse_primary: success - parsed boolean literal (true)
-consume_token: position 13 consumed EqualEqual
-consume_token: position 14 consumed False
-parse_primary: success - parsed boolean literal (false)
-parse_expression: success - parsed precedence expression
-consume_token: position 15 consumed RightParen
-parse_expression: success - parsed precedence expression
-consume_token: position 16 consumed Semicolon
-parse_program: parsing statement at position 17 (Ident(assert))
-parse_statement: starting at position 17 (Ident(assert))
-consume_token: position 17 consumed Ident
-parse_statement: falling back to expression statement
-parse_expression: starting at position 17 (Ident(assert))
-consume_token: position 17 consumed Ident
-parse_primary: success - parsed identifier (assert)
-consume_token: position 18 consumed LeftParen
-parse_expression: starting at position 19 (Not)
-consume_token: position 19 consumed Not
-consume_token: position 20 consumed False
-parse_primary: success - parsed boolean literal (false)
-consume_token: position 21 consumed EqualEqual
-consume_token: position 22 consumed True
-parse_primary: success - parsed boolean literal (true)
-parse_expression: success - parsed precedence expression
-consume_token: position 23 consumed RightParen
-parse_expression: success - parsed precedence expression
-consume_token: position 24 consumed Semicolon
-parse_program: parsed 3 statements
-```
+None
 
 # Result
 ```rust

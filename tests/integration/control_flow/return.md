@@ -12,58 +12,7 @@ assert(result == 42);
 ```
 
 # Output
-```
-parse_program: starting
-parse_program: parsing statement at position 0 (Fn)
-parse_statement: starting at position 0 (Fn)
-consume_token: position 0 consumed Fn
-consume_token: position 1 consumed Ident
-consume_token: position 2 consumed LeftParen
-consume_token: position 3 consumed RightParen
-consume_token: position 4 consumed LeftBrace
-parse_statement: starting at position 5 (Return)
-consume_token: position 5 consumed Return
-parse_expression: starting at position 6 (Int(42))
-consume_token: position 6 consumed Int
-parse_primary: success - parsed numeric/string literal
-parse_expression: success - parsed precedence expression
-consume_token: position 7 consumed Semicolon
-parse_statement: success - parsed return statement
-consume_token: position 8 consumed RightBrace
-parse_statement: success - parsed function declaration
-parse_program: parsing statement at position 9 (Var)
-parse_statement: starting at position 9 (Var)
-consume_token: position 9 consumed Var
-consume_token: position 10 consumed Ident
-consume_token: position 11 consumed Equal
-parse_expression: starting at position 12 (Ident(test_return))
-consume_token: position 12 consumed Ident
-parse_primary: success - parsed identifier (test_return)
-consume_token: position 13 consumed LeftParen
-consume_token: position 14 consumed RightParen
-parse_expression: success - parsed precedence expression
-consume_token: position 15 consumed Semicolon
-parse_statement: success - parsed var declaration
-parse_program: parsing statement at position 16 (Ident(assert))
-parse_statement: starting at position 16 (Ident(assert))
-consume_token: position 16 consumed Ident
-parse_statement: falling back to expression statement
-parse_expression: starting at position 16 (Ident(assert))
-consume_token: position 16 consumed Ident
-parse_primary: success - parsed identifier (assert)
-consume_token: position 17 consumed LeftParen
-parse_expression: starting at position 18 (Ident(result))
-consume_token: position 18 consumed Ident
-parse_primary: success - parsed identifier (result)
-consume_token: position 19 consumed EqualEqual
-consume_token: position 20 consumed Int
-parse_primary: success - parsed numeric/string literal
-parse_expression: success - parsed precedence expression
-consume_token: position 21 consumed RightParen
-parse_expression: success - parsed precedence expression
-consume_token: position 22 consumed Semicolon
-parse_program: parsed 3 statements
-```
+None
 
 # Result
 ```rust

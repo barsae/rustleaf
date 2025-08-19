@@ -13,13 +13,10 @@ pub fn parse_expression(s: &mut TokenStream) -> Result<Expression> {
         s.current_token_info()
     );
     let result = parse_precedence(s, 0);
-    if result.is_ok() {
-        trace!("parse_expression: success - parsed precedence expression");
+    if let Err(_e) = &result {
+        trace!("parse_expression: failed - {}", _e);
     } else {
-        trace!(
-            "parse_expression: failed - {}",
-            result.as_ref().err().unwrap()
-        );
+        trace!("parse_expression: success - parsed precedence expression");
     }
     result
 }
@@ -239,10 +236,10 @@ fn parse_primary(s: &mut TokenStream) -> Result<Expression> {
         return parse_interpolated_string(s);
     }
 
-    let current_token = s.current_token_info();
+    let _current_token = s.current_token_info();
     trace!(
         "parse_primary: failed - no matching primary expression for {}",
-        current_token
+        _current_token
     );
     Err(anyhow!("Expected expression, found {:?}", s.peek_type()))
 }

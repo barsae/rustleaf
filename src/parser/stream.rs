@@ -11,10 +11,6 @@ impl TokenStream {
         TokenStream { tokens, current: 0 }
     }
 
-    pub fn position(&self) -> usize {
-        self.current
-    }
-
     pub fn current_token_info(&self) -> String {
         let token = self.peek();
         match &token.text {

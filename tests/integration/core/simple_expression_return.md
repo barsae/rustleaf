@@ -7,22 +7,7 @@ Assertions: 0
 ```
 
 # Output
-```
-parse_program: starting
-parse_program: parsing statement at position 0 (Int(42))
-parse_statement: starting at position 0 (Int(42))
-parse_statement: falling back to expression statement
-parse_expression: starting at position 0 (Int(42))
-consume_token: position 0 consumed Int
-parse_primary: success - parsed numeric/string literal
-parse_expression: success - parsed precedence expression
-parse_statement: failed - Expected Semicolon, found Eof at position 1
-parse_expression: starting at position 0 (Int(42))
-consume_token: position 0 consumed Int
-parse_primary: success - parsed numeric/string literal
-parse_expression: success - parsed precedence expression
-parse_program: parsed 1 statements
-```
+None
 
 # Result
 ```rust
