@@ -160,6 +160,7 @@ impl RustValue for BoundMethod {
 }
 
 /// A static method bound to a class
+#[allow(dead_code)]
 #[derive(Debug, Clone)]
 pub struct StaticMethod {
     pub class_name: String,

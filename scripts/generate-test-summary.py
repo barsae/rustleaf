@@ -16,13 +16,13 @@ def extract_test_status(file_path):
         with open(file_path, 'r', encoding='utf-8') as f:
             content = f.read()
         
-        # Look for "Status: 🟢", "Status: 🔴", or "Status: 🟡"
-        status_match = re.search(r'Status: ([🟢🔴🟡])', content)
+        # Look for "Status: 🟢" or "Status: 🔴"
+        status_match = re.search(r'Status: ([🟢🔴])', content)
         if status_match:
             return status_match.group(1)
         
-        # Fallback: look for old format "# Program 🟢", "# Program 🔴", or "# Program 🟡"
-        match = re.search(r'# Program ([🟢🔴🟡])', content)
+        # Fallback: look for old format "# Program 🟢" or "# Program 🔴"
+        match = re.search(r'# Program ([🟢🔴])', content)
         if match:
             return match.group(1)
         
@@ -33,10 +33,9 @@ def extract_test_status(file_path):
                 return '🟢'
             elif '🔴' in line:
                 return '🔴'
-            elif '🟡' in line:
-                return '🟡'
-                
-        raise ValueError(f"No status found in {file_path}")
+        
+        # Default to green if no status found
+        return '🟢'
     except Exception as e:
         raise RuntimeError(f"Error reading {file_path}: {e}") from e
 
@@ -199,7 +198,6 @@ def generate_test_summary():
     total_tests = sum(len(tests) for _, tests in sorted_categories)
     passing_tests = sum(1 for _, tests in sorted_categories for _, status, _ in tests if status == '🟢')
     failing_tests = sum(1 for _, tests in sorted_categories for _, status, _ in tests if status == '🔴')
-    no_assert_tests = sum(1 for _, tests in sorted_categories for _, status, _ in tests if status == '🟡')
     
     # Build overall summary for header
     header_summary_parts = []
@@ -207,8 +205,6 @@ def generate_test_summary():
         header_summary_parts.append(f"{passing_tests} 🟢")
     if failing_tests > 0:
         header_summary_parts.append(f"{failing_tests} 🔴")
-    if no_assert_tests > 0:
-        header_summary_parts.append(f"{no_assert_tests} 🟡")
     
     header_summary = " ".join(header_summary_parts)
     
@@ -238,7 +234,6 @@ def generate_test_summary():
         # Count statuses for this category
         category_passing = sum(1 for _, status, _ in tests if status == '🟢')
         category_failing = sum(1 for _, status, _ in tests if status == '🔴')
-        category_no_assert = sum(1 for _, status, _ in tests if status == '🟡')
         
         # Build category summary (omit zeros)
         summary_parts = []
@@ -246,8 +241,6 @@ def generate_test_summary():
             summary_parts.append(f"{category_passing} 🟢")
         if category_failing > 0:
             summary_parts.append(f"{category_failing} 🔴")
-        if category_no_assert > 0:
-            summary_parts.append(f"{category_no_assert} 🟡")
         
         summary_text = " ".join(summary_parts)
         

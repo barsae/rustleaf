@@ -1,12 +1,18 @@
+/// A complete RustLeaf program consisting of statements
 #[derive(Debug, Clone, PartialEq)]
 pub struct Program(pub Vec<Statement>);
 
+/// A block of statements with an optional final expression
 #[derive(Debug, Clone, PartialEq)]
 pub struct Block {
+    /// The statements in this block
     pub statements: Vec<Statement>,
+    /// Optional final expression that returns a value
     pub final_expr: Option<Box<Expression>>,
 }
 
+/// Statements in RustLeaf programs
+#[allow(missing_docs)]
 #[derive(Debug, Clone, PartialEq)]
 pub enum Statement {
     // Macro annotation wrapping another statement
@@ -59,6 +65,8 @@ pub enum Statement {
     Empty,
 }
 
+/// Assignment operators
+#[allow(missing_docs)]
 #[derive(Debug, Clone, PartialEq)]
 pub enum AssignOp {
     Assign,    // =
@@ -69,6 +77,8 @@ pub enum AssignOp {
     ModAssign, // %=
 }
 
+/// Left-hand side values for assignment
+#[allow(missing_docs)]
 #[derive(Debug, Clone, PartialEq)]
 pub enum LValue {
     Identifier(String),
@@ -76,6 +86,8 @@ pub enum LValue {
     GetItem(Box<Expression>, Box<Expression>), // obj[key]
 }
 
+/// Expressions in RustLeaf
+#[allow(missing_docs)]
 #[derive(Debug, Clone, PartialEq)]
 pub enum Expression {
     // Literals and identifiers
@@ -170,6 +182,8 @@ pub enum Expression {
     Dict(Vec<(Expression, Expression)>),
 }
 
+/// Literal values
+#[allow(missing_docs)]
 #[derive(Debug, Clone, PartialEq)]
 pub enum LiteralValue {
     Null,
@@ -244,6 +258,8 @@ pub struct MatchCase {
     pub body: Block, // Match case bodies are blocks
 }
 
+/// Pattern matching constructs
+#[allow(missing_docs)]
 #[derive(Debug, Clone, PartialEq)]
 pub enum Pattern {
     Literal(LiteralValue),

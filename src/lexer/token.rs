@@ -1,5 +1,4 @@
-/// Token types for RustLeaf
-
+/// A lexical token in RustLeaf source code
 #[derive(Clone, PartialEq)]
 pub struct Token {
     pub token_type: TokenType,
@@ -32,6 +31,8 @@ impl std::fmt::Debug for Token {
     }
 }
 
+/// Types of tokens in RustLeaf
+#[allow(missing_docs)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum TokenType {
     // Literals

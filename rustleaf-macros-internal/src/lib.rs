@@ -30,7 +30,7 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
             .map(|(test_name, include_path, test_type, full_path)| {
                 let test_fn_name = syn::Ident::new(test_name, proc_macro2::Span::call_site());
 
-                let is_panic_test = matches!(test_type, TestType::Panic);
+                let _is_panic_test = matches!(test_type, TestType::Panic);
                 let test_body = quote! {
                     // Read the markdown file and extract rustleaf code block
                     let md_content = include_str!(#include_path);
@@ -79,121 +79,26 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
                     let source = extract_rustleaf_code_block(md_content)
                         .expect("Failed to find rustleaf code block in markdown file");
 
-                    println!("DEBUG: Starting test for file: {}", #full_path);
-                    println!("DEBUG: Extracted source code: {}", source);
-
-                    // Start print capture early to capture parser traces
-                    rustleaf::core::start_print_capture();
-                    rustleaf::core::start_assertion_count();
-
-                    // Try lexing
-                    println!("DEBUG: Starting lexing phase");
-                    let tokens_result = rustleaf::lexer::Lexer::tokenize(&source);
-                    let lex_output = match &tokens_result {
-                        Ok(tokens) => {
-                            let formatted_tokens: Vec<String> = tokens.iter().enumerate()
-                                .map(|(i, token)| format!("{}: {:?}", i, token))
-                                .collect();
-                            format!("Ok(\n    [\n        {}\n    ],\n)", formatted_tokens.join(",\n        "))
-                        }
-                        Err(e) => format!("Err({:#?})", e)
-                    };
-                    println!("DEBUG: Lexing completed");
-
-                    // Try parsing (only if lexing succeeded)
-                    println!("DEBUG: Starting parsing phase");
-                    let parse_result = match &tokens_result {
-                        Ok(_) => rustleaf::parser::Parser::parse_str(&source),
-                        Err(e) => Err(anyhow::Error::msg(format!("Lex error: {}", e))),
-                    };
-                    let parse_output = format!("{:#?}", parse_result);
-                    println!("DEBUG: Parsing completed");
-
-                    // Try compiling to eval IR (only if parsing succeeded)
-                    println!("DEBUG: Starting compilation phase");
-                    let eval_output = match &parse_result {
-                        Ok(ast) => {
-                            let eval_result = rustleaf::eval::Compiler::compile(ast.clone());
-                            format!("{:#?}", eval_result)
-                        }
-                        Err(_) => "Skipped due to parse error".to_string(),
-                    };
-                    println!("DEBUG: Compilation completed");
+                    // Try parsing (which includes lexing internally)
+                    let parse_result = rustleaf::parser::Parser::parse_str(&source);
 
                     // Try evaluation (only if all previous stages succeeded)
-                    println!("DEBUG: Starting evaluation phase");
-                    let (output_section, execution_output, eval_success, final_result, assertion_count) = match parse_result {
+                    let (eval_success, final_result) = match parse_result {
                         Ok(ast) => {
-                            println!("DEBUG: AST parsing successful, starting evaluation setup");
-                            // Note: Print capture and assertion counting already started before parsing
-
                             // Get the directory of the test file for module imports
                             let test_file_dir = std::path::Path::new(#full_path).parent().map(|p| p.to_path_buf());
-                            println!("DEBUG: Test file directory: {:?}", test_file_dir);
-
-                            println!("DEBUG: About to call evaluate_with_dir - this is where the stack overflow likely occurs");
                             let result = rustleaf::eval::evaluate_with_dir(ast, test_file_dir);
-                            println!("DEBUG: evaluate_with_dir returned successfully");
-                            // Get all captured output (includes parser traces and print statements)
-                            let captured_output = rustleaf::core::get_captured_prints();
-                            let assertion_count = rustleaf::core::get_assertion_count();
-                            let execution_output = format!("{:#?}", result).replace("\\n", "\n");
-                            println!("DEBUG: Captured {} prints, {} assertions", captured_output.len(), assertion_count);
-
-                            let output_section = if captured_output.is_empty() {
-                                "None".to_string()
-                            } else {
-                                captured_output.join("\n")
-                            };
-
                             let eval_success = result.is_ok();
-                            (output_section, execution_output, eval_success, result, assertion_count)
+                            (eval_success, result)
                         }
                         Err(parse_error) => {
-                            println!("DEBUG: Parse error occurred: {}", parse_error);
-                            // Even on parse error, get any captured output (parser traces)
-                            let captured_output = rustleaf::core::get_captured_prints();
-                            let assertion_count = rustleaf::core::get_assertion_count();
-
-                            let output_section = if captured_output.is_empty() {
-                                "None".to_string()
-                            } else {
-                                captured_output.join("\n")
-                            };
-
                             let error_msg = format!("Parse error: {}", parse_error);
                             let error_result = Err(anyhow::Error::msg(error_msg.clone()));
-                            (output_section, "Skipped due to parse error".to_string(), false, error_result, assertion_count)
+                            (false, error_result)
                         }
                     };
-                    println!("DEBUG: Evaluation completed");
-
-                    // For panic tests, success means it should fail (red circle = expected behavior)
-                    // For normal tests, success means it should succeed (green circle = expected behavior)
-                    println!("DEBUG: Determining test result (eval_success: {}, assertion_count: {})", eval_success, assertion_count);
-                    let circle = if #is_panic_test {
-                        if eval_success { "🔴" } else { "🟢" }
-                    } else {
-                        if eval_success {
-                            // Yellow circle for passing tests with no assertions
-                            if assertion_count == 0 { "🟡" } else { "🟢" }
-                        } else {
-                            "🔴"
-                        }
-                    };
-                    println!("DEBUG: Test result circle: {}", circle);
-
-                    // Update the markdown file in-place with test results
-                    println!("DEBUG: Updating markdown file with results");
-                    let updated_md_content = update_markdown_with_results(
-                        md_content, &source, &circle, &output_section, &execution_output,
-                        &lex_output, &parse_output, &eval_output, assertion_count
-                    );
-                    std::fs::write(#full_path, updated_md_content).unwrap();
-                    println!("DEBUG: Markdown file updated successfully");
 
                     // Return actual result - let cargo handle expectations
-                    println!("DEBUG: Test completed, returning final result");
                     final_result.unwrap();
                 };
 

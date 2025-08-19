@@ -30,6 +30,7 @@ impl RustValue for BoundMethod {
 }
 
 // Helper struct for bound methods using the new Vec<Value> calling paradigm
+#[allow(dead_code)]
 #[derive(Debug, Clone)]
 pub struct BoundMethodVec {
     self_value: Value,
@@ -37,6 +38,7 @@ pub struct BoundMethodVec {
 }
 
 impl BoundMethodVec {
+    #[allow(dead_code)]
     pub fn new(self_value: &Value, method_func: fn(Vec<Value>) -> Result<Value>) -> Self {
         Self {
             self_value: self_value.clone(),

@@ -21,6 +21,7 @@ impl RustLeafFunction {
         }
     }
 
+    #[allow(dead_code)]
     pub fn into_value(self) -> Value {
         Value::from_rust(self)
     }

@@ -70,6 +70,7 @@ impl LexerRule {
     }
 }
 
+/// Lexer for tokenizing RustLeaf source code
 pub struct Lexer {
     source: Vec<char>,
     tokens: Vec<Token>,

@@ -1,10 +1,42 @@
-/// RustLeaf interpreter library
+#![allow(missing_docs)]
+//! RustLeaf interpreter library
+
+/// Core types and abstract syntax tree definitions
 pub mod core;
+
+// Testing framework needs access to these
 pub mod eval;
 pub mod lexer;
 pub mod parser;
 
-// Re-export proc macros
+// Re-export key types for users
+
+/// The main value type used throughout RustLeaf
+pub use core::Value;
+
+/// Trait for implementing custom types that can be used in RustLeaf
+pub use core::RustValue;
+
+/// RustLeaf interpreter/evaluator
+pub use eval::Evaluator;
+
+// Additional exports needed for testing and advanced usage
+pub use core::Args;
+pub use core::BoundMethodVec;
+
+/// Lexer for tokenizing RustLeaf source code
+pub use lexer::Lexer;
+
+/// A lexical token
+pub use lexer::Token;
+
+/// Types of tokens in RustLeaf
+pub use lexer::TokenType;
+
+/// Parser for converting tokens to abstract syntax tree
+pub use parser::Parser;
+
+/// Proc macro for implementing RustValue trait
 pub use rustleaf_macros::rust_value_any;
 
 use anyhow::Result;

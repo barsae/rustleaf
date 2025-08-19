@@ -1,3 +1,6 @@
+//! Binary operator handling for parser
+#![allow(missing_docs)]
+
 use crate::core::*;
 use crate::lexer::TokenType;
 

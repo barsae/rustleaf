@@ -4,7 +4,6 @@ mod core;
 mod expression;
 mod statement;
 mod stream;
-mod tracing;
 
 // Re-export public API
 pub use core::Parser;

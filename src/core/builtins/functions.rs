@@ -2,13 +2,6 @@ use crate::core::Value;
 use crate::core::{Args, RustValue};
 
 use anyhow::{anyhow, Result};
-use std::cell::RefCell;
-
-// Thread-local capture for print output and assertion counting during testing
-thread_local! {
-    static PRINT_CAPTURE: RefCell<Option<Vec<String>>> = const { RefCell::new(None) };
-    static ASSERTION_COUNT: RefCell<Option<u32>> = const { RefCell::new(None) };
-}
 
 #[derive(Clone)]
 pub struct RustFunction {
@@ -41,16 +34,9 @@ impl RustValue for RustFunction {
     }
 }
 
-// Internal helper to write to print capture or stdout
+// Internal helper to write to stdout
 fn write_output(output: &str) {
-    PRINT_CAPTURE.with(|capture| {
-        if let Some(ref mut captured) = *capture.borrow_mut() {
-            captured.push(output.to_string());
-        } else {
-            // Normal behavior: print to stdout
-            println!("{output}");
-        }
-    });
+    println!("{output}");
 }
 
 pub fn print(mut args: Args) -> Result<Value> {
@@ -75,13 +61,6 @@ pub fn assert(mut args: Args) -> Result<Value> {
     let message = args.optional("message", Value::String("Assertion failed".to_string()));
     args.complete()?;
 
-    // Increment assertion count if capture is enabled
-    ASSERTION_COUNT.with(|count| {
-        if let Some(ref mut counter) = *count.borrow_mut() {
-            *counter += 1;
-        }
-    });
-
     if !condition.is_truthy() {
         let message_str = match message {
             Value::String(s) => s,
@@ -91,46 +70,6 @@ pub fn assert(mut args: Args) -> Result<Value> {
     }
 
     Ok(Value::Unit)
-}
-
-// Helper functions for test capture
-pub fn start_print_capture() {
-    PRINT_CAPTURE.with(|capture| {
-        *capture.borrow_mut() = Some(Vec::new());
-    });
-}
-
-pub fn get_captured_prints() -> Vec<String> {
-    PRINT_CAPTURE.with(|capture| capture.borrow_mut().take().unwrap_or_default())
-}
-
-pub fn stop_print_capture() {
-    PRINT_CAPTURE.with(|capture| {
-        *capture.borrow_mut() = None;
-    });
-}
-
-// Helper functions for assertion counting
-pub fn start_assertion_count() {
-    ASSERTION_COUNT.with(|count| {
-        *count.borrow_mut() = Some(0);
-    });
-}
-
-pub fn get_assertion_count() -> u32 {
-    ASSERTION_COUNT.with(|count| count.borrow_mut().take().unwrap_or(0))
-}
-
-pub fn stop_assertion_count() {
-    ASSERTION_COUNT.with(|count| {
-        *count.borrow_mut() = None;
-    });
-}
-
-// Public function to write directly to PRINT_CAPTURE
-// Used by the parser tracing module
-pub fn write_to_print_capture(msg: String) {
-    write_output(&msg);
 }
 
 pub fn is_unit(mut args: Args) -> Result<Value> {

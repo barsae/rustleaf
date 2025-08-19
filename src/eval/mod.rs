@@ -8,22 +8,27 @@ mod scope;
 mod structs;
 mod type_constant;
 
-pub use class::{BoundMethod, Class, ClassInstance, StaticMethod};
+// Public API - evaluator and compiler for testing
 pub use compiler::Compiler;
-pub use constructors::Eval;
-pub use evaluator::{ControlFlow, ErrorKind, EvalResult, Evaluator};
-pub use function::RustLeafFunction;
-pub use params::Params;
-pub use scope::Scope;
-pub use structs::*;
-pub use type_constant::TypeConstant;
+pub use evaluator::Evaluator;
+
+// Internal exports for crate use only
+pub(crate) use class::{BoundMethod, Class, ClassInstance};
+pub(crate) use constructors::Eval;
+pub(crate) use evaluator::{ControlFlow, ErrorKind, EvalResult};
+pub(crate) use function::RustLeafFunction;
+pub(crate) use params::Params;
+pub(crate) use structs::*;
+pub(crate) use type_constant::TypeConstant;
 
 // Convenience function for backward compatibility with tests
+#[allow(dead_code)]
 pub fn evaluate(program: crate::core::Program) -> anyhow::Result<crate::core::Value> {
     evaluate_with_dir(program, None)
 }
 
 // Evaluate with optional custom current directory
+#[allow(dead_code)]
 pub fn evaluate_with_dir(
     program: crate::core::Program,
     current_dir: Option<std::path::PathBuf>,

@@ -1,5 +1,6 @@
 use crate::lexer::{Token, TokenType};
 use anyhow::Result;
+use tracing::debug;
 
 pub struct TokenStream {
     tokens: Vec<Token>,
@@ -9,6 +10,10 @@ pub struct TokenStream {
 impl TokenStream {
     pub fn new(tokens: Vec<Token>) -> Self {
         TokenStream { tokens, current: 0 }
+    }
+
+    pub fn position(&self) -> usize {
+        self.current
     }
 
     pub fn current_token_info(&self) -> String {
@@ -72,7 +77,7 @@ impl TokenStream {
         let current = self.peek();
         if current.token_type == token_type {
             let token = self.advance().clone();
-            crate::trace!(
+            debug!(
                 "consume_token: position {} consumed {:?}",
                 self.current - 1,
                 token_type

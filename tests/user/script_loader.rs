@@ -1,5 +1,5 @@
-use rustleaf::core::Value;
-use rustleaf::eval::Evaluator;
+use rustleaf::Evaluator;
+use rustleaf::Value;
 use std::fs;
 
 /// Test demonstrating the ergonomics of a Rust program that loads a user-specified

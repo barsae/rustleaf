@@ -19,6 +19,7 @@ pub enum ControlFlow {
 
 pub type EvalResult = Result<Value, ControlFlow>;
 
+/// The main RustLeaf interpreter that evaluates programs
 pub struct Evaluator {
     pub globals: ScopeRef,
     pub current_env: ScopeRef,
