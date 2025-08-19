@@ -24,7 +24,7 @@ name = "rustleaf"
 path = "src/lib.rs"
 
 [features]
-default = ["parser-tracing"]
+default = []
 parser-tracing = []
 
 [dependencies]
