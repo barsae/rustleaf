@@ -32,6 +32,27 @@ pub fn rustleaf_tests(args: TokenStream, _input: TokenStream) -> TokenStream {
 
                 let _is_panic_test = matches!(test_type, TestType::Panic);
                 let test_body = quote! {
+                    // Setup tracing subscriber to write to .log file next to test
+                    let test_path = std::path::Path::new(#full_path);
+                    let log_path = test_path.with_extension("log");
+
+                    // Create/truncate the log file
+                    let log_file = std::fs::OpenOptions::new()
+                        .create(true)
+                        .write(true)
+                        .truncate(true)
+                        .open(&log_path)
+                        .unwrap();
+
+                    let (non_blocking, _guard) = tracing_appender::non_blocking(log_file);
+
+                    let subscriber = tracing_subscriber::FmtSubscriber::builder()
+                        .with_writer(non_blocking)
+                        .with_ansi(false)
+                        .with_max_level(tracing::Level::DEBUG)
+                        .finish();
+
+                    let _subscriber_guard = tracing::subscriber::set_default(subscriber);
                     // Read the markdown file and extract rustleaf code block
                     let md_content = include_str!(#include_path);
 
