@@ -13,9 +13,8 @@ updates:
       prefix: "deps"
       include: "scope"
     labels:
-      - "dependencies"
-      - "rust"
-    
+      - "dependabot"
+
   # Keep GitHub Actions up to date
   - package-ecosystem: "github-actions"
     directory: "/"
